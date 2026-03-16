@@ -2,6 +2,11 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import GoalDetailClient from './client'
 
+// Enable edge runtime and caching
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const revalidate = 30 // Cache for 30 seconds at edge
+
 export default async function GoalDetailPage({ params }: { params: { id: string } }) {
   try {
     // Fetch goal with minimal related data - optimize for speed

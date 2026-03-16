@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { Decimal } from '@prisma/client/runtime/library'
+import { unstable_cache, revalidateTag } from 'next/cache'
 
 export interface Goal {
   id: string
@@ -19,32 +20,40 @@ export interface Goal {
 
 /**
  * Get all goals for a workspace
+ * Cached for 5 minutes with stale-while-revalidate
  */
-export async function getGoals(workspaceId: string): Promise<Goal[]> {
-  try {
-    const goals = await prisma.goal.findMany({
-      where: { workspaceId, status: { in: ['active', 'paused'] } },
-      orderBy: { createdAt: 'desc' }
-    })
+export const getGoals = unstable_cache(
+  async (workspaceId: string): Promise<Goal[]> => {
+    try {
+      const goals = await prisma.goal.findMany({
+        where: { workspaceId, status: { in: ['active', 'paused'] } },
+        orderBy: { createdAt: 'desc' }
+      })
 
-    return goals.map((g) => ({
-      id: g.id,
-      name: g.name,
-      currentValue: Number(g.currentValue),
-      targetValue: Number(g.targetValue),
-      unit: g.unit || undefined,
-      endDate: g.endDate.toISOString().split('T')[0],
-      status: g.status,
-      metricType: g.metricType,
-      workspaceId: g.workspaceId,
-      createdAt: g.createdAt.toISOString(),
-      updatedAt: g.updatedAt.toISOString(),
-    }))
-  } catch (err) {
-    console.error('getGoals error:', err)
-    return []
+      return goals.map((g) => ({
+        id: g.id,
+        name: g.name,
+        currentValue: Number(g.currentValue),
+        targetValue: Number(g.targetValue),
+        unit: g.unit || undefined,
+        endDate: g.endDate.toISOString().split('T')[0],
+        status: g.status,
+        metricType: g.metricType,
+        workspaceId: g.workspaceId,
+        createdAt: g.createdAt.toISOString(),
+        updatedAt: g.updatedAt.toISOString(),
+      }))
+    } catch (err) {
+      console.error('getGoals error:', err)
+      return []
+    }
+  },
+  ['goals-list'],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ['goals']
   }
-}
+)
 
 /**
  * Create a new goal
@@ -93,6 +102,9 @@ export async function createGoal(
     })
 
     console.log('Goal created successfully:', goal.id)
+
+    // Revalidate goals cache
+    revalidateTag('goals')
 
     return {
       id: goal.id,
@@ -146,6 +158,9 @@ export async function updateGoal(
       }
     })
 
+    // Revalidate goals cache
+    revalidateTag('goals')
+
     return {
       id: goal.id,
       name: goal.name,
@@ -183,6 +198,9 @@ export async function deleteGoal(workspaceId: string, goalId: string): Promise<b
     await prisma.goal.delete({
       where: { id: goalId }
     })
+
+    // Revalidate goals cache
+    revalidateTag('goals')
 
     return true
   } catch (err) {
