@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { FaArrowLeft, FaEdit, FaTrash, FaTasks, FaBullseye } from 'react-icons/fa'
+import Sidebar from '@/components/Sidebar'
 import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import { deleteGoal } from '@/app/actions/goals'
@@ -13,6 +15,7 @@ interface GoalDetailClientProps {
 
 export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
   const router = useRouter()
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // Calculate progress
   const progress = goal.targetValue > 0 
@@ -59,9 +62,17 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
     return 'bg-red-500'
   }
 
+  const mainPaddingClass = sidebarCollapsed ? 'ml-20' : 'ml-64'
+
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <div className="md:ml-64">
+      <Sidebar
+        workspaceName="My Workspace"
+        isCollapsed={sidebarCollapsed}
+        onCollapsedChange={setSidebarCollapsed}
+      />
+
+      <div className={mainPaddingClass}>
         {/* Back Button */}
         <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
           <button
