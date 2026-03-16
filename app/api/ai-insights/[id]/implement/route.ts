@@ -1,0 +1,31 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { implementAIInsight } from '@/app/actions/ai-insights'
+import { requireWorkspace } from '@/lib/workspace'
+
+const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
+
+/**
+ * POST /api/ai-insights/[id]/implement
+ * Mark an AI insight as implemented
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const workspaceId = await requireWorkspace()
+    const insight = await implementAIInsight(
+      workspaceId,
+      params.id,
+      PLACEHOLDER_USER_ID
+    )
+
+    return NextResponse.json(insight)
+  } catch (error) {
+    console.error('Error in POST /api/ai-insights/[id]/implement:', error)
+    return NextResponse.json(
+      { error: 'Failed to implement AI insight' },
+      { status: 500 }
+    )
+  }
+}

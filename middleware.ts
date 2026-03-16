@@ -1,0 +1,98 @@
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function middleware(req: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: req.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return req.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          req.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+          response = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          })
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+        remove(name: string, options: CookieOptions) {
+          req.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+          response = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          })
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
+    }
+  )
+
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  // Public routes (auth pages and API endpoints with their own auth)
+  const publicRoutes = [
+    '/login', 
+    '/signup', 
+    '/auth/callback', 
+    '/auth/confirm',
+    '/api/auth/logout',  // Logout endpoint
+    '/api/cron',      // Cron endpoints use API key auth
+    '/api/tasks/direct', // Direct API access uses API key auth
+    '/api/assistant',  // AI Assistant API (Week 1 Day 1-2) - TODO: Add proper auth in Day 3-4
+    '/api/migrate-action-plans', // Migration endpoint (one-time use)
+    '/api/brain-dump', // Brain Dump API (internal processing, no auth needed for server-to-server)
+    '/api/doug',      // Doug AI Assistant API (uses DOUG_API_TOKEN auth)
+  ]
+  // Allow root path (landing page) without auth
+  const isPublicRoute = req.nextUrl.pathname === '/' || publicRoutes.some(route => req.nextUrl.pathname.startsWith(route))
+  
+  if (isPublicRoute) {
+    return response
+  }
+  
+  // Require authentication for protected routes
+  if (!session) {
+    const redirectUrl = new URL('/login', req.url)
+    redirectUrl.searchParams.set('redirectedFrom', req.nextUrl.pathname)
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // NOTE: Workspace isolation is handled at the API route level
+  // Each API route validates that the user has access to the requested workspace
+  // We cannot do this validation in middleware because Edge Runtime doesn't support Prisma
+  
+  return response
+}
+
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon|.*\\.svg$|api/public).*)',
+  ]
+}

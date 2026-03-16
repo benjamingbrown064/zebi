@@ -1,0 +1,107 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
+import { requireApiKey } from '@/lib/auth-api'
+import { requireWorkspace } from '@/lib/workspace'
+
+export const dynamic = 'force-dynamic'
+
+const DEFAULT_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
+
+export async function POST(request: NextRequest) {
+  const authError = requireApiKey(request)
+  if (authError) return authError
+
+  try {
+    const workspaceId = await requireWorkspace()
+    console.log('[migrate-action-plans] Starting migration...')
+
+    // Get all objectives with action plans
+    const objectives = await prisma.objective.findMany({
+      where: {
+        workspaceId,
+        aiActionPlan: {
+          not: Prisma.DbNull
+        }
+      },
+      select: {
+        id: true,
+        title: true,
+        aiActionPlan: true
+      }
+    })
+
+    console.log(`[migrate-action-plans] Found ${objectives.length} objectives with action plans`)
+
+    // Get inbox status
+    const inboxStatus = await prisma.status.findFirst({
+      where: {
+        workspaceId,
+        type: 'inbox'
+      }
+    })
+
+    if (!inboxStatus) {
+      return NextResponse.json(
+        { error: 'No inbox status found' },
+        { status: 500 }
+      )
+    }
+
+    let migratedCount = 0
+    const migrationLog: string[] = []
+
+    for (const objective of objectives) {
+      const actionPlan = objective.aiActionPlan as any
+
+      if (!actionPlan || !Array.isArray(actionPlan.steps)) {
+        migrationLog.push(`Skipped ${objective.title} - no valid steps`)
+        continue
+      }
+
+      migrationLog.push(`Migrating ${actionPlan.steps.length} steps from: ${objective.title}`)
+
+      for (const step of actionPlan.steps) {
+        const taskTitle = step.title || step.description || 'Untitled task'
+        
+        await prisma.task.create({
+          data: {
+            workspaceId,
+            title: taskTitle,
+            description: step.description || null,
+            priority: step.priority || 3,
+            statusId: inboxStatus.id,
+            objectiveId: objective.id,
+            createdBy: DEFAULT_USER_ID,
+            aiGenerated: true,
+            aiAgent: 'action-plan-migration'
+          }
+        })
+
+        migratedCount++
+        migrationLog.push(`  ✓ ${taskTitle}`)
+      }
+
+      // Clear action plan
+      await prisma.objective.update({
+        where: { id: objective.id },
+        data: { aiActionPlan: Prisma.DbNull }
+      })
+    }
+
+    migrationLog.push(`\n✅ Complete: ${migratedCount} tasks created`)
+
+    return NextResponse.json({
+      success: true,
+      objectivesProcessed: objectives.length,
+      tasksCreated: migratedCount,
+      log: migrationLog
+    })
+  } catch (error) {
+    console.error('[migrate-action-plans] Error:', error)
+    return NextResponse.json(
+      { error: 'Migration failed', details: String(error) },
+      { status: 500 }
+    )
+  }
+}

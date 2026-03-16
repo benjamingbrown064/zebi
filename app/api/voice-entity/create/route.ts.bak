@@ -1,0 +1,396 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+
+export const dynamic = 'force-dynamic';
+
+const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237';
+const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74';
+
+type EntityType = 'company' | 'objective' | 'project';
+
+interface CompanyProposal {
+  company: {
+    name: string;
+    industry: string;
+    stage?: string;
+    businessModel?: string;
+    description: string;
+  };
+  objectives?: Array<{
+    title: string;
+    description?: string;
+    priority: 'high' | 'medium' | 'low';
+    deadline?: string | null;
+  }>;
+}
+
+interface ObjectiveProposal {
+  objective: {
+    title: string;
+    description: string;
+    objectiveType: 'milestone' | 'outcome' | 'metric' | 'kpi';
+    priority: 'high' | 'medium' | 'low';
+    deadline: string | null;
+    targetValue?: number;
+    unit?: string;
+  };
+  projects?: Array<{
+    name: string;
+    description?: string;
+  }>;
+  tasks?: Array<{
+    title: string;
+    projectIndex?: number | null;
+  }>;
+}
+
+interface ProjectProposal {
+  project: {
+    name: string;
+    description: string;
+    stage?: string;
+    priority: 'high' | 'medium' | 'low';
+    deadline?: string | null;
+  };
+  tasks?: Array<{
+    title: string;
+    description?: string;
+    priority?: 'high' | 'medium' | 'low';
+  }>;
+}
+
+/**
+ * Create company with optional objectives
+ */
+async function createCompany(proposal: CompanyProposal, tx: any) {
+  const { company, objectives } = proposal;
+
+  // Create company
+  const createdCompany = await tx.company.create({
+    data: {
+      workspaceId: DEFAULT_WORKSPACE_ID,
+      name: company.name,
+      industry: company.industry || null,
+      stage: company.stage || 'startup',
+      businessModel: company.businessModel || null,
+      executiveSummary: company.description || null,
+      createdBy: PLACEHOLDER_USER_ID
+    }
+  });
+
+  // Create objectives if any
+  const createdObjectives = [];
+  if (objectives && objectives.length > 0) {
+    const priorityMap = { high: 1, medium: 2, low: 3 };
+    
+    for (const obj of objectives) {
+      const defaultDeadline = new Date();
+      defaultDeadline.setMonth(defaultDeadline.getMonth() + 3);
+      
+      const createdObjective = await tx.objective.create({
+        data: {
+          workspaceId: DEFAULT_WORKSPACE_ID,
+          companyId: createdCompany.id,
+          title: obj.title,
+          description: obj.description || '',
+          objectiveType: 'milestone',
+          metricType: 'boolean',
+          targetValue: 1,
+          currentValue: 0,
+          startDate: new Date(),
+          deadline: obj.deadline ? new Date(obj.deadline) : defaultDeadline,
+          priority: priorityMap[obj.priority] || 2,
+          createdBy: PLACEHOLDER_USER_ID
+        }
+      });
+      createdObjectives.push(createdObjective);
+    }
+  }
+
+  return {
+    company: createdCompany,
+    objectives: createdObjectives
+  };
+}
+
+/**
+ * Create objective with optional projects and tasks
+ */
+async function createObjective(
+  proposal: ObjectiveProposal,
+  parentId: string | null,
+  parentType: 'goal' | 'company' | null,
+  tx: any
+) {
+  const { objective, projects, tasks } = proposal;
+
+  const priorityMap = { high: 1, medium: 2, low: 3 };
+  
+  // Set default deadline (1 month from now)
+  const defaultDeadline = new Date();
+  defaultDeadline.setMonth(defaultDeadline.getMonth() + 1);
+
+  // Determine target value and unit based on objective type
+  let targetValue = 1;
+  let unit = null;
+  let metricType = 'boolean';
+  
+  if (objective.objectiveType === 'metric' || objective.objectiveType === 'kpi') {
+    targetValue = objective.targetValue || 100;
+    unit = objective.unit || '%';
+    metricType = 'numeric';
+  }
+
+  // Create objective
+  const createdObjective = await tx.objective.create({
+    data: {
+      workspaceId: DEFAULT_WORKSPACE_ID,
+      ...(parentType === 'goal' && parentId ? { goalId: parentId } : {}),
+      ...(parentType === 'company' && parentId ? { companyId: parentId } : {}),
+      title: objective.title,
+      description: objective.description || '',
+      objectiveType: objective.objectiveType,
+      metricType,
+      targetValue,
+      currentValue: 0,
+      unit,
+      startDate: new Date(),
+      deadline: objective.deadline ? new Date(objective.deadline) : defaultDeadline,
+      priority: priorityMap[objective.priority] || 2,
+      createdBy: PLACEHOLDER_USER_ID
+    }
+  });
+
+  // Create projects if any
+  const createdProjects = [];
+  if (projects && projects.length > 0) {
+    for (const proj of projects) {
+      const createdProject = await tx.project.create({
+        data: {
+          workspaceId: DEFAULT_WORKSPACE_ID,
+          objectiveId: createdObjective.id,
+          ...(parentType === 'goal' && parentId ? { goalId: parentId } : {}),
+          ...(parentType === 'company' && parentId ? { companyId: parentId } : {}),
+          name: proj.name,
+          description: proj.description || '',
+          priority: 2,
+          createdBy: PLACEHOLDER_USER_ID
+        }
+      });
+      createdProjects.push(createdProject);
+    }
+  }
+
+  // Get inbox status for tasks
+  const inboxStatus = await tx.status.findFirst({
+    where: {
+      workspaceId: DEFAULT_WORKSPACE_ID,
+      type: 'inbox'
+    }
+  });
+
+  if (!inboxStatus) {
+    throw new Error('Inbox status not found');
+  }
+
+  // Create tasks if any
+  const createdTasks = [];
+  if (tasks && tasks.length > 0) {
+    for (const task of tasks) {
+      const projectId =
+        task.projectIndex !== null && 
+        task.projectIndex !== undefined && 
+        task.projectIndex >= 0 && 
+        task.projectIndex < createdProjects.length
+          ? createdProjects[task.projectIndex].id
+          : null;
+
+      const createdTask = await tx.task.create({
+        data: {
+          workspaceId: DEFAULT_WORKSPACE_ID,
+          projectId: projectId || undefined,
+          title: task.title,
+          description: '',
+          statusId: inboxStatus.id,
+          priority: 2,
+          createdBy: PLACEHOLDER_USER_ID
+        }
+      });
+      createdTasks.push(createdTask);
+    }
+  }
+
+  return {
+    objective: createdObjective,
+    projects: createdProjects,
+    tasks: createdTasks
+  };
+}
+
+/**
+ * Create project with optional tasks
+ */
+async function createProject(
+  proposal: ProjectProposal,
+  parentId: string | null,
+  parentType: 'goal' | 'company' | 'objective' | null,
+  tx: any
+) {
+  const { project, tasks } = proposal;
+
+  const priorityMap = { high: 1, medium: 2, low: 3 };
+
+  // Create project
+  const createdProject = await tx.project.create({
+    data: {
+      workspaceId: DEFAULT_WORKSPACE_ID,
+      ...(parentType === 'goal' && parentId ? { goalId: parentId } : {}),
+      ...(parentType === 'company' && parentId ? { companyId: parentId } : {}),
+      ...(parentType === 'objective' && parentId ? { objectiveId: parentId } : {}),
+      name: project.name,
+      description: project.description || '',
+      priority: priorityMap[project.priority] || 2,
+      createdBy: PLACEHOLDER_USER_ID
+    }
+  });
+
+  // Get inbox status for tasks
+  const inboxStatus = await tx.status.findFirst({
+    where: {
+      workspaceId: DEFAULT_WORKSPACE_ID,
+      type: 'inbox'
+    }
+  });
+
+  if (!inboxStatus) {
+    throw new Error('Inbox status not found');
+  }
+
+  // Create tasks if any
+  const createdTasks = [];
+  if (tasks && tasks.length > 0) {
+    for (const task of tasks) {
+      const taskPriorityMap = { high: 1, medium: 2, low: 3 };
+      
+      const createdTask = await tx.task.create({
+        data: {
+          workspaceId: DEFAULT_WORKSPACE_ID,
+          projectId: createdProject.id,
+          title: task.title,
+          description: task.description || '',
+          statusId: inboxStatus.id,
+          priority: task.priority ? taskPriorityMap[task.priority] : 2,
+          createdBy: PLACEHOLDER_USER_ID
+        }
+      });
+      createdTasks.push(createdTask);
+    }
+  }
+
+  return {
+    project: createdProject,
+    tasks: createdTasks
+  };
+}
+
+/**
+ * Create entities from voice proposal
+ */
+export async function POST(req: NextRequest) {
+  try {
+    const { sessionId, entityType, proposal, parentId, parentType } = await req.json();
+
+    if (!sessionId || !entityType || !proposal) {
+      return NextResponse.json(
+        { error: 'sessionId, entityType, and proposal required' },
+        { status: 400 }
+      );
+    }
+
+    if (!['company', 'objective', 'project'].includes(entityType)) {
+      return NextResponse.json(
+        { error: 'Invalid entityType. Must be: company, objective, or project' },
+        { status: 400 }
+      );
+    }
+
+    console.log(`[Voice Entity ${sessionId}] Creating ${entityType} with parent: ${parentType}:${parentId || 'none'}`);
+
+    // Create entities in transaction
+    const result = await prisma.$transaction(async (tx) => {
+      switch (entityType) {
+        case 'company':
+          return createCompany(proposal as CompanyProposal, tx);
+        
+        case 'objective':
+          return createObjective(
+            proposal as ObjectiveProposal,
+            parentId || null,
+            parentType || null,
+            tx
+          );
+        
+        case 'project':
+          return createProject(
+            proposal as ProjectProposal,
+            parentId || null,
+            parentType || null,
+            tx
+          );
+        
+        default:
+          throw new Error(`Unsupported entity type: ${entityType}`);
+      }
+    });
+
+    // Build response based on entity type
+    let response: any = {
+      success: true,
+      entityType
+    };
+
+    if (entityType === 'company') {
+      const companyResult = result as Awaited<ReturnType<typeof createCompany>>;
+      response.created = {
+        companyId: companyResult.company.id,
+        objectiveIds: companyResult.objectives.map(o => o.id)
+      };
+      response.summary = {
+        companies: 1,
+        objectives: companyResult.objectives.length
+      };
+    } else if (entityType === 'objective') {
+      const objectiveResult = result as Awaited<ReturnType<typeof createObjective>>;
+      response.created = {
+        objectiveId: objectiveResult.objective.id,
+        projectIds: objectiveResult.projects.map(p => p.id),
+        taskIds: objectiveResult.tasks.map(t => t.id)
+      };
+      response.summary = {
+        objectives: 1,
+        projects: objectiveResult.projects.length,
+        tasks: objectiveResult.tasks.length
+      };
+    } else if (entityType === 'project') {
+      const projectResult = result as Awaited<ReturnType<typeof createProject>>;
+      response.created = {
+        projectId: projectResult.project.id,
+        taskIds: projectResult.tasks.map(t => t.id)
+      };
+      response.summary = {
+        projects: 1,
+        tasks: projectResult.tasks.length
+      };
+    }
+
+    console.log(`[Voice Entity ${sessionId}] Successfully created ${entityType}:`, response.summary);
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Voice entity creation error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create entities', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}

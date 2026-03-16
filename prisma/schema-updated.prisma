@@ -1,0 +1,703 @@
+// Focus App - AI Business Operating System
+// Updated schema with Objective Engine + Company Intelligence
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== WORKSPACES ====================
+
+model Workspace {
+  id                        String                @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  name                      String
+  plan                      String                @default("free")
+  ownerId                   String?               @db.Uuid
+  createdAt                 DateTime              @default(now()) @db.Timestamptz()
+  updatedAt                 DateTime              @updatedAt @db.Timestamptz()
+
+  // Existing Relations
+  members           WorkspaceMember[]
+  tasks             Task[]
+  goals             Goal[]
+  projects          Project[]
+  tags              Tag[]
+  statuses          Status[]
+  savedFilters      SavedFilter[]
+  comments          TaskComment[]
+  attachments       TaskAttachment[]
+  activityLogs      ActivityLog[]
+  shareLinks        ShareLink[]
+  
+  // New Relations
+  missions          Mission[]
+  objectives        Objective[]
+  companies         Company[]
+  documents         Document[]
+  aiMemories        AIMemory[]
+  aiInsights        AIInsight[]
+  files             File[]
+  repeatingTasks    RepeatingTask[]
+
+  @@index([ownerId])
+}
+
+model WorkspaceMember {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  userId      String   @db.Uuid
+  role        String   @default("member") // owner, admin, member, guest
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+}
+
+// ==================== MISSION (NEW) ====================
+
+model Mission {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String    @db.Text
+  statement         String
+  revenueTarget     Decimal?  @db.Decimal(15, 2)
+  timeline          String?
+  principles        Json?
+  successMetrics    Json?
+  aiRules           Json?
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  updatedAt         DateTime  @updatedAt @db.Timestamptz()
+  createdBy         String    @db.Uuid
+
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  goals             Goal[]
+
+  @@index([workspaceId])
+  @@index([isActive])
+}
+
+// ==================== COMPANIES (NEW) ====================
+
+model Company {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String    @db.Text
+  name              String
+  industry          String?
+  stage             String?
+  businessModel     String?
+  
+  missionStatement  String?
+  executiveSummary  String?   @db.Text
+  vision            String?   @db.Text
+  strategicObjectives Json?
+  revenueTargets    Json?
+  
+  targetCustomers   String?   @db.Text
+  marketSize        String?
+  competitors       Json?
+  differentiators   Json?
+  
+  coreProduct       String?   @db.Text
+  pricing           Json?
+  features          Json?
+  roadmap           Json?
+  
+  usps              Json?
+  positioning       String?   @db.Text
+  
+  aiImprovementAreas Json?
+  aiOpportunities    Json?
+  
+  logoUrl           String?
+  websiteUrl        String?
+  revenue           Decimal?  @db.Decimal(15, 2)
+  archivedAt        DateTime? @db.Timestamptz()
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  updatedAt         DateTime  @updatedAt @db.Timestamptz()
+  createdBy         String    @db.Uuid
+
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  objectives        Objective[]
+  projects          Project[]
+  documents         Document[]
+  memories          AIMemory[]
+  insights          AIInsight[]
+  files             File[]
+  tasks             Task[]
+  repeatingTasks    RepeatingTask[]
+
+  @@index([workspaceId])
+  @@index([archivedAt])
+}
+
+// ==================== OBJECTIVES (NEW) ====================
+
+model Objective {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String    @db.Text
+  companyId         String?   @db.Text
+  goalId            String?   @db.Text
+  
+  title             String
+  description       String?   @db.Text
+  objectiveType     String
+  
+  metricType        String
+  targetValue       Decimal   @db.Decimal(15, 2)
+  currentValue      Decimal   @default(0) @db.Decimal(15, 2)
+  unit              String?
+  
+  startDate         DateTime  @db.Date()
+  deadline          DateTime  @db.Date()
+  
+  status            String    @default("active")
+  progressPercent   Decimal   @default(0) @db.Decimal(5, 2)
+  lastChecked       DateTime? @db.Timestamptz()
+  
+  aiActionPlan      Json?
+  blockerRules      Json?
+  checkFrequency    String    @default("daily")
+  
+  priority          Int       @default(3)
+  dependsOn         String[]
+  
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  updatedAt         DateTime  @updatedAt @db.Timestamptz()
+  createdBy         String    @db.Uuid
+  completedAt       DateTime? @db.Timestamptz()
+  
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  goal              Goal?     @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  
+  milestones        ObjectiveMilestone[]
+  progressEntries   ObjectiveProgress[]
+  blockers          ObjectiveBlocker[]
+  projects          Project[]
+  tasks             Task[]
+
+  @@index([workspaceId])
+  @@index([companyId])
+  @@index([goalId])
+  @@index([status])
+  @@index([deadline])
+  @@index([lastChecked])
+}
+
+model ObjectiveMilestone {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  objectiveId       String    @db.Text
+  title             String
+  targetValue       Decimal   @db.Decimal(15, 2)
+  targetDate        DateTime  @db.Date()
+  completedAt       DateTime? @db.Timestamptz()
+  status            String    @default("pending")
+  
+  objective         Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  @@index([objectiveId])
+  @@index([targetDate])
+}
+
+model ObjectiveProgress {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  objectiveId       String    @db.Text
+  value             Decimal   @db.Decimal(15, 2)
+  entryDate         DateTime  @db.Date()
+  note              String?
+  source            String
+  createdBy         String?   @db.Uuid
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  
+  objective         Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  @@index([objectiveId])
+  @@index([entryDate])
+}
+
+model ObjectiveBlocker {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  objectiveId       String    @db.Text
+  blockerType       String
+  title             String
+  description       String    @db.Text
+  severity          String
+  detectedAt        DateTime  @default(now()) @db.Timestamptz()
+  resolvedAt        DateTime? @db.Timestamptz()
+  aiSuggestion      Json?
+  
+  objective         Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  @@index([objectiveId])
+  @@index([resolvedAt])
+}
+
+// ==================== STATUSES ====================
+
+model Status {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name        String
+  type        String
+  isSystem    Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+  @@index([type])
+}
+
+// ==================== TASKS (ENHANCED) ====================
+
+model Task {
+  id              String          @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  title           String
+  description     String?
+  statusId        String          @db.Text
+  priority        Int             @default(3)
+  dueAt           DateTime?       @db.Timestamptz()
+  startAt         DateTime?       @db.Timestamptz()
+  completedAt     DateTime?       @db.Timestamptz()
+  archivedAt      DateTime?       @db.Timestamptz()
+  projectId       String?         @db.Text
+  goalId          String?         @db.Text
+  parentTaskId    String?         @db.Text
+  sortOrder       Decimal         @default(0)
+  effortPoints    Int?
+  isMilestone     Boolean         @default(false)
+  todayPinDate    DateTime?       @db.Date()
+  todayOrder      Int?
+  todayCategory   String?         @db.Text
+  shareSlug       String?         @unique
+  assigneeId      String?         @db.Uuid
+  createdAt       DateTime        @default(now()) @db.Timestamptz()
+  updatedAt       DateTime        @updatedAt @db.Timestamptz()
+  createdBy       String          @db.Uuid
+  
+  // NEW FIELDS
+  companyId         String?   @db.Text
+  objectiveId       String?   @db.Text
+  repeatingTaskId   String?   @db.Text
+  aiGenerated       Boolean   @default(false)
+  aiAgent           String?
+
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  status          Status          @relation(fields: [statusId], references: [id])
+  project         Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  goal            Goal?           @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  parentTask      Task?           @relation("ParentChild", fields: [parentTaskId], references: [id], onDelete: Cascade)
+  subtasks        Task[]          @relation("ParentChild")
+  
+  // NEW RELATIONS
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  objective         Objective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  repeatingTask     RepeatingTask? @relation(fields: [repeatingTaskId], references: [id], onDelete: SetNull)
+  files             File[]
+  
+  tags            TaskTag[]
+  comments        TaskComment[]
+  attachments     TaskAttachment[]
+  activityLogs    ActivityLog[]
+
+  @@index([workspaceId, statusId])
+  @@index([workspaceId, dueAt])
+  @@index([workspaceId, completedAt])
+  @@index([workspaceId, completedAt, archivedAt])
+  @@index([workspaceId, todayPinDate])
+  @@index([workspaceId, projectId])
+  @@index([workspaceId, goalId])
+  @@index([projectId])
+  @@index([goalId])
+  @@index([companyId])
+  @@index([objectiveId])
+}
+
+// ==================== TAGS ====================
+
+model Tag {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name        String
+  color       String?
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks       TaskTag[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+}
+
+model TaskTag {
+  id       String @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  taskId   String @db.Text
+  tagId    String @db.Text
+
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, tagId])
+  @@index([taskId])
+  @@index([tagId])
+}
+
+// ==================== PROJECTS (ENHANCED) ====================
+
+model Project {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name        String
+  goalId      String?  @db.Text
+  defaultView String   @default("list")
+  archivedAt  DateTime? @db.Timestamptz()
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
+  
+  // NEW FIELDS
+  companyId         String?   @db.Text
+  objectiveId       String?   @db.Text
+  description       String?   @db.Text
+  timeline          Json?
+  priority          Int?
+  owner             String?   @db.Uuid
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  
+  // NEW RELATIONS
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  objective         Objective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  documents         Document[]
+  memories          AIMemory[]
+  files             File[]
+  repeatingTasks    RepeatingTask[]
+
+  @@index([workspaceId])
+  @@index([goalId])
+  @@index([companyId])
+  @@index([objectiveId])
+}
+
+// ==================== GOALS (ENHANCED) ====================
+
+model Goal {
+  id              String          @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name            String
+  descriptionRich Json?
+  metricType      String
+  targetValue     Decimal
+  currentValue    Decimal         @default(0)
+  unit            String?
+  startDate       DateTime        @db.Date()
+  endDate         DateTime        @db.Date()
+  status          String          @default("active")
+  createdAt       DateTime        @default(now()) @db.Timestamptz()
+  updatedAt       DateTime        @updatedAt @db.Timestamptz()
+  createdBy       String          @db.Uuid
+  
+  // NEW FIELDS
+  missionId         String?   @db.Text
+  companyIds        Json?
+  owner             String?
+
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks           Task[]
+  progressEntries GoalProgressEntry[]
+  activityLogs    ActivityLog[]
+  
+  // NEW RELATIONS
+  mission           Mission?  @relation(fields: [missionId], references: [id], onDelete: SetNull)
+  objectives        Objective[]
+
+  @@index([workspaceId])
+  @@index([status])
+  @@index([endDate])
+  @@index([missionId])
+}
+
+model GoalProgressEntry {
+  id        String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  goalId    String   @db.Text
+  value     Decimal
+  entryDate DateTime @db.Date()
+  note      String?
+  createdBy String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz()
+
+  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@index([goalId])
+  @@index([entryDate])
+}
+
+// ==================== DOCUMENTS (NEW) ====================
+
+model Document {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String    @db.Text
+  companyId         String?   @db.Text
+  projectId         String?   @db.Text
+  title             String
+  documentType      String
+  contentRich       Json
+  version           Int       @default(1)
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  updatedAt         DateTime  @updatedAt @db.Timestamptz()
+  createdBy         String    @db.Uuid
+
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  project           Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  files             File[]
+  versions          DocumentVersion[]
+
+  @@index([workspaceId])
+  @@index([companyId])
+  @@index([projectId])
+  @@index([documentType])
+  @@index([updatedAt])
+}
+
+model DocumentVersion {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  documentId        String    @db.Text
+  version           Int
+  contentRich       Json
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  createdBy         String    @db.Uuid
+
+  document          Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([version])
+}
+
+// ==================== AI MEMORY (NEW) ====================
+
+model AIMemory {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String    @db.Text
+  companyId         String?   @db.Text
+  projectId         String?   @db.Text
+  memoryType        String
+  title             String
+  description       String    @db.Text
+  confidenceScore   Int
+  source            String?
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  updatedAt         DateTime  @updatedAt @db.Timestamptz()
+  createdBy         String    @db.Uuid
+
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  project           Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([companyId])
+  @@index([projectId])
+  @@index([memoryType])
+  @@index([updatedAt])
+}
+
+// ==================== AI INSIGHTS (NEW) ====================
+
+model AIInsight {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String    @db.Text
+  companyId         String?   @db.Text
+  insightType       String
+  title             String
+  summary           String    @db.Text
+  detailedAnalysis  Json
+  suggestedActions  Json?
+  priority          Int
+  status            String    @default("new")
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  reviewedAt        DateTime? @db.Timestamptz()
+  reviewedBy        String?   @db.Uuid
+
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([companyId])
+  @@index([insightType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ==================== FILES (NEW) ====================
+
+model File {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String    @db.Text
+  companyId         String?   @db.Text
+  projectId         String?   @db.Text
+  taskId            String?   @db.Text
+  documentId        String?   @db.Text
+  storagePath       String
+  filename          String
+  mimeType          String
+  sizeBytes         BigInt
+  uploadedAt        DateTime  @default(now()) @db.Timestamptz()
+  uploadedBy        String    @db.Uuid
+
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  project           Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  task              Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  document          Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([companyId])
+  @@index([projectId])
+  @@index([taskId])
+  @@index([documentId])
+}
+
+// ==================== REPEATING TASKS (NEW) ====================
+
+model RepeatingTask {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String    @db.Text
+  companyId         String?   @db.Text
+  projectId         String?   @db.Text
+  title             String
+  description       String?   @db.Text
+  frequency         String
+  customInterval    Json?
+  nextRun           DateTime  @db.Timestamptz()
+  lastRun           DateTime? @db.Timestamptz()
+  taskTemplate      Json
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  updatedAt         DateTime  @updatedAt @db.Timestamptz()
+  createdBy         String    @db.Uuid
+
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  project           Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  generatedTasks    Task[]
+
+  @@index([workspaceId])
+  @@index([nextRun])
+  @@index([isActive])
+}
+
+// ==================== COMMENTS ====================
+
+model TaskComment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  taskId      String   @db.Text
+  workspaceId       String          @db.Text
+  bodyRich    Json
+  createdBy   String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
+
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([workspaceId])
+}
+
+// ==================== ATTACHMENTS ====================
+
+model TaskAttachment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  taskId      String   @db.Text
+  storagePath String
+  filename    String
+  mimeType    String
+  sizeBytes   BigInt
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([workspaceId])
+}
+
+// ==================== SHARE LINKS ====================
+
+model ShareLink {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  taskId      String   @db.Text
+  shareSlug   String   @unique
+  isActive    Boolean  @default(true)
+  revokedAt   DateTime? @db.Timestamptz()
+  createdBy   String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([shareSlug])
+}
+
+// ==================== FILTERS ====================
+
+model SavedFilter {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name        String
+  definition  Json
+  defaultView String   @default("list")
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+// ==================== ACTIVITY LOG (ENHANCED) ====================
+
+model ActivityLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  taskId      String?  @db.Text
+  goalId      String?  @db.Text
+  eventType   String
+  eventPayload Json
+  createdBy   String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  
+  // NEW FIELDS
+  companyId         String?   @db.Text
+  projectId         String?   @db.Text
+  objectiveId       String?   @db.Text
+  documentId        String?   @db.Text
+  insightId         String?   @db.Text
+  aiAgent           String?
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  task        Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  goal        Goal?     @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([taskId])
+  @@index([goalId])
+  @@index([createdAt])
+  @@index([companyId])
+  @@index([projectId])
+  @@index([objectiveId])
+}

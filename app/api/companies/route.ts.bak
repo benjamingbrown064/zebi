@@ -1,0 +1,124 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'
+const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
+
+// GET /api/companies - List all companies
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const includeArchived = searchParams.get('includeArchived') === 'true'
+
+    const companies = await prisma.company.findMany({
+      where: {
+        workspaceId: DEFAULT_WORKSPACE_ID,
+        ...(includeArchived ? {} : { archivedAt: null }),
+      },
+      include: {
+        projects: {
+          where: { archivedAt: null },
+          select: { id: true, name: true },
+        },
+        tasks: {
+          where: { archivedAt: null, completedAt: null },
+          select: { id: true },
+        },
+        _count: {
+          select: {
+            projects: true,
+            tasks: true,
+            documents: true,
+            insights: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return NextResponse.json(companies)
+  } catch (error) {
+    console.error('Failed to fetch companies:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch companies' },
+      { status: 500 }
+    )
+  }
+}
+
+// POST /api/companies - Create a new company
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const {
+      name,
+      industry,
+      stage,
+      businessModel,
+      missionStatement,
+      executiveSummary,
+      vision,
+      targetCustomers,
+      marketSize,
+      coreProduct,
+      positioning,
+      logoUrl,
+      websiteUrl,
+      revenue,
+    } = body
+
+    if (!name) {
+      return NextResponse.json(
+        { error: 'Company name is required' },
+        { status: 400 }
+      )
+    }
+
+    const company = await prisma.company.create({
+      data: {
+        workspaceId: DEFAULT_WORKSPACE_ID,
+        name,
+        industry,
+        stage,
+        businessModel,
+        missionStatement,
+        executiveSummary,
+        vision,
+        targetCustomers,
+        marketSize,
+        coreProduct,
+        positioning,
+        logoUrl,
+        websiteUrl,
+        revenue: revenue ? parseFloat(revenue) : null,
+        createdBy: PLACEHOLDER_USER_ID,
+      },
+      include: {
+        projects: {
+          where: { archivedAt: null },
+          select: { id: true, name: true },
+        },
+        tasks: {
+          where: { archivedAt: null, completedAt: null },
+          select: { id: true },
+        },
+        _count: {
+          select: {
+            projects: true,
+            tasks: true,
+            documents: true,
+            insights: true,
+          },
+        },
+      },
+    })
+
+    return NextResponse.json(company, { status: 201 })
+  } catch (error) {
+    console.error('Failed to create company:', error)
+    return NextResponse.json(
+      { error: 'Failed to create company' },
+      { status: 500 }
+    )
+  }
+}

@@ -1,0 +1,417 @@
+'use client';
+
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Sidebar from '@/components/Sidebar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faFileLines,
+  faBuilding,
+  faFolderOpen,
+  faBullseyePointer,
+  faListCheck,
+} from '@fortawesome/pro-duotone-svg-icons'
+import {
+  FaPlus,
+  FaSearch,
+  FaFile,
+  FaFileAlt,
+  FaBuilding,
+  FaFolder,
+  FaTh,
+  FaList,
+  FaFilter,
+  FaSpinner,
+} from 'react-icons/fa';
+
+interface Document {
+  id: string;
+  title: string;
+  documentType: string;
+  updatedAt: string;
+  version: number;
+  company?: { id: string; name: string };
+  project?: { id: string; name: string };
+}
+
+const DOCUMENT_TYPES = [
+  { value: '', label: 'All Types' },
+  { value: 'strategy', label: 'Strategy' },
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'research', label: 'Research' },
+  { value: 'development', label: 'Development' },
+  { value: 'financial', label: 'Financial' },
+  { value: 'presentation', label: 'Presentation' },
+  { value: 'notes', label: 'Notes' },
+];
+
+const PAGE_SIZE = 25; // Load 25 documents at a time
+
+export default function DocumentsPage() {
+  const router = useRouter();
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [typeFilter, search]);
+
+  const fetchDocuments = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.append('limit', PAGE_SIZE.toString());
+      params.append('offset', '0');
+      if (typeFilter) params.append('documentType', typeFilter);
+      if (search) params.append('search', search);
+
+      const res = await fetch(`/api/documents?${params.toString()}`);
+      const data = await res.json();
+      
+      if (data.success) {
+        setDocuments(data.documents);
+        setHasMore(data.documents.length === PAGE_SIZE);
+        setPage(0);
+      }
+    } catch (error) {
+      console.error('Failed to fetch documents:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load more documents
+  const loadMoreDocuments = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const params = new URLSearchParams();
+      params.append('limit', PAGE_SIZE.toString());
+      params.append('offset', (nextPage * PAGE_SIZE).toString());
+      if (typeFilter) params.append('documentType', typeFilter);
+      if (search) params.append('search', search);
+
+      const res = await fetch(`/api/documents?${params.toString()}`);
+      const data = await res.json();
+
+      if (data.success) {
+        if (data.documents.length === 0) {
+          setHasMore(false);
+          setLoadingMore(false);
+          return;
+        }
+
+        setDocuments(prev => [...prev, ...data.documents]);
+        setPage(nextPage);
+        setHasMore(data.documents.length === PAGE_SIZE);
+      }
+    } catch (error) {
+      console.error('Failed to load more documents:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [page, loadingMore, hasMore, typeFilter, search]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          loadMoreDocuments();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, loadingMore, loadMoreDocuments]);
+
+  const createDocument = async () => {
+    try {
+      const res = await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Untitled Document',
+          documentType: 'notes',
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          router.push(`/documents/${data.document.id}`);
+        }
+      } else {
+        console.error('Failed to create document');
+      }
+    } catch (error) {
+      console.error('Error creating document:', error);
+    }
+  };
+
+  const getTypeIcon = () => {
+    return <FontAwesomeIcon icon={faFileLines} className="text-[#A3A3A3]" />;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  return (
+    <div className="min-h-screen bg-bg-cream">
+      <Sidebar
+        workspaceName="My Workspace"
+        isCollapsed={sidebarCollapsed}
+        onCollapsedChange={setSidebarCollapsed}
+      />
+      <div className="ml-64">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="px-8 py-6">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">Documents</h1>
+                <p className="text-gray-600 text-sm mt-1">
+                  {documents.length} {documents.length === 1 ? 'document' : 'documents'}
+                  {!hasMore && documents.length > PAGE_SIZE && ' (all loaded)'}
+                </p>
+              </div>
+              <button
+                onClick={createDocument}
+                className="px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition flex items-center gap-2"
+              >
+                <FaPlus /> New Document
+              </button>
+            </div>
+
+            {/* Search and Filters */}
+            <div className="flex gap-4 items-center">
+              <div className="flex-1 relative">
+                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                />
+              </div>
+
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              >
+                {DOCUMENT_TYPES.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+
+              <div className="flex gap-2 border border-gray-300 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded ${
+                    viewMode === 'grid'
+                      ? 'bg-accent-500 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <FaTh />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded ${
+                    viewMode === 'list'
+                      ? 'bg-accent-500 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <FaList />
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="p-8">
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Loading documents...</p>
+            </div>
+          ) : documents.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+              <FaFileAlt className="mx-auto text-4xl text-gray-300 mb-4" />
+              <p className="text-gray-600 mb-4">No documents yet. Create one to get started.</p>
+              <button
+                onClick={createDocument}
+                className="px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition"
+              >
+                <FaPlus className="inline mr-2" /> Create Your First Document
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Grid View */}
+              {viewMode === 'grid' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {documents.map((doc) => (
+                    <Link
+                      key={doc.id}
+                      href={`/documents/${doc.id}`}
+                      className="bg-white rounded-[14px] border border-[#E5E5E5] p-6 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:border-[#DD3A44] transition cursor-pointer"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="w-10 h-10 rounded-[10px] bg-[#FEF2F2] flex items-center justify-center">
+                          <FontAwesomeIcon icon={faFileLines} className="text-[#DD3A44] text-lg" />
+                        </div>
+                        <span className="text-[11px] text-[#737373] bg-[#F5F5F5] px-2 py-1 rounded-[4px] font-medium">
+                          v{doc.version}
+                        </span>
+                      </div>
+                      <h3 className="text-[15px] font-medium text-[#1A1A1A] mb-2 line-clamp-2">
+                        {doc.title}
+                      </h3>
+                      <p className="text-[11px] text-[#A3A3A3] mb-3 capitalize">
+                        {doc.documentType}
+                      </p>
+                      {doc.company && (
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-4 h-4 rounded-[4px] bg-[#F5F5F5] flex items-center justify-center">
+                            <FontAwesomeIcon icon={faBuilding} className="text-[#737373] text-[10px]" />
+                          </div>
+                          <span className="text-[13px] text-[#525252]">{doc.company.name}</span>
+                        </div>
+                      )}
+                      {doc.project && (
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-4 h-4 rounded-[4px] bg-[#F5F5F5] flex items-center justify-center">
+                            <FontAwesomeIcon icon={faFolderOpen} className="text-[#737373] text-[10px]" />
+                          </div>
+                          <span className="text-[13px] text-[#525252]">{doc.project.name}</span>
+                        </div>
+                      )}
+                      <p className="text-[11px] text-[#A3A3A3] mt-4">
+                        Updated {formatDate(doc.updatedAt)}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* List View */}
+              {viewMode === 'list' && (
+                <div className="bg-white rounded-lg border border-gray-200">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Title
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Type
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Company
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Project
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Updated
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Version
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {documents.map((doc) => (
+                        <tr
+                          key={doc.id}
+                          onClick={() => router.push(`/documents/${doc.id}`)}
+                          className="hover:bg-gray-50 cursor-pointer"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">{getTypeIcon()}</span>
+                              <span className="font-medium text-gray-900">{doc.title}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-600 capitalize">
+                            {doc.documentType}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-600">
+                            {doc.company?.name || '-'}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-600">
+                            {doc.project?.name || '-'}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-500">
+                            {formatDate(doc.updatedAt)}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-500">
+                            v{doc.version}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Infinite scroll trigger */}
+              <div ref={observerTarget} className="py-8 flex justify-center">
+                {loadingMore && (
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <FaSpinner className="animate-spin" />
+                    <span>Loading more documents...</span>
+                  </div>
+                )}
+                {!loadingMore && !hasMore && documents.length > 0 && (
+                  <p className="text-gray-500 text-sm">No more documents to load</p>
+                )}
+              </div>
+            </>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}

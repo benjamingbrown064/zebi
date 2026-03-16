@@ -1,0 +1,95 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireWorkspace } from '@/lib/workspace'
+
+export const dynamic = 'force-dynamic';
+
+const DEFAULT_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74';
+
+// Create a new Brain Dump session
+export async function POST(req: NextRequest) {
+  try {
+    const workspaceId = await requireWorkspace()
+    const body = await req.json();
+    const finalWorkspaceId = body.workspaceId || workspaceId;
+
+    // Create new brain dump session
+    const brainDumpSession = await prisma.brainDumpSession.create({
+      data: {
+        workspaceId: finalWorkspaceId,
+        userId: DEFAULT_USER_ID,
+        status: 'recorded'
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      session: brainDumpSession
+    });
+  } catch (error) {
+    console.error('Brain dump session creation error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create session' },
+      { status: 500 }
+    );
+  }
+}
+
+// Get brain dump sessions (or single session)
+export async function GET(req: NextRequest) {
+  try {
+    const workspaceId = await requireWorkspace()
+    const { searchParams } = new URL(req.url);
+    const sessionId = searchParams.get('sessionId');
+    const limit = parseInt(searchParams.get('limit') || '10');
+
+    // If sessionId provided, get single session
+    if (sessionId) {
+      const session = await prisma.brainDumpSession.findUnique({
+        where: { id: sessionId }
+      });
+      
+      if (!session) {
+        return NextResponse.json(
+          { error: 'Session not found' },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json({
+        success: true,
+        session
+      });
+    }
+
+    // Otherwise, get recent sessions list
+    const sessions = await prisma.brainDumpSession.findMany({
+      where: {
+        workspaceId,
+        userId: DEFAULT_USER_ID
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: limit,
+      select: {
+        id: true,
+        status: true,
+        summary: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      sessions
+    });
+  } catch (error) {
+    console.error('Brain dump sessions fetch error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch sessions' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,0 +1,215 @@
+/**
+ * Brain Dump Execute API
+ * Applies approved actions to the database
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { executeActions } from '@/lib/brain-dump/executor';
+import { requireWorkspace } from '@/lib/workspace'
+
+// Force dynamic rendering (required for Next.js 14 serverless)
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // 60 seconds timeout for execution
+
+// Hardcoded workspace/user (matching other brain-dump endpoints)
+const DEFAULT_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74';
+
+/**
+ * POST /api/brain-dump/execute
+ * Execute approved actions from a brain dump session
+ */
+export async function POST(req: NextRequest) {
+  try {
+    const workspaceId = await requireWorkspace()
+    const body = await req.json();
+    const { sessionId, actionIds } = body;
+
+    if (!sessionId) {
+      return NextResponse.json(
+        { success: false, error: 'Session ID is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!actionIds || !Array.isArray(actionIds) || actionIds.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Action IDs are required' },
+        { status: 400 }
+      );
+    }
+
+    // Verify session exists and belongs to workspace
+    const session = await prisma.brainDumpSession.findFirst({
+      where: {
+        id: sessionId,
+        workspaceId
+      }
+    });
+
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Session not found' },
+        { status: 404 }
+      );
+    }
+
+    // Verify session has been processed
+    if (session.status === 'pending' || session.status === 'transcribing' || session.status === 'transcribed') {
+      return NextResponse.json(
+        { success: false, error: 'Session has not been processed yet' },
+        { status: 400 }
+      );
+    }
+
+    // Fetch approved actions from database
+    const proposedActions = await prisma.brainDumpProposedAction.findMany({
+      where: {
+        brainDumpSessionId: sessionId,
+        id: { in: actionIds }
+      }
+    });
+
+    if (proposedActions.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'No valid actions found' },
+        { status: 404 }
+      );
+    }
+
+    // Convert DB actions to executor format
+    const actionsToExecute = proposedActions.map(dbAction => ({
+      id: dbAction.id, // Include database ID
+      actionType: dbAction.actionType,
+      targetEntityType: dbAction.targetEntityType,
+      targetEntityId: dbAction.targetEntityId,
+      payload: dbAction.payloadJson as Record<string, any>,
+      reasoning: dbAction.reasonSummary || '',
+      confidenceScore: Number(dbAction.confidenceScore),
+      needsReview: dbAction.requiresConfirmation
+    }));
+
+    // Execute actions
+    const result = await executeActions(
+      sessionId,
+      workspaceId,
+      DEFAULT_USER_ID,
+      actionsToExecute
+    );
+
+    // Update action statuses in database
+    const successfulActionIds = result.results
+      .filter(r => r.success)
+      .map((_, index) => proposedActions[index].id);
+
+    const failedActionIds = result.results
+      .filter(r => !r.success)
+      .map((_, index) => proposedActions[index].id);
+
+    if (successfulActionIds.length > 0) {
+      await prisma.brainDumpProposedAction.updateMany({
+        where: {
+          id: { in: successfulActionIds }
+        },
+        data: {
+          status: 'applied'
+        }
+      });
+    }
+
+    if (failedActionIds.length > 0) {
+      await prisma.brainDumpProposedAction.updateMany({
+        where: {
+          id: { in: failedActionIds }
+        },
+        data: {
+          status: 'rejected'
+        }
+      });
+    }
+
+    return NextResponse.json({
+      success: result.success,
+      summary: result,
+      message: result.success 
+        ? `Successfully executed ${result.successfulActions} actions`
+        : `Executed ${result.successfulActions} actions, ${result.failedActions} failed`
+    });
+
+  } catch (error) {
+    console.error('Brain dump execute error:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error during execution'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * GET /api/brain-dump/execute?sessionId=xxx
+ * Get execution status/results for a session
+ */
+export async function GET(req: NextRequest) {
+  try {
+    const workspaceId = await requireWorkspace()
+    const { searchParams } = new URL(req.url);
+    const sessionId = searchParams.get('sessionId');
+
+    if (!sessionId) {
+      return NextResponse.json(
+        { success: false, error: 'Session ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Fetch execution logs
+    const logs = await prisma.brainDumpExecutionLog.findMany({
+      where: {
+        brainDumpSessionId: sessionId
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    // Fetch session status
+    const session = await prisma.brainDumpSession.findUnique({
+      where: { id: sessionId }
+    });
+
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Session not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      session: {
+        id: session.id,
+        status: session.status,
+        processedAt: session.processingCompletedAt
+      },
+      logs,
+      summary: {
+        totalExecuted: logs.length,
+        successful: logs.filter(l => l.executionStatus === 'success').length,
+        failed: logs.filter(l => l.executionStatus === 'failed').length
+      }
+    });
+
+  } catch (error) {
+    console.error('Brain dump execute status error:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}

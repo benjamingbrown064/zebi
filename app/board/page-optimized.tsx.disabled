@@ -1,0 +1,44 @@
+import { prisma } from '@/lib/prisma'
+import BoardClientOptimized from './client-optimized'
+import { requireWorkspace } from '@/lib/workspace'
+
+// NO REVALIDATION - Real-time updates via WebSockets
+export const revalidate = false
+
+export default async function BoardPage() {
+  try {
+    // Get workspace from auth session
+    const workspaceId = await requireWorkspace()
+    
+    // Fetch initial data server-side (only once, then real-time takes over)
+    const [tasks, statuses] = await Promise.all([
+      prisma.task.findMany({
+        where: { 
+          workspaceId,
+          archivedAt: null
+        },
+        include: {
+          tags: {
+            include: { tag: true }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 500 // Limit to 500 most recent tasks
+      }),
+      prisma.status.findMany({
+        where: { workspaceId },
+        orderBy: { sortOrder: 'asc' }
+      })
+    ])
+
+    // Pass data to client component with real-time subscriptions
+    return <BoardClientOptimized initialTasks={tasks} initialStatuses={statuses} workspaceId={workspaceId} />
+  } catch (err) {
+    console.error('Failed to load board data:', err)
+    return (
+      <div className="min-h-screen bg-bg-cream flex items-center justify-center">
+        <div className="text-red-600">Failed to load board</div>
+      </div>
+    )
+  }
+}

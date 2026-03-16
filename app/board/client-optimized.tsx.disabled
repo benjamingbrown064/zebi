@@ -1,0 +1,230 @@
+'use client'
+
+import { useState, useEffect, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import Sidebar from '@/components/Sidebar'
+import TaskBoardTile from '@/components/TaskBoardTile'
+import TaskDetailModal from '@/components/TaskDetailModal'
+import QuickAddModal from '@/components/QuickAddModal'
+import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
+import { FaPlus, FaSpinner } from 'react-icons/fa'
+import { useTasks, useUpdateTask, useCreateTask } from '@/lib/queries/tasks'
+import { useStatuses } from '@/lib/queries/statuses'
+import { Task } from '@/app/actions/tasks'
+
+const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
+
+interface BoardClientProps {
+  initialTasks: any[]
+  initialStatuses: any[]
+  workspaceId: string
+}
+
+export default function BoardClientOptimized({
+  initialTasks,
+  initialStatuses,
+  workspaceId
+}: BoardClientProps) {
+  const router = useRouter()
+  
+  // Use optimized queries with real-time updates
+  const { data: tasks = initialTasks, isLoading: tasksLoading } = useTasks(workspaceId, { limit: 500 })
+  const { data: statuses = initialStatuses, isLoading: statusesLoading } = useStatuses(workspaceId)
+  
+  const updateTaskMutation = useUpdateTask(workspaceId)
+  const createTaskMutation = useCreateTask(workspaceId)
+
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
+  const [quickAddStatusId, setQuickAddStatusId] = useState<string>('')
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Group tasks by status
+  const tasksByStatus = useMemo(() => {
+    const grouped: Record<string, Task[]> = {}
+    statuses.forEach(status => {
+      grouped[status.id] = []
+    })
+    tasks.forEach(task => {
+      if (grouped[task.statusId]) {
+        grouped[task.statusId].push(task)
+      }
+    })
+    return grouped
+  }, [tasks, statuses])
+
+  const handleDragStart = (task: Task) => {
+    setDraggedTask(task)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = async (statusId: string) => {
+    if (!draggedTask) return
+
+    console.log(`[Board] Dropping task ${draggedTask.id} into status ${statusId}`)
+    
+    // Optimistic update via mutation
+    await updateTaskMutation.mutateAsync({
+      taskId: draggedTask.id,
+      updates: { statusId }
+    })
+
+    setDraggedTask(null)
+  }
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task)
+    setIsModalOpen(true)
+  }
+
+  const handleUpdateTask = async (taskId: string, updates: Partial<Task>) => {
+    await updateTaskMutation.mutateAsync({ taskId, updates })
+    if (selectedTask?.id === taskId) {
+      setSelectedTask(prev => prev ? { ...prev, ...updates } : null)
+    }
+  }
+
+  const handleDeleteTask = async (taskId: string) => {
+    await updateTaskMutation.mutateAsync({
+      taskId,
+      updates: { archivedAt: new Date().toISOString() }
+    })
+    setIsModalOpen(false)
+    setSelectedTask(null)
+  }
+
+  const handleQuickAdd = async (input: { title: string; priority: number; tags?: string[]; goalId?: string }) => {
+    await createTaskMutation.mutateAsync({
+      userId: PLACEHOLDER_USER_ID,
+      title: input.title,
+      priority: input.priority,
+      statusId: quickAddStatusId,
+      tagNames: input.tags,
+      goalId: input.goalId,
+    })
+    setIsQuickAddOpen(false)
+  }
+
+  const openQuickAdd = (statusId: string) => {
+    setQuickAddStatusId(statusId)
+    setIsQuickAddOpen(true)
+  }
+
+  if (tasksLoading && tasks.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+        <div className="text-center">
+          <FaSpinner className="animate-spin text-[#DD3A44] text-3xl mx-auto mb-3" />
+          <p className="text-gray-500 text-sm">Loading board with real-time updates...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const mainPaddingClass = isMobile ? 'pt-16' : sidebarCollapsed ? 'ml-20' : 'ml-64'
+
+  return (
+    <div className="min-h-screen bg-[#FAFAFA]">
+      {!isMobile && (
+        <Sidebar isCollapsed={sidebarCollapsed} onCollapsedChange={() => setSidebarCollapsed(!sidebarCollapsed)} />
+      )}
+
+      <div className={`flex-1 ${mainPaddingClass} transition-all duration-300`}>
+        <ResponsiveHeader
+          title="Board"
+          isMobile={isMobile}
+          subtitle={
+            <span className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              Real-time updates active • {tasks.length} tasks
+            </span>
+          }
+        />
+
+        {/* Board Columns */}
+        <div className="p-6 overflow-x-auto">
+          <div className="flex gap-4 min-w-max">
+            {statuses.map(status => {
+              const statusTasks = tasksByStatus[status.id] || []
+              
+              return (
+                <div
+                  key={status.id}
+                  className="flex-shrink-0 w-80"
+                  onDragOver={handleDragOver}
+                  onDrop={() => handleDrop(status.id)}
+                >
+                  {/* Column Header */}
+                  <div className="mb-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-gray-700">{status.name}</h3>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                        {statusTasks.length}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => openQuickAdd(status.id)}
+                      className="p-1 hover:bg-gray-100 rounded transition-colors"
+                      title="Add task"
+                    >
+                      <FaPlus className="text-xs text-gray-400" />
+                    </button>
+                  </div>
+
+                  {/* Tasks */}
+                  <div className="space-y-2 min-h-[200px] bg-gray-50 rounded-lg p-2">
+                    {statusTasks.map(task => (
+                      <div
+                        key={task.id}
+                        draggable
+                        onDragStart={() => handleDragStart(task)}
+                        onClick={() => handleTaskClick(task)}
+                        className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-all"
+                      >
+                        <TaskBoardTile task={task} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Task Detail Modal */}
+      {isModalOpen && selectedTask && (
+        <TaskDetailModal
+          task={selectedTask}
+          onClose={() => {
+            setIsModalOpen(false)
+            setSelectedTask(null)
+          }}
+          onUpdate={(updates) => handleUpdateTask(selectedTask.id, updates)}
+          onDelete={() => handleDeleteTask(selectedTask.id)}
+        />
+      )}
+
+      {/* Quick Add Modal */}
+      {isQuickAddOpen && (
+        <QuickAddModal
+          onClose={() => setIsQuickAddOpen(false)}
+          onAdd={handleQuickAdd}
+        />
+      )}
+    </div>
+  )
+}

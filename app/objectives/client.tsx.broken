@@ -1,0 +1,334 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Sidebar from '@/components/Sidebar'
+import ObjectiveCard from '@/components/ObjectiveCard'
+import ObjectiveForm from '@/components/ObjectiveForm'
+import { FaPlus, FaFilter } from 'react-icons/fa'
+
+interface Objective {
+  id: string
+  title: string
+  description?: string | null
+  companyId?: string | null
+  companyName?: string | null
+  goalId?: string | null
+  goalName?: string | null
+  objectiveType: string
+  metricType: string
+  currentValue: number
+  targetValue: number
+  unit?: string | null
+  startDate: string
+  deadline: string
+  status: string
+  progressPercent: number
+  priority: number
+  activeBlockers: number
+  nextMilestone?: {
+    title: string
+    targetValue: number
+    targetDate: string
+    daysUntil: number
+  }
+  aiWork?: string
+  humanWork?: string
+  taskCount: number
+  projectCount: number
+}
+
+interface Company {
+  id: string
+  name: string
+}
+
+interface Goal {
+  id: string
+  name: string
+}
+
+interface ObjectivesClientProps {
+  initialObjectives: Objective[]
+  companies: Company[]
+  goals: Goal[]
+  workspaceId: string
+}
+
+export default function ObjectivesClient({
+  initialObjectives,
+  companies,
+  goals,
+  workspaceId,
+}: ObjectivesClientProps) {
+  const router = useRouter()
+  const [objectives, setObjectives] = useState<Objective[]>(initialObjectives)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Filters
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [companyFilter, setCompanyFilter] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<string>('deadline')
+
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Apply filters
+  const filteredObjectives = objectives.filter((obj) => {
+    if (statusFilter !== 'all' && obj.status !== statusFilter) return false
+    if (companyFilter !== 'all' && obj.companyId !== companyFilter) return false
+    return true
+  })
+
+  // Apply sorting
+  const sortedObjectives = [...filteredObjectives].sort((a, b) => {
+    switch (sortBy) {
+      case 'deadline':
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+      case 'progress':
+        return b.progressPercent - a.progressPercent
+      case 'status':
+        const statusOrder = { blocked: 0, at_risk: 1, on_track: 2, active: 3, completed: 4 }
+        return (
+          (statusOrder[a.status as keyof typeof statusOrder] || 5) -
+          (statusOrder[b.status as keyof typeof statusOrder] || 5)
+        )
+      case 'company':
+        return (a.companyName || '').localeCompare(b.companyName || '')
+      default:
+        return 0
+    }
+  })
+
+  // Group by status
+  const groupedObjectives = {
+    on_track: sortedObjectives.filter((obj) => obj.status === 'on_track'),
+    at_risk: sortedObjectives.filter((obj) => obj.status === 'at_risk'),
+    blocked: sortedObjectives.filter((obj) => obj.status === 'blocked'),
+    active: sortedObjectives.filter((obj) => obj.status === 'active'),
+    completed: sortedObjectives.filter((obj) => obj.status === 'completed'),
+  }
+
+  const handleCreateObjective = async (objectiveData: any) => {
+    try {
+      const response = await fetch('/api/objectives', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...objectiveData,
+          workspaceId,
+          createdBy: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74', // TODO: Get from session
+          autoBreakdown: true,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to create objective')
+      }
+
+      // Refresh page to show new objective
+      router.refresh()
+    } catch (err) {
+      console.error('Failed to create objective:', err)
+      throw err
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-bg-cream">
+      <Sidebar
+        workspaceName="My Workspace"
+        isCollapsed={sidebarCollapsed}
+        onCollapsedChange={setSidebarCollapsed}
+      />
+
+      <div className="ml-64">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="px-8 py-6 flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">Objectives</h1>
+              <p className="text-gray-600 text-sm mt-1">
+                Track progress toward your most important goals
+              </p>
+            </div>
+            <button
+              onClick={() => setIsFormOpen(true)}
+              className="px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition flex items-center gap-2"
+            >
+              <FaPlus /> New Objective
+            </button>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 p-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Summary Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-600">Total</p>
+                <p className="text-2xl font-bold text-gray-900">{objectives.length}</p>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <p className="text-sm text-green-700">On Track</p>
+                <p className="text-2xl font-bold text-green-700">{groupedObjectives.on_track.length}</p>
+              </div>
+              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                <p className="text-sm text-yellow-700">At Risk</p>
+                <p className="text-2xl font-bold text-yellow-700">{groupedObjectives.at_risk.length}</p>
+              </div>
+              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                <p className="text-sm text-red-700">Blocked</p>
+                <p className="text-2xl font-bold text-red-700">{groupedObjectives.blocked.length}</p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700">Completed</p>
+                <p className="text-2xl font-bold text-blue-700">{groupedObjectives.completed.length}</p>
+              </div>
+            </div>
+
+            {/* Filters */}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2">
+                <FaFilter className="text-gray-400" />
+                <span className="text-sm font-medium text-gray-700">Filter:</span>
+              </div>
+
+              {/* Status Filter */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setStatusFilter('all')}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition ${
+                    statusFilter === 'all'
+                      ? 'bg-accent-500 text-white'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setStatusFilter('on_track')}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition ${
+                    statusFilter === 'on_track'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  On Track
+                </button>
+                <button
+                  onClick={() => setStatusFilter('at_risk')}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition ${
+                    statusFilter === 'at_risk'
+                      ? 'bg-yellow-500 text-white'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  At Risk
+                </button>
+                <button
+                  onClick={() => setStatusFilter('blocked')}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition ${
+                    statusFilter === 'blocked'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  Blocked
+                </button>
+              </div>
+
+              {/* Company Filter */}
+              <select
+                value={companyFilter}
+                onChange={(e) => setCompanyFilter(e.target.value)}
+                className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              >
+                <option value="all">All Companies</option>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              >
+                <option value="deadline">Sort by Deadline</option>
+                <option value="progress">Sort by Progress</option>
+                <option value="status">Sort by Status</option>
+                <option value="company">Sort by Company</option>
+              </select>
+            </div>
+          </div>
+
+            {/* Objectives Grid */}
+            {sortedObjectives.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 mb-4">No objectives found</p>
+                <button
+                  onClick={() => setIsFormOpen(true)}
+                  className="px-6 py-3 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition"
+                >
+                  Create Your First Objective
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 mt-6">
+                {sortedObjectives.map((objective) => (
+                  <ObjectiveCard
+                    key={objective.id}
+                    id={objective.id}
+                    title={objective.title}
+                    companyName={objective.companyName || undefined}
+                    companyId={objective.companyId || undefined}
+                    currentValue={objective.currentValue}
+                    targetValue={objective.targetValue}
+                    unit={objective.unit || undefined}
+                    deadline={new Date(objective.deadline)}
+                    status={objective.status}
+                    progressPercent={objective.progressPercent}
+                    nextMilestone={
+                      objective.nextMilestone
+                        ? {
+                            ...objective.nextMilestone,
+                            targetDate: new Date(objective.nextMilestone.targetDate),
+                          }
+                        : undefined
+                    }
+                    aiWork={objective.aiWork}
+                    humanWork={objective.humanWork}
+                    activeBlockers={objective.activeBlockers}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
+
+      {/* Create/Edit Form Modal */}
+      <ObjectiveForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSave={handleCreateObjective}
+        workspaceId={workspaceId}
+        companies={companies}
+        goals={goals}
+      />
+    </div>
+  )
+}

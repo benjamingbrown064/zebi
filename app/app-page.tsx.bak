@@ -1,0 +1,65 @@
+import Link from 'next/link'
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-bg-cream">
+      {/* Navigation */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-8 py-6 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-accent-500 rounded-lg flex items-center justify-center">
+              <span className="font-bold text-white">✓</span>
+            </div>
+            <span className="text-lg font-semibold">Focus</span>
+          </div>
+          <div className="flex gap-4">
+            <Link href="/login" className="button-secondary">
+              Login
+            </Link>
+            <Link href="/signup" className="button-primary">
+              Sign up
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <div className="max-w-4xl mx-auto px-8 py-20 text-center">
+        <h1 className="text-5xl font-bold mb-4 text-gray-900">
+          Decide what matters today
+        </h1>
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          A calm task manager that helps you focus on what actually matters without losing sight of your goals. Glanceable. Simple. Powerful.
+        </p>
+        
+        <div className="flex gap-4 justify-center mb-16">
+          <Link href="/signup" className="button-primary text-lg px-6 py-3">
+            Get started free
+          </Link>
+          <button className="button-secondary text-lg px-6 py-3">
+            Learn more
+          </button>
+        </div>
+
+        {/* Feature highlights */}
+        <div className="grid grid-cols-3 gap-8 mt-20">
+          <div className="space-y-3">
+            <div className="text-3xl">📋</div>
+            <h3>Max 5 tasks</h3>
+            <p className="text-gray-600 text-sm">Limits create clarity. Focus on what matters.</p>
+          </div>
+          <div className="space-y-3">
+            <div className="text-3xl">🎯</div>
+            <h3>Real goals</h3>
+            <p className="text-gray-600 text-sm">Measurable targets. Timeframes. Progress tracking.</p>
+          </div>
+          <div className="space-y-3">
+            <div className="text-3xl">✨</div>
+            <h3>Zero noise</h3>
+            <p className="text-gray-600 text-sm">Signals, not feeds. Attention without distraction.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

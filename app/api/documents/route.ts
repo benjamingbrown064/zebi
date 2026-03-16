@@ -1,0 +1,127 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireWorkspace } from '@/lib/workspace'
+
+const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
+
+// GET /api/documents - List documents with filters
+export async function GET(request: NextRequest) {
+  try {
+    const workspaceId = await requireWorkspace()
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId');
+    const projectId = searchParams.get('projectId');
+    const documentType = searchParams.get('documentType');
+    const search = searchParams.get('search');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
+
+    // Build filter conditions
+    const where: any = {
+      workspaceId
+    };
+
+    if (companyId) where.companyId = companyId;
+    if (projectId) where.projectId = projectId;
+    if (documentType) where.documentType = documentType;
+    if (search) {
+      where.title = {
+        contains: search,
+        mode: 'insensitive'
+      };
+    }
+
+    // Get documents with related data
+    const [documents, total] = await Promise.all([
+      prisma.document.findMany({
+        where,
+        include: {
+          company: {
+            select: { id: true, name: true }
+          },
+          project: {
+            select: { id: true, name: true }
+          },
+          versions: {
+            select: { id: true, version: true, createdAt: true },
+            orderBy: { version: 'desc' },
+            take: 1
+          }
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: limit,
+        skip: offset
+      }),
+      prisma.document.count({ where })
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      documents,
+      total,
+      limit,
+      offset
+    });
+
+  } catch (error) {
+    console.error('GET /api/documents error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch documents' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/documents - Create new document
+export async function POST(request: NextRequest) {
+  try {
+    const workspaceId = await requireWorkspace()
+    const body = await request.json();
+    console.log('POST /api/documents body:', body);
+    const { companyId, projectId, title, documentType, contentRich } = body;
+
+    const docData = {
+      workspaceId,
+      companyId: companyId || null,
+      projectId: projectId || null,
+      title: title || 'Untitled Document',
+      documentType: documentType || 'notes',
+      contentRich: contentRich || { type: 'doc', content: [] },
+      version: 1,
+      createdBy: DEFAULT_USER_ID
+    };
+    console.log('Creating document with data:', docData);
+
+    // Create document
+    const document = await prisma.document.create({
+      data: docData,
+      include: {
+        company: {
+          select: { id: true, name: true }
+        },
+        project: {
+          select: { id: true, name: true }
+        }
+      }
+    });
+
+    // Create initial version
+    await prisma.documentVersion.create({
+      data: {
+        documentId: document.id,
+        version: 1,
+        contentRich: document.contentRich as any,
+        createdBy: DEFAULT_USER_ID
+      }
+    });
+
+    return NextResponse.json({ success: true, document }, { status: 201 });
+
+  } catch (error) {
+    console.error('POST /api/documents error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create document' },
+      { status: 500 }
+    );
+  }
+}

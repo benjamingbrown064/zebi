@@ -1,0 +1,318 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== WORKSPACES ====================
+
+model Workspace {
+  id                        String                @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  name                      String
+  plan                      String                @default("free")
+  ownerId                   String?               @db.Uuid
+  createdAt                 DateTime              @default(now()) @db.Timestamptz()
+  updatedAt                 DateTime              @updatedAt @db.Timestamptz()
+
+  // Relations
+  members           WorkspaceMember[]
+  tasks             Task[]
+  goals             Goal[]
+  projects          Project[]
+  tags              Tag[]
+  statuses          Status[]
+  savedFilters      SavedFilter[]
+  comments          TaskComment[]
+  attachments       TaskAttachment[]
+  activityLogs      ActivityLog[]
+  shareLinks        ShareLink[]
+
+  @@index([ownerId])
+}
+
+model WorkspaceMember {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  userId      String   @db.Uuid
+  role        String   @default("member") // owner, admin, member, guest
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+}
+
+// ==================== STATUSES ====================
+
+model Status {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name        String
+  type        String   // inbox, planned, doing, blocked, done, custom
+  isSystem    Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+  @@index([type])
+}
+
+// ==================== TASKS ====================
+
+model Task {
+  id              String          @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  title           String
+  description     String?
+  statusId        String          @db.Text
+  priority        Int             @default(3) // 1=highest, 4=lowest
+  dueAt           DateTime?       @db.Timestamptz()
+  startAt         DateTime?       @db.Timestamptz()
+  completedAt     DateTime?       @db.Timestamptz()
+  archivedAt      DateTime?       @db.Timestamptz()
+  projectId       String?         @db.Text
+  goalId          String?         @db.Text
+  parentTaskId    String?         @db.Text
+  sortOrder       Decimal         @default(0)
+  effortPoints    Int?
+  isMilestone     Boolean         @default(false)
+  todayPinDate    DateTime?       @db.Date()
+  todayOrder      Int?
+  todayCategory   String?         @db.Text // 'main' | 'secondary' | 'additional' | null
+  shareSlug       String?         @unique
+  assigneeId      String?         @db.Uuid // User ID assigned to this task
+  createdAt       DateTime        @default(now()) @db.Timestamptz()
+  updatedAt       DateTime        @updatedAt @db.Timestamptz()
+  createdBy       String          @db.Uuid
+
+  // Relations
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  status          Status          @relation(fields: [statusId], references: [id])
+  project         Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  goal            Goal?           @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  parentTask      Task?           @relation("ParentChild", fields: [parentTaskId], references: [id], onDelete: Cascade)
+  subtasks        Task[]          @relation("ParentChild")
+  
+  tags            TaskTag[]
+  comments        TaskComment[]
+  attachments     TaskAttachment[]
+  activityLogs    ActivityLog[]
+
+  @@index([workspaceId, statusId])
+  @@index([workspaceId, dueAt])
+  @@index([workspaceId, completedAt])
+  @@index([workspaceId, completedAt, archivedAt])
+  @@index([workspaceId, todayPinDate])
+  @@index([workspaceId, projectId])
+  @@index([workspaceId, goalId])
+  @@index([projectId])
+  @@index([goalId])
+}
+
+// ==================== TAGS ====================
+
+model Tag {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name        String
+  color       String?
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks       TaskTag[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+}
+
+model TaskTag {
+  id       String @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  taskId   String @db.Text
+  tagId    String @db.Text
+
+  // Relations
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, tagId])
+  @@index([taskId])
+  @@index([tagId])
+}
+
+// ==================== PROJECTS ====================
+
+model Project {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name        String
+  goalId      String?  @db.Text
+  defaultView String   @default("list") // list, board, calendar
+  archivedAt  DateTime? @db.Timestamptz()
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@index([workspaceId])
+  @@index([goalId])
+}
+
+// ==================== GOALS ====================
+
+model Goal {
+  id              String          @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name            String
+  descriptionRich Json?
+  metricType      String          // tasks, milestones, numeric, points
+  targetValue     Decimal
+  currentValue    Decimal         @default(0)
+  unit            String?
+  startDate       DateTime        @db.Date()
+  endDate         DateTime        @db.Date()
+  status          String          @default("active") // active, paused, completed, archived
+  createdAt       DateTime        @default(now()) @db.Timestamptz()
+  updatedAt       DateTime        @updatedAt @db.Timestamptz()
+  createdBy       String          @db.Uuid
+
+  // Relations
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks           Task[]
+  progressEntries GoalProgressEntry[]
+  activityLogs    ActivityLog[]
+
+  @@index([workspaceId])
+  @@index([status])
+  @@index([endDate])
+}
+
+model GoalProgressEntry {
+  id        String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  goalId    String   @db.Text
+  value     Decimal
+  entryDate DateTime @db.Date()
+  note      String?
+  createdBy String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@index([goalId])
+  @@index([entryDate])
+}
+
+// ==================== COMMENTS ====================
+
+model TaskComment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  taskId      String   @db.Text
+  workspaceId       String          @db.Text
+  bodyRich    Json
+  createdBy   String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
+
+  // Relations
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([workspaceId])
+}
+
+// ==================== ATTACHMENTS ====================
+
+model TaskAttachment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  taskId      String   @db.Text
+  storagePath String   // path in Supabase Storage
+  filename    String
+  mimeType    String
+  sizeBytes   BigInt
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([workspaceId])
+}
+
+// ==================== SHARE LINKS ====================
+
+model ShareLink {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  taskId      String   @db.Text
+  shareSlug   String   @unique
+  isActive    Boolean  @default(true)
+  revokedAt   DateTime? @db.Timestamptz()
+  createdBy   String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([shareSlug])
+}
+
+// ==================== FILTERS ====================
+
+model SavedFilter {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  name        String
+  definition  Json     // stored as JSON: { status, priority, dueDateWindow, tags, project, goal, assignedTo, hasAttachments, isBlocked }
+  defaultView String   @default("list")
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+// ==================== ACTIVITY LOG ====================
+
+model ActivityLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String          @db.Text
+  taskId      String?  @db.Text
+  goalId      String?  @db.Text
+  eventType   String   // created, updated, completed, archived, assigned, commented, goal_updated
+  eventPayload Json
+  createdBy   String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  task        Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  goal        Goal?     @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([taskId])
+  @@index([goalId])
+  @@index([createdAt])
+}

@@ -1,0 +1,21 @@
+          {/* Panel 2: Attention */}
+          <div className="space-y-4">
+            <div className="flex items-baseline justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-900">Attention</h2>
+              <p className="text-xs text-gray-500">No signals</p>
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm text-gray-500">No attention signals at this time</p>
+            </div>
+          </div>
+
+          {/* Panel 3: Goals */}
+          <div className="space-y-4">
+            <div className="flex items-baseline justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-900">Goals</h2>
+              <p className="text-xs text-gray-500">0 active</p>
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm text-gray-500">No goals yet. Create one to get started.</p>
+            </div>
+          </div>

@@ -1,0 +1,171 @@
+Vercel CLI 50.15.1
+Retrieving project…
+Deploying benjamin-browns-projects-388ae31c/focus-app
+Uploading [--------------------] (0.0B/141.9KB)
+Uploading [=====---------------] (37.9KB/141.9KB)
+Uploading [==========----------] (71.8KB/141.9KB)
+Uploading [===============-----] (106.4KB/141.9KB)
+Uploading [====================] (141.9KB/141.9KB)
+Inspect: https://vercel.com/benjamin-browns-projects-388ae31c/focus-app/2FwhLxrGgLeiWdbiWYNn1s82srTi [3s]
+Production: https://focus-glt9xngvc-benjamin-browns-projects-388ae31c.vercel.app [3s]
+https://focus-glt9xngvc-benjamin-browns-projects-388ae31c.vercel.appBuilding...
+Building...
+Building: Running build in Washington, D.C., USA (East) – iad1
+Building: Build machine configuration: 2 cores, 8 GB
+Building: Retrieving list of deployment files...
+Building: Downloading 316 deployment files...
+Building: Restored build cache from previous deployment (HXUdDq3zwUzxfiCQhapm7avZ36NX)
+Building: Running "vercel build"
+Building: Vercel CLI 50.28.0
+Building: Installing dependencies...
+Building: up to date in 803ms
+Building: 59 packages are looking for funding
+Building: run `npm fund` for details
+Building: Detected Next.js version: 14.2.35
+Building: Running "npm run build"
+Building: > zebi@0.1.0 build
+Building: > prisma generate && next build
+Building: Environment variables loaded from .env
+Building: Prisma schema loaded from prisma/schema.prisma
+Building: ✔ Generated Prisma Client (4.16.2 | library) to ./node_modules/@prisma/client in 536ms
+Building: You can now start using Prisma Client in your code. Reference: https://pris.ly/d/client
+Building: ```
+Building: import { PrismaClient } from '@prisma/client'
+Building: const prisma = new PrismaClient()
+Building: ```
+Building: ▲ Next.js 14.2.35
+Building: - Environments: .env
+Building: Creating an optimized production build ...
+Building: <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (133kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+Building: ✓ Compiled successfully
+Building: Linting and checking validity of types ...
+Building: Collecting page data ...
+Building: Generating static pages (0/53) ...
+Building: Generating static pages (13/53)
+Building: [DB_TEST] Starting database test...
+Building: [DB_TEST] Total tasks in DB: 65
+Building: [DB_TEST] Workspace found: My Workspace
+Building: [DB_TEST] Tasks in workspace: 5
+Building: [DB_TEST] Query with relations successful: 1 tasks
+Building: [TEST_FILTERS] Calling getFilters for workspace dfd6d384-9e2f-4145-b4f3-254aa82c0237
+Building: getFilters: Fetching filters for workspace dfd6d384-9e2f-4145-b4f3-254aa82c0237
+Building: getFilters: Found 0 filters
+Building: [TEST_FILTERS] getFilters returned 0 filters in 345ms
+Building: [DEBUG] Testing getTasks for workspace dfd6d384-9e2f-4145-b4f3-254aa82c0237
+Building: getTasks: Fetched 65 tasks for workspace dfd6d384-9e2f-4145-b4f3-254aa82c0237 (limit: 1000, offset: 0)
+Building: [DEBUG] getTasks returned 65 tasks
+Building: [TEST_STATUS] Calling getStatuses for workspace dfd6d384-9e2f-4145-b4f3-254aa82c0237
+Building: getStatuses: Fetching statuses for workspace dfd6d384-9e2f-4145-b4f3-254aa82c0237
+Building: getStatuses: Found 6 statuses
+Building: [TEST_STATUS] getStatuses returned 6 statuses in 344ms
+Building: [Doug Auth] DOUG_API_TOKEN not configured
+Building: [Doug Auth] DOUG_API_TOKEN not configured
+Building: Generating static pages (26/53)
+Building: [Doug Auth] DOUG_API_TOKEN not configured
+Building: [Doug Auth] DOUG_API_TOKEN not configured
+Building: [API:filters] Error: Dynamic server usage: Route /api/filters couldn't be rendered statically because it used `request.url`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+Building: [API:statuses] Error: Dynamic server usage: Route /api/statuses couldn't be rendered statically because it used `request.url`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+Building: [API:tasks/direct] Error: Dynamic server usage: Route /api/tasks/direct couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+Building: Generating static pages (39/53)
+Building: [DEBUG] Testing Prisma client...
+Building: [DEBUG] Prisma connection successful
+Building: [DEBUG] Testing full task query...
+Building: [DEBUG] Task query successful, found 65 tasks
+Building: ✓ Generating static pages (53/53)
+Building: Finalizing page optimization ...
+Building: Collecting build traces ...
+Building: Route (app)                                            Size     First Load JS
+Building: ┌ ○ /                                                  175 B          96.2 kB
+Building: ├ ○ /_not-found                                        873 B          88.2 kB
+Building: ├ ƒ /api/ai-insights                                   0 B                0 B
+Building: ├ ƒ /api/ai-insights/[id]                              0 B                0 B
+Building: ├ ƒ /api/ai-insights/[id]/implement                    0 B                0 B
+Building: ├ ƒ /api/ai-insights/[id]/review                       0 B                0 B
+Building: ├ ƒ /api/ai-memory                                     0 B                0 B
+Building: ├ ƒ /api/ai-memory/[id]                                0 B                0 B
+Building: ├ ƒ /api/ai/extract-memory                             0 B                0 B
+Building: ├ ƒ /api/ai/queue/complete                             0 B                0 B
+Building: ├ ƒ /api/ai/queue/next                                 0 B                0 B
+Building: ├ ƒ /api/ai/queue/status                               0 B                0 B
+Building: ├ ƒ /api/attachments                                   0 B                0 B
+Building: ├ ƒ /api/attachments/[attachmentId]                    0 B                0 B
+Building: ├ ƒ /api/attachments/upload                            0 B                0 B
+Building: ├ ƒ /api/companies                                     0 B                0 B
+Building: ├ ƒ /api/companies/[id]                                0 B                0 B
+Building: ├ ƒ /api/cron/auto-archive                             0 B                0 B
+Building: ├ ƒ /api/cron/check-alerts                             0 B                0 B
+Building: ├ ƒ /api/cron/daily-summary                            0 B                0 B
+Building: ├ ƒ /api/cron/generate-insights                        0 B                0 B
+Building: ├ ƒ /api/cron/monitor-objectives                       0 B                0 B
+Building: ├ ƒ /api/cron/morning-briefing                         0 B                0 B
+Building: ├ ƒ /api/cron/proactive-questions                      0 B                0 B
+Building: ├ ƒ /api/cron/repeating-tasks                          0 B                0 B
+Building: ├ ○ /api/debug/db-test                                 0 B                0 B
+Building: ├ ○ /api/debug/test-connection                         0 B                0 B
+Building: ├ ○ /api/debug/test-filters                            0 B                0 B
+Building: ├ ○ /api/debug/test-get-tasks                          0 B                0 B
+Building: ├ ○ /api/debug/test-status                             0 B                0 B
+Building: ├ ƒ /api/documents                                     0 B                0 B
+Building: ├ ƒ /api/documents/[id]                                0 B                0 B
+Building: ├ ƒ /api/documents/[id]/versions                       0 B                0 B
+Building: ├ ƒ /api/doug/blocker                                  0 B                0 B
+Building: ├ ƒ /api/doug/company                                  0 B                0 B
+Building: ├ ƒ /api/doug/detect-blockers                          0 B                0 B
+Building: ├ ƒ /api/doug/objective                                0 B                0 B
+Building: ├ ƒ /api/doug/plan                                     0 B                0 B
+Building: ├ ƒ /api/doug/status                                   0 B                0 B
+Building: ├ ƒ /api/doug/summary                                  0 B                0 B
+Building: ├ ƒ /api/doug/task                                     0 B                0 B
+Building: ├ ƒ /api/doug/weekly-plan                              0 B                0 B
+Building: ├ ƒ /api/filters                                       0 B                0 B
+Building: ├ ƒ /api/objectives                                    0 B                0 B
+Building: ├ ƒ /api/objectives/[id]                               0 B                0 B
+Building: ├ ƒ /api/objectives/[id]/analyze                       0 B                0 B
+Building: ├ ƒ /api/objectives/[id]/blockers                      0 B                0 B
+Building: ├ ƒ /api/objectives/[id]/blockers/[blockerId]/resolve  0 B                0 B
+Building: ├ ƒ /api/objectives/[id]/breakdown                     0 B                0 B
+Building: ├ ƒ /api/objectives/[id]/progress                      0 B                0 B
+Building: ├ ƒ /api/objectives/[id]/trajectory                    0 B                0 B
+Building: ├ ƒ /api/projects                                      0 B                0 B
+Building: ├ ƒ /api/projects/[id]                                 0 B                0 B
+Building: ├ ƒ /api/statuses                                      0 B                0 B
+Building: ├ ƒ /api/tasks/[taskId]                                0 B                0 B
+Building: ├ ƒ /api/tasks/bot                                     0 B                0 B
+Building: ├ ƒ /api/tasks/direct                                  0 B                0 B
+Building: ├ ○ /board                                             7.1 kB          179 kB
+Building: ├ ○ /board-fixed                                       3.27 kB         162 kB
+Building: ├ ○ /companies                                         2.01 kB         165 kB
+Building: ├ ƒ /companies/[id]                                    3.02 kB         166 kB
+Building: ├ ○ /dashboard                                         4.05 kB         163 kB
+Building: ├ ○ /documents                                         4.33 kB         163 kB
+Building: ├ ƒ /documents/[id]                                    110 kB          272 kB
+Building: ├ ○ /filters                                           4.18 kB         163 kB
+Building: ├ ○ /goals                                             4.56 kB         164 kB
+Building: ├ ○ /insights                                          6.35 kB         165 kB
+Building: ├ ○ /login                                             2.02 kB         162 kB
+Building: ├ ○ /memory                                            5.54 kB         165 kB
+Building: ├ ƒ /objectives                                        6.45 kB         165 kB
+Building: ├ ƒ /objectives/[id]                                   7.4 kB          166 kB
+Building: ├ ○ /projects                                          2.5 kB          110 kB
+Building: ├ ƒ /projects/[id]                                     3.94 kB         163 kB
+Building: ├ ○ /settings                                          3.07 kB         162 kB
+Building: ├ ƒ /share/[slug]                                      138 B          87.5 kB
+Building: ├ ○ /signup                                            2.25 kB         162 kB
+Building: ├ ○ /tasks                                             5.7 kB          178 kB
+Building: ├ ƒ /tasks/[taskId]                                    704 B           173 kB
+Building: └ ○ /test-minimal                                      971 B          88.3 kB
+Building: + First Load JS shared by all                          87.4 kB
+Building: ├ chunks/117-6bc8c890d4c2b016.js                     31.7 kB
+Building: ├ chunks/fd9d1056-88c8a1669018f964.js                53.6 kB
+Building: └ other shared chunks (total)                        1.98 kB
+Building: ƒ Middleware                                           74.3 kB
+Building: ○  (Static)   prerendered as static content
+Building: ƒ  (Dynamic)  server-rendered on demand
+Building: Traced Next.js server files in: 46.872ms
+Building: Created all serverless functions in: 250.97ms
+Building: Collected static files (public/, static/, .next/static): 9.747ms
+Building: Build Completed in /vercel/output [39s]
+Building: Deploying outputs...
+[2K[1A[2K[GProduction: https://focus-glt9xngvc-benjamin-browns-projects-388ae31c.vercel.app [59s]
+Completing...
+Aliased: https://zebi.app [59s]

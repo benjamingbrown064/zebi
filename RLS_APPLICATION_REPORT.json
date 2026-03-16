@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-03-07T07:34:56.952Z",
+  "success": true,
+  "before": {
+    "enabled": 1,
+    "disabled": 26
+  },
+  "after": {
+    "enabled": 27,
+    "disabled": 0
+  },
+  "statements": {
+    "alter": {
+      "total": 27,
+      "success": 27,
+      "failed": 0
+    },
+    "create": {
+      "total": 89,
+      "success": 89,
+      "failed": 0
+    }
+  },
+  "totalPolicies": 89,
+  "tablesWithRLS": [
+    "AIInsight",
+    "AIMemory",
+    "AIWorkQueue",
+    "ActivityLog",
+    "Company",
+    "Document",
+    "DocumentVersion",
+    "File",
+    "Goal",
+    "GoalProgressEntry",
+    "Mission",
+    "Objective",
+    "ObjectiveBlocker",
+    "ObjectiveMilestone",
+    "ObjectiveProgress",
+    "Project",
+    "RepeatingTask",
+    "SavedFilter",
+    "ShareLink",
+    "Status",
+    "Tag",
+    "Task",
+    "TaskAttachment",
+    "TaskComment",
+    "TaskTag",
+    "Workspace",
+    "WorkspaceMember"
+  ],
+  "tablesWithoutRLS": []
+}

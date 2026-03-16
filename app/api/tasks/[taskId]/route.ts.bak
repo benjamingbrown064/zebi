@@ -1,0 +1,122 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { requireWorkspace } from '@/lib/workspace'
+
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { taskId: string } }
+) {
+  try {
+    const { taskId } = params
+    const body = await request.json()
+
+    console.log(`[API:tasks/${taskId}] PATCH request with body:`, body)
+
+    // Verify task exists and belongs to workspace
+    const existingTask = await prisma.task.findFirst({
+      where: { id: taskId, workspaceId: DEFAULT_WORKSPACE_ID }
+    })
+
+    if (!existingTask) {
+      return NextResponse.json(
+        { success: false, error: 'Task not found' },
+        { status: 404 }
+      )
+    }
+
+    // If updating status, verify it exists
+    if (body.statusId) {
+      const status = await prisma.status.findFirst({
+        where: { id: body.statusId, workspaceId: DEFAULT_WORKSPACE_ID }
+      })
+      if (!status) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid status' },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Update task
+    const updatedTask = await prisma.task.update({
+      where: { id: taskId },
+      data: {
+        ...(body.statusId && { statusId: body.statusId }),
+        ...(body.priority !== undefined && { priority: body.priority }),
+        ...(body.completedAt !== undefined && { 
+          completedAt: body.completedAt ? new Date(body.completedAt) : null 
+        }),
+        ...(body.dueAt !== undefined && { 
+          dueAt: body.dueAt ? new Date(body.dueAt) : null 
+        }),
+        ...(body.title && { title: body.title }),
+        ...(body.description !== undefined && { description: body.description }),
+        ...(body.assigneeId !== undefined && { assigneeId: body.assigneeId }),
+      },
+      include: {
+        tags: {
+          include: { tag: true }
+        },
+        goal: true
+      }
+    })
+
+    console.log(`[API:tasks/${taskId}] Task updated successfully`)
+
+    // If status changed and task has an objective, recalculate objective progress
+    if (body.statusId && updatedTask.objectiveId) {
+      try {
+        const objectiveTasks = await prisma.task.findMany({
+          where: { objectiveId: updatedTask.objectiveId },
+          include: { status: true }
+        })
+
+        const completedTasks = objectiveTasks.filter(task => task.status?.type === 'done').length
+        const progress = Math.round((completedTasks / objectiveTasks.length) * 100)
+
+        await prisma.objective.update({
+          where: { id: updatedTask.objectiveId },
+          data: {
+            progressPercent: progress,
+            currentValue: progress
+          }
+        })
+
+        console.log(`[API:tasks/${taskId}] Updated objective progress: ${progress}%`)
+      } catch (err) {
+        console.error(`[API:tasks/${taskId}] Failed to update objective progress:`, err)
+        // Don't fail the request if objective update fails
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      task: {
+        id: updatedTask.id,
+        title: updatedTask.title,
+        priority: updatedTask.priority,
+        statusId: updatedTask.statusId,
+        description: updatedTask.description || undefined,
+        dueAt: updatedTask.dueAt?.toISOString(),
+        completedAt: updatedTask.completedAt?.toISOString(),
+        tags: updatedTask.tags.map(tt => tt.tag.name),
+        goal: updatedTask.goal || undefined,
+        goalId: updatedTask.goalId || undefined,
+        projectId: updatedTask.projectId || undefined,
+        assigneeId: updatedTask.assigneeId || undefined,
+        workspaceId: updatedTask.workspaceId,
+        createdAt: updatedTask.createdAt.toISOString(),
+        updatedAt: updatedTask.updatedAt.toISOString(),
+      }
+    })
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err)
+    console.error(`[API:tasks/${params.taskId}] Error:`, errorMsg)
+    
+    return NextResponse.json({
+      success: false,
+      error: errorMsg,
+    }, { status: 500 })
+  }
+}
