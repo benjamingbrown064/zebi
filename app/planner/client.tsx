@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { startOfWeek, addDays, format, isToday, isSameDay } from 'date-fns'
 import {
   DndContext,
@@ -12,6 +12,9 @@ import {
   useSensors,
   closestCorners,
 } from '@dnd-kit/core'
+import Sidebar from '@/components/Sidebar'
+import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer'
+import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import WeekNavigator from './components/WeekNavigator'
 import DayColumn from './components/DayColumn'
 import PlannerTaskCard from './components/PlannerTaskCard'
@@ -56,21 +59,20 @@ export default function WeeklyPlannerClient({
   workspaceId,
   defaultCapacity,
 }: WeeklyPlannerClientProps) {
-  const [currentWeekStart, setCurrentWeekStart] = useState(() =>
-    startOfWeek(new Date(), { weekStartsOn: 1 })
-  )
+  // Start with today as the first day in the 3-day view
+  const [currentDayStart, setCurrentDayStart] = useState(() => new Date())
   const [tasks, setTasks] = useState(initialTasks)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
-  const [selectedMobileDay, setSelectedMobileDay] = useState(0) // 0-6 for Mon-Sun
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // Check mobile on mount
-  useState(() => {
+  useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
-  })
+  }, [])
 
   // Drag sensors
   const sensors = useSensors(
@@ -81,22 +83,22 @@ export default function WeeklyPlannerClient({
     })
   )
 
-  // Generate week days
-  const weekDays = useMemo(
-    () =>
-      Array.from({ length: 7 }, (_, i) => ({
-        date: addDays(currentWeekStart, i),
-        dayOfWeek: i,
-      })),
-    [currentWeekStart]
-  )
+  // Generate 3 consecutive days for desktop, 1 day for mobile
+  const visibleDays = useMemo(() => {
+    const count = isMobile ? 1 : 3
+    return Array.from({ length: count }, (_, i) => ({
+      date: addDays(currentDayStart, i),
+      dayIndex: i,
+    }))
+  }, [currentDayStart, isMobile])
 
   // Group tasks by day
   const tasksByDay = useMemo(() => {
     const grouped: Record<string, Task[]> = {}
     const backlog: Task[] = []
 
-    weekDays.forEach(({ date }) => {
+    // Initialize visible days
+    visibleDays.forEach(({ date }) => {
       const dateKey = format(date, 'yyyy-MM-dd')
       grouped[dateKey] = []
     })
@@ -107,10 +109,11 @@ export default function WeeklyPlannerClient({
 
       if (task.plannedDate) {
         const dateKey = format(new Date(task.plannedDate), 'yyyy-MM-dd')
-        if (grouped[dateKey]) {
+        // Only add to grouped if it's in the visible days, otherwise backlog
+        if (grouped[dateKey] !== undefined) {
           grouped[dateKey].push(task)
         } else {
-          backlog.push(task) // Planned for a different week
+          backlog.push(task) // Planned for a different day
         }
       } else {
         backlog.push(task)
@@ -118,7 +121,7 @@ export default function WeeklyPlannerClient({
     })
 
     return { grouped, backlog }
-  }, [tasks, weekDays])
+  }, [tasks, visibleDays])
 
   // Calculate day capacity
   const getDayCapacity = useCallback(
@@ -133,26 +136,19 @@ export default function WeeklyPlannerClient({
     [defaultCapacity]
   )
 
-  // Handle week navigation
-  const goToPreviousWeek = () => {
-    setCurrentWeekStart(addDays(currentWeekStart, -7))
+  // Handle 3-day navigation (desktop) or single-day (mobile)
+  const goToPrevious = () => {
+    const daysToMove = isMobile ? 1 : 3
+    setCurrentDayStart(addDays(currentDayStart, -daysToMove))
   }
 
-  const goToNextWeek = () => {
-    setCurrentWeekStart(addDays(currentWeekStart, 7))
+  const goToNext = () => {
+    const daysToMove = isMobile ? 1 : 3
+    setCurrentDayStart(addDays(currentDayStart, daysToMove))
   }
 
   const goToToday = () => {
-    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))
-  }
-
-  // Handle mobile day navigation
-  const goToPreviousDay = () => {
-    setSelectedMobileDay((prev) => Math.max(0, prev - 1))
-  }
-
-  const goToNextDay = () => {
-    setSelectedMobileDay((prev) => Math.min(6, prev + 1))
+    setCurrentDayStart(new Date())
   }
 
   // Handle drag start
@@ -244,86 +240,49 @@ export default function WeeklyPlannerClient({
     : null
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Header */}
-      <div className="bg-white border-b border-[#E5E5E5] px-6 py-4">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-semibold text-[#1A1A1A]">
-              Weekly Planner
-            </h1>
-          </div>
+    <ResponsivePageContainer>
+      <Sidebar
+        workspaceName="Zebi"
+        isCollapsed={sidebarCollapsed}
+        onCollapsedChange={setSidebarCollapsed}
+      />
 
-          <WeekNavigator
-            weekStart={currentWeekStart}
-            onPrevious={goToPreviousWeek}
-            onNext={goToNextWeek}
-            onToday={goToToday}
-          />
-        </div>
-      </div>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <ResponsiveHeader
+          breadcrumbs={[
+            { label: 'Zebi', href: '/dashboard' },
+            { label: 'Planner', href: '/planner' },
+          ]}
+          title="Weekly Planner"
+        />
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="h-full max-w-[1400px] mx-auto px-6 py-6">
-            {isMobile ? (
-              // Mobile: Single day view
-              <div className="flex flex-col h-full gap-4">
-                {/* Mobile day navigator */}
-                <div className="flex items-center justify-between bg-white border border-[#E5E5E5] rounded-[14px] px-4 py-3">
-                  <button
-                    onClick={goToPreviousDay}
-                    disabled={selectedMobileDay === 0}
-                    className="px-3 py-2 text-[#525252] hover:bg-[#F5F5F5] rounded-[10px] disabled:opacity-50"
-                  >
-                    ← Prev
-                  </button>
-                  <span className="text-base font-medium text-[#1A1A1A]">
-                    {format(weekDays[selectedMobileDay].date, 'EEEE, MMM d')}
-                  </span>
-                  <button
-                    onClick={goToNextDay}
-                    disabled={selectedMobileDay === 6}
-                    className="px-3 py-2 text-[#525252] hover:bg-[#F5F5F5] rounded-[10px] disabled:opacity-50"
-                  >
-                    Next →
-                  </button>
-                </div>
-
-                {/* Mobile day content */}
-                <DayColumn
-                  date={weekDays[selectedMobileDay].date}
-                  tasks={
-                    tasksByDay.grouped[
-                      format(weekDays[selectedMobileDay].date, 'yyyy-MM-dd')
-                    ] || []
-                  }
-                  capacity={getDayCapacity(
-                    tasksByDay.grouped[
-                      format(weekDays[selectedMobileDay].date, 'yyyy-MM-dd')
-                    ] || []
-                  )}
-                  onMarkComplete={handleMarkComplete}
-                />
-
-                {/* Mobile backlog */}
-                <BacklogSection
-                  tasks={tasksByDay.backlog}
-                  onMarkComplete={handleMarkComplete}
+          <div className="flex-1 overflow-hidden bg-[#FAFAFA]">
+            <div className="h-full max-w-[1400px] mx-auto px-6 py-6">
+              {/* Navigation */}
+              <div className="mb-6">
+                <WeekNavigator
+                  currentStart={currentDayStart}
+                  visibleDays={visibleDays}
+                  isMobile={isMobile}
+                  onPrevious={goToPrevious}
+                  onNext={goToNext}
+                  onToday={goToToday}
                 />
               </div>
-            ) : (
-              // Desktop: 7-column layout with sidebar
-              <div className="flex gap-6 h-full">
-                {/* Weekly board */}
-                <div className="flex-1 grid grid-cols-7 gap-4 overflow-auto">
-                  {weekDays.map(({ date }) => {
+
+              {/* Content */}
+              <div className="flex gap-6 h-[calc(100%-5rem)]">
+                {/* Days grid (3 columns on desktop, 1 on mobile) */}
+                <div className={`flex-1 grid gap-4 overflow-auto ${
+                  isMobile ? 'grid-cols-1' : 'grid-cols-3'
+                }`}>
+                  {visibleDays.map(({ date }) => {
                     const dateKey = format(date, 'yyyy-MM-dd')
                     return (
                       <DayColumn
@@ -339,15 +298,29 @@ export default function WeeklyPlannerClient({
                   })}
                 </div>
 
-                {/* Backlog sidebar */}
-                <div className="w-80 flex-shrink-0">
+                {/* Backlog sidebar (only on desktop) */}
+                {!isMobile && (
+                  <div className="w-80 flex-shrink-0">
+                    <BacklogSection
+                      tasks={tasksByDay.backlog}
+                      onMarkComplete={handleMarkComplete}
+                      workspaceId={workspaceId}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile backlog (below days) */}
+              {isMobile && (
+                <div className="mt-6">
                   <BacklogSection
                     tasks={tasksByDay.backlog}
                     onMarkComplete={handleMarkComplete}
+                    workspaceId={workspaceId}
                   />
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Drag overlay */}
@@ -360,6 +333,6 @@ export default function WeeklyPlannerClient({
           </DragOverlay>
         </DndContext>
       </div>
-    </div>
+    </ResponsivePageContainer>
   )
 }
