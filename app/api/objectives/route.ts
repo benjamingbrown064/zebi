@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateObjectiveBreakdown } from '@/lib/objective-breakdown';
+import { validateAIAuth } from '@/lib/doug-auth';
 
 /**
  * GET /api/objectives
@@ -133,8 +134,17 @@ export async function GET(request: Request) {
  * POST /api/objectives
  * Create objective with AI breakdown
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Validate Bearer token (for API access from Doug/Harvey)
+    const auth = validateAIAuth(request)
+    if (!auth.valid) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized - Invalid API token' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json();
     const {
       workspaceId,

@@ -65,6 +65,9 @@ export async function middleware(req: NextRequest) {
     '/api/auth/logout',  // Logout endpoint
     '/api/cron',      // Cron endpoints use API key auth
     '/api/tasks/direct', // Direct API access uses API key auth
+    '/api/tasks',     // Task endpoints - Bearer token auth (Doug/Harvey)
+    '/api/objectives', // Objectives endpoints - Bearer token auth (Doug/Harvey)
+    '/api/projects',   // Projects endpoints - Bearer token auth (Doug/Harvey)
     '/api/assistant',  // AI Assistant API (Week 1 Day 1-2) - TODO: Add proper auth in Day 3-4
     '/api/migrate-action-plans', // Migration endpoint (one-time use)
     '/api/brain-dump', // Brain Dump API (internal processing, no auth needed for server-to-server)

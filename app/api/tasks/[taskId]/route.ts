@@ -1,18 +1,36 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireWorkspace } from '@/lib/workspace'
+import { validateAIAuth } from '@/lib/doug-auth'
 import { getAffectedObjectives } from '@/lib/objective-progress'
 import { queueMultipleRecalculations } from '@/lib/progress-queue'
 
 
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { taskId: string } }
 ) {
   try {
-    const workspaceId = await requireWorkspace()
-    const { taskId } = params
+    // Check if using Bearer token auth or session auth
+    const auth = validateAIAuth(request)
     const body = await request.json()
+    
+    let workspaceId: string
+    
+    if (auth.valid) {
+      // Bearer token auth - require workspaceId in body
+      workspaceId = body.workspaceId
+      if (!workspaceId) {
+        return NextResponse.json(
+          { success: false, error: 'workspaceId is required when using API token' },
+          { status: 400 }
+        )
+      }
+    } else {
+      // Session auth - get from requireWorkspace()
+      workspaceId = await requireWorkspace()
+    }
+    const { taskId } = params
 
     console.log(`[API:tasks/${taskId}] PATCH request with body:`, body)
 

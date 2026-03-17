@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateAIAuth } from '@/lib/doug-auth'
 
 export async function GET(request: NextRequest) {
   try {
@@ -103,6 +104,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Validate Bearer token (for API access from Doug/Harvey)
+    const auth = validateAIAuth(request)
+    if (!auth.valid) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Invalid API token' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     const {
       workspaceId,
