@@ -6,9 +6,12 @@ import { validateAIAuth } from '@/lib/doug-auth';
 /**
  * GET /api/objectives
  * List objectives with filters and pagination
+ * Supports Bearer token auth (workspaceId from query param) and session auth
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    // Middleware validates Bearer token, so if we reach here with Authorization header, it's valid
+    // or it's a session-authenticated browser request
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get('workspaceId');
     const companyId = searchParams.get('companyId');

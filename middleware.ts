@@ -56,6 +56,23 @@ export async function middleware(req: NextRequest) {
 
   const { data: { session } } = await supabase.auth.getSession()
   
+  // Check for valid Bearer token (Doug/Harvey API access)
+  const authHeader = req.headers.get('authorization')
+  let hasValidBearerToken = false
+  
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.slice(7)
+    const validTokens = [
+      process.env.DOUG_API_TOKEN,
+      process.env.HARVEY_API_TOKEN,
+    ]
+    hasValidBearerToken = validTokens.includes(token)
+    
+    if (hasValidBearerToken) {
+      console.log(`[middleware] Valid Bearer token detected for ${req.nextUrl.pathname}`)
+    }
+  }
+  
   // Public routes (auth pages and API endpoints with their own auth)
   const publicRoutes = [
     '/login', 
@@ -74,7 +91,29 @@ export async function middleware(req: NextRequest) {
     '/api/doug',      // Doug AI Assistant API (uses DOUG_API_TOKEN auth)
   ]
   // Allow root path (landing page) without auth
-  const isPublicRoute = req.nextUrl.pathname === '/' || publicRoutes.some(route => req.nextUrl.pathname.startsWith(route))
+  // Check if path starts with any public route
+  let isPublicRoute = req.nextUrl.pathname === '/'
+  
+  // Debug log for API endpoints
+  if (req.nextUrl.pathname.startsWith('/api/')) {
+    console.log(`[middleware] Path: ${req.nextUrl.pathname}, Auth header: ${req.headers.get('authorization') ? 'present' : 'missing'}`)
+  }
+  
+  for (const route of publicRoutes) {
+    if (req.nextUrl.pathname.startsWith(route)) {
+      isPublicRoute = true
+      if (req.nextUrl.pathname.startsWith('/api/')) {
+        console.log(`[middleware] ${req.nextUrl.pathname} matched public route ${route}`)
+      }
+      break
+    }
+  }
+  
+  // Also treat API endpoints with valid Bearer tokens as public
+  if (req.nextUrl.pathname.startsWith('/api/') && hasValidBearerToken) {
+    console.log(`[middleware] Bearer token auth passed for ${req.nextUrl.pathname}`)
+    return response
+  }
   
   if (isPublicRoute) {
     return response
