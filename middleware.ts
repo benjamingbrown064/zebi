@@ -56,21 +56,11 @@ export async function middleware(req: NextRequest) {
 
   const { data: { session } } = await supabase.auth.getSession()
   
-  // Check for valid Bearer token (Doug/Harvey API access)
-  const authHeader = req.headers.get('authorization')
-  let hasValidBearerToken = false
-  
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.slice(7)
-    const validTokens = [
-      process.env.DOUG_API_TOKEN,
-      process.env.HARVEY_API_TOKEN,
-    ]
-    hasValidBearerToken = validTokens.includes(token)
-    
-    if (hasValidBearerToken) {
-      console.log(`[middleware] Valid Bearer token detected for ${req.nextUrl.pathname}`)
-    }
+  // Check if request has Authorization header (Bearer token)
+  // If so, it's likely an API request - allow through for endpoint-level validation
+  const hasAuthHeader = req.headers.get('authorization') !== null
+  if (hasAuthHeader && req.nextUrl.pathname.startsWith('/api/')) {
+    console.log(`[middleware] API request with auth header: ${req.nextUrl.pathname}`)
   }
   
   // Public routes (auth pages and API endpoints with their own auth)
@@ -109,9 +99,9 @@ export async function middleware(req: NextRequest) {
     }
   }
   
-  // Also treat API endpoints with valid Bearer tokens as public
-  if (req.nextUrl.pathname.startsWith('/api/') && hasValidBearerToken) {
-    console.log(`[middleware] Bearer token auth passed for ${req.nextUrl.pathname}`)
+  // Allow API requests with Authorization headers through (endpoint validates token)
+  if (req.nextUrl.pathname.startsWith('/api/') && hasAuthHeader) {
+    console.log(`[middleware] Allowing API request with auth header through: ${req.nextUrl.pathname}`)
     return response
   }
   
