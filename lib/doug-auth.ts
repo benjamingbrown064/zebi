@@ -60,3 +60,4 @@ export function requireDougAuth(request: NextRequest) {
 
   return null // No error, auth valid
 }
+// Deployed with API auth enabled
