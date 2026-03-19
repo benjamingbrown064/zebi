@@ -155,7 +155,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
         }
       />
 
-      <div className="py-6 md:py-12">
+      <div className="px-6 py-6 md:px-8 md:py-12">
         <GoalsProvider onEdit={handleEditGoal} onDelete={handleDeleteGoal}>
           {children}
         </GoalsProvider>
