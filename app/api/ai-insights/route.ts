@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireWorkspace } from '@/lib/workspace'
+import { validateAIAuth } from '@/lib/doug-auth'
 import {
   getAIInsights,
   createAIInsight,
   AIInsightFilters,
   CreateAIInsightInput,
 } from '@/app/actions/ai-insights'
-
 
 /**
  * GET /api/ai-insights
@@ -15,9 +15,19 @@ import {
  */
 export async function GET(request: NextRequest) {
   try {
-    const workspaceId = await requireWorkspace()
+    const auth = validateAIAuth(request)
+    let workspaceId: string
+
+    if (auth.valid) {
+      const wid = request.nextUrl.searchParams.get('workspaceId')
+      if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
     const searchParams = request.nextUrl.searchParams
-    
+
     const filters: AIInsightFilters = {
       companyId: searchParams.get('companyId') || undefined,
       insightType: searchParams.get('insightType') || undefined,
@@ -29,14 +39,10 @@ export async function GET(request: NextRequest) {
     }
 
     const insights = await getAIInsights(workspaceId, filters)
-
     return NextResponse.json(insights)
   } catch (error) {
     console.error('Error in GET /api/ai-insights:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch AI insights' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch AI insights' }, { status: 500 })
   }
 }
 
@@ -46,44 +52,33 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const workspaceId = await requireWorkspace()
-    const body: CreateAIInsightInput = await request.json()
+    const auth = validateAIAuth(request)
+    let workspaceId: string
 
-    // Validate required fields
-    if (
-      !body.title ||
-      !body.summary ||
-      !body.insightType ||
-      !body.detailedAnalysis
-    ) {
+    const body: CreateAIInsightInput & { workspaceId?: string } = await request.json()
+
+    if (auth.valid) {
+      if (!body.workspaceId) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = body.workspaceId
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
+    if (!body.title || !body.summary || !body.insightType || !body.detailedAnalysis) {
       return NextResponse.json(
-        {
-          error:
-            'Missing required fields: title, summary, insightType, detailedAnalysis',
-        },
+        { error: 'Missing required fields: title, summary, insightType, detailedAnalysis' },
         { status: 400 }
       )
     }
 
-    if (
-      body.priority === undefined ||
-      body.priority < 1 ||
-      body.priority > 4
-    ) {
-      return NextResponse.json(
-        { error: 'priority must be between 1 and 4' },
-        { status: 400 }
-      )
+    if (body.priority === undefined || body.priority < 1 || body.priority > 4) {
+      return NextResponse.json({ error: 'priority must be between 1 and 4' }, { status: 400 })
     }
 
     const insight = await createAIInsight(workspaceId, body)
-
     return NextResponse.json(insight, { status: 201 })
   } catch (error) {
     console.error('Error in POST /api/ai-insights:', error)
-    return NextResponse.json(
-      { error: 'Failed to create AI insight' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create AI insight' }, { status: 500 })
   }
 }
