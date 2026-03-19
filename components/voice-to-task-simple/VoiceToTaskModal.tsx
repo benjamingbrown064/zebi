@@ -206,10 +206,10 @@ export function VoiceToTaskModal({
               <p className="text-lg text-[#1A1A1A] mb-2">
                 Talk through everything that needs to be done.
               </p>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-[#5a5757] mb-4">
                 I'll turn it into a task list for you to review.
               </p>
-              <div className="max-w-md mx-auto p-3 bg-blue-50 border border-blue-200 rounded-[10px]">
+              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded-[10px]">
                 <p className="text-xs text-blue-800">
                   💡 <strong>Tip:</strong> Describe tasks clearly — mention priorities, deadlines, and who should do what.
                 </p>
@@ -219,7 +219,7 @@ export function VoiceToTaskModal({
             {!isRecording ? (
               <button
                 onClick={startRecording}
-                className="w-24 h-24 rounded-full bg-[#DD3A44] hover:bg-[#C7333D] text-white flex items-center justify-center transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                className="w-24 h-24 rounded-full bg-[#DD3A44] hover:bg-[#C7333D] text-white flex items-center justify-center transition-all shadow-[0_20px_40px_rgba(28,27,27,0.06)] hover:shadow-xl hover:scale-105"
               >
                 <FontAwesomeIcon icon={faMicrophone} className="text-3xl" />
               </button>
@@ -248,11 +248,11 @@ export function VoiceToTaskModal({
                 </div>
                 <button
                   onClick={stopRecording}
-                  className="w-16 h-16 rounded-full bg-[#1A1A1A] hover:bg-[#333] text-white flex items-center justify-center transition-all shadow-lg"
+                  className="w-16 h-16 rounded-full bg-[#1A1A1A] hover:bg-[#333] text-white flex items-center justify-center transition-all shadow-[0_20px_40px_rgba(28,27,27,0.06)]"
                 >
                   <FontAwesomeIcon icon={faStop} className="text-xl" />
                 </button>
-                <p className="text-xs text-gray-500">Tap to stop recording</p>
+                <p className="text-xs text-[#A3A3A3]">Tap to stop recording</p>
               </div>
             )}
           </div>
@@ -265,23 +265,23 @@ export function VoiceToTaskModal({
               <Spinner size="lg" color="default" />
             </div>
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Processing your recording...</h3>
-            <p className="text-sm text-gray-600 mb-4">Converting speech to tasks</p>
+            <p className="text-sm text-[#5a5757] mb-4">Converting speech to tasks</p>
             <div className="mt-4 flex items-center justify-center gap-2">
               <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse"></div>
               <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
               <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
             </div>
-            <div className="max-w-md mx-auto mt-6 space-y-2 text-xs text-gray-500">
+            <div className="max-w-md mx-auto mt-6 space-y-2 text-xs text-[#A3A3A3]">
               <div className="flex items-center justify-center gap-2">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-[#f0fafa]0 rounded-full"></div>
                 <span>Transcribing audio</span>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-[#f0fafa]0 rounded-full"></div>
                 <span>Extracting tasks</span>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-[#f0fafa]0 rounded-full"></div>
                 <span>Setting priorities</span>
               </div>
             </div>
@@ -292,7 +292,7 @@ export function VoiceToTaskModal({
         return (
           <div className="py-6">
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Here's what I understood</h3>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-[#5a5757] mb-6">
               {candidates.length} task{candidates.length !== 1 ? 's' : ''} found — edit or remove any before creating.
             </p>
 
@@ -302,7 +302,7 @@ export function VoiceToTaskModal({
                   key={candidate.id}
                   className={`p-4 bg-white border rounded-[10px] transition-all ${
                     candidate.selected
-                      ? 'border-gray-200 shadow-sm'
+                      ? 'border-gray-200 shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
                       : 'border-gray-100 opacity-50'
                   }`}
                 >
@@ -329,7 +329,7 @@ export function VoiceToTaskModal({
                         type="text"
                         value={candidate.title}
                         onChange={(e) => handleUpdateCandidate(candidate.id, { title: e.target.value })}
-                        className="w-full text-[15px] font-medium text-[#1A1A1A] bg-transparent border-none outline-none focus:bg-gray-50 focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all"
+                        className="w-full text-[15px] font-medium text-[#1A1A1A] bg-transparent border-none outline-none focus:bg-[#f6f3f2] focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all"
                       />
                       {/* Editable description */}
                       {candidate.description && (
@@ -337,7 +337,7 @@ export function VoiceToTaskModal({
                           value={candidate.description}
                           onChange={(e) => handleUpdateCandidate(candidate.id, { description: e.target.value })}
                           rows={2}
-                          className="w-full mt-1 text-[13px] text-gray-600 bg-transparent border-none outline-none focus:bg-gray-50 focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all resize-none"
+                          className="w-full mt-1 text-[13px] text-[#5a5757] bg-transparent border-none outline-none focus:bg-[#f6f3f2] focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all resize-none"
                         />
                       )}
                       {/* Priority badge */}
@@ -345,8 +345,8 @@ export function VoiceToTaskModal({
                         <span className={`inline-block mt-2 text-[11px] font-medium px-2 py-0.5 rounded-full ${
                           candidate.priority <= 1 ? 'bg-red-100 text-red-700' :
                           candidate.priority === 2 ? 'bg-orange-100 text-orange-700' :
-                          candidate.priority === 3 ? 'bg-gray-100 text-gray-700' :
-                          'bg-gray-50 text-gray-500'
+                          candidate.priority === 3 ? 'bg-[#f0eded] text-[#5a5757]' :
+                          'bg-[#f6f3f2] text-[#A3A3A3]'
                         }`}>
                           P{candidate.priority}
                         </span>
@@ -357,7 +357,7 @@ export function VoiceToTaskModal({
               ))}
             </div>
 
-            <div className="flex gap-3 pt-6 mt-6 border-t border-[#E5E5E5]">
+            <div className="flex gap-3 pt-6 mt-6">
               <Button color="default" variant="bordered" onPress={handleClose} className="flex-1">
                 Cancel
               </Button>
@@ -376,8 +376,8 @@ export function VoiceToTaskModal({
       case 'result':
         return (
           <div className="text-center py-12 min-h-[400px] flex flex-col items-center justify-center animate-in fade-in duration-500">
-            <div className="mb-6 w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center animate-in zoom-in duration-700">
-              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mb-6 w-20 h-20 mx-auto bg-[#e6f4f4] rounded-full flex items-center justify-center animate-in zoom-in duration-700">
+              <svg className="w-10 h-10 text-[#006766]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
               </svg>
             </div>
@@ -385,7 +385,7 @@ export function VoiceToTaskModal({
               🎉 {result?.created || 0} Task{(result?.created || 0) !== 1 ? 's' : ''} Created
             </h3>
             {result?.context?.name && (
-              <p className="text-[15px] text-gray-600 mb-2">
+              <p className="text-[15px] text-[#5a5757] mb-2">
                 in <span className="font-medium text-[#1A1A1A]">{result.context.name}</span>
               </p>
             )}
@@ -407,15 +407,15 @@ export function VoiceToTaskModal({
       size="3xl"
       scrollBehavior="inside"
       classNames={{
-        base: 'bg-[#FAFAFA]',
+        base: 'bg-[#fcf9f8]',
         wrapper: 'z-[999]',
         backdrop: 'bg-black/30',
         header: 'border-b border-gray-200',
         body: 'py-6',
-        closeButton: 'hover:bg-gray-100'
+        closeButton: 'hover:bg-[#f0eded]'
       }}
     >
-      <ModalContent className="border border-[#E5E5E5] shadow-lg !outline-none focus:outline-none">
+      <ModalContent className=" shadow-[0_20px_40px_rgba(28,27,27,0.06)] !outline-none focus:outline-none">
         <ModalHeader className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#1A1A1A]">Dictate Tasks</h2>
         </ModalHeader>
