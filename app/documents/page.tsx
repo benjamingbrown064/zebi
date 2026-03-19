@@ -146,7 +146,7 @@ export default function DocumentsPage() {
   const getTypeBadge = (type: string) => {
     const typeLabel = DOCUMENT_TYPES.find(t => t.value === type)?.label || type;
     return (
-      <span className="px-2 py-1 rounded-[6px] text-[11px] font-semibold bg-blue-100 text-blue-700">
+      <span className="px-2 py-1 rounded-[6px] text-[11px] font-semibold bg-[#e6f4f4] text-[#006766]">
         {typeLabel}
       </span>
     );
@@ -164,7 +164,7 @@ export default function DocumentsPage() {
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64';
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -204,7 +204,7 @@ export default function DocumentsPage() {
                   ${
                     typeFilter === type.value
                       ? 'bg-[#FEF2F2] text-[#DD3A44] border border-[#DD3A44]'
-                      : 'bg-white text-[#525252] border border-[#E5E5E5] hover:bg-[#F5F5F5]'
+                      : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
                   }
                 `}
               >
@@ -267,7 +267,7 @@ export default function DocumentsPage() {
                     <div
                       key={doc.id}
                       onClick={() => router.push(`/documents/${doc.id}`)}
-                      className="bg-white rounded-[10px] border border-[#E5E5E5] p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                      className="bg-white rounded-[10px] p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
                     >
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
@@ -301,7 +301,7 @@ export default function DocumentsPage() {
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-4 border-t border-[#E5E5E5] text-[12px] text-[#A3A3A3]">
+                      <div className="flex items-center justify-between pt-4 text-[12px] text-[#A3A3A3]">
                         <span>Updated {formatDate(doc.updatedAt)}</span>
                         <span>v{doc.version}</span>
                       </div>
@@ -334,10 +334,10 @@ export default function DocumentsPage() {
           onClick={() => setIsSearchOpen(false)}
         >
           <div
-            className="bg-white w-full max-w-2xl rounded-[14px] shadow-lg p-4 md:p-6"
+            className="bg-white w-full max-w-2xl rounded-[14px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 md:p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3 border border-[#E5E5E5] rounded-[10px] px-4 py-3">
+            <div className="flex items-center gap-3  rounded-[10px] px-4 py-3">
               <FaSearch className="text-[#A3A3A3]" />
               <input
                 type="text"
