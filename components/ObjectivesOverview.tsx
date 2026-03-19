@@ -30,7 +30,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
     return (
       <div className="card-base p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">🎯 Active Objectives</h2>
+          <h2 className="text-lg font-semibold text-[#1c1b1b]">🎯 Active Objectives</h2>
           <Link
             href="/objectives"
             className="text-sm text-accent-600 hover:text-accent-700 font-medium"
@@ -39,10 +39,10 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
           </Link>
         </div>
         <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">No active objectives</p>
+          <p className="text-[#A3A3A3] mb-4">No active objectives</p>
           <Link
             href="/objectives"
-            className="inline-block px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition"
+            className="inline-block px-4 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition"
           >
             Create Your First Objective
           </Link>
@@ -52,10 +52,10 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
   }
 
   const statusConfig: any = {
-    on_track: { bg: 'bg-green-100', text: 'text-green-700', bar: 'bg-green-500', icon: '✅' },
+    on_track: { bg: 'bg-[#e6f4f4]', text: 'text-[#006766]', bar: 'bg-[#f0fafa]0', icon: '✅' },
     at_risk: { bg: 'bg-yellow-100', text: 'text-yellow-700', bar: 'bg-yellow-500', icon: '⚠️' },
     blocked: { bg: 'bg-red-100', text: 'text-red-700', bar: 'bg-red-500', icon: '🚫' },
-    active: { bg: 'bg-gray-100', text: 'text-gray-700', bar: 'bg-accent-500', icon: '🎯' },
+    active: { bg: 'bg-[#f0eded]', text: 'text-[#5a5757]', bar: 'bg-accent-500', icon: '🎯' },
   }
 
   const formatValue = (value: number, unit?: string) => {
@@ -71,7 +71,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
   return (
     <div className="card-base p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-[#1c1b1b] flex items-center gap-2">
           <FaFlag className="text-accent-500" />
           Active Objectives ({objectives.length})
         </h2>
@@ -93,11 +93,11 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
                   {objective.companyName && (
-                    <p className="text-xs text-gray-500 mb-1">{objective.companyName}</p>
+                    <p className="text-xs text-[#A3A3A3] mb-1">{objective.companyName}</p>
                   )}
                   <Link
                     href={`/objectives/${objective.id}`}
-                    className="font-semibold text-gray-900 hover:text-accent-600 transition"
+                    className="font-semibold text-[#1c1b1b] hover:text-accent-600 transition"
                   >
                     {objective.title}
                   </Link>
@@ -112,13 +112,13 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
 
               {/* Progress Bar */}
               <div>
-                <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                <div className="flex items-center justify-between text-xs text-[#5a5757] mb-1">
                   <span>
                     {formatValue(objective.currentValue, objective.unit)} → {formatValue(objective.targetValue, objective.unit)}
                   </span>
                   <span className="font-semibold">{Math.round(objective.progressPercent)}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-[#e8e4e4] rounded-full overflow-hidden">
                   <div
                     className={`h-full ${statusStyle.bar} transition-all duration-300`}
                     style={{ width: `${Math.min(objective.progressPercent, 100)}%` }}
@@ -128,7 +128,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
 
               {/* Next Milestone */}
               {objective.nextMilestone && (
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-[#5a5757]">
                   Next: <strong>{objective.nextMilestone.title}</strong> in{' '}
                   <strong className={objective.nextMilestone.daysUntil < 7 ? 'text-orange-600' : ''}>
                     {objective.nextMilestone.daysUntil} days
@@ -152,17 +152,17 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
                   <div className="flex items-start gap-2 text-xs">
                     <FaRobot className="text-accent-500 mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="text-gray-600">Doug:</span>
-                      <p className="text-gray-900 line-clamp-1">{objective.aiWork}</p>
+                      <span className="text-[#5a5757]">Doug:</span>
+                      <p className="text-[#1c1b1b] line-clamp-1">{objective.aiWork}</p>
                     </div>
                   </div>
                 )}
                 {objective.humanWork && (
                   <div className="flex items-start gap-2 text-xs">
-                    <FaUser className="text-blue-500 mt-0.5 flex-shrink-0" />
+                    <FaUser className="text-[#006766] mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="text-gray-600">You:</span>
-                      <p className="text-gray-900 font-medium line-clamp-1">{objective.humanWork}</p>
+                      <span className="text-[#5a5757]">You:</span>
+                      <p className="text-[#1c1b1b] font-medium line-clamp-1">{objective.humanWork}</p>
                     </div>
                   </div>
                 )}
@@ -178,7 +178,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
       </div>
 
       {objectives.length > 3 && (
-        <div className="mt-6 pt-4 border-t border-gray-200 text-center">
+        <div className="mt-6 pt-4 text-center">
           <Link
             href="/objectives"
             className="text-sm text-accent-600 hover:text-accent-700 font-medium"
