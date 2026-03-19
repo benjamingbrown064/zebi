@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma'
 import { validateAIAuth } from '@/lib/doug-auth'
 import { Decimal } from '@prisma/client/runtime/library'
 
+export const revalidate = 120 // Cache for 120s — invalidated on writes
+
+
 const DEFAULT_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
 
 /**
