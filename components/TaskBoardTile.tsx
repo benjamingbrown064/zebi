@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FaCheck, FaClock, FaEye, FaPaperclip, FaStickyNote, FaFileAlt, FaComment } from 'react-icons/fa'
+import { FaCheck, FaClock, FaEye, FaPaperclip, FaStickyNote, FaFileAlt, FaComment, FaFolder, FaUser } from 'react-icons/fa'
 import { Task, Goal } from '@/lib/types'
 
 interface TaskBoardTileProps {
@@ -11,6 +11,7 @@ interface TaskBoardTileProps {
     attachments?: Array<{ id: string; filename: string }>
     blockedReason?: string
     assignee?: { id: string; name: string } | null
+    project?: { id: string; name: string } | null
   }
   onDragStart?: (task: Task) => void
   onComplete?: (taskId: string) => void
@@ -151,6 +152,26 @@ export default function TaskBoardTile({
           </div>
         )}
       </div>
+
+      {/* ROW 1b: Project + Assignee */}
+      {(task.project || task.assignee) && (
+        <div className="flex items-center gap-3 mb-2 text-xs text-[#737373]">
+          {task.project && (
+            <div className="flex items-center gap-1 min-w-0">
+              <FaFolder size={10} className="text-[#A3A3A3] flex-shrink-0" />
+              <span className="truncate">{task.project.name}</span>
+            </div>
+          )}
+          {task.assignee && (
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <div className="w-4 h-4 rounded-full bg-[#DD3A44] text-white flex items-center justify-center text-[9px] font-medium flex-shrink-0">
+                {task.assignee.name.charAt(0).toUpperCase()}
+              </div>
+              <span className="truncate max-w-[80px]">{task.assignee.name}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ROW 2: Metadata */}
       <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
