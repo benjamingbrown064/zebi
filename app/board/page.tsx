@@ -3,7 +3,7 @@ import BoardClient from './client'
 import { requireWorkspace } from '@/lib/workspace'
 
 // Revalidate the page every 5 seconds so new tasks appear quickly
-export const revalidate = 5
+export const revalidate = 30
 
 export default async function BoardPage() {
   try {
