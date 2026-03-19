@@ -7,15 +7,12 @@ import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import InboxQuickAddModal from '@/components/inbox/InboxQuickAddModal'
 import InboxItemCard from '@/components/inbox/InboxItemCard'
 import ConvertToTaskModal from '@/components/inbox/ConvertToTaskModal'
-import { 
-  FaPlus, 
-  FaFilter, 
-  FaInbox, 
-  FaCheckCircle,
-  FaSync 
+import {
+  FaPlus,
+  FaFilter,
+  FaInbox,
 } from 'react-icons/fa'
 import { useWorkspace } from '@/lib/use-workspace'
-import LoadingScreen from '@/components/LoadingScreen'
 
 interface InboxItem {
   id: string
@@ -70,7 +67,6 @@ export default function InboxPage() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Load inbox data
   useEffect(() => {
     if (workspaceLoading || !workspaceId) return
     loadInbox()
@@ -82,9 +78,7 @@ export default function InboxPage() {
       setLoading(true)
       const statusParam = statusFilter !== 'all' ? `&status=${statusFilter}` : ''
       const res = await fetch(`/api/inbox?workspaceId=${workspaceId}${statusParam}`)
-      
       if (!res.ok) throw new Error('Failed to fetch inbox items')
-      
       const data = await res.json()
       setItems(data.items || [])
     } catch (err) {
@@ -97,9 +91,7 @@ export default function InboxPage() {
   const loadStats = async () => {
     try {
       const res = await fetch(`/api/inbox?workspaceId=${workspaceId}&action=stats`)
-      
       if (!res.ok) throw new Error('Failed to fetch stats')
-      
       const data = await res.json()
       setStats(data)
     } catch (err) {
@@ -112,22 +104,14 @@ export default function InboxPage() {
       const res = await fetch('/api/inbox', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          workspaceId,
-          rawText: text,
-          sourceType,
-        }),
+        body: JSON.stringify({ workspaceId, rawText: text, sourceType }),
       })
-
       if (!res.ok) throw new Error('Failed to create inbox item')
-
-      // Reload inbox
       await loadInbox()
       await loadStats()
       setIsQuickAddOpen(false)
     } catch (err) {
       console.error('Failed to add inbox item:', err)
-      alert('Failed to add item. Please try again.')
     }
   }
 
@@ -138,34 +122,23 @@ export default function InboxPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       })
-
       if (!res.ok) throw new Error('Failed to update status')
-
-      // Reload inbox
       await loadInbox()
       await loadStats()
     } catch (err) {
       console.error('Failed to update status:', err)
-      alert('Failed to update status. Please try again.')
     }
   }
 
   const handleDelete = async (itemId: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return
-
     try {
-      const res = await fetch(`/api/inbox/${itemId}`, {
-        method: 'DELETE',
-      })
-
+      const res = await fetch(`/api/inbox/${itemId}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to delete item')
-
-      // Reload inbox
       await loadInbox()
       await loadStats()
     } catch (err) {
       console.error('Failed to delete item:', err)
-      alert('Failed to delete item. Please try again.')
     }
   }
 
@@ -181,27 +154,11 @@ export default function InboxPage() {
     await loadStats()
   }
 
-  if (workspaceLoading || loading) {
-    return (
-      <div className="flex h-screen bg-[#FAFAFA]">
-        <Sidebar
-          workspaceName="Loading..."
-          isCollapsed={sidebarCollapsed}
-          onCollapsedChange={setSidebarCollapsed}
-        />
-        <div className="flex-1">
-          <LoadingScreen message="Loading inbox..." />
-        </div>
-      </div>
-    )
-  }
-
-  const mainPaddingClass = sidebarCollapsed
-    ? 'md:ml-[72px] ml-0 transition-all duration-200'
-    : 'md:ml-64 ml-0 transition-all duration-200'
+  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64'
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
+      {/* Single Sidebar render */}
       <Sidebar
         workspaceName="Zebi"
         isCollapsed={sidebarCollapsed}
@@ -232,119 +189,139 @@ export default function InboxPage() {
           }
         />
 
-        <div className="p-4 md:p-6">
-      {/* Stats Cards */}
-      {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-xs text-gray-500 mb-1">Total</div>
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+        {/* Loading state - inside layout, not a separate full-screen render */}
+        {(workspaceLoading || loading) ? (
+          <div className="p-4 md:p-6">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="bg-white rounded-xl p-4 animate-pulse">
+                  <div className="h-3 w-16 bg-gray-200 rounded mb-2" />
+                  <div className="h-8 w-10 bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
+            <div className="space-y-3">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white rounded-xl p-4 animate-pulse h-20" />
+              ))}
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-xs text-gray-500 mb-1">Unprocessed</div>
-            <div className="text-2xl font-bold text-[#DD3A44]">{stats.unprocessed}</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-xs text-gray-500 mb-1">Processed</div>
-            <div className="text-2xl font-bold text-blue-600">{stats.processed}</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-xs text-gray-500 mb-1">Converted</div>
-            <div className="text-2xl font-bold text-green-600">{stats.converted}</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
-            <div className="text-xs text-gray-500 mb-1">Completed</div>
-            <div className="text-2xl font-bold text-gray-400">{stats.completed}</div>
-          </div>
-        </div>
-      )}
+        ) : (
+          <div className="p-4 md:p-6">
 
-      {/* Filters */}
-      {showFilters && (
-        <div className="bg-white rounded-xl p-4 mb-6 border border-gray-100">
-          <div className="flex flex-wrap gap-2">
-            {(['all', 'unprocessed', 'processed', 'converted', 'completed'] as StatusFilter[]).map((status) => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-3 py-1.5 text-sm rounded-lg transition ${
-                  statusFilter === status
-                    ? 'bg-[#DD3A44] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+            {/* Stats Cards — tonal surfaces, no borders */}
+            {stats && (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
+                <div className="bg-white rounded-xl p-4">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Total</div>
+                  <div className="text-2xl font-bold text-[#1c1b1b]">{stats.total}</div>
+                </div>
+                <div className="bg-white rounded-xl p-4">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Unprocessed</div>
+                  <div className="text-2xl font-bold text-[#DD3A44]">{stats.unprocessed}</div>
+                </div>
+                <div className="bg-white rounded-xl p-4">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Processed</div>
+                  <div className="text-2xl font-bold text-[#1c1b1b]">{stats.processed}</div>
+                </div>
+                <div className="bg-white rounded-xl p-4">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Converted</div>
+                  <div className="text-2xl font-bold text-[#006766]">{stats.converted}</div>
+                </div>
+                <div className="bg-white rounded-xl p-4">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Completed</div>
+                  <div className="text-2xl font-bold text-[#A3A3A3]">{stats.completed}</div>
+                </div>
+              </div>
+            )}
 
-      {/* Inbox Items */}
-      {items.length === 0 ? (
-        <div className="bg-white rounded-xl p-12 text-center border border-gray-100">
-          <FaInbox className="text-6xl text-gray-300 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No inbox items yet</h3>
-          <p className="text-gray-600 mb-4">
-            {statusFilter === 'all' 
-              ? 'Click Quick Add to capture your first thought'
-              : `No ${statusFilter} items`}
-          </p>
-          {statusFilter === 'all' && (
-            <button
-              onClick={() => setIsQuickAddOpen(true)}
-              className="px-6 py-3 bg-[#DD3A44] text-white rounded-lg hover:opacity-90 transition inline-flex items-center gap-2 font-medium"
-            >
-              <FaPlus />
-              Quick Add
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {items.map((item) => (
-            <InboxItemCard
-              key={item.id}
-              item={item}
-              onUpdateStatus={handleUpdateStatus}
-              onDelete={handleDelete}
-              onConvert={handleConvert}
+            {/* Filters */}
+            {showFilters && (
+              <div className="bg-white rounded-xl p-4 mb-6">
+                <div className="flex flex-wrap gap-2">
+                  {(['all', 'unprocessed', 'processed', 'converted', 'completed'] as StatusFilter[]).map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setStatusFilter(status)}
+                      className={`px-3 py-1.5 text-[13px] rounded-[8px] transition font-medium ${
+                        statusFilter === status
+                          ? 'bg-[#DD3A44] text-white'
+                          : 'bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]'
+                      }`}
+                    >
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Inbox Items */}
+            {items.length === 0 ? (
+              <div className="bg-white rounded-xl p-12 text-center">
+                <FaInbox className="text-5xl text-[#E5E5E5] mx-auto mb-4" />
+                <h3 className="text-[17px] font-semibold text-[#1c1b1b] mb-2">
+                  {statusFilter === 'all' ? 'Your inbox is empty' : `No ${statusFilter} items`}
+                </h3>
+                <p className="text-[13px] text-[#A3A3A3] mb-6">
+                  {statusFilter === 'all' ? 'Capture a thought, idea, or task to get started.' : 'Try a different filter.'}
+                </p>
+                {statusFilter === 'all' && (
+                  <button
+                    onClick={() => setIsQuickAddOpen(true)}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
+                  >
+                    <FaPlus />
+                    Quick Add
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {items.map((item) => (
+                  <InboxItemCard
+                    key={item.id}
+                    item={item}
+                    onUpdateStatus={handleUpdateStatus}
+                    onDelete={handleDelete}
+                    onConvert={handleConvert}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Modals */}
+            <InboxQuickAddModal
+              isOpen={isQuickAddOpen}
+              onClose={() => setIsQuickAddOpen(false)}
+              onAdd={handleQuickAdd}
+              isMobile={isMobile}
             />
-          ))}
-        </div>
-      )}
 
-      {/* Modals */}
-      <InboxQuickAddModal
-        isOpen={isQuickAddOpen}
-        onClose={() => setIsQuickAddOpen(false)}
-        onAdd={handleQuickAdd}
-        isMobile={isMobile}
-      />
+            {selectedItem && (
+              <ConvertToTaskModal
+                isOpen={isConvertModalOpen}
+                onClose={() => {
+                  setIsConvertModalOpen(false)
+                  setSelectedItem(null)
+                }}
+                inboxItem={selectedItem}
+                workspaceId={workspaceId!}
+                onComplete={handleConvertComplete}
+              />
+            )}
 
-      {selectedItem && (
-        <ConvertToTaskModal
-          isOpen={isConvertModalOpen}
-          onClose={() => {
-            setIsConvertModalOpen(false)
-            setSelectedItem(null)
-          }}
-          inboxItem={selectedItem}
-          workspaceId={workspaceId!}
-          onComplete={handleConvertComplete}
-        />
-      )}
-
-      {/* Floating Action Button (Mobile) */}
-      {isMobile && (
-        <button
-          onClick={() => setIsQuickAddOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-[#DD3A44] text-white rounded-full shadow-lg hover:opacity-90 transition flex items-center justify-center z-40"
-        >
-          <FaPlus className="text-xl" />
-        </button>
-      )}
-        </div>
+            {/* Floating Action Button (Mobile) */}
+            {isMobile && (
+              <button
+                onClick={() => setIsQuickAddOpen(true)}
+                className="fixed bottom-6 right-6 w-14 h-14 bg-[#DD3A44] text-white rounded-full shadow-lg hover:bg-[#C7333D] transition flex items-center justify-center z-40"
+              >
+                <FaPlus className="text-xl" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
