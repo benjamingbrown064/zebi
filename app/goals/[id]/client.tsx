@@ -62,7 +62,7 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
     return 'bg-red-500'
   }
 
-  const mainPaddingClass = sidebarCollapsed ? 'ml-20' : 'ml-64'
+  const mainPaddingClass = sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
