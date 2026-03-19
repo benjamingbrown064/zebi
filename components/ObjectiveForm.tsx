@@ -117,15 +117,15 @@ export default function ObjectiveForm({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-[14px] shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">
+        <div className="flex items-center justify-between p-6">
+          <h2 className="text-2xl font-bold text-[#1c1b1b]">
             {initialData ? 'Edit Objective' : 'Create Objective'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 transition"
+            className="p-2 text-[#C4C0C0] hover:text-[#5a5757] transition"
           >
             <FaTimes size={20} />
           </button>
@@ -135,14 +135,14 @@ export default function ObjectiveForm({
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Error */}
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-[10px] text-red-700">
               {error}
             </div>
           )}
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#5a5757] mb-2">
               Objective Title *
             </label>
             <input
@@ -150,14 +150,14 @@ export default function ObjectiveForm({
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g., Reach £50k MRR by June"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               required
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#5a5757] mb-2">
               Description
             </label>
             <textarea
@@ -165,18 +165,18 @@ export default function ObjectiveForm({
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Additional context..."
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
           {/* Company & Goal */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Company *</label>
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">Company *</label>
               <select
                 value={formData.companyId}
                 onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                 required
               >
                 <option value="">Select a company...</option>
@@ -189,11 +189,11 @@ export default function ObjectiveForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Goal</label>
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">Goal</label>
               <select
                 value={formData.goalId}
                 onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 <option value="">None</option>
                 {goals.map((goal) => (
@@ -208,11 +208,11 @@ export default function ObjectiveForm({
           {/* Objective Type & Priority */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">Type</label>
               <select
                 value={formData.objectiveType}
                 onChange={(e) => setFormData({ ...formData, objectiveType: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 <option value="general">General</option>
                 <option value="revenue">Revenue</option>
@@ -224,11 +224,11 @@ export default function ObjectiveForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">Priority</label>
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 <option value={1}>P1 - Urgent</option>
                 <option value={2}>P2 - High</option>
@@ -241,7 +241,7 @@ export default function ObjectiveForm({
           {/* Metric */}
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">
                 Metric Type *
               </label>
               <select
@@ -254,7 +254,7 @@ export default function ObjectiveForm({
                     unit: newMetricType === 'currency' ? 'GBP' : newMetricType === 'percentage' ? '%' : '',
                   })
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 <option value="count">Count</option>
                 <option value="currency">Currency</option>
@@ -264,7 +264,7 @@ export default function ObjectiveForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">
                 Target Value *
               </label>
               <input
@@ -273,19 +273,19 @@ export default function ObjectiveForm({
                 onChange={(e) => setFormData({ ...formData, targetValue: parseFloat(e.target.value) })}
                 min="0"
                 step={formData.metricType === 'currency' ? '1000' : '1'}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Unit</label>
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">Unit</label>
               <input
                 type="text"
                 value={formData.unit}
                 onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                 placeholder="e.g., users, £, %"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -293,45 +293,45 @@ export default function ObjectiveForm({
           {/* Dates */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">
                 Start Date *
               </label>
               <input
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">
                 Deadline *
               </label>
               <input
                 type="date"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                 required
               />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+              className="px-6 py-2 border border-gray-300 rounded-[10px] text-[#5a5757] hover:bg-[#f6f3f2] transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition disabled:opacity-50"
+              className="px-6 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : initialData ? 'Update' : 'Create'}
             </button>
