@@ -268,11 +268,7 @@ export default function InsightsPage() {
               {/* Filters Button */}
               <button
                 onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                className={`px-3 py-2 rounded-lg border transition flex items-center gap-2 ${
-                  isFiltersOpen
-                    ? 'bg-accent-50 border-accent-200 text-accent-700'
-                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                }`}
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#525252] border border-[#E5E5E5] rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaFilter size={16} />
                 Filters
@@ -281,7 +277,7 @@ export default function InsightsPage() {
               {/* Add Insight Button */}
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-accent-500 text-white font-medium rounded-lg hover:bg-accent-600 transition"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaPlus /> Add Insight
               </button>
