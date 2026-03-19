@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { FaPlus, FaMicrophone } from 'react-icons/fa'
+import Sidebar from '@/components/Sidebar'
+import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import VoiceCoachModal from '@/components/voice-coach/VoiceCoachModal'
 import { createGoal, updateGoal, deleteGoal } from '@/app/actions/goals'
@@ -121,7 +123,13 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-[#FAFAFA] flex">
+      <Sidebar
+        workspaceName="My Workspace"
+        isCollapsed={false}
+        onCollapsedChange={() => {}}
+      />
+      <div className="flex-1 flex flex-col overflow-hidden ml-64">
       <ResponsiveHeader
         title="Goals"
         subtitle="Track your long-term objectives"
@@ -257,6 +265,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
           router.refresh()
         }}
       />
-    </>
+      </div>
+    </div>
   )
 }
