@@ -145,3 +145,46 @@ export async function PATCH(
     }, { status: 500 })
   }
 }
+
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { taskId: string } }
+) {
+  try {
+    const auth = validateAIAuth(request)
+    const { searchParams } = new URL(request.url)
+
+    let workspaceId: string
+    if (auth.valid) {
+      const wid = searchParams.get('workspaceId')
+      if (!wid) return NextResponse.json({ success: false, error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
+    const { taskId } = params
+    const hardDelete = searchParams.get('hard') === 'true'
+
+    const existing = await prisma.task.findFirst({ where: { id: taskId, workspaceId } })
+    if (!existing) {
+      return NextResponse.json({ success: false, error: 'Task not found' }, { status: 404 })
+    }
+
+    if (hardDelete) {
+      await prisma.task.delete({ where: { id: taskId } })
+      return NextResponse.json({ success: true, deleted: true })
+    } else {
+      // Soft archive
+      const task = await prisma.task.update({
+        where: { id: taskId },
+        data: { archivedAt: new Date() }
+      })
+      return NextResponse.json({ success: true, archived: true, task: { id: task.id, archivedAt: task.archivedAt } })
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ success: false, error: msg }, { status: 500 })
+  }
+}
