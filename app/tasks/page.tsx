@@ -119,7 +119,7 @@ export default function TasksPage() {
     return <LoadingScreen message="Loading tasks..." />
   }
 
-  const mainPaddingClass = isMobile ? 'pt-16' : sidebarCollapsed ? 'ml-20' : 'ml-64'
+  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64'
 
   const getPriorityBadge = (priority: number) => {
     const colors = {
