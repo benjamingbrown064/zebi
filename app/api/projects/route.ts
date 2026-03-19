@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateAIAuth } from '@/lib/doug-auth'
 
+export const revalidate = 60 // Cache for 60s — invalidated on writes
+
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
