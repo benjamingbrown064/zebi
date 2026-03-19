@@ -99,7 +99,7 @@ export default function ProjectDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg-cream flex items-center justify-center">
-        <div className="text-gray-600">Loading project...</div>
+        <div className="text-[#5a5757]">Loading project...</div>
       </div>
     )
   }
@@ -116,13 +116,13 @@ export default function ProjectDetailPage() {
     1: 'bg-red-100 text-red-700',
     2: 'bg-orange-100 text-orange-700',
     3: 'bg-yellow-100 text-yellow-700',
-    4: 'bg-gray-100 text-gray-700',
+    4: 'bg-[#f0eded] text-[#5a5757]',
   }
 
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -130,7 +130,7 @@ export default function ProjectDetailPage() {
       />
       <div className={mainPaddingClass}>
         {/* Header */}
-        <header className="bg-white border-b border-[#E5E5E5] sticky top-0 z-10">
+        <header className="bg-white sticky top-0 z-10">
           <div className="px-4 md:px-8 py-4 md:py-6">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-xs md:text-sm text-[#A3A3A3] mb-3 md:mb-4 overflow-x-auto scrollbar-hide">
@@ -156,7 +156,7 @@ export default function ProjectDetailPage() {
                 Projects
               </Link>
               <span>/</span>
-              <span className="text-gray-900">{project.name}</span>
+              <span className="text-[#1c1b1b]">{project.name}</span>
             </div>
 
             {/* Project Header */}
@@ -179,7 +179,7 @@ export default function ProjectDetailPage() {
                     {project.company && (
                       <Link
                         href={`/companies/${project.company.id}`}
-                        className="flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm"
+                        className="flex items-center gap-1 px-3 py-1 bg-[#f0eded] text-[#5a5757] rounded-[10px] hover:bg-[#e8e4e4] transition text-sm"
                       >
                         <FaBuilding />
                         {project.company.name}
@@ -188,16 +188,16 @@ export default function ProjectDetailPage() {
 
                     {/* Objective Badge */}
                     {project.objective && (
-                      <div className="flex items-center gap-2 px-3 py-1 bg-accent-100 text-accent-700 rounded-lg text-sm">
+                      <div className="flex items-center gap-2 px-3 py-1 bg-accent-100 text-accent-700 rounded-[10px] text-sm">
                         <FaBullseye />
                         <span>🎯 {project.objective.title}</span>
                         <span
                           className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                             project.objective.status === 'active'
-                              ? 'bg-green-100 text-green-700'
+                              ? 'bg-[#e6f4f4] text-[#006766]'
                               : project.objective.status === 'blocked'
                               ? 'bg-red-100 text-red-700'
-                              : 'bg-gray-100 text-gray-700'
+                              : 'bg-[#f0eded] text-[#5a5757]'
                           }`}
                         >
                           {project.objective.status}
@@ -211,7 +211,7 @@ export default function ProjectDetailPage() {
                     {/* Priority Badge */}
                     {project.priority && (
                       <span
-                        className={`px-3 py-1 rounded-lg text-sm font-medium ${
+                        className={`px-3 py-1 rounded-[10px] text-sm font-medium ${
                           priorityColors[project.priority]
                         }`}
                       >
@@ -222,7 +222,7 @@ export default function ProjectDetailPage() {
 
                   {/* Description */}
                   {project.description && (
-                    <p className="text-gray-600 mt-3 max-w-2xl">
+                    <p className="text-[#5a5757] mt-3 max-w-2xl">
                       {project.description}
                     </p>
                   )}
@@ -242,7 +242,7 @@ export default function ProjectDetailPage() {
                 </button>
                 <button
                   onClick={() => setIsVoiceToTaskOpen(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 bg-blue-600 text-white rounded-[10px] hover:bg-blue-700 transition flex items-center justify-center gap-2 min-h-[44px] text-sm md:text-base"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 bg-[#006766] text-white rounded-[10px] hover:bg-[#005555] transition flex items-center justify-center gap-2 min-h-[44px] text-sm md:text-base"
                 >
                   <FaMicrophone />
                   <span className="hidden sm:inline">Dictate Tasks</span>
@@ -259,7 +259,7 @@ export default function ProjectDetailPage() {
 
             {/* Progress Bar */}
             <div className="mt-6 max-w-3xl">
-              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+              <div className="flex items-center justify-between text-sm text-[#5a5757] mb-2">
                 <span className="flex items-center gap-2">
                   <FaTasks />
                   {completedTasks} / {totalTasks} tasks completed
@@ -268,7 +268,7 @@ export default function ProjectDetailPage() {
                   {Math.round(completionPercent)}%
                 </span>
               </div>
-              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-[#e8e4e4] rounded-full overflow-hidden">
                 <div
                   className="h-full bg-accent-500 transition-all duration-300"
                   style={{ width: `${completionPercent}%` }}
@@ -282,10 +282,10 @@ export default function ProjectDetailPage() {
         <ResponsivePageContainer>
           <main className="py-6 md:py-8">
             <div className="max-w-5xl">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Tasks</h2>
+            <h2 className="text-lg font-semibold text-[#1c1b1b] mb-4">Tasks</h2>
 
             {project.tasks.length === 0 ? (
-              <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-8 text-center">
+              <div className="bg-white rounded-[14px] p-8 text-center">
                 <FaTasks className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                 <p className="text-[#737373] mb-4">No tasks yet in this project.</p>
                 <button 
@@ -308,7 +308,7 @@ export default function ProjectDetailPage() {
                       href={`/tasks/${task.id}`}
                       className="block group"
                     >
-                      <div className="bg-white border border-[#E5E5E5] hover:border-[#DD3A44] rounded-[10px] p-4 transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center gap-3">
+                      <div className="bg-white  hover:border-[#DD3A44] rounded-[10px] p-4 transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center gap-3">
                         {/* Checkbox */}
                         <input
                           type="checkbox"
