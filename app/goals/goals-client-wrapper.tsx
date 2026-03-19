@@ -137,7 +137,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
           <div className="flex items-center gap-2 md:gap-3">
             <button
               onClick={() => setIsVoiceCoachOpen(true)}
-              className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-white hover:bg-gray-50 text-[#DD3A44] border border-[#DD3A44] rounded-[10px] font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#525252] border border-[#E5E5E5] rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
             >
               <FaMicrophone className="text-sm" />
               <span className="hidden sm:inline">Voice Coach</span>
@@ -145,7 +145,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
             </button>
             <button
               onClick={() => setIsAdding(true)}
-              className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
             >
               <FaPlus className="text-sm" />
               <span className="hidden sm:inline">Add Goal</span>
