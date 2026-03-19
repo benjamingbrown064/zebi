@@ -127,7 +127,7 @@ export default function SettingsPage() {
               </p>
               <button
                 onClick={() => router.push('/filters')}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] hover:bg-accent-600 transition"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaFilter />
                 Manage Filters
