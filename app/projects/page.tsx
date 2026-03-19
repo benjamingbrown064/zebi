@@ -119,11 +119,11 @@ export default function ProjectsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800'
-      case 'active': return 'bg-blue-100 text-blue-800'
+      case 'completed': return 'bg-[#e6f4f4] text-green-800'
+      case 'active': return 'bg-[#e6f4f4] text-blue-800'
       case 'planning': return 'bg-yellow-100 text-yellow-800'
-      case 'on_hold': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'on_hold': return 'bg-[#f0eded] text-[#1c1b1b]'
+      default: return 'bg-[#f0eded] text-[#1c1b1b]'
     }
   }
 
@@ -150,7 +150,7 @@ export default function ProjectsPage() {
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar 
         isCollapsed={sidebarCollapsed} 
         onCollapsedChange={setSidebarCollapsed}
@@ -183,7 +183,7 @@ export default function ProjectsPage() {
                   key="voice"
                   startContent={<FaMicrophone className="text-lg" />}
                   onPress={() => setIsVoiceModalOpen(true)}
-                  className="text-blue-600"
+                  className="text-[#006766]"
                 >
                   Create via Voice
                 </DropdownItem>
@@ -215,7 +215,7 @@ export default function ProjectsPage() {
                   ${
                     filterStatus === filter.value
                       ? 'bg-[#FEF2F2] text-[#DD3A44] border border-[#DD3A44]'
-                      : 'bg-white text-[#525252] border border-[#E5E5E5] hover:bg-[#F5F5F5]'
+                      : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
                   }
                 `}
               >
@@ -280,7 +280,7 @@ export default function ProjectsPage() {
                     <Link
                       key={project.id}
                       href={`/projects/${project.id}`}
-                      className="bg-white rounded-[10px] border border-[#E5E5E5] p-6 hover:shadow-lg transition-shadow"
+                      className="bg-white rounded-[10px] p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow"
                     >
                       {/* Header */}
                       <div className="mb-4">
@@ -323,7 +323,7 @@ export default function ProjectsPage() {
                       )}
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-4 border-t border-[#E5E5E5]">
+                      <div className="flex items-center justify-between pt-4">
                         <div className="flex items-center gap-4">
                           <div className="flex items-center gap-1.5 text-[12px] text-[#525252]">
                             <FaTasks className="text-[#A3A3A3]" />
@@ -351,10 +351,10 @@ export default function ProjectsPage() {
           onClick={() => setIsSearchOpen(false)}
         >
           <div 
-            className="bg-white w-full max-w-2xl rounded-[14px] shadow-lg p-4 md:p-6"
+            className="bg-white w-full max-w-2xl rounded-[14px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 md:p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3 border border-[#E5E5E5] rounded-[10px] px-4 py-3">
+            <div className="flex items-center gap-3  rounded-[10px] px-4 py-3">
               <FaSearch className="text-[#A3A3A3]" />
               <input
                 type="text"
