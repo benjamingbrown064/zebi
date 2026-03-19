@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { FaPlus, FaBuilding, FaMicrophone } from 'react-icons/fa'
-import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/react'
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/react'
 import Sidebar from '@/components/Sidebar'
 import CompanyCard from '@/components/CompanyCard'
 import CompanyForm from '@/components/CompanyForm'
@@ -112,14 +112,11 @@ export default function CompaniesPage() {
           primaryAction={
             <Dropdown>
               <DropdownTrigger>
-                <Button
-                  color="danger"
-                  startContent={<FaPlus />}
-                  className="text-white font-medium text-[13px] md:text-[15px] min-h-[44px]"
-                >
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]">
+                  <FaPlus className="text-sm" />
                   <span className="hidden sm:inline">Add Company</span>
                   <span className="sm:hidden">Add</span>
-                </Button>
+                </button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Create company options">
                 <DropdownItem
