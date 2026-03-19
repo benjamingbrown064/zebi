@@ -58,11 +58,11 @@ export default function RichTextEditor({
     <div className="w-full">
       {/* Toolbar - appears on focus */}
       {isFocused && (
-        <div className="mb-2 flex flex-wrap gap-1 p-2 bg-gray-50 rounded-t-lg border border-b-0 border-gray-200">
+        <div className="mb-2 flex flex-wrap gap-1 p-2 bg-[#f6f3f2] rounded-t-lg border border-b-0 border-gray-200">
           <button
             type="button"
             onClick={() => applyFormat('bold')}
-            className="p-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded transition"
+            className="p-2 text-sm text-[#5a5757] hover:text-[#1c1b1b] hover:bg-[#e8e4e4] rounded transition"
             title="Bold (Cmd+B)"
           >
             <FaBold />
@@ -70,7 +70,7 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => applyFormat('italic')}
-            className="p-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded transition"
+            className="p-2 text-sm text-[#5a5757] hover:text-[#1c1b1b] hover:bg-[#e8e4e4] rounded transition"
             title="Italic (Cmd+I)"
           >
             <FaItalic />
@@ -79,7 +79,7 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => applyFormat('insertUnorderedList')}
-            className="p-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded transition"
+            className="p-2 text-sm text-[#5a5757] hover:text-[#1c1b1b] hover:bg-[#e8e4e4] rounded transition"
             title="Bullet list"
           >
             <FaList />
@@ -87,7 +87,7 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => applyFormat('formatBlock', '<blockquote>')}
-            className="p-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded transition"
+            className="p-2 text-sm text-[#5a5757] hover:text-[#1c1b1b] hover:bg-[#e8e4e4] rounded transition"
             title="Quote"
           >
             <FaQuoteLeft />
@@ -119,10 +119,10 @@ export default function RichTextEditor({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onKeyDown={handleKeyDown}
-        className={`w-full px-4 py-3 border rounded-lg focus:outline-none text-gray-900 placeholder-gray-500 resize-none overflow-auto transition ${
+        className={`w-full px-4 py-3 border rounded-[10px] focus:outline-none text-[#1c1b1b] placeholder-gray-500 resize-none overflow-auto transition ${
           isFocused
             ? 'border-accent-500 ring-1 ring-accent-500/20 bg-white'
-            : 'border-gray-200 bg-gray-50'
+            : 'border-gray-200 bg-[#f6f3f2]'
         }`}
         style={{
           minHeight: '120px',
