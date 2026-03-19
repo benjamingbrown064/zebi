@@ -135,7 +135,7 @@ export default function QuickAddModal({
     1: 'bg-red-100 text-red-700',
     2: 'bg-orange-100 text-orange-700',
     3: 'bg-yellow-100 text-yellow-700',
-    4: 'bg-gray-100 text-gray-700',
+    4: 'bg-[#f0eded] text-[#5a5757]',
   }
 
   const priorityLabels: Record<number, string> = {
@@ -151,33 +151,33 @@ export default function QuickAddModal({
 
   return (
     <div className={`fixed inset-0 bg-black z-50 flex items-end md:items-center justify-center md:p-4 ${isMobile ? 'bg-opacity-0' : 'bg-opacity-50'}`}>
-      <div className={`bg-white w-full md:max-w-md md:rounded-lg shadow-lg overflow-y-auto flex flex-col ${
+      <div className={`bg-white w-full md:max-w-md md:rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-y-auto flex flex-col ${
         isMobile 
           ? 'h-screen rounded-t-2xl max-h-[95vh]' 
           : 'max-h-[90vh]'
       }`}>
         {/* Header */}
-        <div className={`sticky top-0 bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex justify-between items-center min-h-[56px] md:min-h-auto`}>
+        <div className={`sticky top-0 bg-white px-4 md:px-6 py-4 flex justify-between items-center min-h-[56px] md:min-h-auto`}>
           {isMobile ? (
             <>
               <button
                 onClick={onClose}
-                className="text-gray-700 hover:bg-gray-100 rounded-lg transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Go back"
               >
                 <FaTimes className="text-lg" />
               </button>
-              <h2 className="text-lg font-semibold text-gray-900 flex-1 text-center">
+              <h2 className="text-lg font-semibold text-[#1c1b1b] flex-1 text-center">
                 Quick add
               </h2>
               <div className="w-[44px]" />
             </>
           ) : (
             <>
-              <h2 className="text-lg font-semibold text-gray-900">Quick add</h2>
+              <h2 className="text-lg font-semibold text-[#1c1b1b]">Quick add</h2>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-[#C4C0C0] hover:text-[#5a5757] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <FaTimes />
               </button>
@@ -189,7 +189,7 @@ export default function QuickAddModal({
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
           {/* Task input with AI suggestions */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-[#5a5757] dark:text-gray-300 mb-2">
               What needs to be done?
             </label>
             <SmartTaskInput
@@ -201,20 +201,20 @@ export default function QuickAddModal({
                 setParsed(parsed)
               }}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-xs text-[#A3A3A3] dark:text-[#C4C0C0] mt-2">
               Format: task text [#tag] • Type 3+ characters for AI suggestions
             </p>
           </div>
 
           {/* Priority dropdown */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-[#5a5757] dark:text-gray-300 mb-2">
               Priority
             </label>
             <select
               value={selectedPriority}
               onChange={(e) => setSelectedPriority(parseInt(e.target.value))}
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
+              className="w-full px-4 py-3 dark:border-gray-600 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
             >
               <option value={1}>P1 - Urgent</option>
               <option value={2}>P2 - High</option>
@@ -225,7 +225,7 @@ export default function QuickAddModal({
 
           {/* Deadline with AI suggestion */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-[#5a5757] dark:text-gray-300 mb-2">
               Deadline (optional)
             </label>
             <div className="flex gap-2 flex-wrap">
@@ -233,7 +233,7 @@ export default function QuickAddModal({
                 type="date"
                 value={dueAt ? dueAt.toISOString().split('T')[0] : ''}
                 onChange={(e) => setDueAt(e.target.value ? new Date(e.target.value + 'T12:00:00') : null)}
-                className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
+                className="flex-1 px-4 py-2 dark:border-gray-600 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
               />
               <SmartDeadlineButton
                 taskDescription={parsed.title}
@@ -243,7 +243,7 @@ export default function QuickAddModal({
               />
             </div>
             {dueAt && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-[#A3A3A3] dark:text-[#C4C0C0] mt-1">
                 Due: {dueAt.toLocaleDateString()}
               </p>
             )}
@@ -251,14 +251,14 @@ export default function QuickAddModal({
 
           {/* Goal dropdown */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-[#5a5757] dark:text-gray-300 mb-2">
               Link to goal (optional)
             </label>
             <select
               value={selectedGoalId || ''}
               onChange={(e) => setSelectedGoalId(e.target.value || null)}
               disabled={loadingGoals || goals.length === 0}
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
+              className="w-full px-4 py-3 dark:border-gray-600 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
             >
               <option value="">
                 {loadingGoals ? 'Loading goals...' : goals.length === 0 ? 'No goals yet' : 'Select a goal'}
@@ -270,7 +270,7 @@ export default function QuickAddModal({
               ))}
             </select>
             {goals.length === 0 && !loadingGoals && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-[#A3A3A3] dark:text-[#C4C0C0] mt-1">
                 Create a goal in /goals first
               </p>
             )}
@@ -278,14 +278,14 @@ export default function QuickAddModal({
 
           {/* Preview */}
           {parsed.title && (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-2">
+            <div className="bg-[#f6f3f2] dark:bg-gray-800 rounded-[14px] p-4 space-y-2">
               <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Title</p>
-                <p className="text-sm text-gray-900 dark:text-gray-100">{parsed.title}</p>
+                <p className="text-xs text-[#5a5757] dark:text-[#C4C0C0] font-medium">Title</p>
+                <p className="text-sm text-[#1c1b1b] dark:text-gray-100">{parsed.title}</p>
               </div>
 
               <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Priority</p>
+                <p className="text-xs text-[#5a5757] dark:text-[#C4C0C0] font-medium">Priority</p>
                 <p className={`text-xs font-semibold ${priorityColors[selectedPriority]} px-2 py-1 rounded w-fit`}>
                   {priorityLabels[selectedPriority]}
                 </p>
@@ -293,17 +293,17 @@ export default function QuickAddModal({
 
               {dueAt && (
                 <div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Deadline</p>
-                  <p className="text-sm text-gray-900 dark:text-gray-100">{dueAt.toLocaleDateString()}</p>
+                  <p className="text-xs text-[#5a5757] dark:text-[#C4C0C0] font-medium">Deadline</p>
+                  <p className="text-sm text-[#1c1b1b] dark:text-gray-100">{dueAt.toLocaleDateString()}</p>
                 </div>
               )}
 
               {parsed.tags.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Tags</p>
+                  <p className="text-xs text-[#5a5757] dark:text-[#C4C0C0] font-medium">Tags</p>
                   <div className="flex flex-wrap gap-1">
                     {parsed.tags.map((tag) => (
-                      <span key={tag} className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-2 py-0.5 rounded">
+                      <span key={tag} className="text-xs bg-[#e6f4f4] dark:bg-blue-900 text-[#006766] dark:text-blue-200 px-2 py-0.5 rounded">
                         #{tag}
                       </span>
                     ))}
@@ -313,7 +313,7 @@ export default function QuickAddModal({
 
               {selectedGoalName && (
                 <div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Goal</p>
+                  <p className="text-xs text-[#5a5757] dark:text-[#C4C0C0] font-medium">Goal</p>
                   <p className="text-sm text-accent-600 dark:text-accent-400 font-medium">{selectedGoalName}</p>
                 </div>
               )}
@@ -328,17 +328,17 @@ export default function QuickAddModal({
         </div>
 
         {/* Buttons */}
-        <div className={`flex flex-col-reverse md:flex-row gap-3 px-4 md:px-6 py-4 border-t border-gray-200 ${isMobile ? 'safe-area-inset-bottom' : ''}`}>
+        <div className={`flex flex-col-reverse md:flex-row gap-3 px-4 md:px-6 py-4 ${isMobile ? 'safe-area-inset-bottom' : ''}`}>
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition font-medium min-h-[44px] flex items-center justify-center"
+            className="flex-1 px-4 py-3 bg-[#f0eded] text-[#1c1b1b] rounded-[10px] hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
           >
             Cancel
           </button>
           <button
             onClick={handleAdd}
             disabled={!parsed.title}
-            className="flex-1 px-4 py-3 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] flex items-center justify-center"
+            className="flex-1 px-4 py-3 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] flex items-center justify-center"
           >
             Add task
           </button>
