@@ -78,10 +78,10 @@ export default function DashboardRecommendations() {
 
   if (loading) {
     return (
-      <Card className="shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300" radius="lg">
+      <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300" radius="lg">
         <CardBody className="p-8">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-2xl flex items-center justify-center shadow-md">
+            <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-[14px] flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
               <FaLightbulb className="text-warning text-xl" />
             </div>
             <div className="flex flex-col">
@@ -99,10 +99,10 @@ export default function DashboardRecommendations() {
 
   if (visibleRecs.length === 0) {
     return (
-      <Card className="shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300" radius="lg">
+      <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300" radius="lg">
         <CardBody className="p-8">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-2xl flex items-center justify-center shadow-md">
+            <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-[14px] flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
               <FaLightbulb className="text-warning text-xl" />
             </div>
             <div className="flex flex-col">
@@ -112,7 +112,7 @@ export default function DashboardRecommendations() {
           </div>
           <Divider className="mb-8" />
           <div className="text-center py-12">
-            <div className="w-20 h-20 bg-gradient-to-br from-default-100 to-default-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+            <div className="w-20 h-20 bg-gradient-to-br from-default-100 to-default-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
               <FaLightbulb className="text-default-400 text-3xl" />
             </div>
             <p className="text-deep-lake font-semibold text-lg">All caught up!</p>
@@ -124,10 +124,10 @@ export default function DashboardRecommendations() {
   }
 
   return (
-    <Card className="shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300" radius="lg">
+    <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300" radius="lg">
       <CardBody className="p-8">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-2xl flex items-center justify-center shadow-md">
+          <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-[14px] flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
             <FaLightbulb className="text-warning text-xl" />
           </div>
           <div className="flex flex-col">
@@ -142,7 +142,7 @@ export default function DashboardRecommendations() {
           {visibleRecs.map((rec) => (
             <Card
               key={rec.id}
-              className="border-2 hover:shadow-lg transition-all duration-200 cursor-pointer transform hover:-translate-y-1"
+              className="border-2 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-all duration-200 cursor-pointer transform hover:-translate-y-1"
               radius="lg"
               classNames={{
                 base: rec.priority === 'high' 
@@ -160,7 +160,7 @@ export default function DashboardRecommendations() {
                         size="sm"
                         color={getPriorityColor(rec.priority)}
                         variant="flat"
-                        className="font-bold shadow-sm"
+                        className="font-bold shadow-[0_1px_3px_rgba(28,27,27,0.06)]"
                       >
                         {rec.priority.toUpperCase()}
                       </Chip>
@@ -188,7 +188,7 @@ export default function DashboardRecommendations() {
                   </Button>
                 </div>
 
-                <details className="text-sm text-gravel bg-white/70 rounded-xl p-4 shadow-sm">
+                <details className="text-sm text-gravel bg-white/70 rounded-[14px] p-4 shadow-[0_1px_3px_rgba(28,27,27,0.06)]">
                   <summary className="cursor-pointer hover:text-deep-lake font-semibold">
                     💡 Why this matters
                   </summary>
@@ -203,7 +203,7 @@ export default function DashboardRecommendations() {
                       color="primary"
                       variant="solid"
                       onPress={() => handleAction(rec.id, action)}
-                      className="font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+                      className="font-semibold shadow-[0_4px_12px_rgba(28,27,27,0.08)] hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transform hover:-translate-y-0.5 transition-all"
                       endContent={<FaArrowRight className="text-sm" />}
                     >
                       {action.label}
