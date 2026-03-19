@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getWorkspaceFromAuth } from '@/lib/workspace'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300 // Cache 300s for read-heavy route
 
 /**
  * GET /api/workspaces/current
