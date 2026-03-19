@@ -52,11 +52,11 @@ export default function ObjectiveDetailClient({
 
   // Status colors
   const statusConfig: any = {
-    on_track: { bg: 'bg-green-100', text: 'text-green-700', bar: 'bg-green-500', icon: '✅', label: 'ON TRACK' },
+    on_track: { bg: 'bg-[#e6f4f4]', text: 'text-[#006766]', bar: 'bg-[#f0fafa]0', icon: '✅', label: 'ON TRACK' },
     at_risk: { bg: 'bg-yellow-100', text: 'text-yellow-700', bar: 'bg-yellow-500', icon: '⚠️', label: 'AT RISK' },
     blocked: { bg: 'bg-red-100', text: 'text-red-700', bar: 'bg-red-500', icon: '🚫', label: 'BLOCKED' },
-    completed: { bg: 'bg-blue-100', text: 'text-blue-700', bar: 'bg-blue-500', icon: '🎉', label: 'COMPLETED' },
-    active: { bg: 'bg-gray-100', text: 'text-gray-700', bar: 'bg-accent-500', icon: '🎯', label: 'ACTIVE' },
+    completed: { bg: 'bg-[#e6f4f4]', text: 'text-[#006766]', bar: 'bg-[#f0fafa]0', icon: '🎉', label: 'COMPLETED' },
+    active: { bg: 'bg-[#f0eded]', text: 'text-[#5a5757]', bar: 'bg-accent-500', icon: '🎯', label: 'ACTIVE' },
   }
 
   const statusStyle = statusConfig[objective.status] || statusConfig.active
@@ -109,7 +109,7 @@ export default function ObjectiveDetailClient({
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex">
+    <div className="min-h-screen bg-[#fcf9f8] flex">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -118,7 +118,7 @@ export default function ObjectiveDetailClient({
 
       <div className={`flex-1 transition-all duration-300 ${mainPaddingClass}`}>
         {/* Header */}
-        <header className="bg-white border-b border-[#E5E5E5] sticky top-0 z-10">
+        <header className="bg-white sticky top-0 z-10">
           <div className="px-4 md:px-12 py-4 md:py-8">
             {/* Tabs - scrollable on mobile */}
             <nav className="flex items-center justify-start md:justify-center gap-4 md:gap-8 overflow-x-auto scrollbar-hide">
@@ -159,7 +159,7 @@ export default function ObjectiveDetailClient({
           </Link>
 
             {/* Intro Card */}
-            <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-4 md:p-8 mb-6 md:mb-8">
+            <div className="bg-white rounded-[14px] p-4 md:p-8 mb-6 md:mb-8">
               {/* Company */}
               {objective.company && (
                 <div className="flex items-center gap-2 mb-3 md:mb-4">
@@ -250,23 +250,23 @@ export default function ObjectiveDetailClient({
                 {objective.progressMode === 'manual' && (
                   <div className="card-base p-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">Current Metrics</h3>
-                      <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-gray-200 text-gray-700">
+                      <h3 className="text-lg font-semibold text-[#1c1b1b]">Current Metrics</h3>
+                      <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-[#e8e4e4] text-[#5a5757]">
                         MANUAL
                       </span>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
                       <div>
-                        <p className="text-sm text-gray-600 mb-1">Current</p>
-                        <p className="text-2xl font-bold text-gray-900">{formatValue(objective.currentValue)}</p>
+                        <p className="text-sm text-[#5a5757] mb-1">Current</p>
+                        <p className="text-2xl font-bold text-[#1c1b1b]">{formatValue(objective.currentValue)}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 mb-1">Target</p>
-                        <p className="text-2xl font-bold text-gray-900">{formatValue(objective.targetValue)}</p>
+                        <p className="text-sm text-[#5a5757] mb-1">Target</p>
+                        <p className="text-2xl font-bold text-[#1c1b1b]">{formatValue(objective.targetValue)}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 mb-1">Gap</p>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-sm text-[#5a5757] mb-1">Gap</p>
+                        <p className="text-2xl font-bold text-[#1c1b1b]">
                           {formatValue(objective.targetValue - objective.currentValue)}
                         </p>
                       </div>
@@ -276,8 +276,8 @@ export default function ObjectiveDetailClient({
 
                 {/* Timeline */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Timeline</h3>
-                  <div className="flex items-center justify-between text-sm text-gray-700">
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">Timeline</h3>
+                  <div className="flex items-center justify-between text-sm text-[#5a5757]">
                     <span>
                       Start: <strong>{new Date(objective.startDate).toLocaleDateString()}</strong>
                     </span>
@@ -294,7 +294,7 @@ export default function ObjectiveDetailClient({
 
                 {/* Progress Chart */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress Chart (Last 30 Days)</h3>
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">Progress Chart (Last 30 Days)</h3>
                   <ProgressChart
                     progressEntries={objective.progressEntries.map((p: any) => ({
                       ...p,
@@ -305,7 +305,7 @@ export default function ObjectiveDetailClient({
                     unit={objective.unit}
                   />
                   {velocity > 0 && (
-                    <p className="text-sm text-gray-600 mt-4">
+                    <p className="text-sm text-[#5a5757] mt-4">
                       Trajectory: At current rate ({formatValue(velocity)}/day), will reach{' '}
                       {formatValue(objective.currentValue + velocity * daysUntil)} by deadline
                     </p>
@@ -315,17 +315,17 @@ export default function ObjectiveDetailClient({
                 {/* Next Milestone */}
                 {nextMilestone && (
                   <div className="card-base p-6 border-2 border-accent-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">🎯 Next Milestone</h3>
-                    <p className="text-xl font-bold text-gray-900 mb-2">{nextMilestone.title}</p>
-                    <p className="text-gray-700 mb-3">
+                    <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">🎯 Next Milestone</h3>
+                    <p className="text-xl font-bold text-[#1c1b1b] mb-2">{nextMilestone.title}</p>
+                    <p className="text-[#5a5757] mb-3">
                       Target: <strong>{formatValue(nextMilestone.targetValue)}</strong> by{' '}
                       <strong>{new Date(nextMilestone.targetDate).toLocaleDateString()}</strong>
                       {' '}({Math.ceil((new Date(nextMilestone.targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days)
                     </p>
-                    <p className="text-gray-700">
+                    <p className="text-[#5a5757]">
                       Need: <strong>{formatValue(nextMilestone.targetValue - objective.currentValue)}</strong> growth
                       {velocity > 0 && (
-                        <span className={`ml-2 ${velocity * Math.ceil((new Date(nextMilestone.targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) >= (nextMilestone.targetValue - objective.currentValue) ? 'text-green-600' : 'text-red-600'}`}>
+                        <span className={`ml-2 ${velocity * Math.ceil((new Date(nextMilestone.targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) >= (nextMilestone.targetValue - objective.currentValue) ? 'text-[#006766]' : 'text-red-600'}`}>
                           ({velocity > 0 && velocity * Math.ceil((new Date(nextMilestone.targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) >= (nextMilestone.targetValue - objective.currentValue) ? '✅ on track' : '⚠️ behind pace'})
                         </span>
                       )}
@@ -335,19 +335,19 @@ export default function ObjectiveDetailClient({
 
                 {/* Status Assessment */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">
                     Status Assessment
                     {objective.lastChecked && (
-                      <span className="text-sm font-normal text-gray-500 ml-2">
+                      <span className="text-sm font-normal text-[#A3A3A3] ml-2">
                         (Updated {new Date(objective.lastChecked).toLocaleString()})
                       </span>
                     )}
                   </h3>
-                  <div className={`p-4 rounded-lg ${statusStyle.bg}`}>
+                  <div className={`p-4 rounded-[10px] ${statusStyle.bg}`}>
                     <p className={`text-lg font-semibold ${statusStyle.text} mb-3`}>
                       {statusStyle.icon} {statusStyle.label}
                     </p>
-                    <ul className="space-y-1 text-gray-700">
+                    <ul className="space-y-1 text-[#5a5757]">
                       <li>• Completing {objective.tasks.filter((t: any) => t.completedAt).length} / {objective.tasks.length} tasks</li>
                       {velocity > 0 && <li>• Growing at {formatValue(velocity)}/day</li>}
                       <li>• {activeBlockers.length} active blocker{activeBlockers.length !== 1 ? 's' : ''}</li>
@@ -372,7 +372,7 @@ export default function ObjectiveDetailClient({
                       // TODO: Implement objective edit
                       router.push(`/objectives/${objective.id}/edit`)
                     }}
-                    className="px-5 py-2.5 bg-white border border-[#E5E5E5] text-[#525252] rounded-[10px] font-medium text-[15px] hover:bg-[#F5F5F5] transition-colors"
+                    className="px-5 py-2.5 bg-white  text-[#525252] rounded-[10px] font-medium text-[15px] hover:bg-[#F5F5F5] transition-colors"
                   >
                     Adjust Objective
                   </button>
@@ -386,15 +386,15 @@ export default function ObjectiveDetailClient({
               <div className="space-y-6">
                 {/* Velocity Chart */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Velocity</h3>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {formatValue(velocity)}<span className="text-lg text-gray-600">/day</span>
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">Velocity</h3>
+                  <p className="text-3xl font-bold text-[#1c1b1b]">
+                    {formatValue(velocity)}<span className="text-lg text-[#5a5757]">/day</span>
                   </p>
                 </div>
 
                 {/* Milestone Timeline */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Milestone Timeline</h3>
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">Milestone Timeline</h3>
                   <MilestoneTimeline
                     milestones={objective.milestones.map((m: any) => ({
                       ...m,
@@ -408,20 +408,20 @@ export default function ObjectiveDetailClient({
 
                 {/* Progress Entry History */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress History</h3>
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">Progress History</h3>
                   {objective.progressEntries.length === 0 ? (
-                    <p className="text-gray-500">No progress entries yet</p>
+                    <p className="text-[#A3A3A3]">No progress entries yet</p>
                   ) : (
                     <div className="space-y-2">
                       {objective.progressEntries.map((entry: any) => (
-                        <div key={entry.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div key={entry.id} className="flex items-center justify-between p-3 bg-[#f6f3f2] rounded-[10px]">
                           <div>
-                            <p className="font-semibold text-gray-900">{formatValue(entry.value)}</p>
-                            <p className="text-xs text-gray-600">
+                            <p className="font-semibold text-[#1c1b1b]">{formatValue(entry.value)}</p>
+                            <p className="text-xs text-[#5a5757]">
                               {new Date(entry.entryDate).toLocaleDateString()} • {entry.source}
                             </p>
                           </div>
-                          {entry.note && <p className="text-sm text-gray-700">{entry.note}</p>}
+                          {entry.note && <p className="text-sm text-[#5a5757]">{entry.note}</p>}
                         </div>
                       ))}
                     </div>
@@ -435,12 +435,12 @@ export default function ObjectiveDetailClient({
               <div className="space-y-6">
                 {/* Active Blockers */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4 flex items-center gap-2">
                     <FaExclamationTriangle className="text-red-600" />
                     Active Blockers ({activeBlockers.length})
                   </h3>
                   {activeBlockers.length === 0 ? (
-                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+                    <div className="p-4 bg-[#f0fafa] border border-green-200 rounded-[10px] text-[#006766]">
                       <FaCheckCircle className="inline mr-2" />
                       No active blockers
                     </div>
@@ -464,7 +464,7 @@ export default function ObjectiveDetailClient({
                 {/* Resolved Blockers */}
                 {resolvedBlockers.length > 0 && (
                   <div className="card-base p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">
                       Resolved Blockers ({resolvedBlockers.length})
                     </h3>
                     <div className="space-y-3">
@@ -489,21 +489,21 @@ export default function ObjectiveDetailClient({
               <div className="space-y-6">
                 {/* Relevant Memories */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Relevant Memories ({memories.length})</h3>
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">Relevant Memories ({memories.length})</h3>
                   {memories.length === 0 ? (
-                    <p className="text-gray-500">No memories yet</p>
+                    <p className="text-[#A3A3A3]">No memories yet</p>
                   ) : (
                     <div className="space-y-3">
                       {memories.map((memory: any) => (
-                        <div key={memory.id} className="p-4 bg-gray-50 rounded-lg">
+                        <div key={memory.id} className="p-4 bg-[#f6f3f2] rounded-[10px]">
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-semibold text-gray-900">{memory.title}</h4>
+                            <h4 className="font-semibold text-[#1c1b1b]">{memory.title}</h4>
                             <span className="px-2 py-1 bg-accent-100 text-accent-700 rounded text-xs font-medium">
                               Confidence: {memory.confidenceScore}/10
                             </span>
                           </div>
-                          <p className="text-sm text-gray-700">{memory.description}</p>
-                          <p className="text-xs text-gray-500 mt-2">
+                          <p className="text-sm text-[#5a5757]">{memory.description}</p>
+                          <p className="text-xs text-[#A3A3A3] mt-2">
                             {memory.memoryType} • {new Date(memory.createdAt).toLocaleDateString()}
                           </p>
                         </div>
@@ -514,15 +514,15 @@ export default function ObjectiveDetailClient({
 
                 {/* Related Insights */}
                 <div className="card-base p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Related Insights ({insights.length})</h3>
+                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">Related Insights ({insights.length})</h3>
                   {insights.length === 0 ? (
-                    <p className="text-gray-500">No insights yet</p>
+                    <p className="text-[#A3A3A3]">No insights yet</p>
                   ) : (
                     <div className="space-y-3">
                       {insights.map((insight: any) => (
-                        <div key={insight.id} className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div key={insight.id} className="p-4 bg-[#f0fafa] border border-transparent rounded-[10px]">
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-semibold text-gray-900">{insight.title}</h4>
+                            <h4 className="font-semibold text-[#1c1b1b]">{insight.title}</h4>
                             <span className={`px-2 py-1 rounded text-xs font-medium ${
                               insight.priority === 1 ? 'bg-red-100 text-red-700' :
                               insight.priority === 2 ? 'bg-orange-100 text-orange-700' :
@@ -531,8 +531,8 @@ export default function ObjectiveDetailClient({
                               P{insight.priority}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-700">{insight.summary}</p>
-                          <p className="text-xs text-gray-500 mt-2">
+                          <p className="text-sm text-[#5a5757]">{insight.summary}</p>
+                          <p className="text-xs text-[#A3A3A3] mt-2">
                             {insight.insightType} • {insight.status} • {new Date(insight.createdAt).toLocaleDateString()}
                           </p>
                         </div>
@@ -546,24 +546,24 @@ export default function ObjectiveDetailClient({
             {/* ACTIVITY TAB */}
             {activeTab === 'activity' && (
               <div className="card-base p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Activity Log ({activityLogs.length})</h3>
+                <h3 className="text-lg font-semibold text-[#1c1b1b] mb-4">Activity Log ({activityLogs.length})</h3>
                 {activityLogs.length === 0 ? (
-                  <p className="text-gray-500">No activity yet</p>
+                  <p className="text-[#A3A3A3]">No activity yet</p>
                 ) : (
                   <div className="space-y-2">
                     {activityLogs.map((log: any) => (
-                      <div key={log.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                      <div key={log.id} className="flex items-start gap-3 p-3 bg-[#f6f3f2] rounded-[10px]">
                         <div className="flex-1">
-                          <p className="text-sm text-gray-900">
+                          <p className="text-sm text-[#1c1b1b]">
                             <strong>{log.entityType}</strong> • {log.action}
                           </p>
                           {log.details && (
-                            <p className="text-xs text-gray-600 mt-1">
+                            <p className="text-xs text-[#5a5757] mt-1">
                               {typeof log.details === 'string' ? log.details : JSON.stringify(log.details)}
                             </p>
                           )}
                         </div>
-                        <span className="text-xs text-gray-500 whitespace-nowrap">
+                        <span className="text-xs text-[#A3A3A3] whitespace-nowrap">
                           {new Date(log.createdAt).toLocaleString()}
                         </span>
                       </div>
