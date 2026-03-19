@@ -112,7 +112,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-12">
@@ -128,7 +128,7 @@ export default function SignupPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8">
+        <div className="bg-white  rounded-[14px] p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-medium text-[#1A1A1A] mb-2">Get started</h2>
             <p className="text-[#525252] text-[15px]">Create your account and workspace</p>
@@ -210,7 +210,7 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-[#E5E5E5] text-center">
+          <div className="mt-6 pt-6 text-center">
             <p className="text-[13px] text-[#525252]">
               Already have an account?{' '}
               <Link 
