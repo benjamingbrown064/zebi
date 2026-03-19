@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireWorkspace } from '@/lib/workspace'
+import { validateAIAuth } from '@/lib/doug-auth'
 import {
   getAIInsight,
   updateAIInsight,
   deleteAIInsight,
   UpdateAIInsightInput,
 } from '@/app/actions/ai-insights'
-
 
 /**
  * GET /api/ai-insights/[id]
@@ -17,23 +17,25 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const workspaceId = await requireWorkspace()
-    const insight = await getAIInsight(workspaceId, params.id)
+    const auth = validateAIAuth(request)
+    let workspaceId: string
 
-    if (!insight) {
-      return NextResponse.json(
-        { error: 'AI insight not found' },
-        { status: 404 }
-      )
+    if (auth.valid) {
+      const wid = request.nextUrl.searchParams.get('workspaceId')
+      if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
     }
 
+    const insight = await getAIInsight(workspaceId, params.id)
+    if (!insight) {
+      return NextResponse.json({ error: 'AI insight not found' }, { status: 404 })
+    }
     return NextResponse.json(insight)
   } catch (error) {
     console.error('Error in GET /api/ai-insights/[id]:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch AI insight' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch AI insight' }, { status: 500 })
   }
 }
 
@@ -46,33 +48,27 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const workspaceId = await requireWorkspace()
-    const body: UpdateAIInsightInput = await request.json()
+    const auth = validateAIAuth(request)
+    let workspaceId: string
 
-    // Validate priority if provided
-    if (
-      body.priority !== undefined &&
-      (body.priority < 1 || body.priority > 4)
-    ) {
-      return NextResponse.json(
-        { error: 'priority must be between 1 and 4' },
-        { status: 400 }
-      )
+    const body: UpdateAIInsightInput & { workspaceId?: string } = await request.json()
+
+    if (auth.valid) {
+      if (!body.workspaceId) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = body.workspaceId
+    } else {
+      workspaceId = await requireWorkspace()
     }
 
-    const insight = await updateAIInsight(
-      workspaceId,
-      params.id,
-      body
-    )
+    if (body.priority !== undefined && (body.priority < 1 || body.priority > 4)) {
+      return NextResponse.json({ error: 'priority must be between 1 and 4' }, { status: 400 })
+    }
 
+    const insight = await updateAIInsight(workspaceId, params.id, body)
     return NextResponse.json(insight)
   } catch (error) {
     console.error('Error in PUT /api/ai-insights/[id]:', error)
-    return NextResponse.json(
-      { error: 'Failed to update AI insight' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update AI insight' }, { status: 500 })
   }
 }
 
@@ -85,15 +81,21 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const workspaceId = await requireWorkspace()
-    await deleteAIInsight(workspaceId, params.id)
+    const auth = validateAIAuth(request)
+    let workspaceId: string
 
+    if (auth.valid) {
+      const wid = request.nextUrl.searchParams.get('workspaceId')
+      if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
+    await deleteAIInsight(workspaceId, params.id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error in DELETE /api/ai-insights/[id]:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete AI insight' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete AI insight' }, { status: 500 })
   }
 }
