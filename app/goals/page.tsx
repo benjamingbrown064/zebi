@@ -5,7 +5,7 @@ import GoalsListServer from './goals-list-server'
 import { Suspense } from 'react'
 
 export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export default async function GoalsPage() {
   let workspaceId: string
