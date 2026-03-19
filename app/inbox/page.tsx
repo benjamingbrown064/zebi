@@ -216,14 +216,14 @@ export default function InboxPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="px-3 py-2 text-sm bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition flex items-center gap-2"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#525252] border border-[#E5E5E5] rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaFilter />
                 {!isMobile && <span>Filter</span>}
               </button>
               <button
                 onClick={() => setIsQuickAddOpen(true)}
-                className="px-4 py-2 bg-[#DD3A44] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2 font-medium"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaPlus />
                 {!isMobile && <span>Quick Add</span>}
