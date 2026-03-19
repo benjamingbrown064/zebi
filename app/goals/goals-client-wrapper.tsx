@@ -123,7 +123,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={false}
@@ -137,7 +137,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
           <div className="flex items-center gap-2 md:gap-3">
             <button
               onClick={() => setIsVoiceCoachOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#525252] border border-[#E5E5E5] rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#e0dbdb] hover:bg-[#d4cecd] text-[#1c1b1b]  rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
             >
               <FaMicrophone className="text-sm" />
               <span className="hidden sm:inline">Voice Coach</span>
@@ -165,7 +165,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
       {isAdding && (
         <div className="fixed inset-0 bg-black/30 z-50 flex items-start justify-center pt-12 md:pt-20 px-4 overflow-y-auto">
           <div 
-            className="bg-white w-full max-w-lg rounded-[14px] shadow-lg p-6 my-8"
+            className="bg-white w-full max-w-lg rounded-[14px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-6 my-8"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-semibold text-[#1A1A1A] mb-6">
@@ -181,7 +181,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                   type="text"
                   value={newGoal.name}
                   onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-[#E5E5E5] rounded-[10px] focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
+                  className="w-full px-4 py-2.5  rounded-[10px] focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
                   placeholder="e.g., Reach £100k revenue"
                 />
               </div>
@@ -195,7 +195,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                     type="number"
                     value={newGoal.targetValue}
                     onChange={(e) => setNewGoal({ ...newGoal, targetValue: Number(e.target.value) })}
-                    className="w-full px-4 py-2.5 border border-[#E5E5E5] rounded-[10px] focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
+                    className="w-full px-4 py-2.5  rounded-[10px] focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
                   />
                 </div>
 
@@ -207,7 +207,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                     type="text"
                     value={newGoal.unit}
                     onChange={(e) => setNewGoal({ ...newGoal, unit: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-[#E5E5E5] rounded-[10px] focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
+                    className="w-full px-4 py-2.5  rounded-[10px] focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
                     placeholder="%"
                   />
                 </div>
@@ -221,7 +221,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                   type="date"
                   value={newGoal.endDate}
                   onChange={(e) => setNewGoal({ ...newGoal, endDate: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-[#E5E5E5] rounded-[10px] focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
+                  className="w-full px-4 py-2.5  rounded-[10px] focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
                 />
               </div>
             </div>
