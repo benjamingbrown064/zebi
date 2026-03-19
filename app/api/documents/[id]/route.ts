@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { validateAIAuth } from '@/lib/doug-auth'
 
 const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -12,19 +13,10 @@ export async function GET(
     const document = await prisma.document.findUnique({
       where: { id: params.id },
       include: {
-        company: {
-          select: { id: true, name: true }
-        },
-        project: {
-          select: { id: true, name: true }
-        },
+        company: { select: { id: true, name: true } },
+        project: { select: { id: true, name: true } },
         versions: {
-          select: {
-            id: true,
-            version: true,
-            createdAt: true,
-            createdBy: true
-          },
+          select: { id: true, version: true, createdAt: true, createdBy: true },
           orderBy: { version: 'desc' }
         }
       }
@@ -38,10 +30,7 @@ export async function GET(
 
   } catch (error) {
     console.error('GET /api/documents/[id] error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch document' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to fetch document' }, { status: 500 });
   }
 }
 
@@ -54,26 +43,18 @@ export async function PUT(
     const body = await request.json();
     const { title, documentType, contentRich, createVersion } = body;
 
-    // Get existing document
-    const existingDoc = await prisma.document.findUnique({
-      where: { id: params.id }
-    });
-
+    const existingDoc = await prisma.document.findUnique({ where: { id: params.id } });
     if (!existingDoc) {
       return NextResponse.json({ success: false, error: 'Document not found' }, { status: 404 });
     }
 
-    // Check if content changed
-    const contentChanged = contentRich && 
+    const contentChanged = contentRich &&
       JSON.stringify(contentRich) !== JSON.stringify(existingDoc.contentRich);
 
-    // Update document
     const updateData: any = {};
     if (title !== undefined) updateData.title = title;
     if (documentType !== undefined) updateData.documentType = documentType;
     if (contentRich !== undefined) updateData.contentRich = contentRich;
-
-    // Increment version if content changed and createVersion is true
     if (contentChanged && createVersion) {
       updateData.version = existingDoc.version + 1;
     }
@@ -82,16 +63,11 @@ export async function PUT(
       where: { id: params.id },
       data: updateData,
       include: {
-        company: {
-          select: { id: true, name: true }
-        },
-        project: {
-          select: { id: true, name: true }
-        }
+        company: { select: { id: true, name: true } },
+        project: { select: { id: true, name: true } }
       }
     });
 
-    // Create version if requested and content changed
     if (contentChanged && createVersion) {
       await prisma.documentVersion.create({
         data: {
@@ -107,10 +83,7 @@ export async function PUT(
 
   } catch (error) {
     console.error('PUT /api/documents/[id] error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update document' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to update document' }, { status: 500 });
   }
 }
 
@@ -120,27 +93,16 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Get document
-    const document = await prisma.document.findUnique({
-      where: { id: params.id }
-    });
-
+    const document = await prisma.document.findUnique({ where: { id: params.id } });
     if (!document) {
       return NextResponse.json({ success: false, error: 'Document not found' }, { status: 404 });
     }
 
-    // Delete document (cascade will delete versions)
-    await prisma.document.delete({
-      where: { id: params.id }
-    });
-
+    await prisma.document.delete({ where: { id: params.id } });
     return NextResponse.json({ success: true });
 
   } catch (error) {
     console.error('DELETE /api/documents/[id] error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete document' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to delete document' }, { status: 500 });
   }
 }
