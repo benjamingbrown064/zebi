@@ -61,7 +61,7 @@ export default function TaskDetailClient({
         isCollapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
       />
-      <div className={sidebarCollapsed ? 'ml-16' : 'ml-64'}>
+      <div className={sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'}>
         {/* Main content - just show empty state since modal will overlay */}
         <div className="p-8">
           <div className="text-center text-gray-500 py-20">
