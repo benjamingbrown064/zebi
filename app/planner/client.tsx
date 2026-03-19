@@ -177,7 +177,7 @@ export default function WeeklyPlannerClient({
 
   // Match the dashboard layout pattern: fixed sidebar + offset main content
   const mainPaddingClass = isMobile
-    ? 'pt-[64px]'
+    ? ''
     : sidebarCollapsed
     ? 'ml-20'
     : 'ml-64'
