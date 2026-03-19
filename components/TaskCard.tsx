@@ -21,7 +21,7 @@ export default function TaskCard({
     1: 'bg-red-100 text-red-700',
     2: 'bg-orange-100 text-orange-700',
     3: 'bg-yellow-100 text-yellow-700',
-    4: 'bg-gray-100 text-gray-700',
+    4: 'bg-[#f0eded] text-[#5a5757]',
   }
 
   const priorityLabels: Record<number, string> = {
@@ -47,8 +47,8 @@ export default function TaskCard({
 
         <div className="flex-1 min-w-0">
           <p
-            className={`font-medium text-gray-900 truncate ${
-              completed ? 'line-through text-gray-500' : ''
+            className={`font-medium text-[#1c1b1b] truncate ${
+              completed ? 'line-through text-[#A3A3A3]' : ''
             }`}
           >
             {title}
@@ -61,13 +61,13 @@ export default function TaskCard({
             </span>
 
             {goalTag && (
-              <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">
+              <span className="text-xs px-2 py-1 bg-[#e6f4f4] text-[#006766] rounded">
                 {goalTag}
               </span>
             )}
 
             {dueTime && (
-              <span className="text-xs text-gray-500">{dueTime}</span>
+              <span className="text-xs text-[#A3A3A3]">{dueTime}</span>
             )}
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function TaskCard({
             onClick={(e) => {
               e.stopPropagation()
             }}
-            className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-gray-600 transition"
+            className="p-1 hover:bg-[#f0eded] rounded text-[#C4C0C0] hover:text-[#5a5757] transition"
             title="More options"
           >
             ⋯
