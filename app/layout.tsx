@@ -1,4 +1,7 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
 import './globals.css'
 import { Providers } from './providers'
 import DynamicAIChatButton from './components/DynamicAIChatButton'
@@ -23,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-[#f6f3f2] text-[#1c1b1b]">
+      <body className={`${inter.variable} bg-[#f6f3f2] text-[#1c1b1b] font-sans`}>
         <Providers>
           {children}
           <DynamicAIChatButton />
