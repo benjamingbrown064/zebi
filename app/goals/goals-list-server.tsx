@@ -7,7 +7,7 @@ interface GoalsListServerProps {
 
 export default async function GoalsListServer({ workspaceId }: GoalsListServerProps) {
   // Fetch goals with optimized query - minimal data needed for list view
-  const goals = await prisma.goal.findMany({
+  const rawGoals = await prisma.goal.findMany({
     where: { 
       workspaceId, 
       status: { in: ['active', 'paused'] } 
@@ -32,6 +32,14 @@ export default async function GoalsListServer({ workspaceId }: GoalsListServerPr
     },
     orderBy: { name: 'asc' }
   })
+
+  // Serialize dates for client components
+  const goals = rawGoals.map(goal => ({
+    ...goal,
+    endDate: goal.endDate.toISOString(),
+    currentValue: goal.currentValue.toString(),
+    targetValue: goal.targetValue.toString(),
+  }))
 
   if (goals.length === 0) {
     return (

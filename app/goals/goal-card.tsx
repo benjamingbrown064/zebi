@@ -9,10 +9,10 @@ interface GoalCardProps {
   goal: {
     id: string
     name: string
-    currentValue: number | any
-    targetValue: number | any
+    currentValue: number | string
+    targetValue: number | string
     unit: string | null
-    endDate: Date
+    endDate: string | Date
     metricType: string
     workspaceId: string
   }
