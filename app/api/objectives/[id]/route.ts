@@ -198,6 +198,8 @@ export async function PUT(
       status,
       priority,
       dependsOn,
+      companyId,
+      goalId,
     } = body;
 
     const updateData: any = {};
@@ -223,6 +225,8 @@ export async function PUT(
     if (status !== undefined) updateData.status = status;
     if (priority !== undefined) updateData.priority = priority;
     if (dependsOn !== undefined) updateData.dependsOn = dependsOn;
+    if (companyId !== undefined) updateData.companyId = companyId;
+    if (goalId !== undefined) updateData.goalId = goalId;
 
     // Mark as completed if status is completed
     if (status === 'completed' && !updateData.completedAt) {
