@@ -249,11 +249,8 @@ export default function WeeklyPlannerClient({
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <ResponsiveHeader
-          breadcrumbs={[
-            { label: 'Zebi', href: '/dashboard' },
-            { label: 'Planner', href: '/planner' },
-          ]}
           title="Weekly Planner"
+          subtitle="Zebi / Planner"
         />
 
         <DndContext
