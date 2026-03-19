@@ -113,7 +113,7 @@ export default function Sidebar({
     return (
       <>
         {/* Mobile Header */}
-        <div className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-[#E5E5E5] flex items-center px-4 z-30">
+        <div className="fixed top-0 left-0 right-0 h-16 bg-[#f6f3f2] flex items-center px-4 z-30">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="p-2 text-[#525252] hover:bg-[#F5F5F5] rounded-[10px] transition min-h-[44px] min-w-[44px] flex items-center justify-center"
@@ -138,7 +138,7 @@ export default function Sidebar({
 
         {/* Mobile Sidebar */}
         <div
-          className={`fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-white border-r border-[#E5E5E5] flex flex-col transition-transform duration-300 z-30 ${
+          className={`fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-[#f6f3f2] flex flex-col transition-transform duration-300 z-30 ${
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
@@ -162,7 +162,7 @@ export default function Sidebar({
             ))}
           </nav>
 
-          <div className="px-3 py-6 border-t border-[#E5E5E5] space-y-1">
+          <div className="px-3 py-6 space-y-1">
             <Link
               href="/settings"
               className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px] ${
@@ -195,12 +195,12 @@ export default function Sidebar({
   // Desktop
   return (
     <div
-      className={`fixed left-0 top-0 h-screen bg-white border-r border-[#E5E5E5] flex flex-col transition-all duration-300 ${
+      className={`fixed left-0 top-0 h-screen bg-[#f6f3f2] flex flex-col transition-all duration-300 ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
     >
       {/* Logo */}
-      <div className={`px-6 py-6 border-b border-[#E5E5E5] ${isCollapsed ? 'px-4' : ''}`}>
+      <div className={`px-6 py-6 ${isCollapsed ? 'px-4' : ''}`}>
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-[#DD3A44] rounded-[10px] flex items-center justify-center flex-shrink-0 text-sm font-bold text-white">
             Z
@@ -228,8 +228,8 @@ export default function Sidebar({
               isCollapsed ? 'justify-center' : ''
             } ${
               isActive(item.href)
-                ? 'bg-[#FEF2F2] text-[#DD3A44]'
-                : 'text-[#525252] hover:bg-[#F5F5F5]'
+                ? 'nav-item-active'
+                : 'nav-item'
             }`}
             title={isCollapsed ? item.label : ''}
           >
@@ -242,15 +242,15 @@ export default function Sidebar({
       </nav>
 
       {/* Settings & Logout */}
-      <div className="px-3 py-6 border-t border-[#E5E5E5] space-y-1">
+      <div className="px-3 py-6 space-y-1">
         <Link
           href="/settings"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px] ${
             isCollapsed ? 'justify-center' : ''
           } ${
             isActive('/settings')
-              ? 'bg-[#FEF2F2] text-[#DD3A44]'
-              : 'text-[#525252] hover:bg-[#F5F5F5]'
+              ? 'nav-item-active'
+              : 'nav-item'
           }`}
           title={isCollapsed ? 'Settings' : ''}
         >
@@ -272,7 +272,7 @@ export default function Sidebar({
       </div>
 
       {/* Collapse Toggle */}
-      <div className="px-3 py-4 border-t border-[#E5E5E5]">
+      <div className="px-3 py-4">
         <button
           onClick={toggleCollapse}
           className="w-full flex items-center justify-center px-3 py-2.5 rounded-[10px] text-[#525252] hover:bg-[#F5F5F5] transition min-h-[44px]"
