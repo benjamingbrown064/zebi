@@ -84,7 +84,7 @@ export default function TaskAssignee({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <label className="block text-sm font-medium text-gray-900 mb-2">
+      <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
         Assigned To
       </label>
 
@@ -93,7 +93,7 @@ export default function TaskAssignee({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg text-left transition ${
+        className={`w-full flex items-center gap-3 px-4 py-3 rounded-[10px] text-left transition ${
           disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-300 cursor-pointer'
         }`}
       >
@@ -102,14 +102,14 @@ export default function TaskAssignee({
             <div className="w-8 h-8 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-medium flex-shrink-0">
               {getInitials(assignee)}
             </div>
-            <span className="flex-1 text-gray-900">{getDisplayName(assignee)}</span>
+            <span className="flex-1 text-[#1c1b1b]">{getDisplayName(assignee)}</span>
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation()
                 handleSelect(null)
               }}
-              className="text-gray-400 hover:text-red-500 transition p-1"
+              className="text-[#C4C0C0] hover:text-red-500 transition p-1"
               title="Unassign"
             >
               <FaTimes className="w-3 h-3" />
@@ -117,18 +117,18 @@ export default function TaskAssignee({
           </>
         ) : (
           <>
-            <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#f0eded] text-[#C4C0C0] flex items-center justify-center flex-shrink-0">
               <FaUser className="w-4 h-4" />
             </div>
-            <span className="flex-1 text-gray-500">Unassigned</span>
-            <FaChevronDown className="w-4 h-4 text-gray-400" />
+            <span className="flex-1 text-[#A3A3A3]">Unassigned</span>
+            <FaChevronDown className="w-4 h-4 text-[#C4C0C0]" />
           </>
         )}
       </button>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-hidden">
+        <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-50 max-h-64 overflow-hidden">
           {/* Search */}
           <div className="p-2 border-b border-gray-100">
             <input
@@ -137,7 +137,7 @@ export default function TaskAssignee({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search members..."
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
@@ -147,16 +147,16 @@ export default function TaskAssignee({
             <button
               type="button"
               onClick={() => handleSelect(null)}
-              className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-50 transition"
+              className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-[#f6f3f2] transition"
             >
-              <div className="w-7 h-7 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-[#f0eded] text-[#C4C0C0] flex items-center justify-center flex-shrink-0">
                 <FaTimes className="w-3 h-3" />
               </div>
-              <span className="text-sm text-gray-600">Unassigned</span>
+              <span className="text-sm text-[#5a5757]">Unassigned</span>
             </button>
 
             {filteredMembers.length === 0 ? (
-              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+              <div className="px-4 py-3 text-sm text-[#A3A3A3] text-center">
                 No members found
               </div>
             ) : (
@@ -165,7 +165,7 @@ export default function TaskAssignee({
                   key={member.id}
                   type="button"
                   onClick={() => handleSelect(member.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-50 transition ${
+                  className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-[#f6f3f2] transition ${
                     member.id === assignedTo ? 'bg-accent-50' : ''
                   }`}
                 >
@@ -173,11 +173,11 @@ export default function TaskAssignee({
                     {getInitials(member)}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-gray-900 truncate">
+                    <div className="text-sm font-medium text-[#1c1b1b] truncate">
                       {getDisplayName(member)}
                     </div>
                     {member.email && (
-                      <div className="text-xs text-gray-500 truncate">
+                      <div className="text-xs text-[#A3A3A3] truncate">
                         {member.email}
                       </div>
                     )}
