@@ -131,7 +131,7 @@ export default function NewDocumentPage() {
   const mainPaddingClass = isMobile ? 'pt-[64px]' : sidebarCollapsed ? 'ml-16' : 'ml-64';
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -140,7 +140,7 @@ export default function NewDocumentPage() {
       
       <div className={mainPaddingClass}>
         {/* Header */}
-        <header className="bg-white border-b border-[#E5E5E5] sticky top-0 z-10">
+        <header className="bg-white sticky top-0 z-10">
           <div className="px-4 md:px-8 py-4 md:py-6">
             {/* Back Link */}
             <Link 
@@ -162,7 +162,7 @@ export default function NewDocumentPage() {
           <div className="py-8 md:py-12">
             <div className="max-w-2xl mx-auto">
               {/* Form Card */}
-              <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-6 md:p-8">
+              <div className="bg-white rounded-[14px] p-6 md:p-8">
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Document Title */}
@@ -271,7 +271,7 @@ export default function NewDocumentPage() {
                   )}
 
                   {/* Actions */}
-                  <div className="flex gap-3 pt-6 border-t border-[#E5E5E5] mt-8">
+                  <div className="flex gap-3 pt-6 mt-8">
                     <Button
                       type="button"
                       variant="flat"
