@@ -147,7 +147,7 @@ export default function ProjectsPage() {
     return <LoadingScreen message="Loading projects..." />
   }
 
-  const mainPaddingClass = isMobile ? 'pt-16' : sidebarCollapsed ? 'ml-20' : 'ml-64'
+  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64'
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
