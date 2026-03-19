@@ -18,13 +18,13 @@ export default function ViewToggle({
   archivedCount = 0,
 }: ViewToggleProps) {
   return (
-    <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1 w-fit">
+    <div className="flex items-center gap-2 bg-[#f0eded] rounded-[10px] p-1 w-fit">
       <button
         onClick={() => onViewChange('active')}
         className={`px-4 py-2 rounded-md font-medium transition ${
           activeView === 'active'
-            ? 'bg-white text-gray-900 shadow-sm'
-            : 'text-gray-600 hover:text-gray-900'
+            ? 'bg-white text-[#1c1b1b] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
+            : 'text-[#5a5757] hover:text-[#1c1b1b]'
         }`}
       >
         Active
@@ -34,13 +34,13 @@ export default function ViewToggle({
         onClick={() => onViewChange('completed')}
         className={`px-4 py-2 rounded-md font-medium transition ${
           activeView === 'completed'
-            ? 'bg-white text-gray-900 shadow-sm'
-            : 'text-gray-600 hover:text-gray-900'
+            ? 'bg-white text-[#1c1b1b] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
+            : 'text-[#5a5757] hover:text-[#1c1b1b]'
         }`}
       >
         Completed
         {completedCount > 0 && (
-          <span className="ml-2 text-xs bg-gray-300 text-gray-700 rounded-full px-2 py-0.5">
+          <span className="ml-2 text-xs bg-gray-300 text-[#5a5757] rounded-full px-2 py-0.5">
             {completedCount}
           </span>
         )}
@@ -50,13 +50,13 @@ export default function ViewToggle({
         onClick={() => onViewChange('archived')}
         className={`px-4 py-2 rounded-md font-medium transition ${
           activeView === 'archived'
-            ? 'bg-white text-gray-900 shadow-sm'
-            : 'text-gray-600 hover:text-gray-900'
+            ? 'bg-white text-[#1c1b1b] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
+            : 'text-[#5a5757] hover:text-[#1c1b1b]'
         }`}
       >
         Archived
         {archivedCount > 0 && (
-          <span className="ml-2 text-xs bg-gray-300 text-gray-700 rounded-full px-2 py-0.5">
+          <span className="ml-2 text-xs bg-gray-300 text-[#5a5757] rounded-full px-2 py-0.5">
             {archivedCount}
           </span>
         )}
