@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FaBuilding, FaProjectDiagram, FaTasks, FaFileAlt, FaLightbulb } from 'react-icons/fa'
+import { FaBuilding, FaFolderOpen, FaTasks, FaFileAlt, FaLightbulb } from 'react-icons/fa'
 
 interface CompanyCardProps {
   id: string
@@ -74,7 +74,7 @@ export default function CompanyCard({
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <FaProjectDiagram className="text-gray-400" />
+            <FaFolderOpen className="text-gray-400" />
             <span>
               {projectCount} {projectCount === 1 ? 'project' : 'projects'}
             </span>
