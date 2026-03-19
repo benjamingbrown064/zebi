@@ -12,6 +12,7 @@ interface TaskBoardTileProps {
     blockedReason?: string
     assignee?: { id: string; name: string } | null
     project?: { id: string; name: string } | null
+    assigneeName?: string | null
   }
   onDragStart?: (task: Task) => void
   onComplete?: (taskId: string) => void
@@ -154,7 +155,7 @@ export default function TaskBoardTile({
       </div>
 
       {/* ROW 1b: Project + Assignee */}
-      {(task.project || task.assignee) && (
+      {(task.project || task.assigneeName) && (
         <div className="flex items-center gap-3 mb-2 text-xs text-[#737373]">
           {task.project && (
             <div className="flex items-center gap-1 min-w-0">
@@ -162,12 +163,12 @@ export default function TaskBoardTile({
               <span className="truncate">{task.project.name}</span>
             </div>
           )}
-          {task.assignee && (
+          {task.assigneeName && (
             <div className="flex items-center gap-1 flex-shrink-0">
               <div className="w-4 h-4 rounded-full bg-[#DD3A44] text-white flex items-center justify-center text-[9px] font-medium flex-shrink-0">
-                {task.assignee.name.charAt(0).toUpperCase()}
+                {task.assigneeName.charAt(0).toUpperCase()}
               </div>
-              <span className="truncate max-w-[80px]">{task.assignee.name}</span>
+              <span className="truncate max-w-[80px]">{task.assigneeName}</span>
             </div>
           )}
         </div>
