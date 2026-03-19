@@ -15,22 +15,22 @@ import { updateTask, deleteTask, createTask } from '@/app/actions/tasks'
 import { getGoals, calculateGoalProgress } from '@/app/actions/goals'
 
 const STATUS_COLORS: Record<string, string> = {
-  inbox: 'bg-gray-50',
-  planned: 'bg-blue-50',
+  inbox: 'bg-[#f6f3f2]',
+  planned: 'bg-[#f0fafa]',
   doing: 'bg-amber-50',
   review: 'bg-cyan-50',
   blocked: 'bg-red-50',
-  done: 'bg-green-50',
+  done: 'bg-[#f0fafa]',
   check: 'bg-purple-50', // Match lane color in board
 }
 
 const STATUS_PILL_COLORS: Record<string, string> = {
-  inbox: 'bg-gray-100 text-gray-700',
-  planned: 'bg-blue-100 text-blue-700',
+  inbox: 'bg-[#f0eded] text-[#5a5757]',
+  planned: 'bg-[#e6f4f4] text-[#006766]',
   doing: 'bg-amber-100 text-amber-700',
   review: 'bg-cyan-100 text-cyan-700',
   blocked: 'bg-red-100 text-red-700',
-  done: 'bg-green-100 text-green-700',
+  done: 'bg-[#e6f4f4] text-[#006766]',
   check: 'bg-purple-100 text-purple-700', // Match lane background
 }
 
@@ -445,7 +445,7 @@ export default function BoardClient({
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -494,12 +494,12 @@ export default function BoardClient({
               .map(status => (
               <div
                 key={status.id}
-                className={`${STATUS_COLORS[status.type] || 'bg-gray-50'} rounded-lg w-72 md:w-80 max-h-[calc(100vh-200px)] flex flex-col overflow-hidden`}
+                className={`${STATUS_COLORS[status.type] || 'bg-[#f6f3f2]'} rounded-[10px] w-72 md:w-80 max-h-[calc(100vh-200px)] flex flex-col overflow-hidden`}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(status.id)}
               >
                 {/* Sticky Header */}
-                <div className="sticky top-0 z-10 flex items-center justify-between px-4 pt-4 pb-4 bg-inherit border-b border-[#E5E5E5]">
+                <div className="sticky top-0 z-10 flex items-center justify-between px-4 pt-4 pb-4 bg-inherit">
                   <h2 className="font-medium text-[#1A1A1A]">{status.name}</h2>
                   <span className="text-[12px] text-[#A3A3A3] bg-white px-2 py-1 rounded">
                     {tasksByStatus[status.id]?.length || 0}
@@ -510,7 +510,7 @@ export default function BoardClient({
                 <div className="overflow-y-auto flex-1 px-4 py-3">
                   <div className="space-y-3">
                     {!tasksByStatus[status.id] || tasksByStatus[status.id].length === 0 ? (
-                      <div className="text-center py-8 text-gray-400 text-sm">
+                      <div className="text-center py-8 text-[#C4C0C0] text-sm">
                         No tasks
                       </div>
                     ) : (
@@ -530,10 +530,10 @@ export default function BoardClient({
                 </div>
 
                 {/* Sticky Footer */}
-                <div className="sticky bottom-0 z-10 px-4 py-3 bg-inherit border-t border-[#E5E5E5]">
+                <div className="sticky bottom-0 z-10 px-4 py-3 bg-inherit">
                   <button 
                     onClick={() => handleOpenQuickAdd(status.id)}
-                    className="w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:bg-white/50 rounded transition"
+                    className="w-full flex items-center justify-center gap-2 py-2 text-sm text-[#5a5757] hover:bg-white/50 rounded transition"
                   >
                     <FaPlus size={14} />
                     Add task
