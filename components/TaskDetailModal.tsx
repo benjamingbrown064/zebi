@@ -27,15 +27,15 @@ const PRIORITIES = [
   { num: 1, label: 'P1 - Urgent', color: 'bg-red-100 text-red-700' },
   { num: 2, label: 'P2 - High', color: 'bg-orange-100 text-orange-700' },
   { num: 3, label: 'P3 - Medium', color: 'bg-yellow-100 text-yellow-700' },
-  { num: 4, label: 'P4 - Low', color: 'bg-gray-100 text-gray-700' },
+  { num: 4, label: 'P4 - Low', color: 'bg-[#f0eded] text-[#5a5757]' },
 ]
 
 const STATUS_COLORS: Record<string, string> = {
-  inbox: 'bg-gray-100 text-gray-700',
-  planned: 'bg-blue-100 text-blue-700',
+  inbox: 'bg-[#f0eded] text-[#5a5757]',
+  planned: 'bg-[#e6f4f4] text-[#006766]',
   doing: 'bg-amber-100 text-amber-700',
   blocked: 'bg-red-100 text-red-700',
-  done: 'bg-green-100 text-green-700',
+  done: 'bg-[#e6f4f4] text-[#006766]',
 }
 
 export default function TaskDetailModal({
@@ -185,35 +185,35 @@ export default function TaskDetailModal({
 
   return (
     <div className={`fixed inset-0 bg-black z-50 flex items-end md:items-center justify-center ${isMobile ? 'bg-opacity-0 p-0' : 'bg-opacity-50 p-4'}`}>
-      <div className={`bg-white w-full shadow-lg overflow-y-auto flex flex-col ${
+      <div className={`bg-white w-full shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-y-auto flex flex-col ${
         isMobile 
           ? 'h-full rounded-none' 
           : 'max-w-2xl max-h-[90vh] rounded-[14px]'
       }`}>
         {/* Header - Mobile: sticky with explicit back button, Desktop: modal close */}
-        <div className={`sticky top-0 bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex justify-between items-center min-h-[56px] md:min-h-auto`}>
+        <div className={`sticky top-0 bg-white px-4 md:px-6 py-4 flex justify-between items-center min-h-[56px] md:min-h-auto`}>
           {isMobile ? (
             <>
               <button
                 onClick={onClose}
-                className="text-gray-700 hover:bg-gray-100 rounded-lg transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Go back"
               >
                 <FaTimes className="text-lg" />
               </button>
-              <h2 className="text-lg font-semibold text-gray-900 flex-1 text-center">
+              <h2 className="text-lg font-semibold text-[#1c1b1b] flex-1 text-center">
                 {task ? 'Edit Task' : 'New Task'}
               </h2>
               <div className="w-[44px]" />
             </>
           ) : (
             <>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-[#1c1b1b]">
                 {task ? 'Edit Task' : 'New Task'}
               </h2>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-[#C4C0C0] hover:text-[#5a5757] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <FaTimes className="text-lg" />
               </button>
@@ -225,7 +225,7 @@ export default function TaskDetailModal({
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
               Task Title
             </label>
             <input
@@ -233,7 +233,7 @@ export default function TaskDetailModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:focus-ring text-gray-900 placeholder-gray-500 min-h-[44px]"
+              className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] placeholder-gray-500 min-h-[44px]"
             />
           </div>
 
@@ -241,13 +241,13 @@ export default function TaskDetailModal({
           <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
             {/* Priority */}
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-3">
+              <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
                 Priority
               </label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(parseInt(e.target.value))}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:focus-ring text-gray-900 min-h-[44px]"
+                className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] min-h-[44px]"
               >
                 {PRIORITIES.map((p) => (
                   <option key={p.num} value={p.num}>
@@ -259,14 +259,14 @@ export default function TaskDetailModal({
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-3">
+              <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
                 Status
               </label>
               {statuses.length > 0 ? (
                 <select
                   value={statusId}
                   onChange={(e) => setStatusId(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:focus-ring text-gray-900 min-h-[44px]"
+                  className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] min-h-[44px]"
                 >
                   <option value="">Select a status</option>
                   {statuses.map((s) => (
@@ -276,7 +276,7 @@ export default function TaskDetailModal({
                   ))}
                 </select>
               ) : (
-                <div className="px-4 py-3 bg-gray-100 text-gray-600 rounded-lg min-h-[44px] flex items-center">
+                <div className="px-4 py-3 bg-[#f0eded] text-[#5a5757] rounded-[10px] min-h-[44px] flex items-center">
                   Loading statuses...
                 </div>
               )}
@@ -284,13 +284,13 @@ export default function TaskDetailModal({
 
             {/* Assignee */}
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-3">
+              <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
                 Assign to
               </label>
               <select
                 value={assigneeId || ''}
                 onChange={(e) => setAssigneeId(e.target.value || null)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:focus-ring text-gray-900 min-h-[44px]"
+                className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] min-h-[44px]"
               >
                 <option value="">Unassigned</option>
                 <option value="doug">Doug</option>
@@ -302,20 +302,20 @@ export default function TaskDetailModal({
 
           {/* Due Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
               Due Date
             </label>
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:focus-ring text-gray-900 min-h-[44px]"
+              className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] min-h-[44px]"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
               Description
             </label>
             <div className="relative">
@@ -343,7 +343,7 @@ export default function TaskDetailModal({
           {/* Attachments */}
           {task && workspaceId && (
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
+              <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
                 Attachments
               </label>
               <FileUpload
@@ -368,11 +368,11 @@ export default function TaskDetailModal({
         </div>
 
         {/* Footer */}
-        <div className={`sticky bottom-0 bg-gray-50 border-t border-gray-200 px-4 md:px-6 py-4 flex flex-col-reverse md:flex-row md:justify-between md:items-center gap-3 md:gap-0 ${isMobile ? 'safe-area-inset-bottom' : ''}`}>
+        <div className={`sticky bottom-0 bg-[#f6f3f2] px-4 md:px-6 py-4 flex flex-col-reverse md:flex-row md:justify-between md:items-center gap-3 md:gap-0 ${isMobile ? 'safe-area-inset-bottom' : ''}`}>
           <div className={`flex gap-2 ${isMobile ? 'w-full md:w-auto' : ''}`}>
             <button
               onClick={handleDelete}
-              className="p-3 text-gray-500 hover:text-red-600 transition rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-3 text-[#A3A3A3] hover:text-red-600 transition rounded-[10px] min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Delete task"
             >
               <FaTrash />
@@ -380,7 +380,7 @@ export default function TaskDetailModal({
             {task && workspaceId && userId && (
               <button
                 onClick={() => setIsShareModalOpen(true)}
-                className="p-3 text-gray-500 hover:text-accent-600 transition rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-3 text-[#A3A3A3] hover:text-accent-600 transition rounded-[10px] min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Share task"
               >
                 <FaShareAlt />
@@ -390,13 +390,13 @@ export default function TaskDetailModal({
           <div className={`flex gap-3 w-full md:w-auto ${isMobile ? 'flex-col-reverse' : ''}`}>
             <button
               onClick={onClose}
-              className="px-4 py-3 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition font-medium min-h-[44px] flex items-center justify-center"
+              className="px-4 py-3 bg-[#f0eded] text-[#1c1b1b] rounded-[10px] hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-3 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition font-medium min-h-[44px] flex items-center justify-center"
+              className="px-4 py-3 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition font-medium min-h-[44px] flex items-center justify-center"
             >
               Save Task
             </button>
