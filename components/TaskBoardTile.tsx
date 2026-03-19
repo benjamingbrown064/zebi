@@ -86,9 +86,9 @@ export default function TaskBoardTile({
       case 3:
         return 'text-amber-500 bg-amber-50'
       case 4:
-        return 'text-gray-400 bg-gray-50'
+        return 'text-[#C4C0C0] bg-[#f6f3f2]'
       default:
-        return 'text-gray-400 bg-gray-50'
+        return 'text-[#C4C0C0] bg-[#f6f3f2]'
     }
   }
 
@@ -121,7 +121,7 @@ export default function TaskBoardTile({
         <div className="flex-1 min-w-0">
           <h3
             title={task.title}
-            className="text-sm font-medium text-gray-900 truncate leading-tight"
+            className="text-sm font-medium text-[#1c1b1b] truncate leading-tight"
           >
             {task.title}
           </h3>
@@ -131,14 +131,14 @@ export default function TaskBoardTile({
           {task.description && (
             <FaFileAlt
               size={12}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-[#C4C0C0] hover:text-[#5a5757]"
               title="Has description"
             />
           )}
           {hasAttachments && (
             <FaPaperclip
               size={12}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-[#C4C0C0] hover:text-[#5a5757]"
               title={`${task.attachments?.length} attachment(s)`}
             />
           )}
@@ -178,7 +178,7 @@ export default function TaskBoardTile({
       <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
         {/* Due Date */}
         {dueDate && (
-          <span className="text-gray-600">{dueDate}</span>
+          <span className="text-[#5a5757]">{dueDate}</span>
         )}
 
         {/* Priority */}
@@ -191,7 +191,7 @@ export default function TaskBoardTile({
             }}
             className={`px-2 py-1 rounded font-medium transition-all ${getPriorityColor(
               task.priority
-            )} ${isHovering ? 'cursor-pointer hover:shadow-sm' : ''}`}
+            )} ${isHovering ? 'cursor-pointer hover:shadow-[0_1px_3px_rgba(28,27,27,0.06)]' : ''}`}
             title="Priority"
           >
             {getPriorityLabel(task.priority)}
@@ -199,7 +199,7 @@ export default function TaskBoardTile({
 
           {/* Priority Picker - appears on hover */}
           {showPriorityPicker && isHovering && (
-            <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1">
+            <div className="absolute top-full mt-1 left-0 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-10 py-1">
               {[1, 2, 3, 4].map((p) => (
                 <button
                   key={p}
@@ -209,8 +209,8 @@ export default function TaskBoardTile({
                     onPriorityChange?.(task.id, p)
                     setShowPriorityPicker(false)
                   }}
-                  className={`block w-full text-left px-3 py-2 text-xs font-medium hover:bg-gray-100 transition-colors ${
-                    task.priority === p ? 'bg-gray-50' : ''
+                  className={`block w-full text-left px-3 py-2 text-xs font-medium hover:bg-[#f0eded] transition-colors ${
+                    task.priority === p ? 'bg-[#f6f3f2]' : ''
                   }`}
                 >
                   {getPriorityLabel(p)}
@@ -226,13 +226,13 @@ export default function TaskBoardTile({
             {displayTags.map((tag) => (
               <span
                 key={tag.id}
-                className="px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium"
+                className="px-2 py-1 bg-[#e6f4f4] text-[#006766] rounded font-medium"
               >
                 {tag.name}
               </span>
             ))}
             {remainingTags > 0 && (
-              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded font-medium">
+              <span className="px-2 py-1 bg-[#f0eded] text-[#5a5757] rounded font-medium">
                 +{remainingTags}
               </span>
             )}
@@ -249,7 +249,7 @@ export default function TaskBoardTile({
         {/* Attachments */}
         {hasAttachments && (
           <span
-            className="flex items-center gap-1 text-gray-500"
+            className="flex items-center gap-1 text-[#A3A3A3]"
             title={`${task.attachments?.length} attachment(s)`}
           >
             <FaPaperclip size={12} /> {task.attachments?.length}
@@ -267,9 +267,9 @@ export default function TaskBoardTile({
             </div>
           )}
           {hasAssignee && !hasBlockedReason && (
-            <div className="flex items-center gap-1 text-gray-600">
+            <div className="flex items-center gap-1 text-[#5a5757]">
               <span className="font-medium">Assigned to:</span>
-              <span className="text-gray-700">{task.assignee?.name}</span>
+              <span className="text-[#5a5757]">{task.assignee?.name}</span>
             </div>
           )}
         </div>
@@ -277,7 +277,7 @@ export default function TaskBoardTile({
 
       {/* HOVER ACTIONS - Subtle, no layout shift */}
       {isHovering && (
-        <div className="absolute inset-0 pointer-events-none rounded-lg bg-gradient-to-t from-black/0 to-transparent" />
+        <div className="absolute inset-0 pointer-events-none rounded-[10px] bg-gradient-to-t from-black/0 to-transparent" />
       )}
 
       {isHovering && (
@@ -289,7 +289,7 @@ export default function TaskBoardTile({
               e.stopPropagation()
               onComplete?.(task.id)
             }}
-            className="text-xs font-medium px-2 py-1 bg-green-50 text-green-700 hover:bg-green-100 rounded transition-colors flex items-center gap-1"
+            className="text-xs font-medium px-2 py-1 bg-[#f0fafa] text-[#006766] hover:bg-[#e6f4f4] rounded transition-colors flex items-center gap-1"
             title="Mark complete"
           >
             <FaCheck size={12} />
@@ -306,7 +306,7 @@ export default function TaskBoardTile({
               snoozeUntil.setHours(snoozeUntil.getHours() + 1)
               onSnooze?.(task.id, snoozeUntil)
             }}
-            className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded transition-colors flex items-center gap-1"
+            className="text-xs font-medium px-2 py-1 bg-[#f0fafa] text-[#006766] hover:bg-[#e6f4f4] rounded transition-colors flex items-center gap-1"
             title="Snooze for 1 hour"
           >
             <FaClock size={12} />
@@ -320,7 +320,7 @@ export default function TaskBoardTile({
               e.stopPropagation()
               onView?.(task.id)
             }}
-            className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded transition-colors ml-auto flex items-center gap-1"
+            className="text-xs font-medium px-2 py-1 bg-[#f0fafa] text-[#006766] hover:bg-[#e6f4f4] rounded transition-colors ml-auto flex items-center gap-1"
             title="View task details"
           >
             <FaEye size={12} />
