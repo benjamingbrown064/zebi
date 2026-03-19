@@ -56,8 +56,8 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
   }
 
   const getProgressColor = () => {
-    if (progress >= 100) return 'bg-green-500'
-    if (progress >= 75) return 'bg-blue-500'
+    if (progress >= 100) return 'bg-[#f0fafa]0'
+    if (progress >= 75) return 'bg-[#f0fafa]0'
     if (progress >= 50) return 'bg-yellow-500'
     return 'bg-red-500'
   }
@@ -65,7 +65,7 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
   const mainPaddingClass = sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -91,7 +91,7 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
             <div className="flex items-center gap-2 md:gap-3">
               <button
                 onClick={() => router.push(`/goals?edit=${goal.id}`)}
-                className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-white hover:bg-gray-50 text-[#525252] border border-[#E5E5E5] rounded-[10px] font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-white hover:bg-[#f6f3f2] text-[#525252]  rounded-[10px] font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
               >
                 <FaEdit className="text-sm" />
                 <span className="hidden sm:inline">Edit</span>
@@ -110,13 +110,13 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
         <ResponsivePageContainer>
           <div className="py-6 md:py-12 space-y-6">
             {/* Progress Card */}
-            <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-6">
+            <div className="bg-white rounded-[14px] p-6">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
                   <h2 className="text-[17px] font-semibold text-[#1A1A1A] mb-1">Progress</h2>
                   <p className="text-[15px] text-[#A3A3A3]">{formatValue()}</p>
                 </div>
-                <span className="px-3 py-1.5 rounded-[6px] text-[13px] font-semibold bg-blue-100 text-blue-700">
+                <span className="px-3 py-1.5 rounded-[6px] text-[13px] font-semibold bg-[#e6f4f4] text-[#006766]">
                   {progress}%
                 </span>
               </div>
@@ -132,7 +132,7 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-[#E5E5E5]">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
                 <div>
                   <p className="text-[12px] text-[#A3A3A3] mb-1">Target</p>
                   <p className="text-[15px] font-semibold text-[#1A1A1A]">
@@ -172,13 +172,13 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
             />
             {/* Tasks Count */}
             {totalTasks > 0 && (
-              <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-6">
+              <div className="bg-white rounded-[14px] p-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[17px] font-semibold text-[#1A1A1A] flex items-center gap-2">
                     <FaTasks className="text-[#DD3A44]" />
                     Linked Tasks
                   </h2>
-                  <span className="text-[13px] font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-[6px]">
+                  <span className="text-[13px] font-medium bg-[#e6f4f4] text-[#006766] px-3 py-1 rounded-[6px]">
                     {totalTasks} task{totalTasks !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -188,7 +188,7 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
 
             {/* Objectives */}
             {goal.objectives && goal.objectives.length > 0 && (
-              <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-6">
+              <div className="bg-white rounded-[14px] p-6">
                 <h2 className="text-[17px] font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
                   <FaBullseye className="text-[#DD3A44]" />
                   Linked Objectives
@@ -205,9 +205,9 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
                         <p className="text-[15px] text-[#1A1A1A]">{objective.title}</p>
                       </div>
                       <span className={`px-2 py-1 rounded-[6px] text-[11px] font-medium ${
-                        objective.status === 'complete' ? 'bg-green-100 text-green-700' :
+                        objective.status === 'complete' ? 'bg-[#e6f4f4] text-[#006766]' :
                         objective.status === 'at_risk' ? 'bg-red-100 text-red-700' :
-                        objective.status === 'on_track' ? 'bg-blue-100 text-blue-700' :
+                        objective.status === 'on_track' ? 'bg-[#e6f4f4] text-[#006766]' :
                         'bg-[#F5F5F5] text-[#525252]'
                       }`}>
                         {objective.status.replace('_', ' ')}
