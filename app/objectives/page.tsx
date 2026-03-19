@@ -28,7 +28,11 @@ export default async function ObjectivesPage() {
           blockers: {
             where: { resolvedAt: null },
           },
-          // Tasks trimmed - use _count for list view performance
+          tasks: {
+            where: { archivedAt: null },
+            select: { id: true, aiGenerated: true, completedAt: true },
+            take: 1
+          },
           _count: {
             select: {
               tasks: true,
