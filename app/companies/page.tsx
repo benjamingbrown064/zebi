@@ -11,6 +11,7 @@ import ResponsivePageContainer from '@/components/responsive/ResponsivePageConta
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import VoiceEntityModal from '@/components/voice-entity/VoiceEntityModal'
 import { useWorkspace } from '@/lib/use-workspace'
+import { cachedFetch, invalidateCache } from '@/lib/client-cache'
 
 interface Company {
   id: string
@@ -53,7 +54,7 @@ export default function CompaniesPage() {
   async function loadCompanies() {
     if (!workspaceId) return
     try {
-      const response = await fetch(`/api/companies?workspaceId=${workspaceId}`)
+      const response = await cachedFetch<any[]>(`/api/companies?workspaceId=${workspaceId}`)
       if (response.ok) {
         const data = await response.json()
         setCompanies(data)
