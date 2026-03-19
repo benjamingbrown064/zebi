@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // Force dynamic rendering
-export const dynamic = 'force-dynamic'
+export const revalidate = 300 // Cache for 300s — invalidated on writes
 
 const DEFAULT_STATUSES = [
   { name: 'Inbox', type: 'inbox', sortOrder: 0 },
