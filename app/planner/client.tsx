@@ -183,7 +183,7 @@ export default function WeeklyPlannerClient({
     : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="Zebi"
         isCollapsed={sidebarCollapsed}
@@ -192,7 +192,7 @@ export default function WeeklyPlannerClient({
 
       <div className={`${mainPaddingClass} flex flex-col h-screen transition-all duration-300`}>
         {/* Header */}
-        <header className="bg-white border-b border-[#E5E5E5] sticky top-0 z-10 flex-shrink-0">
+        <header className="bg-white sticky top-0 z-10 flex-shrink-0">
           <div className="px-6 py-4 md:py-6">
             <h1 className="text-xl md:text-2xl font-semibold text-[#1A1A1A]">Weekly Planner</h1>
             <p className="text-sm text-[#A3A3A3] mt-0.5">Zebi / Planner</p>
