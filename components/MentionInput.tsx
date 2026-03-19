@@ -153,12 +153,12 @@ export default function MentionInput({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
-          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent disabled:opacity-50"
+          className="flex-1 px-3 py-2 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent disabled:opacity-50"
         />
         <button
           onClick={handleSubmit}
           disabled={!value.trim() || disabled}
-          className="px-3 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="px-3 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           <FaPaperPlane className="w-4 h-4" />
         </button>
@@ -168,13 +168,13 @@ export default function MentionInput({
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute left-0 right-12 bottom-full mb-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50"
+          className="absolute left-0 right-12 bottom-full mb-1 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-hidden z-50"
         >
           {suggestions.map((user, index) => (
             <button
               key={user.id}
               onClick={() => insertMention(user)}
-              className={`w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-gray-50 transition ${
+              className={`w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-[#f6f3f2] transition ${
                 index === selectedIndex ? 'bg-accent-50' : ''
               }`}
             >
@@ -182,11 +182,11 @@ export default function MentionInput({
                 {getInitials(user)}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium text-gray-900 truncate">
+                <div className="text-sm font-medium text-[#1c1b1b] truncate">
                   {getUserDisplayName(user)}
                 </div>
                 {user.email && (
-                  <div className="text-xs text-gray-500 truncate">
+                  <div className="text-xs text-[#A3A3A3] truncate">
                     {user.email}
                   </div>
                 )}
