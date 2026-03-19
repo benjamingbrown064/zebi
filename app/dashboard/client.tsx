@@ -94,7 +94,7 @@ export default function DashboardClient({
     day: 'numeric',
   })
 
-  const mainPaddingClass = isMobile ? 'pt-[64px]' : sidebarCollapsed ? 'ml-16' : 'ml-64'
+  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   // Load AI suggestions
   useEffect(() => {
