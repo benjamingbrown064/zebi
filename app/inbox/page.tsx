@@ -13,6 +13,7 @@ import {
   FaInbox,
 } from 'react-icons/fa'
 import { useWorkspace } from '@/lib/use-workspace'
+import { cachedFetch } from '@/lib/client-cache'
 
 interface InboxItem {
   id: string
@@ -77,7 +78,7 @@ export default function InboxPage() {
     try {
       setLoading(true)
       const statusParam = statusFilter !== 'all' ? `&status=${statusFilter}` : ''
-      const res = await fetch(`/api/inbox?workspaceId=${workspaceId}${statusParam}`)
+      const res = await cachedFetch<any>(`/api/inbox?workspaceId=${workspaceId}${statusParam}`)
       if (!res.ok) throw new Error('Failed to fetch inbox items')
       const data = await res.json()
       setItems(data.items || [])
@@ -90,7 +91,7 @@ export default function InboxPage() {
 
   const loadStats = async () => {
     try {
-      const res = await fetch(`/api/inbox?workspaceId=${workspaceId}&action=stats`)
+      const res = await cachedFetch<any>(`/api/inbox?workspaceId=${workspaceId}&action=stats`)
       if (!res.ok) throw new Error('Failed to fetch stats')
       const data = await res.json()
       setStats(data)
