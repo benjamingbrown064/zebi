@@ -64,7 +64,7 @@ export default function TaskDetailClient({
       <div className={sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'}>
         {/* Main content - just show empty state since modal will overlay */}
         <div className="p-8">
-          <div className="text-center text-gray-500 py-20">
+          <div className="text-center text-[#A3A3A3] py-20">
             Loading task details...
           </div>
         </div>
