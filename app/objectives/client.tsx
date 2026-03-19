@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/react'
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/react'
 import Sidebar from '@/components/Sidebar'
 import ObjectiveCard from '@/components/ObjectiveCard'
 import ObjectiveForm from '@/components/ObjectiveForm'
@@ -215,14 +215,11 @@ export default function ObjectivesClient({
           primaryAction={
             <Dropdown>
               <DropdownTrigger>
-                <Button
-                  color="danger"
-                  startContent={<FaPlus />}
-                  className="text-white font-medium text-[13px] md:text-[15px] min-h-[44px]"
-                >
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]">
+                  <FaPlus className="text-sm" />
                   <span className="hidden sm:inline">New Objective</span>
                   <span className="sm:hidden">New</span>
-                </Button>
+                </button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Create objective options">
                 <DropdownItem
