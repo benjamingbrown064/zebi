@@ -21,7 +21,13 @@ export default async function BoardPage() {
         include: {
           tags: {
             include: { tag: true }
-          }
+          },
+          project: {
+            select: { id: true, name: true }
+          },
+          assignee: {
+            select: { id: true, name: true }
+          },
         },
         orderBy: { createdAt: 'desc' },
         take: 500 // Limit to 500 most recent tasks (prevents loading thousands)
