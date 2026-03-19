@@ -9,7 +9,6 @@ export const metadata = {
 }
 
 async function getWeeklyPlannerData(workspaceId: string) {
-  // Fetch all non-archived tasks
   const tasks = await prisma.task.findMany({
     where: {
       workspaceId,
@@ -18,30 +17,18 @@ async function getWeeklyPlannerData(workspaceId: string) {
     include: {
       status: true,
       project: {
-        select: {
-          id: true,
-          name: true,
-        },
+        select: { id: true, name: true },
       },
       company: {
-        select: {
-          id: true,
-          name: true,
-        },
+        select: { id: true, name: true },
       },
       objective: {
-        select: {
-          id: true,
-          title: true,
-        },
+        select: { id: true, title: true },
       },
     },
-    orderBy: {
-      createdAt: 'desc',
-    },
+    orderBy: { createdAt: 'desc' },
   })
 
-  // Get workspace settings for capacity
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
   })
@@ -49,24 +36,21 @@ async function getWeeklyPlannerData(workspaceId: string) {
   return {
     tasks,
     workspace,
-    defaultCapacity: 8, // Default 8 hours per day
+    defaultCapacity: 8,
   }
 }
 
 export default async function WeeklyPlannerPage() {
   const workspaceId = await requireWorkspace()
-
   const data = await getWeeklyPlannerData(workspaceId)
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
-      <Suspense fallback={<div className="p-12">Loading planner...</div>}>
-        <WeeklyPlannerClient
-          initialTasks={data.tasks}
-          workspaceId={workspaceId}
-          defaultCapacity={data.defaultCapacity}
-        />
-      </Suspense>
-    </div>
+    <Suspense fallback={<div className="p-12">Loading planner...</div>}>
+      <WeeklyPlannerClient
+        initialTasks={data.tasks}
+        workspaceId={workspaceId}
+        defaultCapacity={data.defaultCapacity}
+      />
+    </Suspense>
   )
 }
