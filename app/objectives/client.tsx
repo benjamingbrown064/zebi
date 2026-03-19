@@ -1,4 +1,5 @@
 'use client'
+import { cachedFetch, invalidateCache } from '@/lib/client-cache'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
