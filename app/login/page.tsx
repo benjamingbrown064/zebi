@@ -48,7 +48,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-12">
@@ -64,7 +64,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8">
+        <div className="bg-white  rounded-[14px] p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-medium text-[#1A1A1A] mb-2">Welcome back</h2>
             <p className="text-[#525252] text-[15px]">Sign in to continue to your workspace</p>
@@ -116,7 +116,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-[#E5E5E5] text-center">
+          <div className="mt-6 pt-6 text-center">
             <p className="text-[13px] text-[#525252]">
               Don't have an account?{' '}
               <Link 
