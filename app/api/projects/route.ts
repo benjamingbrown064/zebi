@@ -10,6 +10,9 @@ export async function GET(request: NextRequest) {
     const objectiveId = searchParams.get('objectiveId')
     const status = searchParams.get('status')
 
+    // By default exclude archived projects; pass includeArchived=true to override
+    const includeArchived = searchParams.get('includeArchived') === 'true'
+
     if (!workspaceId) {
       return NextResponse.json(
         { error: 'workspaceId is required' },
@@ -18,7 +21,12 @@ export async function GET(request: NextRequest) {
     }
 
     const where: any = { workspaceId }
-    
+
+    // Exclude archived by default
+    if (!includeArchived) {
+      where.archivedAt = null
+    }
+
     if (companyId) where.companyId = companyId
     if (objectiveId) where.objectiveId = objectiveId
     if (status) where.status = status
@@ -59,17 +67,16 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    // Map database 'name' field to frontend 'title' field and calculate progress
     const mappedProjects = projects.map(project => {
-      // Calculate progress from tasks
       const totalTasks = project.tasks.length
-      const completedTasks = project.tasks.filter(t => t.status.name === 'Done' || t.status.name === 'Check').length
+      const completedTasks = project.tasks.filter(
+        t => t.status.name === 'Done' || t.status.name === 'Check'
+      ).length
       const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
-      
-      // Determine status
+
       let status = 'active'
       if (project.archivedAt) {
-        status = 'completed'
+        status = 'archived'
       } else if (totalTasks === 0) {
         status = 'planning'
       }
@@ -92,6 +99,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       projects: mappedProjects,
       count: mappedProjects.length,
+      filters: { includeArchived },
     })
   } catch (error) {
     console.error('Failed to fetch projects:', error)
@@ -104,7 +112,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Validate Bearer token (for API access from Doug/Harvey)
     const auth = validateAIAuth(request)
     if (!auth.valid) {
       return NextResponse.json(
