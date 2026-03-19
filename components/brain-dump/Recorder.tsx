@@ -162,7 +162,7 @@ export default function Recorder({
       <div className="flex flex-col items-center gap-8">
         {/* Timer */}
         <div className={`text-6xl font-light tracking-wide transition-colors ${
-          isRecording ? (isPaused ? 'text-yellow-600' : 'text-[#DD3A44]') : 'text-gray-400'
+          isRecording ? (isPaused ? 'text-yellow-600' : 'text-[#DD3A44]') : 'text-[#C4C0C0]'
         }`}>
           {formatTime(recordingTime)}
         </div>
@@ -180,12 +180,12 @@ export default function Recorder({
             <>
               <button
                 onClick={togglePause}
-                className="flex items-center justify-center w-16 h-16 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
+                className="flex items-center justify-center w-16 h-16 bg-[#e8e4e4] hover:bg-gray-300 rounded-full transition-colors"
               >
                 {isPaused ? (
-                  <FaPlay className="text-gray-700 text-xl ml-1" />
+                  <FaPlay className="text-[#5a5757] text-xl ml-1" />
                 ) : (
-                  <FaPause className="text-gray-700 text-xl" />
+                  <FaPause className="text-[#5a5757] text-xl" />
                 )}
               </button>
               
@@ -200,7 +200,7 @@ export default function Recorder({
         </div>
 
         {/* Status Text */}
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-[#5a5757]">
           {!isRecording && 'Click to start recording'}
           {isRecording && !isPaused && 'Recording... Click pause or stop when done'}
           {isRecording && isPaused && 'Paused. Click to resume or stop'}
