@@ -200,7 +200,7 @@ export default function ObjectivesClient({
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -233,7 +233,7 @@ export default function ObjectivesClient({
                   key="voice"
                   startContent={<FaMicrophone className="text-lg" />}
                   onPress={() => setIsVoiceModalOpen(true)}
-                  className="text-blue-600"
+                  className="text-[#006766]"
                 >
                   Create via Voice
                 </DropdownItem>
@@ -247,7 +247,7 @@ export default function ObjectivesClient({
           <div className="py-6 md:py-12">
             {/* Summary Stats - Responsive Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 mb-6 md:mb-12">
-              <div className="bg-white rounded-[10px] md:rounded-[14px] border border-[#E5E5E5] p-4 md:p-5">
+              <div className="bg-white rounded-[10px] md:rounded-[14px] p-4 md:p-5">
                 <p className="text-[11px] md:text-[13px] leading-[20px] text-[#A3A3A3] mb-1">Total</p>
                 <p className="text-[20px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#1A1A1A]">
                   {objectives.length}
@@ -300,7 +300,7 @@ export default function ObjectivesClient({
                         ${
                           statusFilter === filter.value
                             ? 'bg-[#FEF2F2] text-[#DD3A44] border border-[#DD3A44]'
-                            : 'bg-white text-[#525252] border border-[#E5E5E5] hover:bg-[#F5F5F5]'
+                            : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
                         }
                       `}
                     >
@@ -314,7 +314,7 @@ export default function ObjectivesClient({
                   <select
                     value={companyFilter}
                     onChange={(e) => setCompanyFilter(e.target.value)}
-                    className="px-4 py-2 bg-white border border-[#E5E5E5] rounded-[10px] text-[13px] text-[#525252] focus:outline-none focus:border-[#DD3A44] focus:ring-2 focus:ring-[#DD3A44] focus:ring-offset-2 min-h-[44px] w-full sm:w-auto"
+                    className="px-4 py-2 bg-white  rounded-[10px] text-[13px] text-[#525252] focus:outline-none focus:border-[#DD3A44] focus:ring-2 focus:ring-[#DD3A44] focus:ring-offset-2 min-h-[44px] w-full sm:w-auto"
                   >
                     <option value="all">All Companies</option>
                     {companies.map((company) => (
