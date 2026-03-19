@@ -21,60 +21,96 @@ const WorkspaceContext = createContext<WorkspaceContextValue>({
   refetch: async () => {},
 })
 
+const LS_KEY = 'zebi_workspace'
+const LS_TTL = 10 * 60 * 1000 // 10 minutes
+
+function readLocalCache(): { workspaceId: string; workspaceName: string; role: string } | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    if (!raw) return null
+    const { data, expiresAt } = JSON.parse(raw)
+    if (Date.now() > expiresAt) { localStorage.removeItem(LS_KEY); return null }
+    return data
+  } catch { return null }
+}
+
+function writeLocalCache(data: { workspaceId: string; workspaceName: string; role: string }) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({ data, expiresAt: Date.now() + LS_TTL }))
+  } catch {}
+}
+
+function clearLocalCache() {
+  if (typeof window === 'undefined') return
+  try { localStorage.removeItem(LS_KEY) } catch {}
+}
+
 export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const hasFetched = useRef(false)
+
+  // Boot from localStorage immediately — zero-latency on navigation
+  const cached = readLocalCache()
   const [state, setState] = useState<WorkspaceContextValue>({
-    workspaceId: null,
-    workspaceName: null,
-    role: null,
-    loading: true,
+    workspaceId: cached?.workspaceId ?? null,
+    workspaceName: cached?.workspaceName ?? null,
+    role: cached?.role ?? null,
+    loading: !cached, // if we have cache, loading is already false
     error: null,
     refetch: async () => {},
   })
 
-  const fetchWorkspace = useCallback(async () => {
+  const fetchWorkspace = useCallback(async (force = false) => {
     const publicRoutes = ['/login', '/signup', '/auth/callback', '/auth/confirm']
     const isPublicRoute = pathname === '/' || publicRoutes.some(route => pathname?.startsWith(route))
-
     if (isPublicRoute) {
       setState(prev => ({ ...prev, loading: false }))
       return
     }
 
-    try {
-      const res = await fetch('/api/workspaces/current', {
-        credentials: 'include',
-      })
-
-      if (res.status === 401) {
+    // Serve from localStorage cache unless forced
+    if (!force) {
+      const hit = readLocalCache()
+      if (hit) {
         setState(prev => ({
-          ...prev, workspaceId: null, workspaceName: null, role: null,
-          loading: false, error: new Error('Unauthorized'),
+          ...prev,
+          workspaceId: hit.workspaceId,
+          workspaceName: hit.workspaceName,
+          role: hit.role,
+          loading: false,
+          error: null,
         }))
         return
       }
+    }
 
+    try {
+      setState(prev => ({ ...prev, loading: true }))
+      const res = await fetch('/api/workspaces/current', { credentials: 'include' })
+
+      if (res.status === 401) {
+        clearLocalCache()
+        setState(prev => ({ ...prev, workspaceId: null, workspaceName: null, role: null, loading: false, error: new Error('Unauthorized') }))
+        return
+      }
       if (!res.ok) throw new Error(`Failed: ${res.status}`)
 
       const data = await res.json()
-      setState(prev => ({
-        ...prev,
-        workspaceId: data.workspace?.id || null,
-        workspaceName: data.workspace?.name || null,
-        role: data.workspace?.role || null,
-        loading: false, error: null,
-      }))
+      const ws = {
+        workspaceId: data.workspace?.id ?? null,
+        workspaceName: data.workspace?.name ?? null,
+        role: data.workspace?.role ?? null,
+      }
+      if (ws.workspaceId) writeLocalCache(ws as any)
+      setState(prev => ({ ...prev, ...ws, loading: false, error: null }))
     } catch (error) {
-      setState(prev => ({
-        ...prev, workspaceId: null, workspaceName: null, role: null,
-        loading: false,
-        error: error instanceof Error ? error : new Error('Unknown error'),
-      }))
+      setState(prev => ({ ...prev, workspaceId: null, loading: false, error: error instanceof Error ? error : new Error('Unknown error') }))
     }
   }, [pathname])
 
-  // Fetch ONCE on mount, not on every pathname change
+  // Fetch once on mount (skip if localStorage hit)
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true
@@ -82,25 +118,22 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Only re-fetch if we navigate to/from a public route (login/signup)
+  // Handle login/logout navigation
   useEffect(() => {
     const publicRoutes = ['/login', '/signup', '/auth/callback', '/auth/confirm']
     const isPublicRoute = pathname === '/' || publicRoutes.some(route => pathname?.startsWith(route))
-
     if (isPublicRoute && state.workspaceId) {
-      // Went to login page — clear workspace
+      clearLocalCache()
       setState(prev => ({ ...prev, workspaceId: null, loading: false }))
       hasFetched.current = false
     } else if (!isPublicRoute && !state.workspaceId && !state.loading && hasFetched.current) {
-      // Came back from login — re-fetch
       hasFetched.current = false
-      fetchWorkspace()
+      fetchWorkspace(true)
     }
   }, [pathname])
 
-  // Expose refetch
   useEffect(() => {
-    setState(prev => ({ ...prev, refetch: fetchWorkspace }))
+    setState(prev => ({ ...prev, refetch: () => fetchWorkspace(true) }))
   }, [fetchWorkspace])
 
   return (
@@ -112,8 +145,6 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
 export function useWorkspace() {
   const context = useContext(WorkspaceContext)
-  if (context === undefined) {
-    throw new Error('useWorkspace must be used within WorkspaceProvider')
-  }
+  if (context === undefined) throw new Error('useWorkspace must be used within WorkspaceProvider')
   return context
 }
