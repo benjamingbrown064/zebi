@@ -89,12 +89,12 @@ export default function GoalCompanyLinker({
   }, 0)
 
   return (
-    <div className="mt-6 border-t border-[#E5E5E5] pt-6">
+    <div className="mt-6 pt-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-[#1A1A1A]">Link Companies</h3>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="text-[13px] px-3 py-1.5 bg-[#DD3A44] text-white rounded-lg hover:opacity-90 transition inline-flex items-center gap-2"
+          className="text-[13px] px-3 py-1.5 bg-[#DD3A44] text-white rounded-[10px] hover:opacity-90 transition inline-flex items-center gap-2"
         >
           <FaLink className="text-xs" />
           {linkedCompanies.length > 0 ? 'Manage' : 'Add'} Companies
@@ -103,7 +103,7 @@ export default function GoalCompanyLinker({
 
       {/* Display linked companies */}
       {linkedCompanies.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-4 mb-4">
+        <div className="bg-[#f6f3f2] rounded-[14px] p-4 mb-4">
           <p className="text-[12px] text-[#525252] mb-3">
             {linkedCompanies.length} compan{linkedCompanies.length === 1 ? 'y' : 'ies'} linked
           </p>
@@ -111,7 +111,7 @@ export default function GoalCompanyLinker({
             {linkedCompanies.map(company => (
               <div
                 key={company.id}
-                className="flex items-center justify-between bg-white p-3 rounded-lg border border-[#E5E5E5]"
+                className="flex items-center justify-between bg-white p-3 rounded-[10px] "
               >
                 <span className="text-[14px] font-medium text-[#1A1A1A]">{company.name}</span>
                 <span className="text-[13px] text-[#DD3A44] font-semibold">
@@ -120,7 +120,7 @@ export default function GoalCompanyLinker({
               </div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-[#E5E5E5]">
+          <div className="mt-4 pt-4">
             <p className="text-[13px] text-[#525252]">Total Revenue:</p>
             <p className="text-2xl font-bold text-[#DD3A44]">
               £{totalRevenue.toLocaleString()}
@@ -132,7 +132,7 @@ export default function GoalCompanyLinker({
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+          <div className="bg-white rounded-[14px] shadow-xl w-full max-w-md mx-4 p-6">
             <h4 className="font-semibold text-[#1A1A1A] mb-4">Link Companies to Goal</h4>
 
             {isLoading ? (
@@ -148,7 +148,7 @@ export default function GoalCompanyLinker({
                     allCompanies.map(company => (
                       <label
                         key={company.id}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-[#E5E5E5] cursor-pointer hover:bg-gray-50 transition"
+                        className="flex items-center gap-3 p-3 rounded-[10px]  cursor-pointer hover:bg-[#f6f3f2] transition"
                       >
                         <input
                           type="checkbox"
@@ -169,7 +169,7 @@ export default function GoalCompanyLinker({
 
                 {/* Preview total */}
                 {selectedCompanies.length > 0 && (
-                  <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                  <div className="bg-[#f6f3f2] p-4 rounded-[10px] mb-6">
                     <p className="text-[12px] text-[#525252] mb-2">Total Revenue Preview:</p>
                     <p className="text-xl font-bold text-[#DD3A44]">
                       £{totalRevenue.toLocaleString()}
@@ -181,14 +181,14 @@ export default function GoalCompanyLinker({
                 <div className="flex gap-3">
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="flex-1 px-4 py-2 border border-[#E5E5E5] rounded-lg text-[13px] font-medium text-[#525252] hover:bg-gray-50 transition"
+                    className="flex-1 px-4 py-2  rounded-[10px] text-[13px] font-medium text-[#525252] hover:bg-[#f6f3f2] transition"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex-1 px-4 py-2 bg-[#DD3A44] text-white rounded-lg text-[13px] font-medium hover:opacity-90 transition disabled:opacity-50"
+                    className="flex-1 px-4 py-2 bg-[#DD3A44] text-white rounded-[10px] text-[13px] font-medium hover:opacity-90 transition disabled:opacity-50"
                   >
                     {isSaving ? (
                       <FaSpinner className="animate-spin inline mr-2" />
