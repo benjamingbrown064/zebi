@@ -1,3 +1,5 @@
+export const revalidate = 30
+
 import { Suspense } from 'react'
 import { prisma } from '@/lib/prisma'
 import { requireWorkspace } from '@/lib/workspace'
