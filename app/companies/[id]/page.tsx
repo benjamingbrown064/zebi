@@ -1,4 +1,5 @@
 'use client'
+import { cachedFetch } from '@/lib/client-cache'
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
@@ -139,7 +140,7 @@ export default function CompanyDetailPage() {
 
   async function loadCompany() {
     try {
-      const response = await fetch(`/api/companies/${companyId}`)
+      const response = await cachedFetch<any>(`/api/companies/${companyId}`)
       if (response.ok) {
         const data = await response.json()
         setCompany(data)
