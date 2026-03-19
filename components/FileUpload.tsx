@@ -154,10 +154,10 @@ export default function FileUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${
+        className={`border-2 border-dashed rounded-[14px] p-6 text-center cursor-pointer transition ${
           isDragging
             ? 'border-accent-500 bg-accent-50'
-            : 'border-gray-300 hover:border-accent-400 hover:bg-gray-50'
+            : 'border-gray-300 hover:border-accent-400 hover:bg-[#f6f3f2]'
         }`}
       >
         <input
@@ -167,11 +167,11 @@ export default function FileUpload({
           onChange={(e) => handleFileUpload(e.target.files)}
           className="hidden"
         />
-        <FaUpload className="mx-auto text-2xl text-gray-400 mb-2" />
-        <p className="text-sm text-gray-600">
+        <FaUpload className="mx-auto text-2xl text-[#C4C0C0] mb-2" />
+        <p className="text-sm text-[#5a5757]">
           {uploading ? 'Uploading...' : 'Drop files here or click to upload'}
         </p>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-[#A3A3A3] mt-1">
           Supported: {ALLOWED_EXTENSIONS.join(', ')} (max 10MB)
         </p>
       </div>
@@ -183,19 +183,19 @@ export default function FileUpload({
       {/* Attachments List */}
       {attachments.length > 0 && (
         <div className="mt-4 space-y-2">
-          <h4 className="text-sm font-medium text-gray-900">Attachments</h4>
+          <h4 className="text-sm font-medium text-[#1c1b1b]">Attachments</h4>
           {attachments.map((attachment) => (
             <div
               key={attachment.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+              className="flex items-center justify-between p-3 bg-[#f6f3f2] rounded-[10px]"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <span className="text-xl">{getFileIcon(attachment.mimeType)}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-medium text-[#1c1b1b] truncate">
                     {attachment.filename}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-[#A3A3A3]">
                     {formatFileSize(attachment.sizeBytes)}
                   </p>
                 </div>
@@ -205,14 +205,14 @@ export default function FileUpload({
                   href={`/api/attachments/${attachment.id}/download`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 text-gray-500 hover:text-accent-600 transition"
+                  className="p-2 text-[#A3A3A3] hover:text-accent-600 transition"
                   title="Download"
                 >
                   <FaDownload />
                 </a>
                 <button
                   onClick={() => handleDelete(attachment.id)}
-                  className="p-2 text-gray-500 hover:text-red-600 transition"
+                  className="p-2 text-[#A3A3A3] hover:text-red-600 transition"
                   title="Delete"
                 >
                   <FaTimes />
