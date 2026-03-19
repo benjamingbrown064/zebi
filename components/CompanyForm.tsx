@@ -67,10 +67,10 @@ export default function CompanyForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Info */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-900">Basic Information</h3>
+        <h3 className="font-semibold text-[#1c1b1b]">Basic Information</h3>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
             Company Name *
           </label>
           <input
@@ -79,13 +79,13 @@ export default function CompanyForm({
             onChange={(e) => updateField('name', e.target.value)}
             placeholder="e.g., Love Warranty"
             required
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
               Industry
             </label>
             <input
@@ -93,18 +93,18 @@ export default function CompanyForm({
               value={formData.industry}
               onChange={(e) => updateField('industry', e.target.value)}
               placeholder="e.g., SaaS, E-commerce"
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
               Stage
             </label>
             <select
               value={formData.stage}
               onChange={(e) => updateField('stage', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
             >
               {STAGES.map((stage) => (
                 <option key={stage} value={stage}>
@@ -117,13 +117,13 @@ export default function CompanyForm({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
               Business Model
             </label>
             <select
               value={formData.businessModel}
               onChange={(e) => updateField('businessModel', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
             >
               <option value="">Select...</option>
               {BUSINESS_MODELS.map((model) => (
@@ -135,7 +135,7 @@ export default function CompanyForm({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
               Monthly Revenue (£)
             </label>
             <input
@@ -143,14 +143,14 @@ export default function CompanyForm({
               value={formData.revenue}
               onChange={(e) => updateField('revenue', e.target.value)}
               placeholder="0"
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
               Logo URL
             </label>
             <input
@@ -158,12 +158,12 @@ export default function CompanyForm({
               value={formData.logoUrl}
               onChange={(e) => updateField('logoUrl', e.target.value)}
               placeholder="https://..."
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
               Website URL
             </label>
             <input
@@ -171,7 +171,7 @@ export default function CompanyForm({
               value={formData.websiteUrl}
               onChange={(e) => updateField('websiteUrl', e.target.value)}
               placeholder="https://..."
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
             />
           </div>
         </div>
@@ -179,10 +179,10 @@ export default function CompanyForm({
 
       {/* Strategy */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-900">Strategy</h3>
+        <h3 className="font-semibold text-[#1c1b1b]">Strategy</h3>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
             Mission Statement
           </label>
           <input
@@ -190,12 +190,12 @@ export default function CompanyForm({
             value={formData.missionStatement}
             onChange={(e) => updateField('missionStatement', e.target.value)}
             placeholder="What's the company's mission?"
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
             Executive Summary
           </label>
           <textarea
@@ -203,12 +203,12 @@ export default function CompanyForm({
             onChange={(e) => updateField('executiveSummary', e.target.value)}
             placeholder="Brief overview of the company..."
             rows={3}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
             Vision
           </label>
           <textarea
@@ -216,17 +216,17 @@ export default function CompanyForm({
             onChange={(e) => updateField('vision', e.target.value)}
             placeholder="Long-term vision..."
             rows={2}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
           />
         </div>
       </div>
 
       {/* Market */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-900">Market</h3>
+        <h3 className="font-semibold text-[#1c1b1b]">Market</h3>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
             Target Customers
           </label>
           <textarea
@@ -234,12 +234,12 @@ export default function CompanyForm({
             onChange={(e) => updateField('targetCustomers', e.target.value)}
             placeholder="Who are the ideal customers?"
             rows={2}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
             Market Size
           </label>
           <input
@@ -247,17 +247,17 @@ export default function CompanyForm({
             value={formData.marketSize}
             onChange={(e) => updateField('marketSize', e.target.value)}
             placeholder="e.g., £500M TAM"
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
           />
         </div>
       </div>
 
       {/* Product */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-900">Product</h3>
+        <h3 className="font-semibold text-[#1c1b1b]">Product</h3>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
             Core Product
           </label>
           <textarea
@@ -265,12 +265,12 @@ export default function CompanyForm({
             onChange={(e) => updateField('coreProduct', e.target.value)}
             placeholder="What does the product do?"
             rows={2}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
             Positioning
           </label>
           <textarea
@@ -278,18 +278,18 @@ export default function CompanyForm({
             onChange={(e) => updateField('positioning', e.target.value)}
             placeholder="How do you position vs competitors?"
             rows={2}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:focus-ring"
+            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
           />
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-4 border-t border-gray-200">
+      <div className="flex gap-3 pt-4">
         <button
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="flex-1 px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition font-medium disabled:opacity-50"
+          className="flex-1 px-4 py-2 bg-[#f0eded] text-[#1c1b1b] rounded-[10px] hover:bg-[#e8e4e4] transition font-medium disabled:opacity-50"
         >
           Cancel
         </button>
