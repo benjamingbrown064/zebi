@@ -123,13 +123,13 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={false}
         onCollapsedChange={() => {}}
       />
-      <div className="flex-1 flex flex-col overflow-hidden md:ml-64">
+      <div className="md:ml-64 flex flex-col overflow-hidden">
       <ResponsiveHeader
         title="Goals"
         subtitle="Track your long-term objectives"
