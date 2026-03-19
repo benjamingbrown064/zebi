@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireWorkspace } from '@/lib/workspace'
+import { validateAIAuth } from '@/lib/doug-auth'
 import {
   getAIMemories,
   createAIMemory,
@@ -16,9 +17,19 @@ const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
  */
 export async function GET(request: NextRequest) {
   try {
-    const workspaceId = await requireWorkspace()
+    const auth = validateAIAuth(request)
+    let workspaceId: string
+
+    if (auth.valid) {
+      const wid = request.nextUrl.searchParams.get('workspaceId')
+      if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
     const searchParams = request.nextUrl.searchParams
-    
+
     const filters: AIMemoryFilters = {
       companyId: searchParams.get('companyId') || undefined,
       projectId: searchParams.get('projectId') || undefined,
@@ -30,14 +41,10 @@ export async function GET(request: NextRequest) {
     }
 
     const memories = await getAIMemories(workspaceId, filters)
-
     return NextResponse.json(memories)
   } catch (error) {
     console.error('Error in GET /api/ai-memory:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch AI memories' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch AI memories' }, { status: 500 })
   }
 }
 
@@ -47,10 +54,18 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const workspaceId = await requireWorkspace()
-    const body: CreateAIMemoryInput = await request.json()
+    const auth = validateAIAuth(request)
+    let workspaceId: string
 
-    // Validate required fields
+    const body: CreateAIMemoryInput & { workspaceId?: string } = await request.json()
+
+    if (auth.valid) {
+      if (!body.workspaceId) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = body.workspaceId
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
     if (!body.title || !body.description || !body.memoryType) {
       return NextResponse.json(
         { error: 'Missing required fields: title, description, memoryType' },
@@ -58,29 +73,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (
-      body.confidenceScore === undefined ||
-      body.confidenceScore < 1 ||
-      body.confidenceScore > 10
-    ) {
-      return NextResponse.json(
-        { error: 'confidenceScore must be between 1 and 10' },
-        { status: 400 }
-      )
+    if (body.confidenceScore === undefined || body.confidenceScore < 1 || body.confidenceScore > 10) {
+      return NextResponse.json({ error: 'confidenceScore must be between 1 and 10' }, { status: 400 })
     }
 
-    const memory = await createAIMemory(
-      workspaceId,
-      PLACEHOLDER_USER_ID,
-      body
-    )
-
+    const memory = await createAIMemory(workspaceId, PLACEHOLDER_USER_ID, body)
     return NextResponse.json(memory, { status: 201 })
   } catch (error) {
     console.error('Error in POST /api/ai-memory:', error)
-    return NextResponse.json(
-      { error: 'Failed to create AI memory' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create AI memory' }, { status: 500 })
   }
 }
