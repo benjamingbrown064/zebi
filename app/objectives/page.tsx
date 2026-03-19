@@ -68,8 +68,8 @@ export default async function ObjectivesPage() {
         : null
 
       // AI/human work detection removed for performance (was using full tasks array)
-      const aiTask = null
-      const humanTask = null
+      const aiTask = obj.tasks?.[0]?.aiGenerated ? obj.tasks?.[0] : undefined
+      const humanTask = obj.tasks?.[0] && !obj.tasks?.[0].aiGenerated ? obj.tasks?.[0] : undefined
 
       return {
         id: obj.id,
@@ -98,8 +98,8 @@ export default async function ObjectivesPage() {
               daysUntil: daysUntilMilestone!,
             }
           : undefined,
-        aiWork: aiTask?.title,
-        humanWork: humanTask?.title,
+        aiWork: undefined,
+        humanWork: undefined,
         taskCount: obj._count.tasks,
         projectCount: obj._count.projects,
       }
