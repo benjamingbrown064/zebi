@@ -14,6 +14,7 @@ import { FaPlus, FaSearch, FaFilter, FaCircle, FaCheckCircle, FaClock } from 're
 import { getTasks, createTask, updateTask, deleteTask, Task } from '@/app/actions/tasks'
 import { getStatuses, Status } from '@/app/actions/statuses'
 import { useWorkspace } from '@/lib/use-workspace'
+import { cachedFetch, invalidateCache } from '@/lib/client-cache'
 import LoadingScreen from '@/components/LoadingScreen'
 
 const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
