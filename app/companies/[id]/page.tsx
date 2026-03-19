@@ -337,7 +337,7 @@ export default function CompanyDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center">
         <LoadingSpinner />
       </div>
     )
@@ -366,7 +366,7 @@ export default function CompanyDetailPage() {
   const activeView = moreMenuTab || activeTab
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -374,7 +374,7 @@ export default function CompanyDetailPage() {
       />
       <div className={mainPaddingClass}>
         {/* Header - Tabs Only */}
-        <header className="bg-white border-b border-[#E5E5E5] sticky top-0 z-10">
+        <header className="bg-white sticky top-0 z-10">
           <div className="flex items-center justify-between px-4 md:px-12 py-4 md:py-6">
             {/* Tabs */}
             <div className="flex gap-1 overflow-x-auto flex-1 mr-4 scrollbar-hide">
@@ -416,7 +416,7 @@ export default function CompanyDetailPage() {
                 </button>
 
                 {showMoreMenu && (
-                  <div className="absolute top-full mt-2 right-0 bg-white border border-[#E5E5E5] rounded-[10px] shadow-lg min-w-[180px] py-2 z-20">
+                  <div className="absolute top-full mt-2 right-0 bg-white  rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] min-w-[180px] py-2 z-20">
                     {moreMenuItems.map((item) => (
                       <button
                         key={item.id}
@@ -500,14 +500,14 @@ export default function CompanyDetailPage() {
             {activeView === 'overview' && (
               <div className="w-full space-y-6">
                 {company.missionStatement && (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6">
+                  <div className="bg-white  rounded-[14px] p-6">
                     <h3 className="font-semibold text-[#1A1A1A] mb-2">Mission Statement</h3>
                     <p className="text-[#525252] text-[15px]">{company.missionStatement}</p>
                   </div>
                 )}
 
                 {company.executiveSummary && (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6">
+                  <div className="bg-white  rounded-[14px] p-6">
                     <h3 className="font-semibold text-[#1A1A1A] mb-2">Executive Summary</h3>
                     <p className="text-[#525252] text-[15px] whitespace-pre-wrap">{company.executiveSummary}</p>
                   </div>
@@ -515,42 +515,42 @@ export default function CompanyDetailPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {company.vision && (
-                    <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6">
+                    <div className="bg-white  rounded-[14px] p-6">
                       <h3 className="font-semibold text-[#1A1A1A] mb-2">Vision</h3>
                       <p className="text-[#525252] text-[15px] whitespace-pre-wrap">{company.vision}</p>
                     </div>
                   )}
 
                   {company.businessModel && (
-                    <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6">
+                    <div className="bg-white  rounded-[14px] p-6">
                       <h3 className="font-semibold text-[#1A1A1A] mb-2">Business Model</h3>
                       <p className="text-[#525252] text-[15px]">{company.businessModel}</p>
                     </div>
                   )}
 
                   {company.targetCustomers && (
-                    <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6">
+                    <div className="bg-white  rounded-[14px] p-6">
                       <h3 className="font-semibold text-[#1A1A1A] mb-2">Target Customers</h3>
                       <p className="text-[#525252] text-[15px] whitespace-pre-wrap">{company.targetCustomers}</p>
                     </div>
                   )}
 
                   {company.marketSize && (
-                    <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6">
+                    <div className="bg-white  rounded-[14px] p-6">
                       <h3 className="font-semibold text-[#1A1A1A] mb-2">Market Size</h3>
                       <p className="text-[#525252] text-[15px]">{company.marketSize}</p>
                     </div>
                   )}
 
                   {company.coreProduct && (
-                    <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6">
+                    <div className="bg-white  rounded-[14px] p-6">
                       <h3 className="font-semibold text-[#1A1A1A] mb-2">Core Product</h3>
                       <p className="text-[#525252] text-[15px] whitespace-pre-wrap">{company.coreProduct}</p>
                     </div>
                   )}
 
                   {company.positioning && (
-                    <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6">
+                    <div className="bg-white  rounded-[14px] p-6">
                       <h3 className="font-semibold text-[#1A1A1A] mb-2">Positioning</h3>
                       <p className="text-[#525252] text-[15px] whitespace-pre-wrap">{company.positioning}</p>
                     </div>
@@ -574,7 +574,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {company.projects.length === 0 ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8 text-center">
+                  <div className="bg-white  rounded-[14px] p-8 text-center">
                     <FontAwesomeIcon icon={faFolderOpen} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                     <p className="text-[#A3A3A3] text-[15px]">No projects yet.</p>
                   </div>
@@ -582,7 +582,7 @@ export default function CompanyDetailPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {company.projects.map((project) => (
                       <Link key={project.id} href={`/projects/${project.id}`}>
-                        <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6 hover:shadow-md transition cursor-pointer">
+                        <div className="bg-white  rounded-[14px] p-6 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer">
                           <h3 className="font-semibold text-[#1A1A1A] mb-2">{project.name}</h3>
                           {project.description && (
                             <p className="text-[13px] text-[#525252] mb-3 line-clamp-2">{project.description}</p>
@@ -618,7 +618,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {company.documents.length === 0 ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8 text-center">
+                  <div className="bg-white  rounded-[14px] p-8 text-center">
                     <FontAwesomeIcon icon={faFileLines} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                     <p className="text-[#A3A3A3] text-[15px]">No documents yet.</p>
                   </div>
@@ -628,7 +628,7 @@ export default function CompanyDetailPage() {
                       <div 
                         key={doc.id} 
                         onClick={() => setSelectedDocument(doc)}
-                        className="bg-white border border-[#E5E5E5] rounded-[14px] p-6 hover:shadow-md transition cursor-pointer"
+                        className="bg-white  rounded-[14px] p-6 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer"
                       >
                         <div className="flex items-start justify-between">
                           <div>
@@ -661,7 +661,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {company.objectives.length === 0 ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8 text-center">
+                  <div className="bg-white  rounded-[14px] p-8 text-center">
                     <FontAwesomeIcon icon={faBullseye} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                     <p className="text-[#A3A3A3] text-[15px]">No objectives linked to this company.</p>
                   </div>
@@ -669,17 +669,17 @@ export default function CompanyDetailPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {company.objectives.map((objective: any) => (
                       <Link key={objective.id} href={`/objectives/${objective.id}`}>
-                        <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-6 hover:shadow-md transition cursor-pointer">
+                        <div className="bg-white  rounded-[14px] p-6 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer">
                           <div className="flex items-center justify-between mb-3">
                             <span
                               className={`px-2 py-1 rounded-[6px] text-[12px] font-medium ${
                                 objective.status === 'active'
-                                  ? 'bg-green-50 text-green-700'
+                                  ? 'bg-[#f0fafa] text-[#006766]'
                                   : objective.status === 'on_track'
-                                  ? 'bg-blue-50 text-blue-700'
+                                  ? 'bg-[#f0fafa] text-[#006766]'
                                   : objective.status === 'at_risk'
                                   ? 'bg-yellow-50 text-yellow-700'
-                                  : 'bg-gray-50 text-gray-700'
+                                  : 'bg-[#f6f3f2] text-[#5a5757]'
                               }`}
                             >
                               {objective.status.replace('_', ' ')}
@@ -712,7 +712,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {company.tasks.length === 0 ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8 text-center">
+                  <div className="bg-white  rounded-[14px] p-8 text-center">
                     <FontAwesomeIcon icon={faListCheck} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                     <p className="text-[#A3A3A3] text-[15px]">No tasks assigned to this company.</p>
                   </div>
@@ -721,7 +721,7 @@ export default function CompanyDetailPage() {
                     {company.tasks.map((task: any) => (
                       <div 
                         key={task.id}
-                        className="bg-white border border-[#E5E5E5] rounded-[14px] p-4 hover:shadow-md transition cursor-pointer"
+                        className="bg-white  rounded-[14px] p-4 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer"
                       >
                         <div className="flex items-start gap-3">
                           <input 
@@ -768,7 +768,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {company.insights.length === 0 ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8 text-center">
+                  <div className="bg-white  rounded-[14px] p-8 text-center">
                     <FontAwesomeIcon icon={faLightbulb} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                     <p className="text-[#A3A3A3] text-[15px]">No insights yet.</p>
                   </div>
@@ -778,15 +778,15 @@ export default function CompanyDetailPage() {
                       <div 
                         key={insight.id}
                         onClick={() => setSelectedInsight(insight)}
-                        className="bg-white border border-[#E5E5E5] rounded-[14px] p-6 hover:shadow-md transition cursor-pointer"
+                        className="bg-white  rounded-[14px] p-6 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">
                             <span
                               className={`px-2 py-1 rounded-[6px] text-[12px] font-medium ${
                                 insight.status === 'new'
-                                  ? 'bg-blue-50 text-blue-700'
-                                  : 'bg-gray-50 text-gray-700'
+                                  ? 'bg-[#f0fafa] text-[#006766]'
+                                  : 'bg-[#f6f3f2] text-[#5a5757]'
                               }`}
                             >
                               {insight.status}
@@ -816,7 +816,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {company.memories.length === 0 ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8 text-center">
+                  <div className="bg-white  rounded-[14px] p-8 text-center">
                     <FontAwesomeIcon icon={faBrain} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                     <p className="text-[#A3A3A3] text-[15px]">No memories yet.</p>
                   </div>
@@ -826,7 +826,7 @@ export default function CompanyDetailPage() {
                       <div 
                         key={memory.id}
                         onClick={() => setSelectedMemory(memory)}
-                        className="bg-white border border-[#E5E5E5] rounded-[14px] p-6 hover:shadow-md transition cursor-pointer"
+                        className="bg-white  rounded-[14px] p-6 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <span className="text-[12px] text-[#A3A3A3]">{memory.memoryType}</span>
@@ -858,7 +858,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {company.files.length === 0 ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8 text-center">
+                  <div className="bg-white  rounded-[14px] p-8 text-center">
                     <FontAwesomeIcon icon={faFolder} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                     <p className="text-[#A3A3A3] text-[15px]">No files yet.</p>
                   </div>
@@ -868,7 +868,7 @@ export default function CompanyDetailPage() {
                       <div 
                         key={file.id}
                         onClick={() => setSelectedFile(file)}
-                        className="bg-white border border-[#E5E5E5] rounded-[14px] p-4 hover:shadow-md transition cursor-pointer flex items-center justify-between"
+                        className="bg-white  rounded-[14px] p-4 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer flex items-center justify-between"
                       >
                         <div>
                           <h3 className="font-medium text-[#1A1A1A]">{file.filename}</h3>
@@ -895,14 +895,14 @@ export default function CompanyDetailPage() {
                     <LoadingSpinner />
                   </div>
                 ) : activityLogs.length === 0 ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-[14px] p-8 text-center">
+                  <div className="bg-white  rounded-[14px] p-8 text-center">
                     <FontAwesomeIcon icon={faHistory} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                     <p className="text-[#A3A3A3] text-[15px]">No activity yet.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {activityLogs.map((log: any) => (
-                      <div key={log.id} className="bg-white border border-[#E5E5E5] rounded-[14px] p-4">
+                      <div key={log.id} className="bg-white  rounded-[14px] p-4">
                         <div className="flex items-start gap-3">
                           <div className="w-8 h-8 bg-[#F5F5F5] rounded-full flex items-center justify-center flex-shrink-0">
                             <FontAwesomeIcon icon={faHistory} className="text-[#A3A3A3] text-xs" />
@@ -929,13 +929,13 @@ export default function CompanyDetailPage() {
         {isEditing && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-0 md:p-4">
             <div className={`
-              bg-white shadow-lg w-full overflow-y-auto
+              bg-white shadow-[0_20px_40px_rgba(28,27,27,0.06)] w-full overflow-y-auto
               ${isMobile 
                 ? 'h-full rounded-none' 
                 : 'rounded-[14px] max-w-2xl max-h-[90vh]'
               }
             `}>
-              <div className="sticky top-0 bg-white border-b border-[#E5E5E5] px-4 md:px-8 py-4 md:py-6">
+              <div className="sticky top-0 bg-white px-4 md:px-8 py-4 md:py-6">
                 <h2 className="text-lg md:text-xl font-semibold text-[#1A1A1A]">Edit {company.name}</h2>
               </div>
               <div className="px-4 md:px-8 py-4 md:py-6">
@@ -970,7 +970,7 @@ export default function CompanyDetailPage() {
         {selectedDocument && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-[14px] max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between">
+              <div className="sticky top-0 bg-white px-6 py-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-[#1A1A1A]">{selectedDocument.title}</h2>
                 <div className="flex items-center gap-2">
                   <Link href={`/documents/${selectedDocument.id}`}>
@@ -1003,7 +1003,7 @@ export default function CompanyDetailPage() {
         {selectedInsight && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-[14px] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between">
+              <div className="sticky top-0 bg-white px-6 py-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-[#1A1A1A]">{selectedInsight.title}</h2>
                 <div className="flex items-center gap-2">
                   <Link href={`/insights/${selectedInsight.id}`}>
@@ -1022,7 +1022,7 @@ export default function CompanyDetailPage() {
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <span className={`px-2 py-1 rounded-[6px] text-[12px] font-medium ${
-                    selectedInsight.status === 'new' ? 'bg-blue-50 text-blue-700' : 'bg-gray-50 text-gray-700'
+                    selectedInsight.status === 'new' ? 'bg-[#f0fafa] text-[#006766]' : 'bg-[#f6f3f2] text-[#5a5757]'
                   }`}>
                     {selectedInsight.status}
                   </span>
@@ -1038,7 +1038,7 @@ export default function CompanyDetailPage() {
         {selectedMemory && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-[14px] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between">
+              <div className="sticky top-0 bg-white px-6 py-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-[#1A1A1A]">{selectedMemory.title}</h2>
                 <div className="flex items-center gap-2">
                   <Link href={`/memory/${selectedMemory.id}`}>
@@ -1071,7 +1071,7 @@ export default function CompanyDetailPage() {
         {selectedFile && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-[14px] max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between">
+              <div className="sticky top-0 bg-white px-6 py-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-[#1A1A1A]">{selectedFile.filename}</h2>
                 <div className="flex items-center gap-2">
                   <a 
