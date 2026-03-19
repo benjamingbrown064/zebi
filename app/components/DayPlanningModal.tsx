@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FaTimes, FaRobot, FaList, FaClock, FaFolder, FaCheck, FaPlus, FaGripVertical } from 'react-icons/fa'
-import { getTasks } from '@/app/actions/tasks'
+import { FaTimes, FaRobot, FaList, FaClock, FaFolder, FaCheck, FaPlus, FaGripVertical, FaExclamationTriangle } from 'react-icons/fa'
 import {
   DndContext,
   DragEndEvent,
@@ -25,9 +24,9 @@ interface Task {
   title: string
   priority?: number
   dueAt?: string
-  project?: { name: string }
-  company?: { name: string }
-  status?: { name: string; type: string }
+  project?: { name: string } | null
+  company?: { name: string } | null
+  status?: { name: string; type: string } | null
 }
 
 interface Suggestion {
@@ -45,7 +44,7 @@ interface DayPlanningModalProps {
   workspaceId: string
 }
 
-type TabType = 'suggestions' | 'all' | 'recent' | 'projects'
+type TabType = 'suggestions' | 'all' | 'recent'
 type CategoryType = 'main' | 'secondary' | 'additional' | 'other'
 
 export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPlanningModalProps) {
@@ -53,6 +52,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [allTasks, setAllTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
 
@@ -62,116 +62,116 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
   const [quickWins, setQuickWins] = useState<Task[]>([])
   const [additionalTasks, setAdditionalTasks] = useState<Task[]>([])
 
-  // Drag sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
+      activationConstraint: { distance: 8 },
     })
   )
 
-  // Load data
   useEffect(() => {
     loadData()
   }, [])
 
   const loadData = async () => {
     setLoading(true)
+    setLoadError(null)
     try {
-      // Load AI suggestions
-      const suggestionsRes = await fetch(`/api/dashboard/suggestions?workspaceId=${workspaceId}`)
-      const suggestionsData = await suggestionsRes.json()
-      setSuggestions(suggestionsData.suggestions || [])
+      // Load tasks and suggestions in parallel
+      const [tasksRes, suggestionsRes, planRes] = await Promise.all([
+        fetch(`/api/tasks/direct?workspaceId=${workspaceId}&includeCompleted=false&includeArchived=false`),
+        fetch(`/api/dashboard/suggestions?workspaceId=${workspaceId}`).catch(() => null),
+        fetch(`/api/dashboard/plan?workspaceId=${workspaceId}`).catch(() => null),
+      ])
 
-      // Load all tasks using server action
-      const tasksData = await getTasks(workspaceId)
-      setAllTasks(tasksData || [])
+      // Tasks — required
+      if (!tasksRes.ok) {
+        const err = await tasksRes.text()
+        throw new Error(`Failed to load tasks (${tasksRes.status}): ${err}`)
+      }
+      const tasksData = await tasksRes.json()
+      const tasks: Task[] = (tasksData.tasks || []).map((t: any) => ({
+        id: t.id,
+        title: t.title,
+        priority: t.priority,
+        dueAt: t.dueAt,
+        project: t.projectId ? { name: t.projectId } : null, // minimal until we enrich
+        company: null,
+        status: null,
+      }))
+      setAllTasks(tasks)
 
-      // Load current plan
-      const planRes = await fetch(`/api/dashboard/plan?workspaceId=${workspaceId}`)
-      const planData = await planRes.json()
-      const plannedTasks = planData.tasks || []
+      // Suggestions — best-effort
+      if (suggestionsRes?.ok) {
+        const suggestionsData = await suggestionsRes.json()
+        setSuggestions(suggestionsData.suggestions || [])
+      }
 
-      // Populate existing plan
-      setPrimaryTask(plannedTasks.find((t: any) => t.todayCategory === 'main') || null)
-      setSecondaryTasks(plannedTasks.filter((t: any) => t.todayCategory === 'secondary'))
-      setQuickWins(plannedTasks.filter((t: any) => t.todayCategory === 'additional'))
-      setAdditionalTasks(plannedTasks.filter((t: any) => t.todayCategory === 'other'))
+      // Existing plan — best-effort
+      if (planRes?.ok) {
+        const planData = await planRes.json()
+        const plannedTasks = planData.tasks || []
+        setPrimaryTask(plannedTasks.find((t: any) => t.todayCategory === 'main') || null)
+        setSecondaryTasks(plannedTasks.filter((t: any) => t.todayCategory === 'secondary'))
+        setQuickWins(plannedTasks.filter((t: any) => t.todayCategory === 'additional'))
+        setAdditionalTasks(plannedTasks.filter((t: any) => t.todayCategory === 'other'))
+      }
     } catch (error) {
-      console.error('Failed to load planning data:', error)
+      const msg = error instanceof Error ? error.message : String(error)
+      console.error('DayPlanningModal: Failed to load data:', msg)
+      setLoadError(msg)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleAddToPlan = async (taskId: string, category: CategoryType) => {
-    try {
-      // Find task from suggestions or all tasks
-      const suggestion = suggestions.find(s => s.metadata?.id === taskId)
-      const task = allTasks.find(t => t.id === taskId)
-      
-      if (!suggestion && !task) return
+  const handleAddToPlan = (taskId: string, category: CategoryType) => {
+    // Find from tasks or suggestions
+    const task = allTasks.find(t => t.id === taskId)
+    const suggestion = suggestions.find(s => (s.metadata?.id || s.id) === taskId)
 
-      const taskToAdd = task || {
-        id: suggestion!.metadata.id,
-        title: suggestion!.name,
-        priority: suggestion!.metadata.priority,
-        dueAt: suggestion!.metadata.dueAt,
-        project: suggestion!.metadata.project,
-        company: suggestion!.metadata.company,
-      }
+    const taskToAdd: Task = task || {
+      id: suggestion?.metadata?.id || taskId,
+      title: suggestion?.name || taskId,
+      priority: suggestion?.metadata?.priority,
+      dueAt: suggestion?.metadata?.dueAt,
+      project: suggestion?.metadata?.project ? { name: suggestion.metadata.project } : null,
+      company: suggestion?.metadata?.company ? { name: suggestion.metadata.company } : null,
+    }
 
-      // Add to appropriate slot
-      if (category === 'main' && !primaryTask) {
-        setPrimaryTask(taskToAdd)
-      } else if (category === 'secondary' && secondaryTasks.length < 2) {
-        setSecondaryTasks([...secondaryTasks, taskToAdd])
-      } else if (category === 'additional' && quickWins.length < 3) {
-        setQuickWins([...quickWins, taskToAdd])
-      } else if (category === 'other') {
-        setAdditionalTasks([...additionalTasks, taskToAdd])
-      }
-    } catch (error) {
-      console.error('Failed to add task to plan:', error)
+    if (category === 'main' && !primaryTask) {
+      setPrimaryTask(taskToAdd)
+    } else if (category === 'secondary' && secondaryTasks.length < 2) {
+      setSecondaryTasks(prev => [...prev, taskToAdd])
+    } else if (category === 'additional' && quickWins.length < 3) {
+      setQuickWins(prev => [...prev, taskToAdd])
+    } else if (category === 'other') {
+      setAdditionalTasks(prev => [...prev, taskToAdd])
     }
   }
 
   const handleRemoveFromPlan = (taskId: string, category: CategoryType) => {
-    if (category === 'main') {
-      setPrimaryTask(null)
-    } else if (category === 'secondary') {
-      setSecondaryTasks(secondaryTasks.filter(t => t.id !== taskId))
-    } else if (category === 'additional') {
-      setQuickWins(quickWins.filter(t => t.id !== taskId))
-    } else if (category === 'other') {
-      setAdditionalTasks(additionalTasks.filter(t => t.id !== taskId))
-    }
+    if (category === 'main') setPrimaryTask(null)
+    else if (category === 'secondary') setSecondaryTasks(prev => prev.filter(t => t.id !== taskId))
+    else if (category === 'additional') setQuickWins(prev => prev.filter(t => t.id !== taskId))
+    else if (category === 'other') setAdditionalTasks(prev => prev.filter(t => t.id !== taskId))
   }
 
   const findTaskById = (id: string): { task: Task; category: CategoryType } | null => {
     if (primaryTask?.id === id) return { task: primaryTask, category: 'main' }
-    
-    const secTask = secondaryTasks.find(t => t.id === id)
-    if (secTask) return { task: secTask, category: 'secondary' }
-    
-    const qwTask = quickWins.find(t => t.id === id)
-    if (qwTask) return { task: qwTask, category: 'additional' }
-    
-    const addTask = additionalTasks.find(t => t.id === id)
-    if (addTask) return { task: addTask, category: 'other' }
-    
+    const sec = secondaryTasks.find(t => t.id === id)
+    if (sec) return { task: sec, category: 'secondary' }
+    const qw = quickWins.find(t => t.id === id)
+    if (qw) return { task: qw, category: 'additional' }
+    const add = additionalTasks.find(t => t.id === id)
+    if (add) return { task: add, category: 'other' }
     return null
   }
 
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string)
-  }
+  const handleDragStart = (event: DragStartEvent) => setActiveId(event.active.id as string)
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     setActiveId(null)
-
     if (!over) return
 
     const activeTaskData = findTaskById(active.id as string)
@@ -180,122 +180,43 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
     const { task: activeTask, category: fromCategory } = activeTaskData
     const overId = over.id as string
 
-    // Determine target category from droppable zone
     let toCategory: CategoryType | null = null
-    
-    if (overId === 'primary-drop') {
-      toCategory = 'main'
-    } else if (overId === 'secondary-drop') {
-      toCategory = 'secondary'
-    } else if (overId === 'quickwin-drop') {
-      toCategory = 'additional'
-    } else if (overId === 'additional-drop') {
-      toCategory = 'other'
-    } else {
-      // Dropped on another task - determine category from that task
+    if (overId === 'primary-drop') toCategory = 'main'
+    else if (overId === 'secondary-drop') toCategory = 'secondary'
+    else if (overId === 'quickwin-drop') toCategory = 'additional'
+    else if (overId === 'additional-drop') toCategory = 'other'
+    else {
       const overTaskData = findTaskById(overId)
-      if (overTaskData) {
-        toCategory = overTaskData.category
-      }
+      if (overTaskData) toCategory = overTaskData.category
     }
 
-    if (!toCategory) return
+    if (!toCategory || toCategory === fromCategory) return
 
-    // Remove from original category
     handleRemoveFromPlan(activeTask.id, fromCategory)
-
-    // Add to new category
-    if (toCategory === 'main' && !primaryTask) {
-      setPrimaryTask(activeTask)
-    } else if (toCategory === 'secondary' && fromCategory !== 'secondary') {
-      if (secondaryTasks.length < 2) {
-        setSecondaryTasks([...secondaryTasks, activeTask])
-      }
-    } else if (toCategory === 'secondary' && fromCategory === 'secondary') {
-      // Reorder within secondary
-      const oldIndex = secondaryTasks.findIndex(t => t.id === active.id)
-      const newIndex = secondaryTasks.findIndex(t => t.id === over.id)
-      const newTasks = [...secondaryTasks]
-      const [removed] = newTasks.splice(oldIndex, 1)
-      newTasks.splice(newIndex, 0, removed)
-      setSecondaryTasks(newTasks)
-    } else if (toCategory === 'additional' && fromCategory !== 'additional') {
-      if (quickWins.length < 3) {
-        setQuickWins([...quickWins, activeTask])
-      }
-    } else if (toCategory === 'additional' && fromCategory === 'additional') {
-      // Reorder within quick wins
-      const oldIndex = quickWins.findIndex(t => t.id === active.id)
-      const newIndex = quickWins.findIndex(t => t.id === over.id)
-      const newTasks = [...quickWins]
-      const [removed] = newTasks.splice(oldIndex, 1)
-      newTasks.splice(newIndex, 0, removed)
-      setQuickWins(newTasks)
-    } else if (toCategory === 'other') {
-      setAdditionalTasks([...additionalTasks, activeTask])
-    }
+    handleAddToPlan(activeTask.id, toCategory)
   }
 
   const handleSave = async () => {
     setSaving(true)
     try {
-      // Clear existing plan first
       const existingPlanRes = await fetch(`/api/dashboard/plan?workspaceId=${workspaceId}`)
       const existingPlan = await existingPlanRes.json()
-      
       for (const task of existingPlan.tasks || []) {
         await fetch(`/api/dashboard/plan?taskId=${task.id}`, { method: 'DELETE' })
       }
 
-      // Add primary task
-      if (primaryTask) {
-        await fetch('/api/dashboard/plan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            taskId: primaryTask.id,
-            category: 'main',
-            workspaceId
-          })
-        })
-      }
+      const planEntries = [
+        ...(primaryTask ? [{ task: primaryTask, category: 'main' }] : []),
+        ...secondaryTasks.map(t => ({ task: t, category: 'secondary' })),
+        ...quickWins.map(t => ({ task: t, category: 'additional' })),
+        ...additionalTasks.map(t => ({ task: t, category: 'other' })),
+      ]
 
-      // Add secondary tasks
-      for (const task of secondaryTasks) {
+      for (const { task, category } of planEntries) {
         await fetch('/api/dashboard/plan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            taskId: task.id,
-            category: 'secondary',
-            workspaceId
-          })
-        })
-      }
-
-      // Add quick wins
-      for (const task of quickWins) {
-        await fetch('/api/dashboard/plan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            taskId: task.id,
-            category: 'additional',
-            workspaceId
-          })
-        })
-      }
-
-      // Add additional tasks
-      for (const task of additionalTasks) {
-        await fetch('/api/dashboard/plan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            taskId: task.id,
-            category: 'other',
-            workspaceId
-          })
+          body: JSON.stringify({ taskId: task.id, category, workspaceId }),
         })
       }
 
@@ -307,20 +228,17 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
     }
   }
 
-  const isTaskInPlan = (taskId: string) => {
-    return (
-      primaryTask?.id === taskId ||
-      secondaryTasks.some(t => t.id === taskId) ||
-      quickWins.some(t => t.id === taskId) ||
-      additionalTasks.some(t => t.id === taskId)
-    )
-  }
+  const isTaskInPlan = (taskId: string) =>
+    primaryTask?.id === taskId ||
+    secondaryTasks.some(t => t.id === taskId) ||
+    quickWins.some(t => t.id === taskId) ||
+    additionalTasks.some(t => t.id === taskId)
 
   const activeTask = activeId ? findTaskById(activeId)?.task : null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div 
+      <div
         className="bg-white rounded-[14px] shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
@@ -346,76 +264,87 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
           <div className="flex-1 flex flex-col border-r border-[#E5E5E5]">
             {/* Tabs */}
             <div className="flex border-b border-[#E5E5E5]">
-              <button
-                onClick={() => setActiveTab('suggestions')}
-                className={`flex-1 px-4 py-3 text-[13px] font-medium transition-colors ${
-                  activeTab === 'suggestions'
-                    ? 'text-[#DD3A44] border-b-2 border-[#DD3A44]'
-                    : 'text-[#737373] hover:text-[#1A1A1A]'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <FaRobot />
-                  AI Suggestions
-                </div>
-              </button>
-              <button
-                onClick={() => setActiveTab('all')}
-                className={`flex-1 px-4 py-3 text-[13px] font-medium transition-colors ${
-                  activeTab === 'all'
-                    ? 'text-[#DD3A44] border-b-2 border-[#DD3A44]'
-                    : 'text-[#737373] hover:text-[#1A1A1A]'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <FaList />
-                  All Tasks
-                </div>
-              </button>
-              <button
-                onClick={() => setActiveTab('recent')}
-                className={`flex-1 px-4 py-3 text-[13px] font-medium transition-colors ${
-                  activeTab === 'recent'
-                    ? 'text-[#DD3A44] border-b-2 border-[#DD3A44]'
-                    : 'text-[#737373] hover:text-[#1A1A1A]'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <FaClock />
-                  Recent
-                </div>
-              </button>
+              {(['suggestions', 'all', 'recent'] as TabType[]).map((tab) => {
+                const labels: Record<TabType, { label: string; icon: React.ReactNode }> = {
+                  suggestions: { label: 'AI Suggestions', icon: <FaRobot /> },
+                  all: { label: 'All Tasks', icon: <FaList /> },
+                  recent: { label: 'Recent', icon: <FaClock /> },
+                }
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex-1 px-4 py-3 text-[13px] font-medium transition-colors ${
+                      activeTab === tab
+                        ? 'text-[#DD3A44] border-b-2 border-[#DD3A44]'
+                        : 'text-[#737373] hover:text-[#1A1A1A]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      {labels[tab].icon}
+                      {labels[tab].label}
+                      {tab === 'all' && !loading && allTasks.length > 0 && (
+                        <span className="ml-1 px-1.5 py-0.5 bg-[#F5F5F5] rounded-[4px] text-[11px] text-[#737373]">
+                          {allTasks.length}
+                        </span>
+                      )}
+                      {tab === 'suggestions' && !loading && suggestions.length > 0 && (
+                        <span className="ml-1 px-1.5 py-0.5 bg-[#FEF2F2] rounded-[4px] text-[11px] text-[#DD3A44]">
+                          {suggestions.length}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
             </div>
 
             {/* Task List */}
             <div className="flex-1 overflow-y-auto p-4">
               {loading ? (
                 <div className="text-center py-12">
-                  <p className="text-[13px] text-[#A3A3A3]">Loading...</p>
+                  <div className="inline-block w-5 h-5 border-2 border-[#DD3A44] border-t-transparent rounded-full animate-spin mb-3" />
+                  <p className="text-[13px] text-[#A3A3A3]">Loading tasks...</p>
+                </div>
+              ) : loadError ? (
+                <div className="p-4 bg-[#FEF2F2] border border-[#FECACA] rounded-[10px]">
+                  <div className="flex items-start gap-3">
+                    <FaExclamationTriangle className="text-[#DD3A44] mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-[13px] font-medium text-[#1A1A1A] mb-1">Failed to load tasks</p>
+                      <p className="text-[12px] text-[#737373] mb-3">{loadError}</p>
+                      <button
+                        onClick={loadData}
+                        className="text-[12px] px-3 py-1.5 bg-white border border-[#E5E5E5] rounded-[6px] hover:bg-[#F5F5F5] transition-colors"
+                      >
+                        Try again
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ) : activeTab === 'suggestions' ? (
-                <SuggestionsTab 
+                <SuggestionsTab
                   suggestions={suggestions}
                   onAdd={handleAddToPlan}
                   isTaskInPlan={isTaskInPlan}
                 />
               ) : activeTab === 'all' ? (
-                <AllTasksTab 
+                <AllTasksTab
                   tasks={allTasks}
                   onAdd={handleAddToPlan}
                   isTaskInPlan={isTaskInPlan}
                 />
-              ) : activeTab === 'recent' ? (
-                <RecentTab 
-                  tasks={allTasks.filter(t => t.dueAt)}
+              ) : (
+                <AllTasksTab
+                  tasks={allTasks.slice(0, 20)}
                   onAdd={handleAddToPlan}
                   isTaskInPlan={isTaskInPlan}
                 />
-              ) : null}
+              )}
             </div>
           </div>
 
-          {/* Right: Plan Preview with Drag-and-Drop */}
+          {/* Right: Plan Preview */}
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
@@ -425,7 +354,6 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
             <div className="w-96 bg-[#FAFAFA] p-6 overflow-y-auto">
               <h4 className="text-[15px] font-medium text-[#1A1A1A] mb-4">Your Plan</h4>
 
-              {/* Primary Task */}
               <DroppableZone id="primary-drop" label="Primary (1)">
                 {primaryTask ? (
                   <DraggableTask
@@ -438,7 +366,6 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                 )}
               </DroppableZone>
 
-              {/* Secondary Tasks */}
               <DroppableZone id="secondary-drop" label="Secondary (2)">
                 <SortableContext items={secondaryTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                   {secondaryTasks.map((task) => (
@@ -453,7 +380,6 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                 </SortableContext>
               </DroppableZone>
 
-              {/* Quick Wins */}
               <DroppableZone id="quickwin-drop" label="Quick Wins (3)">
                 <SortableContext items={quickWins.map(t => t.id)} strategy={verticalListSortingStrategy}>
                   {quickWins.map((task) => (
@@ -468,7 +394,6 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                 </SortableContext>
               </DroppableZone>
 
-              {/* Additional */}
               {additionalTasks.length > 0 && (
                 <DroppableZone id="additional-drop" label={`Additional (${additionalTasks.length})`}>
                   {additionalTasks.map((task) => (
@@ -489,7 +414,6 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
               )}
             </div>
 
-            {/* Drag Overlay */}
             <DragOverlay>
               {activeTask ? (
                 <div className="p-3 bg-white border-2 border-[#DD3A44] rounded-[10px] shadow-lg opacity-90">
@@ -508,7 +432,6 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
           >
             Cancel
           </button>
-          
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
@@ -521,7 +444,6 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
             >
               Clear Plan
             </button>
-            
             <button
               onClick={handleSave}
               disabled={saving}
@@ -536,7 +458,6 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
   )
 }
 
-// Droppable Zone Component
 function DroppableZone({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
   return (
     <div className="mb-5">
@@ -550,16 +471,8 @@ function DroppableZone({ id, label, children }: { id: string; label: string; chi
   )
 }
 
-// Draggable Task Component
 function DraggableTask({ task, onRemove, color }: { task: Task; onRemove: () => void; color: 'red' | 'yellow' | 'blue' }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -583,17 +496,13 @@ function DraggableTask({ task, onRemove, color }: { task: Task; onRemove: () => 
         <FaGripVertical className="text-[#A3A3A3] text-xs mt-1 flex-shrink-0" />
         <p className="text-[13px] text-[#1A1A1A] flex-1">{task.title}</p>
       </div>
-      <button
-        onClick={onRemove}
-        className="text-[#A3A3A3] hover:text-[#737373] transition-colors"
-      >
+      <button onClick={onRemove} className="text-[#A3A3A3] hover:text-[#737373] transition-colors">
         <FaTimes className="text-xs" />
       </button>
     </div>
   )
 }
 
-// Empty Slot Component
 function EmptySlot({ text }: { text: string }) {
   return (
     <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded-[10px] text-center mb-2">
@@ -602,16 +511,17 @@ function EmptySlot({ text }: { text: string }) {
   )
 }
 
-// AI Suggestions Tab
 function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
   suggestions: Suggestion[]
-  onAdd: (taskId: string, category: 'main' | 'secondary' | 'additional' | 'other') => void
+  onAdd: (taskId: string, category: CategoryType) => void
   isTaskInPlan: (taskId: string) => boolean
 }) {
   if (suggestions.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-[13px] text-[#A3A3A3]">No AI suggestions available</p>
+        <FaRobot className="text-[#A3A3A3] text-2xl mx-auto mb-3" />
+        <p className="text-[13px] font-medium text-[#525252] mb-1">No AI suggestions yet</p>
+        <p className="text-[12px] text-[#A3A3A3]">Try the All Tasks tab to pick manually</p>
       </div>
     )
   }
@@ -621,7 +531,7 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
       {suggestions.map((suggestion, index) => {
         const taskId = suggestion.metadata?.id || suggestion.id
         const inPlan = isTaskInPlan(taskId)
-        
+
         return (
           <div key={taskId} className="p-4 bg-[#F5F5F5] rounded-[10px]">
             <div className="flex items-start gap-3 mb-2">
@@ -630,13 +540,15 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[14px] font-medium text-[#1A1A1A] mb-1">{suggestion.name}</p>
-                <p className="text-[12px] text-[#737373]">{suggestion.reasons[0]}</p>
+                {suggestion.reasons[0] && (
+                  <p className="text-[12px] text-[#737373]">{suggestion.reasons[0]}</p>
+                )}
                 <span className="inline-block text-[10px] px-2 py-0.5 bg-white border border-[#E5E5E5] rounded-[4px] text-[#737373] uppercase tracking-wide mt-2">
                   {suggestion.type}
                 </span>
               </div>
             </div>
-            
+
             {inPlan ? (
               <div className="flex items-center gap-2 text-[12px] text-[#10B981] mt-3">
                 <FaCheck />
@@ -671,64 +583,74 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
   )
 }
 
-// All Tasks Tab
 function AllTasksTab({ tasks, onAdd, isTaskInPlan }: {
   tasks: Task[]
-  onAdd: (taskId: string, category: 'main' | 'secondary' | 'additional' | 'other') => void
+  onAdd: (taskId: string, category: CategoryType) => void
   isTaskInPlan: (taskId: string) => boolean
 }) {
+  const [search, setSearch] = useState('')
+
+  const filtered = search
+    ? tasks.filter(t => t.title.toLowerCase().includes(search.toLowerCase()))
+    : tasks
+
   if (tasks.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-[13px] text-[#A3A3A3]">No tasks available</p>
+        <FaList className="text-[#A3A3A3] text-2xl mx-auto mb-3" />
+        <p className="text-[13px] font-medium text-[#525252] mb-1">No tasks found</p>
+        <p className="text-[12px] text-[#A3A3A3]">All tasks may be completed or archived</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-2">
-      {tasks.map((task) => {
-        const inPlan = isTaskInPlan(task.id)
-        
-        return (
-          <div key={task.id} className="p-3 bg-white border border-[#E5E5E5] rounded-[10px]">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-[#1A1A1A] mb-1">{task.title}</p>
-                {(task.project || task.company) && (
-                  <p className="text-[11px] text-[#A3A3A3]">
-                    {task.company?.name && <span>{task.company.name}</span>}
-                    {task.company?.name && task.project?.name && <span> · </span>}
-                    {task.project?.name && <span>{task.project.name}</span>}
-                  </p>
-                )}
-              </div>
-              
-              {inPlan ? (
-                <div className="text-[11px] text-[#10B981] flex items-center gap-1">
-                  <FaCheck className="text-xs" />
+    <div>
+      {/* Search */}
+      <div className="mb-3">
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full px-3 py-2 text-[13px] border border-[#E5E5E5] rounded-[8px] bg-white focus:outline-none focus:border-[#DD3A44] transition-colors"
+        />
+      </div>
+
+      <div className="space-y-2">
+        {filtered.length === 0 ? (
+          <p className="text-center py-6 text-[13px] text-[#A3A3A3]">No tasks match your search</p>
+        ) : (
+          filtered.map((task) => {
+            const inPlan = isTaskInPlan(task.id)
+            return (
+              <div key={task.id} className="p-3 bg-white border border-[#E5E5E5] rounded-[10px]">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium text-[#1A1A1A] mb-0.5">{task.title}</p>
+                    {(task.project || task.company) && (
+                      <p className="text-[11px] text-[#A3A3A3]">
+                        {[task.company?.name, task.project?.name].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
+                  </div>
+                  {inPlan ? (
+                    <FaCheck className="text-[#10B981] text-xs mt-1 flex-shrink-0" />
+                  ) : (
+                    <button
+                      onClick={() => onAdd(task.id, 'other')}
+                      className="text-[#DD3A44] hover:text-[#C7333D] transition-colors flex-shrink-0"
+                      title="Add to plan"
+                    >
+                      <FaPlus className="text-xs" />
+                    </button>
+                  )}
                 </div>
-              ) : (
-                <button
-                  onClick={() => onAdd(task.id, 'other')}
-                  className="text-[#DD3A44] hover:text-[#C7333D] transition-colors"
-                >
-                  <FaPlus className="text-xs" />
-                </button>
-              )}
-            </div>
-          </div>
-        )
-      })}
+              </div>
+            )
+          })
+        )}
+      </div>
     </div>
   )
-}
-
-// Recent Tab (simplified - same as All Tasks for now)
-function RecentTab({ tasks, onAdd, isTaskInPlan }: {
-  tasks: Task[]
-  onAdd: (taskId: string, category: 'main' | 'secondary' | 'additional' | 'other') => void
-  isTaskInPlan: (taskId: string) => boolean
-}) {
-  return <AllTasksTab tasks={tasks.slice(0, 20)} onAdd={onAdd} isTaskInPlan={isTaskInPlan} />
 }
