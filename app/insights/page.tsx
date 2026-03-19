@@ -171,7 +171,7 @@ export default function InsightsPage() {
       case 'risk':
         return <FaExclamationTriangle className="text-red-500" />
       case 'strategy':
-        return <FaBullseye className="text-blue-500" />
+        return <FaBullseye className="text-[#006766]" />
       case 'optimization':
         return <FaCogs className="text-purple-500" />
       default:
@@ -186,9 +186,9 @@ export default function InsightsPage() {
       case 2:
         return 'border-orange-300 bg-orange-50'
       case 3:
-        return 'border-blue-300 bg-blue-50'
+        return 'border-transparent bg-[#f0fafa]'
       case 4:
-        return 'border-gray-300 bg-gray-50'
+        return 'border-gray-300 bg-[#f6f3f2]'
       default:
         return 'border-gray-300 bg-white'
     }
@@ -212,13 +212,13 @@ export default function InsightsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'new':
-        return <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">New</span>
+        return <span className="px-2 py-1 text-xs rounded-full bg-[#e6f4f4] text-[#006766]">New</span>
       case 'reviewed':
         return <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">Reviewed</span>
       case 'implemented':
-        return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Implemented</span>
+        return <span className="px-2 py-1 text-xs rounded-full bg-[#e6f4f4] text-[#006766]">Implemented</span>
       case 'dismissed':
-        return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">Dismissed</span>
+        return <span className="px-2 py-1 text-xs rounded-full bg-[#f0eded] text-[#5a5757]">Dismissed</span>
       default:
         return null
     }
@@ -227,7 +227,7 @@ export default function InsightsPage() {
   if (workspaceLoading || (loading && insights.length === 0) || !workspaceId) {
     return (
       <div className="min-h-screen bg-bg-cream flex items-center justify-center">
-        <div className="text-gray-600">Loading insights...</div>
+        <div className="text-[#5a5757]">Loading insights...</div>
       </div>
     )
   }
@@ -240,14 +240,14 @@ export default function InsightsPage() {
         onCollapsedChange={setSidebarCollapsed}
       />
       <div className={sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'}>
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <header className="bg-white sticky top-0 z-10">
           <div className="px-8 py-6 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-2xl font-semibold text-[#1c1b1b] flex items-center gap-2">
                 <FaLightbulb className="text-yellow-500" />
                 AI Insights
               </h1>
-              <p className="text-gray-600 text-sm mt-1">
+              <p className="text-[#5a5757] text-sm mt-1">
                 {insights.length} {insights.length === 1 ? 'insight' : 'insights'}
                 {(searchQuery || selectedTypes.length > 0 || selectedStatuses.length > 0 || selectedPriorities.length > 0) && ' (filtered)'}
               </p>
@@ -260,15 +260,15 @@ export default function InsightsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search insights..."
-                  className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500"
+                  className="pl-10 pr-4 py-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-accent-500"
                 />
-                <FaSearch className="absolute left-3 top-3 text-gray-400" size={16} />
+                <FaSearch className="absolute left-3 top-3 text-[#C4C0C0]" size={16} />
               </div>
 
               {/* Filters Button */}
               <button
                 onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#525252] border border-[#E5E5E5] rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#e0dbdb] hover:bg-[#d4cecd] text-[#1c1b1b]  rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaFilter size={16} />
                 Filters
@@ -286,11 +286,11 @@ export default function InsightsPage() {
 
           {/* Filters Panel */}
           {isFiltersOpen && (
-            <div className="px-8 pb-6 border-t border-gray-200 bg-gray-50 space-y-4">
+            <div className="px-8 pb-6 bg-[#f6f3f2] space-y-4">
               <div className="grid grid-cols-3 gap-6">
                 {/* Type Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-3">
+                  <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
                     Insight Type
                   </label>
                   <div className="space-y-2">
@@ -308,7 +308,7 @@ export default function InsightsPage() {
                           }}
                           className="rounded border-gray-300"
                         />
-                        <span className="text-sm text-gray-700 capitalize">{type}</span>
+                        <span className="text-sm text-[#5a5757] capitalize">{type}</span>
                       </label>
                     ))}
                   </div>
@@ -316,7 +316,7 @@ export default function InsightsPage() {
 
                 {/* Status Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-3">
+                  <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
                     Status
                   </label>
                   <div className="space-y-2">
@@ -334,7 +334,7 @@ export default function InsightsPage() {
                           }}
                           className="rounded border-gray-300"
                         />
-                        <span className="text-sm text-gray-700 capitalize">{status}</span>
+                        <span className="text-sm text-[#5a5757] capitalize">{status}</span>
                       </label>
                     ))}
                   </div>
@@ -342,7 +342,7 @@ export default function InsightsPage() {
 
                 {/* Priority Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-3">
+                  <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
                     Priority
                   </label>
                   <div className="space-y-2">
@@ -360,7 +360,7 @@ export default function InsightsPage() {
                           }}
                           className="rounded border-gray-300"
                         />
-                        <span className="text-sm text-gray-700">{getPriorityLabel(priority)}</span>
+                        <span className="text-sm text-[#5a5757]">{getPriorityLabel(priority)}</span>
                       </label>
                     ))}
                   </div>
@@ -376,7 +376,7 @@ export default function InsightsPage() {
                     setSelectedStatuses(['new'])
                     setSelectedPriorities([])
                   }}
-                  className="px-3 py-1 text-sm bg-white text-gray-700 border border-gray-200 rounded hover:bg-gray-50 transition"
+                  className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#f6f3f2] transition"
                 >
                   Clear all filters
                 </button>
@@ -390,8 +390,8 @@ export default function InsightsPage() {
             {insights.length === 0 ? (
               <div className="text-center py-12">
                 <FaLightbulb className="mx-auto text-gray-300" size={48} />
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No insights yet</h3>
-                <p className="mt-2 text-gray-600">
+                <h3 className="mt-4 text-lg font-medium text-[#1c1b1b]">No insights yet</h3>
+                <p className="mt-2 text-[#5a5757]">
                   AI-generated insights will appear here to help you make better decisions.
                 </p>
               </div>
@@ -404,48 +404,48 @@ export default function InsightsPage() {
                       setSelectedInsight(insight)
                       setIsDetailModalOpen(true)
                     }}
-                    className={`p-5 rounded-lg border-2 hover:shadow-md transition cursor-pointer ${getPriorityColor(insight.priority)}`}
+                    className={`p-5 rounded-[10px] border-2 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer ${getPriorityColor(insight.priority)}`}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {getInsightIcon(insight.insightType)}
-                        <span className="text-xs font-medium text-gray-600 capitalize">
+                        <span className="text-xs font-medium text-[#5a5757] capitalize">
                           {insight.insightType}
                         </span>
                       </div>
                       {getStatusBadge(insight.status)}
                     </div>
 
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <h3 className="font-semibold text-[#1c1b1b] mb-2 line-clamp-2">
                       {insight.title}
                     </h3>
 
-                    <p className="text-gray-700 text-sm line-clamp-3 mb-3">
+                    <p className="text-[#5a5757] text-sm line-clamp-3 mb-3">
                       {insight.summary}
                     </p>
 
                     {insight.company && (
                       <div className="mb-3">
-                        <span className="px-2 py-1 text-xs rounded-full bg-white text-gray-700 border border-gray-300">
+                        <span className="px-2 py-1 text-xs rounded-full bg-white text-[#5a5757] border border-gray-300">
                           🏢 {insight.company.name}
                         </span>
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-200">
+                    <div className="flex items-center justify-between text-xs text-[#A3A3A3] pt-3">
                       <span>{getPriorityLabel(insight.priority)}</span>
                       <span>{new Date(insight.createdAt).toLocaleDateString()}</span>
                     </div>
 
                     {/* Quick Actions */}
                     {insight.status === 'new' && (
-                      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200">
+                      <div className="flex items-center gap-2 mt-3 pt-3">
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
                             handleReview(insight.id)
                           }}
-                          className="flex-1 px-3 py-1.5 text-xs bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition"
+                          className="flex-1 px-3 py-1.5 text-xs bg-white text-[#5a5757] border border-gray-300 rounded hover:bg-[#f6f3f2] transition"
                         >
                           Review
                         </button>
@@ -517,7 +517,7 @@ function InsightDetailModal({
       case 'risk':
         return <FaExclamationTriangle className="text-red-500" size={24} />
       case 'strategy':
-        return <FaBullseye className="text-blue-500" size={24} />
+        return <FaBullseye className="text-[#006766]" size={24} />
       case 'optimization':
         return <FaCogs className="text-purple-500" size={24} />
       default:
@@ -527,15 +527,15 @@ function InsightDetailModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white rounded-[10px] shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {getInsightIcon(insight.insightType)}
-            <h2 className="text-xl font-semibold text-gray-900">Insight Details</h2>
+            <h2 className="text-xl font-semibold text-[#1c1b1b]">Insight Details</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-[#C4C0C0] hover:text-[#5a5757] transition"
           >
             <FaTimes size={20} />
           </button>
@@ -545,10 +545,10 @@ function InsightDetailModal({
           {/* Header Info */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <span className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-700 capitalize">
+              <span className="px-3 py-1 text-sm rounded-full bg-[#f0eded] text-[#5a5757] capitalize">
                 {insight.insightType}
               </span>
-              <span className="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700">
+              <span className="px-3 py-1 text-sm rounded-full bg-[#e6f4f4] text-[#006766]">
                 Priority {insight.priority}
               </span>
               {insight.company && (
@@ -557,23 +557,23 @@ function InsightDetailModal({
                 </span>
               )}
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">{insight.title}</h3>
+            <h3 className="text-2xl font-bold text-[#1c1b1b] mb-2">{insight.title}</h3>
           </div>
 
           {/* Summary */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Summary</h4>
-            <p className="text-gray-900">{insight.summary}</p>
+          <div className="bg-[#f6f3f2] p-4 rounded-[10px]">
+            <h4 className="text-sm font-semibold text-[#5a5757] mb-2">Summary</h4>
+            <p className="text-[#1c1b1b]">{insight.summary}</p>
           </div>
 
           {/* Detailed Analysis */}
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Detailed Analysis</h4>
-            <div className="bg-white border border-gray-200 p-4 rounded-lg">
+            <h4 className="text-sm font-semibold text-[#5a5757] mb-3">Detailed Analysis</h4>
+            <div className="bg-white p-4 rounded-[10px]">
               {typeof insight.detailedAnalysis === 'string' ? (
-                <p className="text-gray-900 whitespace-pre-wrap">{insight.detailedAnalysis}</p>
+                <p className="text-[#1c1b1b] whitespace-pre-wrap">{insight.detailedAnalysis}</p>
               ) : (
-                <pre className="text-gray-900 text-sm whitespace-pre-wrap">
+                <pre className="text-[#1c1b1b] text-sm whitespace-pre-wrap">
                   {JSON.stringify(insight.detailedAnalysis, null, 2)}
                 </pre>
               )}
@@ -583,20 +583,20 @@ function InsightDetailModal({
           {/* Suggested Actions */}
           {insight.suggestedActions && (
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Suggested Actions</h4>
-              <div className="bg-accent-50 border border-accent-200 p-4 rounded-lg">
+              <h4 className="text-sm font-semibold text-[#5a5757] mb-3">Suggested Actions</h4>
+              <div className="bg-accent-50 border border-accent-200 p-4 rounded-[10px]">
                 {typeof insight.suggestedActions === 'string' ? (
-                  <p className="text-gray-900">{insight.suggestedActions}</p>
+                  <p className="text-[#1c1b1b]">{insight.suggestedActions}</p>
                 ) : Array.isArray(insight.suggestedActions) ? (
                   <ul className="list-disc list-inside space-y-2">
                     {insight.suggestedActions.map((action: any, idx: number) => (
-                      <li key={idx} className="text-gray-900">
+                      <li key={idx} className="text-[#1c1b1b]">
                         {typeof action === 'string' ? action : JSON.stringify(action)}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <pre className="text-gray-900 text-sm whitespace-pre-wrap">
+                  <pre className="text-[#1c1b1b] text-sm whitespace-pre-wrap">
                     {JSON.stringify(insight.suggestedActions, null, 2)}
                   </pre>
                 )}
@@ -605,20 +605,20 @@ function InsightDetailModal({
           )}
 
           {/* Status & Metadata */}
-          <div className="grid grid-cols-2 gap-4 border-t border-gray-200 pt-5">
+          <div className="grid grid-cols-2 gap-4 pt-5">
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-1">Status</h4>
-              <p className="text-gray-900 capitalize">{insight.status}</p>
+              <h4 className="text-sm font-medium text-[#5a5757] mb-1">Status</h4>
+              <p className="text-[#1c1b1b] capitalize">{insight.status}</p>
             </div>
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-1">Created</h4>
-              <p className="text-gray-900">{new Date(insight.createdAt).toLocaleString()}</p>
+              <h4 className="text-sm font-medium text-[#5a5757] mb-1">Created</h4>
+              <p className="text-[#1c1b1b]">{new Date(insight.createdAt).toLocaleString()}</p>
             </div>
             {insight.reviewedAt && (
               <>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">Reviewed</h4>
-                  <p className="text-gray-900">{new Date(insight.reviewedAt).toLocaleString()}</p>
+                  <h4 className="text-sm font-medium text-[#5a5757] mb-1">Reviewed</h4>
+                  <p className="text-[#1c1b1b]">{new Date(insight.reviewedAt).toLocaleString()}</p>
                 </div>
               </>
             )}
@@ -626,14 +626,14 @@ function InsightDetailModal({
         </div>
 
         {/* Actions */}
-        <div className="sticky bottom-0 bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+        <div className="sticky bottom-0 bg-[#f6f3f2] px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => {
               if (confirm('Are you sure you want to delete this insight?')) {
                 onDelete(insight.id)
               }
             }}
-            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-[10px] transition"
           >
             Delete
           </button>
@@ -642,19 +642,19 @@ function InsightDetailModal({
               <>
                 <button
                   onClick={() => onDismiss(insight.id)}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                  className="px-4 py-2 text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition"
                 >
                   Dismiss
                 </button>
                 <button
                   onClick={() => onReview(insight.id)}
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                  className="px-4 py-2 bg-[#e8e4e4] text-[#1c1b1b] rounded-[10px] hover:bg-gray-300 transition"
                 >
                   Mark Reviewed
                 </button>
                 <button
                   onClick={() => onImplement(insight.id)}
-                  className="px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition"
+                  className="px-4 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition"
                 >
                   <FaCheckCircle className="inline mr-2" />
                   Implement
@@ -664,7 +664,7 @@ function InsightDetailModal({
             {insight.status === 'reviewed' && (
               <button
                 onClick={() => onImplement(insight.id)}
-                className="px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition"
+                className="px-4 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition"
               >
                 <FaCheckCircle className="inline mr-2" />
                 Mark Implemented
@@ -711,12 +711,12 @@ function CreateInsightModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-[10px] shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Create New Insight</h2>
+          <h2 className="text-xl font-semibold text-[#1c1b1b]">Create New Insight</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-[#C4C0C0] hover:text-[#5a5757] transition"
           >
             <FaTimes size={20} />
           </button>
@@ -724,29 +724,29 @@ function CreateInsightModal({
 
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+            <label className="block text-sm font-medium text-[#5a5757] mb-2">Title *</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Brief title for this insight"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Summary *</label>
+            <label className="block text-sm font-medium text-[#5a5757] mb-2">Summary *</label>
             <textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               placeholder="2-3 sentence summary"
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#5a5757] mb-2">
               Detailed Analysis *
             </label>
             <textarea
@@ -754,12 +754,12 @@ function CreateInsightModal({
               onChange={(e) => setDetailedAnalysis(e.target.value)}
               placeholder="Full analysis and reasoning..."
               rows={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#5a5757] mb-2">
               Suggested Actions (optional)
             </label>
             <textarea
@@ -767,17 +767,17 @@ function CreateInsightModal({
               onChange={(e) => setSuggestedActions(e.target.value)}
               placeholder="What should be done? One action per line."
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">Type</label>
               <select
                 value={insightType}
                 onChange={(e) => setInsightType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 {['opportunity', 'risk', 'strategy', 'optimization'].map((type) => (
                   <option key={type} value={type} className="capitalize">
@@ -788,11 +788,11 @@ function CreateInsightModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">Priority</label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 <option value={1}>P1 - Critical</option>
                 <option value={2}>P2 - High</option>
@@ -803,16 +803,16 @@ function CreateInsightModal({
           </div>
         </div>
 
-        <div className="bg-gray-50 px-6 py-4 flex items-center justify-end gap-2 border-t border-gray-200">
+        <div className="bg-[#f6f3f2] px-6 py-4 flex items-center justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+            className="px-4 py-2 text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition"
+            className="px-4 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition"
           >
             Create Insight
           </button>
