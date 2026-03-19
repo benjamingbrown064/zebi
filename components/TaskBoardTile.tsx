@@ -113,7 +113,7 @@ export default function TaskBoardTile({
         setIsHovering(false)
         setShowPriorityPicker(false)
       }}
-      className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow duration-200 relative group"
+      className="card cursor-pointer relative group p-4"
     >
       {/* ROW 1: Title + Indicators + Assignee */}
       <div className="flex items-start justify-between gap-2 mb-3 relative">
@@ -258,7 +258,7 @@ export default function TaskBoardTile({
 
       {/* ROW 3 (Conditional): Blocked Reason OR Assignee */}
       {showRow3 && (
-        <div className="flex items-center gap-3 pt-2 border-t border-gray-100 text-xs">
+        <div className="flex items-center gap-3 pt-2 text-xs mt-2">
           {hasBlockedReason && (
             <div className="flex items-center gap-1 text-red-600">
               <span className="font-medium">Blocked:</span>
@@ -280,7 +280,7 @@ export default function TaskBoardTile({
       )}
 
       {isHovering && (
-        <div className="absolute bottom-0 left-0 right-0 flex gap-2 p-3 bg-white border-t border-gray-100 rounded-b-lg pointer-events-auto">
+        <div className="absolute bottom-0 left-0 right-0 flex gap-2 p-3 bg-white rounded-b-[14px] pointer-events-auto">
           {/* Complete button */}
           <button
             onClick={(e) => {
