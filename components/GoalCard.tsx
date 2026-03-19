@@ -21,8 +21,8 @@ export default function GoalCard({
 
   const statusColors: Record<string, { bg: string; text: string; label: string }> = {
     'on-track': {
-      bg: 'bg-green-100',
-      text: 'text-green-700',
+      bg: 'bg-[#e6f4f4]',
+      text: 'text-[#006766]',
       label: 'On track',
     },
     behind: {
@@ -44,11 +44,11 @@ export default function GoalCard({
       onClick={onClick}
       className="card-base p-4 card-hover cursor-pointer space-y-3"
     >
-      <p className="font-semibold text-gray-900">{name}</p>
+      <p className="font-semibold text-[#1c1b1b]">{name}</p>
 
       {/* Progress Bar */}
       <div className="space-y-1">
-        <div className="flex justify-between text-xs text-gray-600">
+        <div className="flex justify-between text-xs text-[#5a5757]">
           <span>Progress</span>
           <span>
             {current}
@@ -56,7 +56,7 @@ export default function GoalCard({
             {unit && ` ${unit}`}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-[#e8e4e4] rounded-full h-2">
           <div
             className="bg-accent-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${Math.min(progress, 100)}%` }}
@@ -66,7 +66,7 @@ export default function GoalCard({
 
       {/* Status & Due Date */}
       <div className="flex items-center justify-between">
-        {dueDate && <span className="text-xs text-gray-500">Due: {dueDate}</span>}
+        {dueDate && <span className="text-xs text-[#A3A3A3]">Due: {dueDate}</span>}
         <span className={`text-xs px-2 py-1 rounded font-medium ${bg} ${text}`}>
           {label}
         </span>
