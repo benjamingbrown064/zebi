@@ -260,10 +260,10 @@ export default function VoiceEntityModal({
       case 'company':
         return (
           <>
-            <div className="mb-6 p-4 bg-white border border-gray-200 rounded-[10px]">
-              <h4 className="text-sm font-semibold text-gray-500 mb-2">{config.icon} COMPANY</h4>
+            <div className="mb-6 p-4 bg-white rounded-[10px]">
+              <h4 className="text-sm font-semibold text-[#A3A3A3] mb-2">{config.icon} COMPANY</h4>
               <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.company.name}</h5>
-              <div className="space-y-1 text-sm text-gray-700">
+              <div className="space-y-1 text-sm text-[#5a5757]">
                 <p><span className="font-medium">Industry:</span> {proposal.company.industry}</p>
                 {proposal.company.stage && (
                   <p><span className="font-medium">Stage:</span> {proposal.company.stage}</p>
@@ -276,21 +276,21 @@ export default function VoiceEntityModal({
             </div>
 
             {proposal.objectives && proposal.objectives.length > 0 && (
-              <div className="mb-6 p-4 bg-white border border-gray-200 rounded-[10px]">
-                <h4 className="text-sm font-semibold text-gray-500 mb-3">
+              <div className="mb-6 p-4 bg-white rounded-[10px]">
+                <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">
                   🎯 OBJECTIVES ({proposal.objectives.length})
                 </h4>
                 <div className="space-y-2">
                   {proposal.objectives.map((obj: any, index: number) => (
                     <div key={index} className="flex items-start gap-2">
-                      <span className="text-sm text-gray-600">{index + 1}.</span>
+                      <span className="text-sm text-[#5a5757]">{index + 1}.</span>
                       <div className="flex-1">
                         <p className="text-sm text-[#1A1A1A]">
                           {obj.priority === 'high' && '⚠️ '}
                           {obj.title}
                         </p>
                         {obj.deadline && (
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-[#A3A3A3]">
                             Target: {new Date(obj.deadline).toLocaleDateString()}
                           </p>
                         )}
@@ -306,10 +306,10 @@ export default function VoiceEntityModal({
       case 'objective':
         return (
           <>
-            <div className="mb-6 p-4 bg-white border border-gray-200 rounded-[10px]">
-              <h4 className="text-sm font-semibold text-gray-500 mb-2">{config.icon} OBJECTIVE</h4>
+            <div className="mb-6 p-4 bg-white rounded-[10px]">
+              <h4 className="text-sm font-semibold text-[#A3A3A3] mb-2">{config.icon} OBJECTIVE</h4>
               <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.objective.title}</h5>
-              <div className="space-y-1 text-sm text-gray-700">
+              <div className="space-y-1 text-sm text-[#5a5757]">
                 <p><span className="font-medium">Type:</span> {proposal.objective.objectiveType}</p>
                 <p><span className="font-medium">Priority:</span> {proposal.objective.priority}</p>
                 {proposal.objective.deadline && (
@@ -323,8 +323,8 @@ export default function VoiceEntityModal({
             </div>
 
             {proposal.projects && proposal.projects.length > 0 && (
-              <div className="mb-6 p-4 bg-white border border-gray-200 rounded-[10px]">
-                <h4 className="text-sm font-semibold text-gray-500 mb-3">
+              <div className="mb-6 p-4 bg-white rounded-[10px]">
+                <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">
                   🗂️ PROJECTS ({proposal.projects.length})
                 </h4>
                 <ul className="space-y-1">
@@ -336,8 +336,8 @@ export default function VoiceEntityModal({
             )}
 
             {proposal.tasks && proposal.tasks.length > 0 && (
-              <div className="mb-6 p-4 bg-white border border-gray-200 rounded-[10px]">
-                <h4 className="text-sm font-semibold text-gray-500 mb-3">
+              <div className="mb-6 p-4 bg-white rounded-[10px]">
+                <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">
                   ✅ TASKS ({proposal.tasks.length})
                 </h4>
                 <ul className="space-y-1">
@@ -353,10 +353,10 @@ export default function VoiceEntityModal({
       case 'project':
         return (
           <>
-            <div className="mb-6 p-4 bg-white border border-gray-200 rounded-[10px]">
-              <h4 className="text-sm font-semibold text-gray-500 mb-2">{config.icon} PROJECT</h4>
+            <div className="mb-6 p-4 bg-white rounded-[10px]">
+              <h4 className="text-sm font-semibold text-[#A3A3A3] mb-2">{config.icon} PROJECT</h4>
               <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.project.name}</h5>
-              <div className="space-y-1 text-sm text-gray-700">
+              <div className="space-y-1 text-sm text-[#5a5757]">
                 {proposal.project.stage && (
                   <p><span className="font-medium">Stage:</span> {proposal.project.stage}</p>
                 )}
@@ -369,21 +369,21 @@ export default function VoiceEntityModal({
             </div>
 
             {proposal.tasks && proposal.tasks.length > 0 && (
-              <div className="mb-6 p-4 bg-white border border-gray-200 rounded-[10px]">
-                <h4 className="text-sm font-semibold text-gray-500 mb-3">
+              <div className="mb-6 p-4 bg-white rounded-[10px]">
+                <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">
                   ✅ TASKS ({proposal.tasks.length})
                 </h4>
                 <div className="space-y-2">
                   {proposal.tasks.map((task: any, index: number) => (
                     <div key={index} className="flex items-start gap-2">
-                      <span className="text-sm text-gray-600">{index + 1}.</span>
+                      <span className="text-sm text-[#5a5757]">{index + 1}.</span>
                       <div className="flex-1">
                         <p className="text-sm text-[#1A1A1A]">
                           {task.priority === 'high' && '⚠️ '}
                           {task.title}
                         </p>
                         {task.description && (
-                          <p className="text-xs text-gray-500 mt-1">{task.description}</p>
+                          <p className="text-xs text-[#A3A3A3] mt-1">{task.description}</p>
                         )}
                       </div>
                     </div>
@@ -451,8 +451,8 @@ export default function VoiceEntityModal({
             
             <div className="mb-8 text-center">
               <p className="text-lg text-[#1A1A1A] mb-2">{config.openingQuestion}</p>
-              <p className="text-sm text-gray-600 mb-4">Speak naturally for 30-90 seconds</p>
-              <div className="max-w-md mx-auto p-3 bg-blue-50 border border-blue-200 rounded-[10px]">
+              <p className="text-sm text-[#5a5757] mb-4">Speak naturally for 30-90 seconds</p>
+              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded-[10px]">
                 <p className="text-xs text-blue-800">
                   💡 <strong>Tip:</strong> Be specific about names, dates, and key details.
                 </p>
@@ -472,7 +472,7 @@ export default function VoiceEntityModal({
           <div className="text-center py-12">
             <Spinner size="lg" color="default" className="mb-6" />
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Converting speech to text...</h3>
-            <p className="text-sm text-gray-600">Using OpenAI Whisper</p>
+            <p className="text-sm text-[#5a5757]">Using OpenAI Whisper</p>
           </div>
         );
 
@@ -481,7 +481,7 @@ export default function VoiceEntityModal({
           <div className="text-center py-12">
             <Spinner size="lg" color="default" className="mb-6" />
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Analyzing your input...</h3>
-            <p className="text-sm text-gray-600">AI is structuring the {config.singular.toLowerCase()}</p>
+            <p className="text-sm text-[#5a5757]">AI is structuring the {config.singular.toLowerCase()}</p>
           </div>
         );
 
@@ -506,15 +506,15 @@ export default function VoiceEntityModal({
           <div className="text-center py-12">
             <Spinner size="lg" color="default" className="mb-6" />
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Creating {config.singular.toLowerCase()}...</h3>
-            <p className="text-sm text-gray-600">Saving to workspace</p>
+            <p className="text-sm text-[#5a5757]">Saving to workspace</p>
           </div>
         );
 
       case 'success':
         return (
           <div className="text-center py-12 animate-in fade-in duration-500">
-            <div className="mb-6 w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center animate-in zoom-in duration-700">
-              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mb-6 w-20 h-20 mx-auto bg-[#e6f4f4] rounded-full flex items-center justify-center animate-in zoom-in duration-700">
+              <svg className="w-10 h-10 text-[#006766]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
               </svg>
             </div>
@@ -522,7 +522,7 @@ export default function VoiceEntityModal({
               🎉 {config.singular} created successfully!
             </h3>
             {createdCounts && (
-              <div className="mb-4 max-w-sm mx-auto space-y-2 text-sm text-gray-700">
+              <div className="mb-4 max-w-sm mx-auto space-y-2 text-sm text-[#5a5757]">
                 {Object.entries(createdCounts).map(([key, value]) => {
                   const count = value as number;
                   return count > 0 ? (
@@ -534,7 +534,7 @@ export default function VoiceEntityModal({
                 })}
               </div>
             )}
-            <p className="text-sm text-gray-600 animate-pulse">Redirecting...</p>
+            <p className="text-sm text-[#5a5757] animate-pulse">Redirecting...</p>
           </div>
         );
 
@@ -550,10 +550,10 @@ export default function VoiceEntityModal({
       size="3xl"
       scrollBehavior="inside"
       classNames={{
-        base: 'bg-[#FAFAFA]',
+        base: 'bg-[#fcf9f8]',
         header: 'border-b border-gray-200',
         body: 'py-6',
-        closeButton: 'hover:bg-gray-100'
+        closeButton: 'hover:bg-[#f0eded]'
       }}
     >
       <ModalContent>
