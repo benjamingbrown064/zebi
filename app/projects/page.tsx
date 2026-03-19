@@ -12,6 +12,7 @@ import { FaPlus, FaSearch, FaFolder, FaTasks, FaBuilding, FaFlag, FaMicrophone }
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFolderOpen, faFlagCheckered } from '@fortawesome/pro-duotone-svg-icons'
 import { useWorkspace } from '@/lib/use-workspace'
+import { cachedFetch, invalidateCache } from '@/lib/client-cache'
 import LoadingScreen from '@/components/LoadingScreen'
 
 interface Project {
