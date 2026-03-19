@@ -47,17 +47,17 @@ export default function CompletionToast({
 
   return (
     <div
-      className={`fixed bottom-6 right-6 bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm transform transition-all duration-300 ${
+      className={`fixed bottom-6 right-6 bg-[#f0fafa] border border-green-200 rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 max-w-sm transform transition-all duration-300 ${
         dismissing ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
       <div className="flex items-start gap-3">
-        <FaCheckCircle className="text-green-600 flex-shrink-0 mt-0.5" />
+        <FaCheckCircle className="text-[#006766] flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900">
+          <p className="text-sm font-medium text-[#1c1b1b]">
             Task completed · Will archive {getRetentionText()}
           </p>
-          <p className="text-xs text-gray-600 mt-1 truncate">{taskTitle}</p>
+          <p className="text-xs text-[#5a5757] mt-1 truncate">{taskTitle}</p>
         </div>
         <button
           onClick={() => {
@@ -67,7 +67,7 @@ export default function CompletionToast({
               setDismissing(false)
             }, 300)
           }}
-          className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+          className="text-[#C4C0C0] hover:text-[#5a5757] flex-shrink-0"
         >
           <FaTimes />
         </button>
@@ -79,7 +79,7 @@ export default function CompletionToast({
             onArchiveNow()
             onClose()
           }}
-          className="text-xs font-medium text-green-600 hover:text-green-700 bg-green-100 hover:bg-green-200 px-2 py-1 rounded transition"
+          className="text-xs font-medium text-[#006766] hover:text-[#006766] bg-[#e6f4f4] hover:bg-green-200 px-2 py-1 rounded transition"
         >
           Archive now
         </button>
@@ -88,7 +88,7 @@ export default function CompletionToast({
             onUndo()
             onClose()
           }}
-          className="text-xs font-medium text-gray-600 hover:text-gray-700 hover:bg-gray-100 px-2 py-1 rounded transition"
+          className="text-xs font-medium text-[#5a5757] hover:text-[#5a5757] hover:bg-[#f0eded] px-2 py-1 rounded transition"
         >
           Undo
         </button>
