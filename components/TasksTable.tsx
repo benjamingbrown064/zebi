@@ -30,7 +30,7 @@ const PRIORITY_COLORS: Record<number, string> = {
   1: 'text-red-600',
   2: 'text-orange-600',
   3: 'text-yellow-600',
-  4: 'text-gray-600',
+  4: 'text-[#5a5757]',
 }
 
 export default function TasksTable({
@@ -57,11 +57,11 @@ export default function TasksTable({
   }
 
   const STATUS_BADGE_COLORS: Record<string, string> = {
-    inbox: 'bg-gray-100 text-gray-700',
-    planned: 'bg-blue-100 text-blue-700',
+    inbox: 'bg-[#f0eded] text-[#5a5757]',
+    planned: 'bg-[#e6f4f4] text-[#006766]',
     doing: 'bg-amber-100 text-amber-700',
     blocked: 'bg-red-100 text-red-700',
-    done: 'bg-green-100 text-green-700',
+    done: 'bg-[#e6f4f4] text-[#006766]',
     check: 'bg-purple-100 text-purple-700', // Match board lane color
   }
 
@@ -168,10 +168,10 @@ export default function TasksTable({
   )
 
   return (
-    <div className="w-full overflow-x-auto border border-gray-200 rounded-lg">
+    <div className="w-full overflow-x-auto rounded-[10px]">
       <table className="w-full">
         {/* Header */}
-        <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
+        <thead className="bg-[#f6f3f2] sticky top-0 z-10">
           <tr>
             <th className="px-4 py-3 text-left w-12">
               <input
@@ -181,34 +181,34 @@ export default function TasksTable({
                 className="rounded border-gray-300"
               />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm">
               <SortHeader label="Title" sortKey="title" />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               <SortHeader label="Status" sortKey="statusId" />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               <SortHeader label="Priority" sortKey="priority" />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               Company
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               Project
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               Objective
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               Goal
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               <SortHeader label="Due Date" sortKey="dueAt" />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900 text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               Updated
             </th>
-            <th className="px-4 py-3 text-right font-semibold text-gray-900 text-sm">
+            <th className="px-4 py-3 text-right font-semibold text-[#1c1b1b] text-sm">
               Actions
             </th>
           </tr>
@@ -218,7 +218,7 @@ export default function TasksTable({
         <tbody className="bg-white">
           {sortedTasks.length === 0 ? (
             <tr>
-              <td colSpan={11} className="px-4 py-12 text-center text-gray-500 text-sm">
+              <td colSpan={11} className="px-4 py-12 text-center text-[#A3A3A3] text-sm">
                 No tasks
               </td>
             </tr>
@@ -226,7 +226,7 @@ export default function TasksTable({
             sortedTasks.map((task) => (
               <tr
                 key={task.id}
-                className="border-b border-gray-100 hover:bg-gray-50 transition"
+                className="border-b border-gray-100 hover:bg-[#f6f3f2] transition"
               >
                 <td className="px-4 py-3">
                   <input
@@ -237,15 +237,15 @@ export default function TasksTable({
                   />
                 </td>
                 <td
-                  className="px-4 py-3 text-sm font-medium text-gray-900 cursor-pointer hover:text-accent-600"
+                  className="px-4 py-3 text-sm font-medium text-[#1c1b1b] cursor-pointer hover:text-accent-600"
                   onClick={() => onTaskClick?.(task)}
                 >
                   <div className="truncate max-w-xs" title={task.title}>
                     {task.title}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
-                  <span className={`text-xs px-2 py-1 rounded font-medium ${STATUS_BADGE_COLORS[getStatusType(task.statusId)] || 'bg-gray-100 text-gray-700'}`}>
+                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
+                  <span className={`text-xs px-2 py-1 rounded font-medium ${STATUS_BADGE_COLORS[getStatusType(task.statusId)] || 'bg-[#f0eded] text-[#5a5757]'}`}>
                     {getStatusName(task.statusId)}
                   </span>
                 </td>
@@ -254,46 +254,46 @@ export default function TasksTable({
                 >
                   {PRIORITY_LABELS[task.priority]}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
                   {task.company ? (
                     <span className="truncate max-w-[150px] block" title={task.company.name}>
                       {task.company.name}
                     </span>
                   ) : (
-                    <span className="text-gray-400">—</span>
+                    <span className="text-[#C4C0C0]">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
                   {task.project ? (
                     <span className="truncate max-w-[150px] block" title={task.project.name}>
                       {task.project.name}
                     </span>
                   ) : (
-                    <span className="text-gray-400">—</span>
+                    <span className="text-[#C4C0C0]">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
                   {task.objective ? (
                     <span className="truncate max-w-[150px] block" title={task.objective.title}>
                       {task.objective.title}
                     </span>
                   ) : (
-                    <span className="text-gray-400">—</span>
+                    <span className="text-[#C4C0C0]">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
                   {task.goal ? (
                     <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded font-medium text-xs">
                       {task.goal.name}
                     </span>
                   ) : (
-                    <span className="text-gray-400">—</span>
+                    <span className="text-[#C4C0C0]">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
                   {formatDueDate(task.dueAt?.toString())}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#A3A3A3] whitespace-nowrap">
                   {task.updatedAt
                     ? new Date(task.updatedAt).toLocaleDateString('en-US', {
                         month: 'short',
@@ -304,7 +304,7 @@ export default function TasksTable({
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => onComplete?.(task.id)}
-                    className="p-2 text-gray-500 hover:text-accent-600 hover:bg-accent-50 rounded transition"
+                    className="p-2 text-[#A3A3A3] hover:text-accent-600 hover:bg-accent-50 rounded transition"
                     title="Complete task"
                   >
                     <FaCheck className="w-4 h-4" />
@@ -318,15 +318,15 @@ export default function TasksTable({
 
       {/* Summary */}
       {selectedTasks.size > 0 && (
-        <div className="bg-blue-50 border-t border-blue-200 px-4 py-3 flex items-center justify-between">
+        <div className="bg-[#f0fafa] border-t border-transparent px-4 py-3 flex items-center justify-between">
           <span className="text-sm text-blue-900">
             {selectedTasks.size} task{selectedTasks.size !== 1 ? 's' : ''} selected
           </span>
           <div className="flex gap-2">
-            <button className="px-3 py-1 text-sm bg-white text-gray-700 border border-gray-200 rounded hover:bg-gray-50">
+            <button className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#f6f3f2]">
               Change Status
             </button>
-            <button className="px-3 py-1 text-sm bg-white text-gray-700 border border-gray-200 rounded hover:bg-gray-50">
+            <button className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#f6f3f2]">
               Change Priority
             </button>
           </div>
