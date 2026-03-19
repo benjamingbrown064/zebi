@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, Button, Input, Textarea, Checkbox } from '@heroui/react';
+import { Modal, ModalContent, ModalHeader, ModalBody, Button, Spinner } from '@heroui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faStop, faCircle, faCheckCircle } from '@fortawesome/pro-duotone-svg-icons';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 interface VoiceToTaskModalProps {
   isOpen: boolean;
@@ -51,14 +52,11 @@ export function VoiceToTaskModal({
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
-
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
       mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
-        }
+        if (event.data.size > 0) chunksRef.current.push(event.data);
       };
 
       mediaRecorder.onstop = async () => {
@@ -70,12 +68,11 @@ export function VoiceToTaskModal({
       mediaRecorder.start();
       setIsRecording(true);
       startTimeRef.current = Date.now();
-
       timerRef.current = setInterval(() => {
         setDuration(Math.floor((Date.now() - startTimeRef.current) / 1000));
       }, 1000);
     } catch (err: any) {
-      setError('Microphone access denied');
+      setError('Microphone access denied. Please allow microphone access and try again.');
     }
   };
 
@@ -83,9 +80,7 @@ export function VoiceToTaskModal({
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+      if (timerRef.current) clearInterval(timerRef.current);
     }
   };
 
@@ -93,7 +88,6 @@ export function VoiceToTaskModal({
     try {
       setStep('processing');
 
-      // Create session
       const sessionRes = await fetch('/api/task-generation/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,11 +95,9 @@ export function VoiceToTaskModal({
       });
 
       if (!sessionRes.ok) throw new Error('Failed to create session');
-
       const sessionData = await sessionRes.json();
       setSessionId(sessionData.sessionId);
 
-      // Upload audio
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
 
@@ -115,8 +107,6 @@ export function VoiceToTaskModal({
       });
 
       if (!uploadRes.ok) throw new Error('Failed to upload audio');
-
-      // Poll for completion
       await pollForReview(sessionData.sessionId);
     } catch (err: any) {
       setError(err.message);
@@ -127,12 +117,10 @@ export function VoiceToTaskModal({
   const pollForReview = async (sid: string) => {
     for (let i = 0; i < 60; i++) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       const res = await fetch(`/api/task-generation/sessions/${sid}/review`);
       const data = await res.json();
-
       if (data.status === 'ready_for_review') {
-        setCandidates(data.candidates || []);
+        setCandidates(data.candidates?.map((c: any) => ({ ...c, selected: true })) || []);
         setStep('review');
         return;
       } else if (data.status === 'failed') {
@@ -143,15 +131,12 @@ export function VoiceToTaskModal({
   };
 
   const handleUpdateCandidate = (id: string, updates: any) => {
-    setCandidates((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
-    );
+    setCandidates((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
   };
 
   const handleCreateTasks = async () => {
     try {
       const selectedIds = candidates.filter((c) => c.selected).map((c) => c.id);
-
       if (!sessionId || selectedIds.length === 0) return;
 
       const res = await fetch(`/api/task-generation/sessions/${sessionId}/create`, {
@@ -163,10 +148,7 @@ export function VoiceToTaskModal({
       const data = await res.json();
       setResult(data);
       setStep('result');
-
-      if (onComplete) {
-        onComplete();
-      }
+      if (onComplete) onComplete();
     } catch (err: any) {
       setError(err.message);
     }
@@ -178,161 +160,268 @@ export function VoiceToTaskModal({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const selectedCount = candidates.filter((c) => c.selected).length;
+
+  const handleClose = () => {
+    setStep('capture');
+    setIsRecording(false);
+    setDuration(0);
+    setSessionId(null);
+    setCandidates([]);
+    setResult(null);
+    setError(null);
+    onClose();
+  };
+
+  const renderContent = () => {
+    if (error) {
+      return (
+        <div className="text-center py-12">
+          <div className="mb-6 w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Something went wrong</h3>
+          <div className="mb-6 max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded-[10px]">
+            <p className="text-sm text-red-800">{error}</p>
+          </div>
+          <div className="flex gap-3 justify-center">
+            <Button color="default" variant="bordered" onPress={handleClose}>
+              Cancel
+            </Button>
+            <Button color="danger" onPress={() => { setError(null); setStep('capture'); }}>
+              Try Again
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    switch (step) {
+      case 'capture':
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[400px] py-8">
+            <div className="mb-8 text-center">
+              <p className="text-lg text-[#1A1A1A] mb-2">
+                Talk through everything that needs to be done.
+              </p>
+              <p className="text-sm text-gray-600 mb-4">
+                I'll turn it into a task list for you to review.
+              </p>
+              <div className="max-w-md mx-auto p-3 bg-blue-50 border border-blue-200 rounded-[10px]">
+                <p className="text-xs text-blue-800">
+                  💡 <strong>Tip:</strong> Describe tasks clearly — mention priorities, deadlines, and who should do what.
+                </p>
+              </div>
+            </div>
+
+            {!isRecording ? (
+              <button
+                onClick={startRecording}
+                className="w-24 h-24 rounded-full bg-[#DD3A44] hover:bg-[#C7333D] text-white flex items-center justify-center transition-all shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                <FontAwesomeIcon icon={faMicrophone} className="text-3xl" />
+              </button>
+            ) : (
+              <div className="flex flex-col items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <FontAwesomeIcon icon={faCircle} className="text-[#DD3A44] animate-pulse" />
+                  <span className="text-[15px] font-medium text-[#1A1A1A]">Recording</span>
+                </div>
+                <div className="text-5xl font-light tabular-nums text-[#1A1A1A]">
+                  {formatDuration(duration)}
+                </div>
+                {/* Animated waveform */}
+                <div className="flex items-center justify-center gap-1 h-8">
+                  {[...Array(12)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-1 bg-[#DD3A44] rounded-full animate-pulse"
+                      style={{
+                        height: `${Math.random() * 24 + 8}px`,
+                        animationDelay: `${i * 0.1}s`,
+                        animationDuration: `${0.4 + Math.random() * 0.4}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+                <button
+                  onClick={stopRecording}
+                  className="w-16 h-16 rounded-full bg-[#1A1A1A] hover:bg-[#333] text-white flex items-center justify-center transition-all shadow-lg"
+                >
+                  <FontAwesomeIcon icon={faStop} className="text-xl" />
+                </button>
+                <p className="text-xs text-gray-500">Tap to stop recording</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'processing':
+        return (
+          <div className="text-center py-12 min-h-[400px] flex flex-col items-center justify-center">
+            <div className="mb-6 relative">
+              <Spinner size="lg" color="default" />
+            </div>
+            <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Processing your recording...</h3>
+            <p className="text-sm text-gray-600 mb-4">Converting speech to tasks</p>
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+            </div>
+            <div className="max-w-md mx-auto mt-6 space-y-2 text-xs text-gray-500">
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                <span>Transcribing audio</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                <span>Extracting tasks</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                <span>Setting priorities</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'review':
+        return (
+          <div className="py-6">
+            <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Here's what I understood</h3>
+            <p className="text-sm text-gray-600 mb-6">
+              {candidates.length} task{candidates.length !== 1 ? 's' : ''} found — edit or remove any before creating.
+            </p>
+
+            <div className="space-y-3">
+              {candidates.map((candidate) => (
+                <div
+                  key={candidate.id}
+                  className={`p-4 bg-white border rounded-[10px] transition-all ${
+                    candidate.selected
+                      ? 'border-gray-200 shadow-sm'
+                      : 'border-gray-100 opacity-50'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => handleUpdateCandidate(candidate.id, { selected: !candidate.selected })}
+                      className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                        candidate.selected
+                          ? 'bg-[#DD3A44] border-[#DD3A44] text-white'
+                          : 'border-gray-300 bg-white'
+                      }`}
+                    >
+                      {candidate.selected && (
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+
+                    <div className="flex-1 min-w-0">
+                      {/* Editable title */}
+                      <input
+                        type="text"
+                        value={candidate.title}
+                        onChange={(e) => handleUpdateCandidate(candidate.id, { title: e.target.value })}
+                        className="w-full text-[15px] font-medium text-[#1A1A1A] bg-transparent border-none outline-none focus:bg-gray-50 focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all"
+                      />
+                      {/* Editable description */}
+                      {candidate.description && (
+                        <textarea
+                          value={candidate.description}
+                          onChange={(e) => handleUpdateCandidate(candidate.id, { description: e.target.value })}
+                          rows={2}
+                          className="w-full mt-1 text-[13px] text-gray-600 bg-transparent border-none outline-none focus:bg-gray-50 focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all resize-none"
+                        />
+                      )}
+                      {/* Priority badge */}
+                      {candidate.priority && (
+                        <span className={`inline-block mt-2 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                          candidate.priority <= 1 ? 'bg-red-100 text-red-700' :
+                          candidate.priority === 2 ? 'bg-orange-100 text-orange-700' :
+                          candidate.priority === 3 ? 'bg-gray-100 text-gray-700' :
+                          'bg-gray-50 text-gray-500'
+                        }`}>
+                          P{candidate.priority}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3 pt-6 mt-6 border-t border-[#E5E5E5]">
+              <Button color="default" variant="bordered" onPress={handleClose} className="flex-1">
+                Cancel
+              </Button>
+              <Button
+                color="danger"
+                onPress={handleCreateTasks}
+                isDisabled={selectedCount === 0}
+                className="flex-1"
+              >
+                Create {selectedCount} Task{selectedCount !== 1 ? 's' : ''}
+              </Button>
+            </div>
+          </div>
+        );
+
+      case 'result':
+        return (
+          <div className="text-center py-12 min-h-[400px] flex flex-col items-center justify-center animate-in fade-in duration-500">
+            <div className="mb-6 w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center animate-in zoom-in duration-700">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-3">
+              🎉 {result?.created || 0} Task{(result?.created || 0) !== 1 ? 's' : ''} Created
+            </h3>
+            {result?.context?.name && (
+              <p className="text-[15px] text-gray-600 mb-2">
+                in <span className="font-medium text-[#1A1A1A]">{result.context.name}</span>
+              </p>
+            )}
+            <Button color="danger" onPress={handleClose} className="mt-8">
+              Done
+            </Button>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       size="3xl"
       scrollBehavior="inside"
+      classNames={{
+        base: 'bg-[#FAFAFA]',
+        wrapper: 'z-[999]',
+        backdrop: 'bg-black/30',
+        header: 'border-b border-gray-200',
+        body: 'py-6',
+        closeButton: 'hover:bg-gray-100'
+      }}
     >
-      <ModalContent>
-        {() => (
-          <>
-            <ModalHeader className="px-6 py-4 border-b border-[#E5E5E5]">
-              <h2 className="text-[17px] font-semibold text-[#1A1A1A]">
-                Dictate Tasks
-              </h2>
-            </ModalHeader>
-            <ModalBody className="p-6">
-              {step === 'capture' && (
-                <div className="flex flex-col items-center justify-center min-h-[400px]">
-                  <p className="text-[15px] text-[#6B6B6B] text-center mb-8 max-w-md">
-                    Talk through everything that needs to be done. I'll turn it into a task list for you to review.
-                  </p>
-
-                  {!isRecording ? (
-                    <Button
-                      size="lg"
-                      color="primary"
-                      startContent={<FontAwesomeIcon icon={faMicrophone} />}
-                      onPress={startRecording}
-                      className="h-14 px-8"
-                    >
-                      Start Recording
-                    </Button>
-                  ) : (
-                    <div className="flex flex-col items-center gap-6">
-                      <div className="flex items-center gap-3">
-                        <FontAwesomeIcon
-                          icon={faCircle}
-                          className="text-[#DD3A44] animate-pulse"
-                        />
-                        <span className="text-[15px] font-medium">Recording</span>
-                      </div>
-                      <div className="text-4xl font-light tabular-nums">
-                        {formatDuration(duration)}
-                      </div>
-                      <Button
-                        size="lg"
-                        color="danger"
-                        variant="flat"
-                        startContent={<FontAwesomeIcon icon={faStop} />}
-                        onPress={stopRecording}
-                        className="h-14 px-8"
-                      >
-                        Stop Recording
-                      </Button>
-                    </div>
-                  )}
-
-                  {error && (
-                    <div className="mt-8 max-w-md">
-                      <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-                        <p className="text-sm text-red-800">{error}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {step === 'processing' && (
-                <div className="flex flex-col items-center justify-center min-h-[400px]">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#DD3A44] mb-6"></div>
-                  <p className="text-[15px] text-[#6B6B6B]">Processing your recording...</p>
-                </div>
-              )}
-
-              {step === 'review' && (
-                <div className="space-y-4">
-                  {candidates.map((candidate) => (
-                    <div
-                      key={candidate.id}
-                      className="border border-[#E5E5E5] rounded-lg p-4"
-                    >
-                      <div className="flex items-start gap-3">
-                        <Checkbox
-                          isSelected={candidate.selected}
-                          onValueChange={(selected) =>
-                            handleUpdateCandidate(candidate.id, { selected })
-                          }
-                        />
-                        <div className="flex-1">
-                          <Input
-                            value={candidate.title}
-                            onChange={(e) =>
-                              handleUpdateCandidate(candidate.id, { title: e.target.value })
-                            }
-                            classNames={{ input: 'font-medium' }}
-                          />
-                          {candidate.description && (
-                            <Textarea
-                              value={candidate.description}
-                              onChange={(e) =>
-                                handleUpdateCandidate(candidate.id, {
-                                  description: e.target.value,
-                                })
-                              }
-                              minRows={2}
-                              classNames={{ input: 'text-[13px]' }}
-                              className="mt-2"
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="flex gap-3 pt-4 border-t border-[#E5E5E5] mt-6">
-                    <Button variant="flat" onPress={onClose} className="flex-1">
-                      Cancel
-                    </Button>
-                    <Button
-                      color="primary"
-                      onPress={handleCreateTasks}
-                      className="flex-1"
-                    >
-                      Create {candidates.filter((c) => c.selected).length} Tasks
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {step === 'result' && result && (
-                <div className="flex flex-col items-center justify-center min-h-[400px]">
-                  <FontAwesomeIcon
-                    icon={faCheckCircle}
-                    className="text-[#4CAF50] text-6xl mb-6"
-                  />
-                  <h3 className="text-[20px] font-semibold text-[#1A1A1A] mb-2">
-                    {result.created} Task{result.created !== 1 ? 's' : ''} Created
-                  </h3>
-                  {result.context.name && (
-                    <p className="text-[15px] text-[#6B6B6B]">
-                      in <span className="font-medium text-[#1A1A1A]">{result.context.name}</span>
-                    </p>
-                  )}
-                  <Button
-                    color="primary"
-                    onPress={onClose}
-                    className="mt-8"
-                  >
-                    Done
-                  </Button>
-                </div>
-              )}
-            </ModalBody>
-          </>
-        )}
+      <ModalContent className="border border-[#E5E5E5] shadow-lg !outline-none focus:outline-none">
+        <ModalHeader className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-[#1A1A1A]">Dictate Tasks</h2>
+        </ModalHeader>
+        <ModalBody>
+          {renderContent()}
+        </ModalBody>
       </ModalContent>
     </Modal>
   );
