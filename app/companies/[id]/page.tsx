@@ -362,7 +362,7 @@ export default function CompanyDetailPage() {
     { id: 'activity', label: 'Activity', icon: faHistory },
   ]
 
-  const mainPaddingClass = isMobile ? 'pt-[64px]' : sidebarCollapsed ? 'ml-16' : 'ml-64'
+  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
   const activeView = moreMenuTab || activeTab
 
   return (
