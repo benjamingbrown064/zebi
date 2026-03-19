@@ -27,7 +27,11 @@ export interface AIContext {
 /**
  * Build context for AI from workspace data
  */
-export async function buildContext(
+// In-process context cache: avoids 7 DB queries per AI request (TTL: 2 min)
+const contextCache = new Map<string, { result: Awaited<ReturnType<typeof buildContextUncached>>; expiresAt: number }>()
+const CONTEXT_CACHE_TTL = 2 * 60 * 1000
+
+async function buildContextUncached(
   workspaceId: string,
   userId: string
 ): Promise<AIContext> {
@@ -412,4 +416,15 @@ export function formatContextForPrompt(context: AIContext): string {
   )
 
   return lines.join('\n')
+}
+
+
+export async function buildContext(workspaceId: string, userId?: string) {
+  const key = `${workspaceId}:${userId || 'anon'}`
+  const cached = contextCache.get(key)
+  if (cached && Date.now() < cached.expiresAt) return cached.result
+
+  const result = await buildContextUncached(workspaceId, userId)
+  contextCache.set(key, { result, expiresAt: Date.now() + CONTEXT_CACHE_TTL })
+  return result
 }
