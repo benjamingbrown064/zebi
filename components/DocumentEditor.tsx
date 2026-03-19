@@ -52,12 +52,12 @@ export default function DocumentEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 underline cursor-pointer',
+          class: 'text-[#006766] underline cursor-pointer',
         },
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg',
+          class: 'max-w-full h-auto rounded-[10px]',
         },
       }),
       Placeholder.configure({
@@ -134,13 +134,13 @@ export default function DocumentEditor({
   return (
     <div className="w-full">
       {/* Toolbar */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 p-2 flex flex-wrap gap-1 items-center">
+      <div className="sticky top-0 z-10 bg-white p-2 flex flex-wrap gap-1 items-center">
         {/* Text formatting */}
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
-          className={`p-2 rounded hover:bg-gray-100 ${
-            editor.isActive('bold') ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] ${
+            editor.isActive('bold') ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Bold (Cmd+B)"
         >
@@ -149,8 +149,8 @@ export default function DocumentEditor({
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
           disabled={!editor.can().chain().focus().toggleItalic().run()}
-          className={`p-2 rounded hover:bg-gray-100 ${
-            editor.isActive('italic') ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] ${
+            editor.isActive('italic') ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Italic (Cmd+I)"
         >
@@ -159,8 +159,8 @@ export default function DocumentEditor({
         <button
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           disabled={!editor.can().chain().focus().toggleUnderline().run()}
-          className={`p-2 rounded hover:bg-gray-100 ${
-            editor.isActive('underline') ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] ${
+            editor.isActive('underline') ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Underline (Cmd+U)"
         >
@@ -172,8 +172,8 @@ export default function DocumentEditor({
         {/* Headings */}
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={`p-2 rounded hover:bg-gray-100 text-sm font-semibold ${
-            editor.isActive('heading', { level: 1 }) ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] text-sm font-semibold ${
+            editor.isActive('heading', { level: 1 }) ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Heading 1"
         >
@@ -181,8 +181,8 @@ export default function DocumentEditor({
         </button>
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-2 rounded hover:bg-gray-100 text-sm font-semibold ${
-            editor.isActive('heading', { level: 2 }) ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] text-sm font-semibold ${
+            editor.isActive('heading', { level: 2 }) ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Heading 2"
         >
@@ -190,8 +190,8 @@ export default function DocumentEditor({
         </button>
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          className={`p-2 rounded hover:bg-gray-100 text-sm font-semibold ${
-            editor.isActive('heading', { level: 3 }) ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] text-sm font-semibold ${
+            editor.isActive('heading', { level: 3 }) ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Heading 3"
         >
@@ -203,8 +203,8 @@ export default function DocumentEditor({
         {/* Lists */}
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-2 rounded hover:bg-gray-100 ${
-            editor.isActive('bulletList') ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] ${
+            editor.isActive('bulletList') ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Bullet List"
         >
@@ -212,8 +212,8 @@ export default function DocumentEditor({
         </button>
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-2 rounded hover:bg-gray-100 ${
-            editor.isActive('orderedList') ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] ${
+            editor.isActive('orderedList') ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Numbered List"
         >
@@ -225,8 +225,8 @@ export default function DocumentEditor({
         {/* Block quote */}
         <button
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`p-2 rounded hover:bg-gray-100 ${
-            editor.isActive('blockquote') ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] ${
+            editor.isActive('blockquote') ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Block Quote"
         >
@@ -238,8 +238,8 @@ export default function DocumentEditor({
         {/* Link & Image */}
         <button
           onClick={setLink}
-          className={`p-2 rounded hover:bg-gray-100 ${
-            editor.isActive('link') ? 'bg-gray-200 text-blue-600' : 'text-gray-700'
+          className={`p-2 rounded hover:bg-[#f0eded] ${
+            editor.isActive('link') ? 'bg-[#e8e4e4] text-[#006766]' : 'text-[#5a5757]'
           }`}
           title="Add Link"
         >
@@ -247,7 +247,7 @@ export default function DocumentEditor({
         </button>
         <button
           onClick={addImage}
-          className="p-2 rounded hover:bg-gray-100 text-gray-700"
+          className="p-2 rounded hover:bg-[#f0eded] text-[#5a5757]"
           title="Add Image"
         >
           <FaImage />
@@ -259,7 +259,7 @@ export default function DocumentEditor({
         <button
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().chain().focus().undo().run()}
-          className="p-2 rounded hover:bg-gray-100 text-gray-700 disabled:opacity-30"
+          className="p-2 rounded hover:bg-[#f0eded] text-[#5a5757] disabled:opacity-30"
           title="Undo"
         >
           <FaUndo />
@@ -267,7 +267,7 @@ export default function DocumentEditor({
         <button
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().chain().focus().redo().run()}
-          className="p-2 rounded hover:bg-gray-100 text-gray-700 disabled:opacity-30"
+          className="p-2 rounded hover:bg-[#f0eded] text-[#5a5757] disabled:opacity-30"
           title="Redo"
         >
           <FaRedo />
@@ -275,7 +275,7 @@ export default function DocumentEditor({
 
         {/* Save status */}
         <div className="flex-1" />
-        <div className="text-sm text-gray-500 px-2">
+        <div className="text-sm text-[#A3A3A3] px-2">
           {saveStatus === 'saved' && '✓ Saved'}
           {saveStatus === 'saving' && 'Saving...'}
           {saveStatus === 'unsaved' && '• Unsaved changes'}
