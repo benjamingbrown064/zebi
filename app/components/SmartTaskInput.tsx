@@ -82,11 +82,11 @@ export default function SmartTaskInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`w-full px-4 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${className}`}
+          className={`w-full px-4 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent bg-white dark:bg-gray-800 text-[#1c1b1b] dark:text-gray-100 ${className}`}
         />
         {loading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <FaSpinner className="animate-spin text-gray-400" size={16} />
+            <FaSpinner className="animate-spin text-[#C4C0C0]" size={16} />
           </div>
         )}
         {!loading && suggestions.length > 0 && (
@@ -97,9 +97,9 @@ export default function SmartTaskInput({
       </div>
 
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-          <div className="p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
-            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 dark:border-gray-700 rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)]">
+          <div className="p-2 dark:border-gray-700 bg-[#f6f3f2] dark:bg-gray-750">
+            <div className="flex items-center gap-2 text-xs text-[#5a5757] dark:text-[#C4C0C0]">
               <FaLightbulb className="text-yellow-500" size={12} />
               <span>AI Suggestions</span>
             </div>
@@ -109,7 +109,7 @@ export default function SmartTaskInput({
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm text-gray-900 dark:text-gray-100"
+                className="w-full text-left px-4 py-2 hover:bg-[#f0eded] dark:hover:bg-gray-700 transition-colors text-sm text-[#1c1b1b] dark:text-gray-100"
               >
                 {suggestion}
               </button>
@@ -117,7 +117,7 @@ export default function SmartTaskInput({
           </div>
           <button
             onClick={() => setShowSuggestions(false)}
-            className="w-full px-4 py-2 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-750 border-t border-gray-200 dark:border-gray-700"
+            className="w-full px-4 py-2 text-xs text-[#A3A3A3] dark:text-[#C4C0C0] hover:bg-[#f6f3f2] dark:hover:bg-gray-750 dark:border-gray-700"
           >
             Dismiss
           </button>
