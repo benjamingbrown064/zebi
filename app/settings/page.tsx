@@ -45,7 +45,7 @@ export default function SettingsPage() {
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -61,7 +61,7 @@ export default function SettingsPage() {
           <main className="py-6 md:py-8">
             <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
               {/* Workspace Section */}
-              <div className="bg-white rounded-[10px] border border-[#E5E5E5] p-4 md:p-6">
+              <div className="bg-white rounded-[10px] p-4 md:p-6">
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Workspace</h2>
               <div className="space-y-4">
                 <div>
@@ -72,7 +72,7 @@ export default function SettingsPage() {
                     type="text"
                     value="My Workspace"
                     disabled
-                    className="w-full px-4 py-2.5 border border-[#E5E5E5] rounded-[10px] bg-[#F5F5F5] text-gray-600 min-h-[44px]"
+                    className="w-full px-4 py-2.5  rounded-[10px] bg-[#F5F5F5] text-[#5a5757] min-h-[44px]"
                   />
                   <p className="text-xs text-[#A3A3A3] mt-1">Workspace name cannot be changed</p>
                 </div>
@@ -80,21 +80,21 @@ export default function SettingsPage() {
             </div>
 
               {/* Preferences Section */}
-              <div className="bg-white rounded-[10px] border border-[#E5E5E5] p-4 md:p-6">
+              <div className="bg-white rounded-[10px] p-4 md:p-6">
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Preferences</h2>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-[#525252]">
                     Default view
                   </label>
-                  <select className="px-3 py-2.5 border border-[#E5E5E5] rounded-[10px] text-sm min-h-[44px]">
+                  <select className="px-3 py-2.5  rounded-[10px] text-sm min-h-[44px]">
                     <option>Dashboard</option>
                     <option>Board</option>
                     <option>Tasks</option>
                   </select>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-[#E5E5E5]">
+                <div className="flex items-center justify-between pt-4">
                   <div>
                     <label className="text-sm font-medium text-[#525252]">
                       Dark mode
@@ -120,7 +120,7 @@ export default function SettingsPage() {
             </div>
 
               {/* Filters Section */}
-              <div className="bg-white rounded-[10px] border border-[#E5E5E5] p-4 md:p-6">
+              <div className="bg-white rounded-[10px] p-4 md:p-6">
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Filters</h2>
               <p className="text-[13px] text-[#A3A3A3] mb-4">
                 Create and manage custom task filters to quickly find what you need.
@@ -135,7 +135,7 @@ export default function SettingsPage() {
             </div>
 
               {/* About Section */}
-              <div className="bg-white rounded-[10px] border border-[#E5E5E5] p-4 md:p-6">
+              <div className="bg-white rounded-[10px] p-4 md:p-6">
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">About</h2>
               <p className="text-[13px] text-[#A3A3A3]">
                 Zebi v0.1.0
