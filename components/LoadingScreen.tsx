@@ -17,7 +17,7 @@ export default function LoadingScreen({
     <div className={containerClasses}>
       <div className="flex flex-col items-center justify-center gap-4">
         <FaSpinner className="animate-spin text-[#DD3A44] text-4xl" />
-        <p className="text-gray-600 text-sm font-medium">{message}</p>
+        <p className="text-[#5a5757] text-sm font-medium">{message}</p>
       </div>
     </div>
   )
