@@ -93,14 +93,14 @@ export default function TaskComments({
 
   return (
     <div className="border-t border-gray-200 pt-4 mt-4">
-      <h3 className="text-sm font-medium text-gray-900 mb-3">Comments</h3>
+      <h3 className="text-sm font-medium text-[#1c1b1b] mb-3">Comments</h3>
 
       {/* Comments List */}
       <div className="space-y-3 mb-4 max-h-48 overflow-y-auto">
         {isLoading ? (
-          <p className="text-sm text-gray-500">Loading comments...</p>
+          <p className="text-sm text-[#A3A3A3]">Loading comments...</p>
         ) : comments.length === 0 ? (
-          <p className="text-sm text-gray-500">No comments yet</p>
+          <p className="text-sm text-[#A3A3A3]">No comments yet</p>
         ) : (
           comments.map((comment) => (
             <div key={comment.id} className="flex gap-3 group">
@@ -112,23 +112,23 @@ export default function TaskComments({
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm font-medium text-[#1c1b1b]">
                     {comment.createdBy === userId ? userName : 'Team Member'}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-[#A3A3A3]">
                     {formatTimeAgo(comment.createdAt)}
                   </span>
                   {comment.createdBy === userId && (
                     <button
                       onClick={() => handleDelete(comment.id)}
-                      className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition"
+                      className="opacity-0 group-hover:opacity-100 text-[#C4C0C0] hover:text-red-500 transition"
                       title="Delete comment"
                     >
                       <FaTrash className="w-3 h-3" />
                     </button>
                   )}
                 </div>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                <p className="text-sm text-[#5a5757] whitespace-pre-wrap break-words">
                   {comment.body}
                 </p>
               </div>
