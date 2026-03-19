@@ -145,11 +145,11 @@ export default function BacklogSection({
     <div
       ref={setNodeRef}
       className={`flex flex-col h-full bg-white border rounded-[14px] overflow-hidden transition-all ${
-        isOver ? 'border-[#DD3A44] shadow-md' : 'border-[#E5E5E5]'
+        isOver ? 'border-[#DD3A44] shadow-[0_4px_12px_rgba(28,27,27,0.08)]' : 'border-[#E5E5E5]'
       }`}
     >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#E5E5E5] bg-[#FAFAFA]">
+      <div className="px-4 py-3 bg-[#fcf9f8]">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <FaInbox className="w-4 h-4 text-[#A3A3A3]" />
@@ -171,7 +171,7 @@ export default function BacklogSection({
       </div>
 
       {/* Search Bar */}
-      <div className="px-4 py-3 border-b border-[#E5E5E5]">
+      <div className="px-4 py-3">
         <div className="relative">
           <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-[#A3A3A3]" />
           <input
@@ -179,7 +179,7 @@ export default function BacklogSection({
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 text-sm border border-[#E5E5E5] rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
+            className="w-full pl-9 pr-8 py-2 text-sm  rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
           />
           {searchQuery && (
             <button
@@ -193,7 +193,7 @@ export default function BacklogSection({
       </div>
 
       {/* Filters */}
-      <div className="px-4 py-3 border-b border-[#E5E5E5] space-y-2">
+      <div className="px-4 py-3 space-y-2">
         {/* Project filter */}
         {projects.length > 0 && (
           <div>
@@ -203,7 +203,7 @@ export default function BacklogSection({
             <select
               value={selectedProject}
               onChange={(e) => setSelectedProject(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm border border-[#E5E5E5] rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
+              className="w-full px-3 py-1.5 text-sm  rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
             >
               <option value="all">All Projects</option>
               {projects.map((project) => (
@@ -273,7 +273,7 @@ export default function BacklogSection({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm border border-[#E5E5E5] rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
+              className="w-full px-3 py-1.5 text-sm  rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
             >
               <option value="all">All Statuses</option>
               {statuses.map((status) => (
@@ -293,7 +293,7 @@ export default function BacklogSection({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="w-full px-3 py-1.5 text-sm border border-[#E5E5E5] rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
+            className="w-full px-3 py-1.5 text-sm  rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
           >
             <option value="priority">Priority (High first)</option>
             <option value="effort">Effort (Largest first)</option>
