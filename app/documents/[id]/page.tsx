@@ -57,7 +57,7 @@ function ExportDropdown({ onExport }: { onExport: (format: 'markdown' | 'html' |
       <button
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
-        className="inline-flex items-center gap-2 px-4 py-2 border border-[#E5E5E5] text-[#525252] rounded-[10px] hover:bg-[#F5F5F5] transition text-[13px] font-medium"
+        className="inline-flex items-center gap-2 px-4 py-2  text-[#525252] rounded-[10px] hover:bg-[#F5F5F5] transition text-[13px] font-medium"
       >
         <FaFileDownload />
         Export
@@ -67,7 +67,7 @@ function ExportDropdown({ onExport }: { onExport: (format: 'markdown' | 'html' |
         <div
           onMouseEnter={() => setIsOpen(true)}
           onMouseLeave={() => setIsOpen(false)}
-          className="absolute right-0 mt-1 w-48 bg-white border border-[#E5E5E5] rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.08)] overflow-hidden z-50"
+          className="absolute right-0 mt-1 w-48 bg-white  rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.08)] overflow-hidden z-50"
         >
           <button
             onClick={() => {
@@ -302,7 +302,7 @@ export default function DocumentDetailPage() {
         <div className="md:ml-64 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
-            <p className="text-gray-600 mt-4">Loading document...</p>
+            <p className="text-[#5a5757] mt-4">Loading document...</p>
           </div>
         </div>
       </div>
@@ -315,7 +315,7 @@ export default function DocumentDetailPage() {
         <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
         <div className="md:ml-64 flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Document not found</h2>
+            <h2 className="text-2xl font-bold text-[#1c1b1b] mb-2">Document not found</h2>
             <Link href="/documents" className="text-accent-600 hover:underline">
               Back to documents
             </Link>
@@ -330,7 +330,7 @@ export default function DocumentDetailPage() {
       <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
       <div className="md:ml-64">
       {/* Header */}
-      <div className="bg-white border-b border-[#E5E5E5] sticky top-0 z-20">
+      <div className="bg-white sticky top-0 z-20">
         <div className="max-w-[1280px] mx-auto px-12 py-6">
           {/* First line: Document name */}
           <div className="flex items-center gap-4 mb-4">
@@ -359,7 +359,7 @@ export default function DocumentDetailPage() {
                 setDocumentType(e.target.value);
                 saveDocument();
               }}
-              className="px-4 py-2 border border-[#E5E5E5] rounded-[10px] text-[13px] font-medium text-[#525252] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent"
+              className="px-4 py-2  rounded-[10px] text-[13px] font-medium text-[#525252] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent"
             >
               {DOCUMENT_TYPES.map((type) => (
                 <option key={type.value} value={type.value}>
@@ -373,7 +373,7 @@ export default function DocumentDetailPage() {
                 setShowVersionHistory(!showVersionHistory);
                 if (!showVersionHistory) fetchVersions();
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-[#E5E5E5] text-[#525252] rounded-[10px] hover:bg-[#F5F5F5] transition text-[13px] font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2  text-[#525252] rounded-[10px] hover:bg-[#F5F5F5] transition text-[13px] font-medium"
             >
               <FaHistory />
               History
@@ -398,7 +398,7 @@ export default function DocumentDetailPage() {
           </div>
 
           {selectedVersion && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-between">
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-[10px] flex items-center justify-between">
               <span className="text-sm text-yellow-800">
                 Viewing version {selectedVersion.version} from{' '}
                 {new Date(selectedVersion.createdAt).toLocaleString()}
@@ -430,7 +430,7 @@ export default function DocumentDetailPage() {
         <div className="flex gap-6">
           {/* Editor */}
           <div className="flex-1">
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="bg-white rounded-[10px] overflow-hidden">
               {content && (
                 <DocumentEditor
                   content={content}
@@ -445,12 +445,12 @@ export default function DocumentDetailPage() {
 
           {/* Version history sidebar */}
           {showVersionHistory && (
-            <div className="w-80 bg-white border border-gray-200 rounded-lg p-4">
+            <div className="w-80 bg-white rounded-[14px] p-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900">Version History</h3>
+                <h3 className="font-semibold text-[#1c1b1b]">Version History</h3>
                 <button
                   onClick={() => setShowVersionHistory(false)}
-                  className="p-1 text-gray-500 hover:text-gray-700"
+                  className="p-1 text-[#A3A3A3] hover:text-[#5a5757]"
                 >
                   <FaTimes />
                 </button>
@@ -461,21 +461,21 @@ export default function DocumentDetailPage() {
                   <button
                     key={version.id}
                     onClick={() => viewVersion(version)}
-                    className={`w-full text-left p-3 rounded-lg border transition ${
+                    className={`w-full text-left p-3 rounded-[10px] border transition ${
                       selectedVersion?.id === version.id
                         ? 'border-blue-500 bg-accent-50'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-[#f6f3f2]'
                     }`}
                   >
-                    <div className="font-medium text-sm text-gray-900">
+                    <div className="font-medium text-sm text-[#1c1b1b]">
                       Version {version.version}
                       {version.version === document.version && (
-                        <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded">
+                        <span className="ml-2 px-2 py-0.5 bg-[#e6f4f4] text-[#006766] text-xs rounded">
                           Current
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-[#A3A3A3] mt-1">
                       {new Date(version.createdAt).toLocaleString()}
                     </div>
                   </button>
