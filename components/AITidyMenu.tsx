@@ -50,9 +50,9 @@ export default function AITidyMenu({
   if (!isOpen) return null
 
   return (
-    <div className="absolute top-full mt-2 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-40 min-w-[280px]">
+    <div className="absolute top-full mt-2 right-0 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-40 min-w-[280px]">
       <div className="p-2">
-        <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <h3 className="px-3 py-2 text-xs font-semibold text-[#A3A3A3] uppercase tracking-wider">
           Rewrite For
         </h3>
         {TIDY_MODES.map((mode) => (
@@ -65,16 +65,16 @@ export default function AITidyMenu({
             disabled={isLoading}
             onMouseEnter={() => setHoveredMode(mode.id)}
             onMouseLeave={() => setHoveredMode(null)}
-            className={`w-full text-left px-3 py-3 rounded-lg transition ${
+            className={`w-full text-left px-3 py-3 rounded-[10px] transition ${
               hoveredMode === mode.id
                 ? 'bg-accent-50 border-l-2 border-accent-500'
                 : 'border-l-2 border-transparent'
             } ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
+              isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f6f3f2]'
             }`}
           >
-            <div className="font-medium text-sm text-gray-900">{mode.label}</div>
-            <div className="text-xs text-gray-500 mt-0.5">{mode.description}</div>
+            <div className="font-medium text-sm text-[#1c1b1b]">{mode.label}</div>
+            <div className="text-xs text-[#A3A3A3] mt-0.5">{mode.description}</div>
           </button>
         ))}
       </div>
