@@ -11,7 +11,6 @@ export default async function ObjectivesPage() {
     const workspaceId = await requireWorkspace()
     
     // Fetch objectives with related data
-    console.log('[ObjectivesPage] Fetching objectives, companies, and goals...')
     const [objectives, companies, goals] = await Promise.all([
       prisma.objective.findMany({
         where: { workspaceId },
@@ -29,16 +28,7 @@ export default async function ObjectivesPage() {
           blockers: {
             where: { resolvedAt: null },
           },
-          tasks: {
-            where: { archivedAt: null },
-            select: {
-              id: true,
-              title: true,
-              completedAt: true,
-              aiGenerated: true,
-              aiAgent: true,
-            },
-          },
+          // Tasks trimmed - use _count for list view performance
           _count: {
             select: {
               tasks: true,
@@ -60,7 +50,6 @@ export default async function ObjectivesPage() {
       }),
     ])
 
-    console.log('[ObjectivesPage] Fetched:', {
       objectivesCount: objectives.length,
       companiesCount: companies.length,
       goalsCount: goals.length,
