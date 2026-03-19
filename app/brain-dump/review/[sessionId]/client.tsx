@@ -262,7 +262,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center">
         <Spinner size="lg" color="default" />
       </div>
     );
@@ -270,7 +270,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] p-8">
+      <div className="min-h-screen bg-[#fcf9f8] p-8">
         <div className="max-w-3xl mx-auto">
           <div className="bg-white rounded-[14px] p-8 border border-red-200">
             <p className="text-[#DD3A44] text-base">{error || 'No data available'}</p>
@@ -283,20 +283,20 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
   const approvedCount = data.actions.filter(a => a.status === 'approved').length;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white">
         <div className="max-w-4xl mx-auto px-8 py-6">
           <div className="flex items-center gap-6">
             <button
               onClick={() => router.push('/brain-dump')}
-              className="flex items-center justify-center w-10 h-10 rounded-[10px] hover:bg-gray-100 transition-colors"
+              className="flex items-center justify-center w-10 h-10 rounded-[10px] hover:bg-[#f0eded] transition-colors"
             >
-              <FaChevronLeft className="text-gray-600" />
+              <FaChevronLeft className="text-[#5a5757]" />
             </button>
             <div className="flex-1">
               <h1 className="text-2xl font-semibold text-[#1A1A1A] mb-1">Review Changes</h1>
-              <p className="text-sm text-gray-600">{data.session.summary}</p>
+              <p className="text-sm text-[#5a5757]">{data.session.summary}</p>
             </div>
             {approvedCount > 0 && (
               <Button
@@ -315,9 +315,9 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
       <div className="max-w-4xl mx-auto px-8 py-8">
         {/* Execution Result */}
         {executionResult && (
-          <div className={`mb-8 rounded-[14px] p-6 ${executionResult.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+          <div className={`mb-8 rounded-[14px] p-6 ${executionResult.success ? 'bg-[#f0fafa] border border-green-200' : 'bg-red-50 border border-red-200'}`}>
             <div className="flex items-start gap-4">
-              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${executionResult.success ? 'bg-green-500' : 'bg-red-500'}`}>
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${executionResult.success ? 'bg-[#f0fafa]0' : 'bg-red-500'}`}>
                 {executionResult.success ? (
                   <FaCheck className="text-white text-sm" />
                 ) : (
@@ -332,7 +332,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                   {executionResult.message || executionResult.error}
                 </p>
                 {executionResult.summary && (
-                  <div className="space-y-1 text-sm text-gray-700">
+                  <div className="space-y-1 text-sm text-[#5a5757]">
                     {executionResult.summary.createdEntities.tasks.length > 0 && (
                       <p>✓ Created {executionResult.summary.createdEntities.tasks.length} task(s)</p>
                     )}
@@ -343,7 +343,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                       <p>✓ Created {executionResult.summary.createdEntities.objectives.length} objective(s)</p>
                     )}
                     {executionResult.success && (
-                      <p className="text-gray-600 mt-3">Redirecting in 2 seconds...</p>
+                      <p className="text-[#5a5757] mt-3">Redirecting in 2 seconds...</p>
                     )}
                   </div>
                 )}
@@ -353,14 +353,14 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
         )}
 
         {/* Transcript */}
-        <div className="mb-8 bg-white rounded-[14px] p-8 border border-gray-200">
+        <div className="mb-8 bg-white rounded-[14px] p-8">
           <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Your Update</h2>
-          <p className="text-base text-gray-700 leading-relaxed">{data.session.transcript}</p>
+          <p className="text-base text-[#5a5757] leading-relaxed">{data.session.transcript}</p>
         </div>
 
         {/* No Actions */}
         {data.actions.length === 0 && (
-          <div className="bg-blue-50 rounded-[14px] p-8 border border-blue-200">
+          <div className="bg-[#f0fafa] rounded-[14px] p-8 border border-transparent">
             <p className="text-blue-900 text-base">
               No actionable items found in your update. Try speaking more specifically about tasks, projects, or objectives.
             </p>
@@ -390,8 +390,8 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                   <div
                     key={action.id}
                     className={`bg-white rounded-[14px] p-6 border transition-all ${
-                      isApproved ? 'border-green-500 bg-green-50' :
-                      isRejected ? 'border-gray-300 bg-gray-50 opacity-60' :
+                      isApproved ? 'border-green-500 bg-[#f0fafa]' :
+                      isRejected ? 'border-gray-300 bg-[#f6f3f2] opacity-60' :
                       'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -402,21 +402,21 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                           <Chip
                             size="sm"
                             variant="flat"
-                            className="bg-gray-100 text-gray-700 text-xs font-medium"
+                            className="bg-[#f0eded] text-[#5a5757] text-xs font-medium"
                           >
                             {action.actionType.replace(/_/g, ' ')}
                           </Chip>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-[#A3A3A3]">
                             {Math.round(action.confidenceScore * 100)}% confidence
                           </span>
                         </div>
 
                         {/* Reasoning */}
-                        <p className="text-base text-gray-900 mb-4 leading-relaxed">{action.reasoning}</p>
+                        <p className="text-base text-[#1c1b1b] mb-4 leading-relaxed">{action.reasoning}</p>
 
                         {/* Editable Fields */}
                         {isEditing ? (
-                          <div className="space-y-5 p-5 bg-gray-50 rounded-[10px]">
+                          <div className="space-y-5 p-5 bg-[#f6f3f2] rounded-[10px]">
                             <Input
                               label="Title"
                               labelPlacement="outside"
@@ -424,7 +424,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                               value={displayPayload.title || ''}
                               onChange={(e) => handleEdit(action.id, 'title', e.target.value)}
                               classNames={{
-                                label: 'text-sm font-medium text-gray-700 mb-1',
+                                label: 'text-sm font-medium text-[#5a5757] mb-1',
                                 input: 'text-sm',
                                 inputWrapper: 'bg-white border-gray-200'
                               }}
@@ -437,7 +437,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                               value={displayPayload.description || ''}
                               onChange={(e) => handleEdit(action.id, 'description', e.target.value)}
                               classNames={{
-                                label: 'text-sm font-medium text-gray-700 mb-1',
+                                label: 'text-sm font-medium text-[#5a5757] mb-1',
                                 input: 'text-sm',
                                 inputWrapper: 'bg-white border-gray-200'
                               }}
@@ -452,13 +452,13 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                                   value={displayPayload.dueAt ? formatDateForInput(displayPayload.dueAt) : ''}
                                   onChange={(e) => handleEdit(action.id, 'dueAt', e.target.value)}
                                   classNames={{
-                                    label: 'text-sm font-medium text-gray-700 mb-1',
+                                    label: 'text-sm font-medium text-[#5a5757] mb-1',
                                     input: 'text-sm',
                                     inputWrapper: 'bg-white border-gray-200'
                                   }}
                                 />
                                 {displayPayload.dueAt && (
-                                  <p className="text-xs text-gray-500 mt-2 pl-1">
+                                  <p className="text-xs text-[#A3A3A3] mt-2 pl-1">
                                     {formatDateForDisplay(displayPayload.dueAt)}
                                   </p>
                                 )}
@@ -475,7 +475,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                                 handleEdit(action.id, 'priority', priority);
                               }}
                               classNames={{
-                                label: 'text-sm font-medium text-gray-700 mb-1',
+                                label: 'text-sm font-medium text-[#5a5757] mb-1',
                                 trigger: 'bg-white border-gray-200',
                                 value: 'text-sm'
                               }}
@@ -496,7 +496,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                             </div>
                           </div>
                         ) : (
-                          <div className="space-y-2 text-sm text-gray-600">
+                          <div className="space-y-2 text-sm text-[#5a5757]">
                             {displayPayload.title && (
                               <p><span className="font-medium">Title:</span> {displayPayload.title}</p>
                             )}
@@ -516,10 +516,10 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                           <>
                             <button
                               onClick={() => setEditingAction(isEditing ? null : action.id)}
-                              className="flex items-center justify-center w-9 h-9 rounded-[6px] hover:bg-gray-100 transition-colors"
+                              className="flex items-center justify-center w-9 h-9 rounded-[6px] hover:bg-[#f0eded] transition-colors"
                               title="Edit"
                             >
-                              <FaEdit className="text-gray-600 text-sm" />
+                              <FaEdit className="text-[#5a5757] text-sm" />
                             </button>
                             <button
                               onClick={() => handleReject(action.id)}
@@ -538,7 +538,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                           </>
                         )}
                         {isApproved && (
-                          <div className="flex items-center gap-2 px-3 py-2 bg-green-500 rounded-[6px]">
+                          <div className="flex items-center gap-2 px-3 py-2 bg-[#f0fafa]0 rounded-[6px]">
                             <FaCheck className="text-white text-sm" />
                             <span className="text-white text-sm font-medium">Approved</span>
                           </div>
