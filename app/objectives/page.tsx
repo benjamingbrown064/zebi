@@ -50,11 +50,6 @@ export default async function ObjectivesPage() {
       }),
     ])
 
-      objectivesCount: objectives.length,
-      companiesCount: companies.length,
-      goalsCount: goals.length,
-      goals: goals
-    })
 
     // Map objectives with computed fields
     const mappedObjectives = objectives.map((obj) => {
