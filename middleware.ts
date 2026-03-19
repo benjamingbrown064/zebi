@@ -60,7 +60,6 @@ export async function middleware(req: NextRequest) {
   // If so, it's likely an API request - allow through for endpoint-level validation
   const hasAuthHeader = req.headers.get('authorization') !== null
   if (hasAuthHeader && req.nextUrl.pathname.startsWith('/api/')) {
-    console.log(`[middleware] API request with auth header: ${req.nextUrl.pathname}`)
   }
   
   // Public routes (auth pages and API endpoints with their own auth)
@@ -86,14 +85,12 @@ export async function middleware(req: NextRequest) {
   
   // Debug log for API endpoints
   if (req.nextUrl.pathname.startsWith('/api/')) {
-    console.log(`[middleware] Path: ${req.nextUrl.pathname}, Auth header: ${req.headers.get('authorization') ? 'present' : 'missing'}`)
   }
   
   for (const route of publicRoutes) {
     if (req.nextUrl.pathname.startsWith(route)) {
       isPublicRoute = true
       if (req.nextUrl.pathname.startsWith('/api/')) {
-        console.log(`[middleware] ${req.nextUrl.pathname} matched public route ${route}`)
       }
       break
     }
@@ -101,7 +98,6 @@ export async function middleware(req: NextRequest) {
   
   // Allow API requests with Authorization headers through (endpoint validates token)
   if (req.nextUrl.pathname.startsWith('/api/') && hasAuthHeader) {
-    console.log(`[middleware] Allowing API request with auth header through: ${req.nextUrl.pathname}`)
     return response
   }
   
