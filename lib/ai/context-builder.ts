@@ -133,7 +133,7 @@ export async function buildContext(
         { priority: 'asc' },
         { dueAt: 'asc' },
       ],
-      take: 50, // Increased from 20 to get better picture
+      take: 30, // Reduced from 50 — enough context without over-fetching
     }),
 
     // Active blockers
