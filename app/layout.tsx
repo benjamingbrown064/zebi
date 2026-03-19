@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-gray-50 text-gray-900">
+      <body className="bg-[#f6f3f2] text-[#1c1b1b]">
         <Providers>
           {children}
           <DynamicAIChatButton />
