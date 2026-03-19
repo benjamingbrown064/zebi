@@ -52,16 +52,16 @@ export default function AITidyPreviewModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <div className="sticky top-0 bg-white px-6 py-4 flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">AI Tidy Preview</h2>
-            <p className="text-sm text-gray-500 mt-1">{MODE_LABELS[mode]}</p>
+            <h2 className="text-xl font-semibold text-[#1c1b1b]">AI Tidy Preview</h2>
+            <p className="text-sm text-[#A3A3A3] mt-1">{MODE_LABELS[mode]}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-[#C4C0C0] hover:text-[#5a5757] transition"
           >
             <FaTimes className="text-lg" />
           </button>
@@ -74,24 +74,24 @@ export default function AITidyPreviewModal({
               <div className="animate-spin">
                 <div className="w-8 h-8 border-4 border-accent-200 border-t-accent-500 rounded-full" />
               </div>
-              <span className="ml-3 text-gray-600">Tidying your description...</span>
+              <span className="ml-3 text-[#5a5757]">Tidying your description...</span>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-6">
               {/* Original */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Original</h3>
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 min-h-[300px] whitespace-pre-wrap text-sm text-gray-700">
+                <h3 className="text-sm font-semibold text-[#1c1b1b] mb-3">Original</h3>
+                <div className="p-4 bg-[#f6f3f2] rounded-[10px] min-h-[300px] whitespace-pre-wrap text-sm text-[#5a5757]">
                   {original}
                 </div>
               </div>
 
               {/* Rewritten */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                <h3 className="text-sm font-semibold text-[#1c1b1b] mb-3">
                   Rewritten ({MODE_LABELS[mode]})
                 </h3>
-                <div className="p-4 bg-accent-50 rounded-lg border border-accent-200 min-h-[300px] whitespace-pre-wrap text-sm text-gray-700">
+                <div className="p-4 bg-accent-50 rounded-[10px] border border-accent-200 min-h-[300px] whitespace-pre-wrap text-sm text-[#5a5757]">
                   {rewritten}
                 </div>
               </div>
@@ -101,14 +101,14 @@ export default function AITidyPreviewModal({
 
         {/* Footer */}
         {!isLoading && (
-          <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end gap-3">
+          <div className="sticky bottom-0 bg-[#f6f3f2] px-6 py-4 flex justify-end gap-3">
             <button
               onClick={handleReject}
               disabled={selectedAction === 'accept'}
-              className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-[10px] font-medium transition flex items-center gap-2 ${
                 selectedAction === 'reject'
                   ? 'bg-red-100 text-red-700 opacity-50'
-                  : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                  : 'bg-[#f0eded] text-[#1c1b1b] hover:bg-[#e8e4e4]'
               }`}
             >
               <FaReject className="text-sm" />
@@ -117,9 +117,9 @@ export default function AITidyPreviewModal({
             <button
               onClick={handleAccept}
               disabled={selectedAction === 'reject'}
-              className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-[10px] font-medium transition flex items-center gap-2 ${
                 selectedAction === 'accept'
-                  ? 'bg-green-100 text-green-700'
+                  ? 'bg-[#e6f4f4] text-[#006766]'
                   : 'bg-accent-500 text-white hover:bg-accent-600'
               }`}
             >
