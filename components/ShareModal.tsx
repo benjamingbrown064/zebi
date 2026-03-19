@@ -77,16 +77,16 @@ export default function ShareModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
+      <div className="bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] max-w-md w-full">
         {/* Header */}
         <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <FaLink className="text-accent-500" />
-            <h2 className="text-lg font-semibold text-gray-900">Share Task</h2>
+            <h2 className="text-lg font-semibold text-[#1c1b1b]">Share Task</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-[#C4C0C0] hover:text-[#5a5757] transition"
           >
             <FaTimes className="text-lg" />
           </button>
@@ -96,19 +96,19 @@ export default function ShareModal({
         <div className="p-6">
           {/* Task Info */}
           <div className="mb-6">
-            <p className="text-sm text-gray-500 mb-1">Sharing</p>
-            <p className="text-gray-900 font-medium truncate">{taskTitle}</p>
+            <p className="text-sm text-[#A3A3A3] mb-1">Sharing</p>
+            <p className="text-[#1c1b1b] font-medium truncate">{taskTitle}</p>
           </div>
 
           {isLoading ? (
             <div className="text-center py-4">
-              <p className="text-gray-500">Loading...</p>
+              <p className="text-[#A3A3A3]">Loading...</p>
             </div>
           ) : shareLink ? (
             // Show existing share link
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#5a5757] mb-2">
                   Share Link
                 </label>
                 <div className="flex gap-2">
@@ -116,13 +116,13 @@ export default function ShareModal({
                     type="text"
                     value={shareUrl || ''}
                     readOnly
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700"
+                    className="flex-1 px-3 py-2 rounded-[10px] text-sm bg-[#f6f3f2] text-[#5a5757]"
                   />
                   <button
                     onClick={handleCopy}
-                    className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
+                    className={`px-4 py-2 rounded-[10px] font-medium transition flex items-center gap-2 ${
                       isCopied
-                        ? 'bg-green-100 text-green-700'
+                        ? 'bg-[#e6f4f4] text-[#006766]'
                         : 'bg-accent-500 text-white hover:bg-accent-600'
                     }`}
                   >
@@ -142,7 +142,7 @@ export default function ShareModal({
               </div>
 
               <div className="pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-500 mb-3">
+                <p className="text-xs text-[#A3A3A3] mb-3">
                   Anyone with this link can view this task (read-only). No sign-in required.
                 </p>
                 <button
@@ -158,16 +158,16 @@ export default function ShareModal({
           ) : (
             // No share link exists - show create option
             <div className="text-center py-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaLink className="w-6 h-6 text-gray-400" />
+              <div className="w-16 h-16 bg-[#f0eded] rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaLink className="w-6 h-6 text-[#C4C0C0]" />
               </div>
-              <p className="text-gray-600 mb-4">
+              <p className="text-[#5a5757] mb-4">
                 Create a public link to share this task with anyone.
               </p>
               <button
                 onClick={handleCreateLink}
                 disabled={isCreating}
-                className="px-6 py-2 bg-accent-500 text-white rounded-lg font-medium hover:bg-accent-600 transition disabled:opacity-50"
+                className="px-6 py-2 bg-accent-500 text-white rounded-[10px] font-medium hover:bg-accent-600 transition disabled:opacity-50"
               >
                 {isCreating ? 'Creating...' : 'Create Share Link'}
               </button>
@@ -179,7 +179,7 @@ export default function ShareModal({
         <div className="border-t border-gray-100 px-6 py-4">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition font-medium"
+            className="w-full px-4 py-2 bg-[#f0eded] text-[#1c1b1b] rounded-[10px] hover:bg-[#e8e4e4] transition font-medium"
           >
             Close
           </button>
