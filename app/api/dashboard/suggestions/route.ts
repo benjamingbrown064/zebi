@@ -7,22 +7,32 @@ import { createClient } from '@/lib/supabase-server'
 // Mark as dynamic route (uses searchParams)
 export const dynamic = 'force-dynamic'
 
+// In-process result cache per workspace — TTL 3 minutes
+// buildContext runs 7 DB queries; this avoids doing it on every dashboard load
+const suggestionsCache = new Map<string, { result: any; expiresAt: number }>()
+const CACHE_TTL_MS = 3 * 60 * 1000
+
 /**
  * GET /api/dashboard/suggestions
  * Get AI-prioritized work suggestions
  */
 export async function GET(request: NextRequest) {
   try {
-    // Get authenticated user's workspace
     const workspaceId = await requireWorkspace()
+
+    // Serve from cache if fresh
+    const cached = suggestionsCache.get(workspaceId)
+    if (cached && Date.now() < cached.expiresAt) {
+      return NextResponse.json(cached.result)
+    }
+
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     const userId = user?.id || 'system'
-    
-    // Build workspace context
+
+    // Build workspace context (7 DB queries)
     const context = await buildContext(workspaceId, userId)
-    
-    // If workspace not found or empty, return empty suggestions
+
     if (!context.workspace || !context.workspace.id) {
       return NextResponse.json({
         suggestions: [],
@@ -32,21 +42,23 @@ export async function GET(request: NextRequest) {
         primaryGoal: null,
       })
     }
-    
-    // Run prioritization engine
+
     const result = prioritizeWorkspace(context)
-    
-    // Return top suggestions with metadata
-    return NextResponse.json({
-      suggestions: result.topItems.slice(0, 10), // Top 10 suggestions
+
+    const payload = {
+      suggestions: result.topItems.slice(0, 10),
       blockers: result.blockers,
       stalledWork: result.stalledWork,
       missingStructure: result.missingStructure,
       primaryGoal: context.workspace.primaryGoal,
-    })
+    }
+
+    // Cache the result
+    suggestionsCache.set(workspaceId, { result: payload, expiresAt: Date.now() + CACHE_TTL_MS })
+
+    return NextResponse.json(payload)
   } catch (error) {
     console.error('Failed to generate suggestions:', error)
-    // Return empty suggestions instead of 500 error
     return NextResponse.json({
       suggestions: [],
       blockers: [],
