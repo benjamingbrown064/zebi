@@ -126,7 +126,7 @@ export default function TasksPage() {
       1: 'bg-red-100 text-red-700 border-red-200',
       2: 'bg-orange-100 text-orange-700 border-orange-200',
       3: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-      4: 'bg-blue-100 text-blue-700 border-blue-200',
+      4: 'bg-[#e6f4f4] text-[#006766] border-transparent',
     }
     const labels = { 1: 'P1', 2: 'P2', 3: 'P3', 4: 'P4' }
     return (
@@ -166,7 +166,7 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar 
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -229,7 +229,7 @@ export default function TasksPage() {
                       className={`px-3 py-2 rounded-[6px] text-[13px] font-medium transition min-h-[44px] ${
                         selectedPriorities.includes(p.num)
                           ? 'bg-[#DD3A44] text-white'
-                          : 'bg-white text-[#525252] border border-[#E5E5E5] hover:bg-[#F5F5F5]'
+                          : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
                       }`}
                     >
                       {p.label}
@@ -257,7 +257,7 @@ export default function TasksPage() {
                       className={`px-3 py-2 rounded-[6px] text-[13px] font-medium transition min-h-[44px] ${
                         selectedStatuses.includes(status.id)
                           ? 'bg-[#DD3A44] text-white'
-                          : 'bg-white text-[#525252] border border-[#E5E5E5] hover:bg-[#F5F5F5]'
+                          : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
                       }`}
                     >
                       {status.name}
@@ -274,7 +274,7 @@ export default function TasksPage() {
                     setSelectedPriorities([])
                     setSelectedStatuses([])
                   }}
-                  className="w-full px-4 py-2 text-[13px] bg-white text-[#525252] border border-[#E5E5E5] rounded-[10px] hover:bg-[#F5F5F5] transition-colors font-medium min-h-[44px]"
+                  className="w-full px-4 py-2 text-[13px] bg-white text-[#525252]  rounded-[10px] hover:bg-[#F5F5F5] transition-colors font-medium min-h-[44px]"
                 >
                   Clear all filters
                 </button>
@@ -364,10 +364,10 @@ export default function TasksPage() {
           onClick={() => setIsSearchOpen(false)}
         >
           <div 
-            className="bg-white w-full max-w-2xl rounded-[14px] shadow-lg p-4 md:p-6"
+            className="bg-white w-full max-w-2xl rounded-[14px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 md:p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3 border border-[#E5E5E5] rounded-[10px] px-4 py-3">
+            <div className="flex items-center gap-3  rounded-[10px] px-4 py-3">
               <FaSearch className="text-[#A3A3A3]" />
               <input
                 type="text"
