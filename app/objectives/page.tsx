@@ -63,11 +63,9 @@ export default async function ObjectivesPage() {
         ? Math.ceil((new Date(nextMilestone.targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
         : null
 
-      // Find AI work (most recent AI-generated task)
-      const aiTask = obj.tasks.find((t) => t.aiGenerated && !t.completedAt)
-      
-      // Find human work (most recent non-AI task)
-      const humanTask = obj.tasks.find((t) => !t.aiGenerated && !t.completedAt)
+      // AI/human work detection removed for performance (was using full tasks array)
+      const aiTask = null
+      const humanTask = null
 
       return {
         id: obj.id,
