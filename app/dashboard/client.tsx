@@ -124,7 +124,7 @@ export default function DashboardClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar 
         workspaceName="Zebi"
         isCollapsed={sidebarCollapsed}
@@ -133,7 +133,7 @@ export default function DashboardClient({
       
       <div className={mainPaddingClass}>
         {/* Header */}
-        <header className="bg-white border-b border-[#E5E5E5] sticky top-0 z-10">
+        <header className="bg-white sticky top-0 z-10">
           <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-4 md:py-8">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-0 md:justify-between">
               <div>
@@ -145,7 +145,7 @@ export default function DashboardClient({
               <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto">
                 <button
                   onClick={() => setShowCompletedModal(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-[6px] border border-[#E5E5E5] text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-[6px] text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <FaCheck className="text-[#10B981]" />
                   <span className="hidden sm:inline">Recently Completed</span>
@@ -154,7 +154,7 @@ export default function DashboardClient({
                 
                 <button
                   onClick={() => setShowBotActivityModal(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-[6px] border border-[#E5E5E5] text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-[6px] text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <FaRobot className="text-[#DD3A44]" />
                   <span className="hidden sm:inline">Bot Activity</span>
@@ -294,7 +294,7 @@ function TodaysPlanCard({
   const isEmpty = !keyTask && subTasks.length === 0 && hopeToComplete.length === 0 && additionalTasks.length === 0
 
   return (
-    <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-8">
+    <div className="bg-white rounded-[14px] p-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -316,7 +316,7 @@ function TodaysPlanCard({
       {aiSuggestionsCount > 0 && (
         <button
           onClick={onShowSuggestions}
-          className="w-full mb-6 p-4 bg-[#F5F5F5] hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-[10px] transition-colors text-left"
+          className="w-full mb-6 p-4 bg-[#F5F5F5] hover:bg-[#E5E5E5]  rounded-[10px] transition-colors text-left"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -417,7 +417,7 @@ function TodaysPlanCard({
                   <div
                     key={task.id}
                     onClick={() => onTaskClick(task.id)}
-                    className="p-2.5 bg-white border border-[#E5E5E5] rounded-[6px] cursor-pointer hover:bg-[#F5F5F5] transition-colors"
+                    className="p-2.5 bg-white  rounded-[6px] cursor-pointer hover:bg-[#F5F5F5] transition-colors"
                   >
                     <p className="text-[13px] text-[#525252]">{task.title}</p>
                   </div>
@@ -444,7 +444,7 @@ function ObjectivesCard({
   const displayObjectives = objectives.slice(0, 3)
 
   return (
-    <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-6">
+    <div className="bg-white rounded-[14px] p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-[18px] leading-[28px] font-medium text-[#1A1A1A]">Objectives</h3>
@@ -469,7 +469,7 @@ function ObjectivesCard({
             <div
               key={obj.id}
               onClick={() => onObjectiveClick(obj.id)}
-              className="p-4 border border-[#E5E5E5] rounded-[10px] cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
+              className="p-4  rounded-[10px] cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
             >
               {/* Company */}
               {obj.companyName && (
@@ -518,7 +518,7 @@ function ProjectsCard({
   const displayProjects = projects.slice(0, 3)
 
   return (
-    <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-6">
+    <div className="bg-white rounded-[14px] p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-[18px] leading-[28px] font-medium text-[#1A1A1A]">Projects</h3>
@@ -543,7 +543,7 @@ function ProjectsCard({
             <div
               key={project.id}
               onClick={() => onProjectClick(project.id)}
-              className="p-4 border border-[#E5E5E5] rounded-[10px] cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
+              className="p-4  rounded-[10px] cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
             >
               {/* Title & Progress */}
               <div className="flex items-baseline justify-between mb-2">
@@ -582,7 +582,7 @@ function Modal({ children, onClose, title }: { children: React.ReactNode; onClos
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E5E5]">
+        <div className="flex items-center justify-between px-6 py-4">
           <h3 className="text-[18px] font-medium text-[#1A1A1A]">{title}</h3>
           <button
             onClick={onClose}
@@ -716,7 +716,7 @@ function SuggestionsModalContent({ suggestions, workspaceId, onRefresh }: {
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-3 mb-1">
                   <p className="text-[14px] font-medium text-[#1A1A1A]">{suggestion.name}</p>
-                  <span className="text-[11px] px-2 py-0.5 rounded-[4px] bg-white border border-[#E5E5E5] text-[#737373] uppercase tracking-wide flex-shrink-0">
+                  <span className="text-[11px] px-2 py-0.5 rounded-[4px] bg-white text-[#737373] uppercase tracking-wide flex-shrink-0">
                     {suggestion.type}
                   </span>
                 </div>
@@ -731,19 +731,19 @@ function SuggestionsModalContent({ suggestions, workspaceId, onRefresh }: {
                   <div className="flex gap-2 mt-3">
                     <button 
                       onClick={() => handleAddToPlan(suggestion, 'main')}
-                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-[6px] transition-colors"
+                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
                     >
                       Add to Primary
                     </button>
                     <button 
                       onClick={() => handleAddToPlan(suggestion, 'secondary')}
-                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-[6px] transition-colors"
+                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
                     >
                       Add to Secondary
                     </button>
                     <button 
                       onClick={() => handleAddToPlan(suggestion, 'additional')}
-                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-[6px] transition-colors"
+                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
                     >
                       Add to Quick Win
                     </button>
