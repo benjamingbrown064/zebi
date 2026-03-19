@@ -79,10 +79,10 @@ export default function AIActivityFeed({
   ]
 
   return (
-    <Card className="shadow-md" radius="lg">
+    <Card className="shadow-[0_4px_12px_rgba(28,27,27,0.08)]" radius="lg">
       <CardHeader className="flex items-center justify-between pb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-primary-100 rounded-[14px] flex items-center justify-center">
             <Activity className="w-5 h-5 text-primary" />
           </div>
           <div className="flex flex-col">
@@ -159,12 +159,12 @@ function LoadingSkeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex gap-3 p-4 bg-default-50 rounded-xl">
+        <div key={i} className="flex gap-3 p-4 bg-default-50 rounded-[14px]">
           <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
           <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-3/4 rounded-lg" />
-            <Skeleton className="h-3 w-full rounded-lg" />
-            <Skeleton className="h-3 w-2/3 rounded-lg" />
+            <Skeleton className="h-4 w-3/4 rounded-[10px]" />
+            <Skeleton className="h-3 w-full rounded-[10px]" />
+            <Skeleton className="h-3 w-2/3 rounded-[10px]" />
           </div>
         </div>
       ))}
