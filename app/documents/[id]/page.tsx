@@ -299,7 +299,7 @@ export default function DocumentDetailPage() {
     return (
       <div className="min-h-screen bg-bg-cream">
         <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
-        <div className="ml-64 flex items-center justify-center min-h-screen">
+        <div className="md:ml-64 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
             <p className="text-gray-600 mt-4">Loading document...</p>
@@ -313,7 +313,7 @@ export default function DocumentDetailPage() {
     return (
       <div className="min-h-screen bg-bg-cream">
         <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
-        <div className="ml-64 flex items-center justify-center min-h-screen">
+        <div className="md:ml-64 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Document not found</h2>
             <Link href="/documents" className="text-accent-600 hover:underline">
@@ -328,7 +328,7 @@ export default function DocumentDetailPage() {
   return (
     <div className="min-h-screen bg-bg-cream">
       <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
-      <div className="ml-64">
+      <div className="md:ml-64">
       {/* Header */}
       <div className="bg-white border-b border-[#E5E5E5] sticky top-0 z-20">
         <div className="max-w-[1280px] mx-auto px-12 py-6">
