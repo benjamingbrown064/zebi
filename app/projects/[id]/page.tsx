@@ -18,6 +18,7 @@ import ResponsivePageContainer from '@/components/responsive/ResponsivePageConta
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import QuickAddModal from '@/components/QuickAddModal'
 import { useWorkspace } from '@/lib/use-workspace'
+import { cachedFetch } from '@/lib/client-cache'
 import { VoiceToTaskModal } from '@/components/voice-to-task-simple/VoiceToTaskModal'
 
 interface Project {
@@ -77,7 +78,7 @@ export default function ProjectDetailPage() {
 
   async function loadProject() {
     try {
-      const response = await fetch(`/api/projects/${projectId}`)
+      const response = await cachedFetch<any>(`/api/projects/${projectId}`)
       if (response.ok) {
         const data = await response.json()
         setProject(data)
