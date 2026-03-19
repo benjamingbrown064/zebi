@@ -1,12 +1,7 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-
-/**
- * Client-side workspace context for React components
- * SECURITY: Fetches workspace from authenticated API
- */
 
 export interface WorkspaceContextValue {
   workspaceId: string | null
@@ -28,6 +23,7 @@ const WorkspaceContext = createContext<WorkspaceContextValue>({
 
 export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const hasFetched = useRef(false)
   const [state, setState] = useState<WorkspaceContextValue>({
     workspaceId: null,
     workspaceName: null,
@@ -37,100 +33,75 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     refetch: async () => {},
   })
 
-  const fetchWorkspace = async () => {
-    // Don't fetch on public routes
+  const fetchWorkspace = useCallback(async () => {
     const publicRoutes = ['/login', '/signup', '/auth/callback', '/auth/confirm']
     const isPublicRoute = pathname === '/' || publicRoutes.some(route => pathname?.startsWith(route))
-    
-    console.log('[WorkspaceProvider] fetchWorkspace called', { pathname, isPublicRoute })
-    
+
     if (isPublicRoute) {
-      console.log('[WorkspaceProvider] Skipping fetch for public route')
-      setState(prev => ({
-        ...prev,
-        loading: false,
-      }))
+      setState(prev => ({ ...prev, loading: false }))
       return
     }
 
     try {
-      console.log('[WorkspaceProvider] Fetching workspace from /api/workspaces/current')
       const res = await fetch('/api/workspaces/current', {
-        credentials: 'include', // Ensure cookies are sent
-        cache: 'no-store', // Don't cache workspace requests
+        credentials: 'include',
       })
-      
-      console.log('[WorkspaceProvider] API response:', res.status)
-      
+
       if (res.status === 401) {
-        // Unauthorized - likely no session
-        console.error('[WorkspaceProvider] 401 Unauthorized - no valid session')
         setState(prev => ({
-          ...prev,
-          workspaceId: null,
-          workspaceName: null,
-          role: null,
-          loading: false,
-          error: new Error('Unauthorized: No valid session'),
+          ...prev, workspaceId: null, workspaceName: null, role: null,
+          loading: false, error: new Error('Unauthorized'),
         }))
         return
       }
-      
-      if (res.status === 404) {
-        // No workspace found for user
-        console.error('[WorkspaceProvider] 404 - no workspace found for user')
-        setState(prev => ({
-          ...prev,
-          workspaceId: null,
-          workspaceName: null,
-          role: null,
-          loading: false,
-          error: new Error('No workspace found'),
-        }))
-        return
-      }
-      
-      if (!res.ok) {
-        const errorText = await res.text()
-        console.error('[WorkspaceProvider] API error:', res.status, errorText)
-        throw new Error(`Failed to fetch workspace: ${res.status}`)
-      }
-      
+
+      if (!res.ok) throw new Error(`Failed: ${res.status}`)
+
       const data = await res.json()
-      console.log('[WorkspaceProvider] Workspace loaded:', data.workspace)
-      
       setState(prev => ({
         ...prev,
         workspaceId: data.workspace?.id || null,
         workspaceName: data.workspace?.name || null,
         role: data.workspace?.role || null,
-        loading: false,
-        error: null,
+        loading: false, error: null,
       }))
     } catch (error) {
-      console.error('[WorkspaceProvider] Failed to load workspace:', error)
       setState(prev => ({
-        ...prev,
-        workspaceId: null,
-        workspaceName: null,
-        role: null,
+        ...prev, workspaceId: null, workspaceName: null, role: null,
         loading: false,
         error: error instanceof Error ? error : new Error('Unknown error'),
       }))
     }
-  }
-
-  useEffect(() => {
-    fetchWorkspace()
   }, [pathname])
 
-  // Add refetch method to state
+  // Fetch ONCE on mount, not on every pathname change
   useEffect(() => {
-    setState(prev => ({
-      ...prev,
-      refetch: fetchWorkspace,
-    }))
+    if (!hasFetched.current) {
+      hasFetched.current = true
+      fetchWorkspace()
+    }
   }, [])
+
+  // Only re-fetch if we navigate to/from a public route (login/signup)
+  useEffect(() => {
+    const publicRoutes = ['/login', '/signup', '/auth/callback', '/auth/confirm']
+    const isPublicRoute = pathname === '/' || publicRoutes.some(route => pathname?.startsWith(route))
+
+    if (isPublicRoute && state.workspaceId) {
+      // Went to login page — clear workspace
+      setState(prev => ({ ...prev, workspaceId: null, loading: false }))
+      hasFetched.current = false
+    } else if (!isPublicRoute && !state.workspaceId && !state.loading && hasFetched.current) {
+      // Came back from login — re-fetch
+      hasFetched.current = false
+      fetchWorkspace()
+    }
+  }, [pathname])
+
+  // Expose refetch
+  useEffect(() => {
+    setState(prev => ({ ...prev, refetch: fetchWorkspace }))
+  }, [fetchWorkspace])
 
   return (
     <WorkspaceContext.Provider value={state}>
@@ -139,21 +110,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-/**
- * Hook to access workspace context in client components
- * 
- * @returns Current workspace info
- * @example
- * const { workspaceId, loading } = useWorkspace()
- * if (loading) return <LoadingSpinner />
- * if (!workspaceId) return <NoWorkspace />
- */
 export function useWorkspace() {
   const context = useContext(WorkspaceContext)
-  
   if (context === undefined) {
     throw new Error('useWorkspace must be used within WorkspaceProvider')
   }
-  
   return context
 }
