@@ -99,7 +99,7 @@ export default function CompaniesPage() {
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -130,7 +130,7 @@ export default function CompaniesPage() {
                   key="voice"
                   startContent={<FaMicrophone className="text-lg" />}
                   onPress={() => setIsVoiceModalOpen(true)}
-                  className="text-blue-600"
+                  className="text-[#006766]"
                 >
                   Create via Voice
                 </DropdownItem>
@@ -144,7 +144,7 @@ export default function CompaniesPage() {
             {loading ? (
               <LoadingScreen message="Loading companies..." fullPage={false} />
             ) : companies.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-[14px] border border-[#E5E5E5]">
+              <div className="text-center py-12 bg-white rounded-[14px]">
                 <FaBuilding className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                 <p className="text-[#525252] mb-4 px-4">No companies yet. Create one to get started.</p>
                 <button
@@ -183,13 +183,13 @@ export default function CompaniesPage() {
       {isAdding && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-0 md:p-4">
           <div className={`
-            bg-white shadow-lg w-full overflow-y-auto
+            bg-white shadow-[0_20px_40px_rgba(28,27,27,0.06)] w-full overflow-y-auto
             ${isMobile 
               ? 'h-full rounded-none' 
               : 'rounded-[14px] max-w-2xl max-h-[90vh]'
             }
           `}>
-            <div className="sticky top-0 bg-white border-b border-[#E5E5E5] px-4 md:px-8 py-4 md:py-6">
+            <div className="sticky top-0 bg-white px-4 md:px-8 py-4 md:py-6">
               <h2 className="text-lg md:text-xl font-semibold text-[#1A1A1A]">Add a new company</h2>
             </div>
             <div className="px-4 md:px-8 py-4 md:py-6">
