@@ -71,7 +71,7 @@ export default function OverflowMenu({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white border border-[#E5E5E5] rounded-[10px] shadow-lg overflow-hidden z-50">
+        <div className="absolute right-0 mt-2 w-56 bg-white  rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-hidden z-50">
           {actions.map((action, index) => (
             <button
               key={index}
