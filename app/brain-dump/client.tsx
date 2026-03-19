@@ -93,30 +93,30 @@ export default function BrainDumpClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#fcf9f8]">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white">
         <div className="max-w-4xl mx-auto px-8 py-6">
           <h1 className="text-2xl font-semibold text-[#1A1A1A]">Brain Dump</h1>
-          <p className="text-sm text-gray-600 mt-1">Speak your updates, we'll structure them</p>
+          <p className="text-sm text-[#5a5757] mt-1">Speak your updates, we'll structure them</p>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-8 py-12">
         {/* Recorder */}
-        <div className="bg-white rounded-[14px] p-12 border border-gray-200 mb-8">
+        <div className="bg-white rounded-[14px] p-12 mb-8">
           <div className="max-w-2xl mx-auto">
             {processing ? (
               <div className="text-center py-16">
                 <Spinner size="lg" color="default" className="mb-6" />
                 <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Processing your update</h3>
-                <p className="text-sm text-gray-600">This will take a few moments...</p>
+                <p className="text-sm text-[#5a5757]">This will take a few moments...</p>
               </div>
             ) : (
               <>
                 <div className="text-center mb-8">
                   <h2 className="text-xl font-semibold text-[#1A1A1A] mb-2">Record Your Update</h2>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-[#5a5757]">
                     Speak naturally about your work. Mention tasks, projects, deadlines, or priorities.
                   </p>
                 </div>
@@ -127,8 +127,8 @@ export default function BrainDumpClient() {
                   onRecordingStop={() => setRecording(false)}
                 />
 
-                <div className="mt-8 p-4 bg-gray-50 rounded-[10px]">
-                  <p className="text-xs text-gray-600 leading-relaxed">
+                <div className="mt-8 p-4 bg-[#f6f3f2] rounded-[10px]">
+                  <p className="text-xs text-[#5a5757] leading-relaxed">
                     <span className="font-medium">Tips:</span> Mention specific names, dates (like "Friday" or "next week"), 
                     and priorities. For example: "Add high priority task for Love Warranty claims review, due Friday" 
                     or "Update DGS integration to at risk status."
@@ -152,26 +152,26 @@ export default function BrainDumpClient() {
                 <button
                   key={session.id}
                   onClick={() => router.push(`/brain-dump/review/${session.id}`)}
-                  className="w-full bg-white rounded-[10px] p-5 border border-gray-200 hover:border-gray-300 transition-all text-left"
+                  className="w-full bg-white rounded-[10px] p-5 hover:border-gray-300 transition-all text-left"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`inline-block w-2 h-2 rounded-full ${
-                          session.status === 'processed' ? 'bg-green-500' :
+                          session.status === 'processed' ? 'bg-[#f0fafa]0' :
                           session.status === 'processing' ? 'bg-yellow-500' :
-                          session.status === 'applied' ? 'bg-blue-500' :
+                          session.status === 'applied' ? 'bg-[#f0fafa]0' :
                           'bg-gray-400'
                         }`} />
-                        <span className="text-xs font-medium text-gray-500 uppercase">
+                        <span className="text-xs font-medium text-[#A3A3A3] uppercase">
                           {session.status}
                         </span>
-                        <span className="text-xs text-gray-400">•</span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-[#C4C0C0]">•</span>
+                        <span className="text-xs text-[#A3A3A3]">
                           {formatDate(session.createdAt)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-900 line-clamp-2 leading-relaxed">
+                      <p className="text-sm text-[#1c1b1b] line-clamp-2 leading-relaxed">
                         {session.summary || session.transcript || 'No transcript available'}
                       </p>
                     </div>
@@ -185,7 +185,7 @@ export default function BrainDumpClient() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-sm text-gray-500">No recent updates yet</p>
+            <p className="text-sm text-[#A3A3A3]">No recent updates yet</p>
           </div>
         )}
       </div>
