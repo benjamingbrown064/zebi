@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   if (!workspace) {
     console.error('No workspace found for user')
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-medium text-[#1A1A1A] mb-2">No Workspace Found</h2>
           <p className="text-[#737373]">Please contact support to set up your workspace.</p>
