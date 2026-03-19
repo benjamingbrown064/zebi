@@ -27,7 +27,7 @@ export default async function BoardPage() {
           },
         },
         orderBy: { createdAt: 'desc' },
-        take: 500 // Limit to 500 most recent tasks (prevents loading thousands)
+        take: 500 // Limit to 500 most recent tasks (prevents loading thousands) - project included
       }),
       prisma.status.findMany({
         where: { workspaceId },
