@@ -168,12 +168,12 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
   return (
     <div className="space-y-6">
       {/* Goal Section */}
-      <div className="p-4 bg-white border border-gray-200 rounded-[10px]">
-        <h4 className="text-sm font-semibold text-gray-500 mb-3">🎯 GOAL</h4>
+      <div className="p-4 bg-white rounded-[10px]">
+        <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">🎯 GOAL</h4>
         
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
+            <label className="block text-xs font-medium text-[#5a5757] mb-1">Name</label>
             <Input
               value={editedProposal.goal.name}
               onChange={(e) => updateGoal('name', e.target.value)}
@@ -186,7 +186,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+            <label className="block text-xs font-medium text-[#5a5757] mb-1">Description</label>
             <Textarea
               value={editedProposal.goal.description}
               onChange={(e) => updateGoal('description', e.target.value)}
@@ -199,7 +199,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Success Criteria</label>
+            <label className="block text-xs font-medium text-[#5a5757] mb-1">Success Criteria</label>
             <Textarea
               value={editedProposal.goal.successCriteria}
               onChange={(e) => updateGoal('successCriteria', e.target.value)}
@@ -212,7 +212,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Target Date</label>
+            <label className="block text-xs font-medium text-[#5a5757] mb-1">Target Date</label>
             <Input
               type="date"
               value={editedProposal.goal.targetDate || ''}
@@ -227,9 +227,9 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
       </div>
 
       {/* Objectives Section */}
-      <div className="p-4 bg-white border border-gray-200 rounded-[10px]">
+      <div className="p-4 bg-white rounded-[10px]">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-sm font-semibold text-gray-500">📋 OBJECTIVES ({editedProposal.objectives.length})</h4>
+          <h4 className="text-sm font-semibold text-[#A3A3A3]">📋 OBJECTIVES ({editedProposal.objectives.length})</h4>
           <Button
             size="sm"
             color="default"
@@ -243,7 +243,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
 
         <div className="space-y-3">
           {editedProposal.objectives.map((obj, index) => (
-            <div key={index} className="p-3 bg-gray-50 rounded-[8px] space-y-2">
+            <div key={index} className="p-3 bg-[#f6f3f2] rounded-[8px] space-y-2">
               <div className="flex items-start gap-2">
                 <Input
                   value={obj.title}
@@ -297,9 +297,9 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
       </div>
 
       {/* Projects Section */}
-      <div className="p-4 bg-white border border-gray-200 rounded-[10px]">
+      <div className="p-4 bg-white rounded-[10px]">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-sm font-semibold text-gray-500">🗂️ PROJECTS ({editedProposal.projects.length})</h4>
+          <h4 className="text-sm font-semibold text-[#A3A3A3]">🗂️ PROJECTS ({editedProposal.projects.length})</h4>
           <Button
             size="sm"
             color="default"
@@ -338,9 +338,9 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
       </div>
 
       {/* Tasks Section */}
-      <div className="p-4 bg-white border border-gray-200 rounded-[10px]">
+      <div className="p-4 bg-white rounded-[10px]">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-sm font-semibold text-gray-500">✅ TASKS ({editedProposal.tasks.length})</h4>
+          <h4 className="text-sm font-semibold text-[#A3A3A3]">✅ TASKS ({editedProposal.tasks.length})</h4>
           <Button
             size="sm"
             color="default"
@@ -355,7 +355,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
         <div className="space-y-2">
           {editedProposal.tasks.map((task, index) => (
             <div key={index} className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 min-w-[24px]">{index + 1}.</span>
+              <span className="text-sm text-[#5a5757] min-w-[24px]">{index + 1}.</span>
               <Input
                 value={task.title}
                 onChange={(e) => updateTask(index, 'title', e.target.value)}
@@ -381,9 +381,9 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
 
       {/* Blockers Section */}
       {editedProposal.blockers.length > 0 && (
-        <div className="p-4 bg-white border border-gray-200 rounded-[10px]">
+        <div className="p-4 bg-white rounded-[10px]">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold text-gray-500">⚠️ BLOCKERS & RISKS ({editedProposal.blockers.length})</h4>
+            <h4 className="text-sm font-semibold text-[#A3A3A3]">⚠️ BLOCKERS & RISKS ({editedProposal.blockers.length})</h4>
             <Button
               size="sm"
               color="default"
@@ -423,7 +423,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
       )}
 
       {/* Action Buttons */}
-      <div className="flex gap-3 pt-4 border-t border-gray-200">
+      <div className="flex gap-3 pt-4">
         <Button
           color="default"
           variant="bordered"
