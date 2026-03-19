@@ -96,7 +96,7 @@ export default function CompaniesPage() {
     loadCompanies()
   }
 
-  const mainPaddingClass = isMobile ? 'pt-[64px]' : sidebarCollapsed ? 'ml-16' : 'ml-64'
+  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
