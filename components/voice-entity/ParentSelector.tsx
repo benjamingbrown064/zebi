@@ -24,7 +24,7 @@ export default function ParentSelector({
   if (!context) return null;
 
   return (
-    <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-[10px]">
+    <div className="mb-6 p-4 bg-[#f0fafa] border border-transparent rounded-[10px]">
       <p className="text-sm font-medium text-blue-900 mb-3">
         {entityType === 'objective' 
           ? 'Link to Goal or Company (optional)' 
