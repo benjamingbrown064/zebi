@@ -15,7 +15,7 @@ const config: Config = {
         sans: ['Inter', 'system-ui', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        // ── Zebi Design System tokens ──────────────────────────────────────
+        // ── Zebi Design System tokens (Editorial Command v1.0) ─────────────
         // Primary action red (keep existing Zebi red — not changed per spec)
         primary:  { DEFAULT: '#DD3A44', dark: '#C7333D' },
 
