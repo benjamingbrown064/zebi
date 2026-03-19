@@ -284,16 +284,6 @@ export default function ProjectsPage() {
                     >
                       {/* Header */}
                       <div className="mb-4">
-                        {/* Company */}
-                        {project.company && (
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-5 h-5 rounded-[4px] bg-[#F5F5F5] flex items-center justify-center">
-                              <FaBuilding className="text-[#737373] text-[10px]" />
-                            </div>
-                            <span className="text-[13px] font-medium text-[#525252]">{project.company.name}</span>
-                          </div>
-                        )}
-                        
                         {/* Project name with icon */}
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-6 h-6 rounded-[6px] bg-[#FEF2F2] flex items-center justify-center">
@@ -303,14 +293,24 @@ export default function ProjectsPage() {
                             {project.title}
                           </h3>
                         </div>
-                        
+
+                        {/* Company */}
+                        {project.company && (
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-5 h-5 rounded-[4px] bg-[#F5F5F5] flex items-center justify-center">
+                              <FaBuilding className="text-[#737373] text-[10px]" />
+                            </div>
+                            <span className="text-[13px] text-[#525252]">{project.company.name}</span>
+                          </div>
+                        )}
+
                         {/* Objective */}
                         {project.objective && (
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-5 h-5 rounded-[4px] bg-[#F5F5F5] flex items-center justify-center">
                               <FontAwesomeIcon icon={faFlagCheckered} className="text-[#737373] text-[10px]" />
                             </div>
-                            <span className="text-[13px] text-[#525252] truncate">{project.objective.title}</span>
+                            <span className="text-[13px] text-[#A3A3A3] truncate">{project.objective.title}</span>
                           </div>
                         )}
                       </div>
