@@ -157,15 +157,15 @@ export default function TodaySelectionModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end md:items-center justify-center md:p-4">
-      <div className={`bg-white w-full md:max-w-2xl md:rounded-lg shadow-lg overflow-y-auto flex flex-col ${
+      <div className={`bg-white w-full md:max-w-2xl md:rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-y-auto flex flex-col ${
         isMobile ? 'h-[95vh] rounded-t-2xl' : 'max-h-[90vh]'
       }`}>
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex justify-between items-center min-h-[56px]">
-          <h2 className="text-lg font-semibold text-gray-900">Plan Your Day</h2>
+        <div className="sticky top-0 bg-white px-4 md:px-6 py-4 flex justify-between items-center min-h-[56px]">
+          <h2 className="text-lg font-semibold text-[#1c1b1b]">Plan Your Day</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="text-[#C4C0C0] hover:text-[#5a5757] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <FaTimes />
           </button>
@@ -174,15 +174,15 @@ export default function TodaySelectionModal({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
           {loading ? (
-            <div className="text-center py-8 text-gray-500">Loading...</div>
+            <div className="text-center py-8 text-[#A3A3A3]">Loading...</div>
           ) : (
             <>
               {/* Main Task */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900">1. Must Complete</h3>
+                  <h3 className="text-sm font-semibold text-[#1c1b1b]">1. Must Complete</h3>
                   {mainSlots > 0 && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    <span className="text-xs bg-[#f0eded] text-[#5a5757] px-2 py-1 rounded">
                       {mainSlots} slot
                     </span>
                   )}
@@ -193,11 +193,11 @@ export default function TodaySelectionModal({
                     {todayState.main.map(task => (
                       <div
                         key={task.id}
-                        className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg"
+                        className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-[10px]"
                       >
-                        <FaGripVertical className="text-gray-400" size={14} />
+                        <FaGripVertical className="text-[#C4C0C0]" size={14} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{task.title}</p>
+                          <p className="text-sm font-medium text-[#1c1b1b] truncate">{task.title}</p>
                         </div>
                         <button
                           onClick={() => handleRemoveTask(task.id, 'main')}
@@ -209,7 +209,7 @@ export default function TodaySelectionModal({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500">
+                  <div className="p-3 bg-[#f6f3f2] rounded-[10px] text-sm text-[#A3A3A3]">
                     Select 1 main task for today
                   </div>
                 )}
@@ -220,10 +220,10 @@ export default function TodaySelectionModal({
                       <button
                         key={task.id}
                         onClick={() => handleAddTask(task.id, 'main')}
-                        className="w-full text-left flex items-center gap-3 p-3 bg-white border border-gray-200 hover:border-red-200 hover:bg-red-50 rounded-lg transition"
+                        className="w-full text-left flex items-center gap-3 p-3 bg-white hover:border-red-200 hover:bg-red-50 rounded-[10px] transition"
                       >
-                        <FaPlus className="text-gray-400 flex-shrink-0" size={14} />
-                        <span className="text-sm text-gray-700 truncate">{task.title}</span>
+                        <FaPlus className="text-[#C4C0C0] flex-shrink-0" size={14} />
+                        <span className="text-sm text-[#5a5757] truncate">{task.title}</span>
                       </button>
                     ))}
                   </div>
@@ -233,9 +233,9 @@ export default function TodaySelectionModal({
               {/* Secondary Tasks */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900">2. Need to Complete</h3>
+                  <h3 className="text-sm font-semibold text-[#1c1b1b]">2. Need to Complete</h3>
                   {secondarySlots > 0 && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    <span className="text-xs bg-[#f0eded] text-[#5a5757] px-2 py-1 rounded">
                       {secondarySlots} slots
                     </span>
                   )}
@@ -246,11 +246,11 @@ export default function TodaySelectionModal({
                     {todayState.secondary.map(task => (
                       <div
                         key={task.id}
-                        className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg"
+                        className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-[10px]"
                       >
-                        <FaGripVertical className="text-gray-400" size={14} />
+                        <FaGripVertical className="text-[#C4C0C0]" size={14} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{task.title}</p>
+                          <p className="text-sm font-medium text-[#1c1b1b] truncate">{task.title}</p>
                         </div>
                         <button
                           onClick={() => handleRemoveTask(task.id, 'secondary')}
@@ -262,7 +262,7 @@ export default function TodaySelectionModal({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500">
+                  <div className="p-3 bg-[#f6f3f2] rounded-[10px] text-sm text-[#A3A3A3]">
                     Select up to 2 secondary tasks
                   </div>
                 )}
@@ -273,10 +273,10 @@ export default function TodaySelectionModal({
                       <button
                         key={task.id}
                         onClick={() => handleAddTask(task.id, 'secondary')}
-                        className="w-full text-left flex items-center gap-3 p-3 bg-white border border-gray-200 hover:border-amber-200 hover:bg-amber-50 rounded-lg transition"
+                        className="w-full text-left flex items-center gap-3 p-3 bg-white hover:border-amber-200 hover:bg-amber-50 rounded-[10px] transition"
                       >
-                        <FaPlus className="text-gray-400 flex-shrink-0" size={14} />
-                        <span className="text-sm text-gray-700 truncate">{task.title}</span>
+                        <FaPlus className="text-[#C4C0C0] flex-shrink-0" size={14} />
+                        <span className="text-sm text-[#5a5757] truncate">{task.title}</span>
                       </button>
                     ))}
                   </div>
@@ -286,9 +286,9 @@ export default function TodaySelectionModal({
               {/* Additional Tasks */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900">3. Nice to Complete</h3>
+                  <h3 className="text-sm font-semibold text-[#1c1b1b]">3. Nice to Complete</h3>
                   {additionalSlots > 0 && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    <span className="text-xs bg-[#f0eded] text-[#5a5757] px-2 py-1 rounded">
                       {additionalSlots} slots
                     </span>
                   )}
@@ -299,15 +299,15 @@ export default function TodaySelectionModal({
                     {todayState.additional.map(task => (
                       <div
                         key={task.id}
-                        className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg"
+                        className="flex items-center gap-3 p-3 bg-[#f0fafa] border border-transparent rounded-[10px]"
                       >
-                        <FaGripVertical className="text-gray-400" size={14} />
+                        <FaGripVertical className="text-[#C4C0C0]" size={14} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{task.title}</p>
+                          <p className="text-sm font-medium text-[#1c1b1b] truncate">{task.title}</p>
                         </div>
                         <button
                           onClick={() => handleRemoveTask(task.id, 'additional')}
-                          className="text-blue-600 hover:text-blue-700 p-2 min-h-[32px] min-w-[32px] flex items-center justify-center"
+                          className="text-[#006766] hover:text-[#006766] p-2 min-h-[32px] min-w-[32px] flex items-center justify-center"
                         >
                           <FaTimes size={14} />
                         </button>
@@ -315,7 +315,7 @@ export default function TodaySelectionModal({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500">
+                  <div className="p-3 bg-[#f6f3f2] rounded-[10px] text-sm text-[#A3A3A3]">
                     Select up to 3 additional tasks
                   </div>
                 )}
@@ -326,10 +326,10 @@ export default function TodaySelectionModal({
                       <button
                         key={task.id}
                         onClick={() => handleAddTask(task.id, 'additional')}
-                        className="w-full text-left flex items-center gap-3 p-3 bg-white border border-gray-200 hover:border-blue-200 hover:bg-blue-50 rounded-lg transition"
+                        className="w-full text-left flex items-center gap-3 p-3 bg-white hover:border-transparent hover:bg-[#f0fafa] rounded-[10px] transition"
                       >
-                        <FaPlus className="text-gray-400 flex-shrink-0" size={14} />
-                        <span className="text-sm text-gray-700 truncate">{task.title}</span>
+                        <FaPlus className="text-[#C4C0C0] flex-shrink-0" size={14} />
+                        <span className="text-sm text-[#5a5757] truncate">{task.title}</span>
                       </button>
                     ))}
                   </div>
@@ -339,9 +339,9 @@ export default function TodaySelectionModal({
               {/* Other Tasks (Additional) */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900">4. Additional</h3>
+                  <h3 className="text-sm font-semibold text-[#1c1b1b]">4. Additional</h3>
                   {otherSlots > 0 && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    <span className="text-xs bg-[#f0eded] text-[#5a5757] px-2 py-1 rounded">
                       {otherSlots} slots
                     </span>
                   )}
@@ -352,15 +352,15 @@ export default function TodaySelectionModal({
                     {todayState.other.map(task => (
                       <div
                         key={task.id}
-                        className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-300 rounded-lg"
+                        className="flex items-center gap-3 p-3 bg-[#f6f3f2] border border-gray-300 rounded-[10px]"
                       >
-                        <FaGripVertical className="text-gray-400" size={14} />
+                        <FaGripVertical className="text-[#C4C0C0]" size={14} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{task.title}</p>
+                          <p className="text-sm font-medium text-[#1c1b1b] truncate">{task.title}</p>
                         </div>
                         <button
                           onClick={() => handleRemoveTask(task.id, 'other')}
-                          className="text-gray-600 hover:text-gray-700 p-2 min-h-[32px] min-w-[32px] flex items-center justify-center"
+                          className="text-[#5a5757] hover:text-[#5a5757] p-2 min-h-[32px] min-w-[32px] flex items-center justify-center"
                         >
                           <FaTimes size={14} />
                         </button>
@@ -368,7 +368,7 @@ export default function TodaySelectionModal({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500">
+                  <div className="p-3 bg-[#f6f3f2] rounded-[10px] text-sm text-[#A3A3A3]">
                     Select up to 5 additional tasks
                   </div>
                 )}
@@ -379,10 +379,10 @@ export default function TodaySelectionModal({
                       <button
                         key={task.id}
                         onClick={() => handleAddTask(task.id, 'other')}
-                        className="w-full text-left flex items-center gap-3 p-3 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-lg transition"
+                        className="w-full text-left flex items-center gap-3 p-3 bg-white hover:border-gray-300 hover:bg-[#f6f3f2] rounded-[10px] transition"
                       >
-                        <FaPlus className="text-gray-400 flex-shrink-0" size={14} />
-                        <span className="text-sm text-gray-700 truncate">{task.title}</span>
+                        <FaPlus className="text-[#C4C0C0] flex-shrink-0" size={14} />
+                        <span className="text-sm text-[#5a5757] truncate">{task.title}</span>
                       </button>
                     ))}
                   </div>
@@ -393,10 +393,10 @@ export default function TodaySelectionModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-4 md:px-6 py-4">
+        <div className="sticky bottom-0 bg-[#f6f3f2] px-4 md:px-6 py-4">
           <button
             onClick={onClose}
-            className="w-full px-4 py-3 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition font-medium min-h-[44px]"
+            className="w-full px-4 py-3 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition font-medium min-h-[44px]"
           >
             Done
           </button>
