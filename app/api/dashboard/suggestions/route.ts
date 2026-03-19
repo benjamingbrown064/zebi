@@ -27,7 +27,8 @@ export async function GET(request: NextRequest) {
     }
 
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? (await supabase.auth.getUser()).data.user
     const userId = user?.id || 'system'
 
     // Build workspace context (7 DB queries)
