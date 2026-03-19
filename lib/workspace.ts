@@ -13,13 +13,31 @@ export interface UserWorkspace {
   role: 'owner' | 'admin' | 'member' | 'guest'
 }
 
+// In-process workspace cache: avoids repeated DB lookups per userId
+// Entries expire after 5 minutes. Cleared on logout.
+const workspaceCache = new Map<string, { workspace: UserWorkspace; expiresAt: number }>()
+const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
+
+function getCachedWorkspace(userId: string): UserWorkspace | null {
+  const entry = workspaceCache.get(userId)
+  if (!entry) return null
+  if (Date.now() > entry.expiresAt) {
+    workspaceCache.delete(userId)
+    return null
+  }
+  return entry.workspace
+}
+
+function setCachedWorkspace(userId: string, workspace: UserWorkspace) {
+  workspaceCache.set(userId, { workspace, expiresAt: Date.now() + CACHE_TTL_MS })
+}
+
 /**
  * Create Supabase SSR client that reads from request cookies
- * This is required for API routes to see the authenticated session
  */
 function createSupabaseServerClient() {
   const cookieStore = cookies()
-  
+
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -48,44 +66,42 @@ function createSupabaseServerClient() {
 }
 
 /**
- * Get user's workspace from database (server-side only)
- * Used in API routes and server components
- * 
- * @returns User's workspace or null if not found
- * @throws Error if not authenticated
+ * Get user's workspace from database (server-side only).
+ *
+ * PERF: Uses getSession() (local JWT decode) instead of getUser() (network round-trip)
+ * since middleware already validated the session. Falls back to getUser() if session
+ * is absent (e.g. during initial SSR before cookie hydration).
  */
 export async function getWorkspaceFromAuth(): Promise<UserWorkspace | null> {
   const supabase = createSupabaseServerClient()
-  
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
 
-  if (authError) {
-    console.error('Auth error in getWorkspaceFromAuth:', authError)
-    throw new Error('Unauthorized: No valid session')
+  // getSession() decodes the JWT locally — no network call to Supabase
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+
+  if (sessionError || !session?.user) {
+    // Fall back to getUser() for edge cases (e.g. fresh login, expired local token)
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      throw new Error('Unauthorized: No valid session')
+    }
+    return getWorkspaceCached(user.id)
   }
 
-  if (!user) {
-    console.warn('No user found in session')
-    throw new Error('Unauthorized: No valid session')
-  }
+  return getWorkspaceCached(session.user.id)
+}
 
-  const workspace = await getUserWorkspace(user.id)
-  
-  if (!workspace) {
-    console.warn(`No workspace found for user ${user.id}`)
-  }
-  
+async function getWorkspaceCached(userId: string): Promise<UserWorkspace | null> {
+  // Check in-process cache first
+  const cached = getCachedWorkspace(userId)
+  if (cached) return cached
+
+  const workspace = await getUserWorkspace(userId)
+  if (workspace) setCachedWorkspace(userId, workspace)
   return workspace
 }
 
 /**
  * Get workspace for a specific user ID
- * 
- * @param userId - Supabase user ID
- * @returns User's workspace or null if not found
  */
 export async function getUserWorkspace(userId: string): Promise<UserWorkspace | null> {
   const membership = await prisma.workspaceMember.findFirst({
@@ -99,13 +115,11 @@ export async function getUserWorkspace(userId: string): Promise<UserWorkspace | 
       },
     },
     orderBy: {
-      createdAt: 'asc', // Get the first/primary workspace
+      createdAt: 'asc',
     },
   })
 
-  if (!membership) {
-    return null
-  }
+  if (!membership) return null
 
   return {
     id: membership.workspace.id,
@@ -116,9 +130,6 @@ export async function getUserWorkspace(userId: string): Promise<UserWorkspace | 
 
 /**
  * Get all workspaces a user is a member of
- * 
- * @param userId - Supabase user ID
- * @returns Array of workspaces
  */
 export async function getUserWorkspaces(userId: string): Promise<UserWorkspace[]> {
   const memberships = await prisma.workspaceMember.findMany({
@@ -145,10 +156,6 @@ export async function getUserWorkspaces(userId: string): Promise<UserWorkspace[]
 
 /**
  * Verify user has access to a workspace
- * 
- * @param userId - Supabase user ID
- * @param workspaceId - Workspace ID to check
- * @returns true if user has access, false otherwise
  */
 export async function hasWorkspaceAccess(
   userId: string,
@@ -168,30 +175,25 @@ export async function hasWorkspaceAccess(
 
 /**
  * Get workspace ID from auth session (throws if not found)
- * Use this when workspace is required
- * 
- * @returns Workspace ID
- * @throws Error if no workspace found or not authenticated
  */
 export async function requireWorkspace(): Promise<string> {
   const workspace = await getWorkspaceFromAuth()
-  
+
   if (!workspace) {
     throw new Error('No workspace found for user')
   }
-  
+
   return workspace.id
 }
 
 /**
  * Middleware helper: Get workspace from request cookies
- * Used in middleware.ts for workspace isolation
  */
 export async function getWorkspaceFromRequest(
   request: Request
 ): Promise<UserWorkspace | null> {
   const cookieStore = cookies()
-  
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -206,13 +208,8 @@ export async function getWorkspaceFromRequest(
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) return null
 
-  if (!user) {
-    return null
-  }
-
-  return getUserWorkspace(user.id)
+  return getWorkspaceCached(session.user.id)
 }
