@@ -53,13 +53,13 @@ export default function TasksTableToolbar({
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="relative">
-        <FaSearch className="absolute left-4 top-3.5 text-gray-400 w-4 h-4" />
+        <FaSearch className="absolute left-4 top-3.5 text-[#C4C0C0] w-4 h-4" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange?.(e.target.value)}
           placeholder="Search tasks..."
-          className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-accent-500"
+          className="w-full pl-10 pr-4 py-3 rounded-[10px] focus:outline-none focus:ring-1 focus:ring-accent-500"
         />
       </div>
 
@@ -67,10 +67,10 @@ export default function TasksTableToolbar({
       <div className="flex items-center gap-2">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`px-4 py-2 rounded-lg border transition flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-[10px] border transition flex items-center gap-2 ${
             showFilters
               ? 'bg-accent-50 border-accent-200 text-accent-700'
-              : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+              : 'bg-white border-gray-200 text-[#5a5757] hover:bg-[#f6f3f2]'
           }`}
         >
           <FaFilter className="w-4 h-4" />
@@ -80,7 +80,7 @@ export default function TasksTableToolbar({
         {hasActiveFilters && (
           <button
             onClick={onClearFilters}
-            className="px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition flex items-center gap-2"
+            className="px-4 py-2 rounded-[10px] bg-white text-[#5a5757] hover:bg-[#f6f3f2] transition flex items-center gap-2"
           >
             <FaTimes className="w-4 h-4" />
             Clear filters
@@ -90,10 +90,10 @@ export default function TasksTableToolbar({
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4">
+        <div className="p-4 bg-[#f6f3f2] rounded-[10px] space-y-4">
           {/* Priority Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
               Priority
             </label>
             <div className="space-y-2">
@@ -105,7 +105,7 @@ export default function TasksTableToolbar({
                     onChange={() => handlePriorityToggle(p.num)}
                     className="rounded border-gray-300"
                   />
-                  <span className="text-sm text-gray-700">{p.label}</span>
+                  <span className="text-sm text-[#5a5757]">{p.label}</span>
                 </label>
               ))}
             </div>
@@ -114,7 +114,7 @@ export default function TasksTableToolbar({
           {/* Status Filter */}
           {statuses.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
+              <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
                 Status
               </label>
               <div className="space-y-2">
@@ -126,7 +126,7 @@ export default function TasksTableToolbar({
                       onChange={() => handleStatusToggle(status.id)}
                       className="rounded border-gray-300"
                     />
-                    <span className="text-sm text-gray-700">{status.name}</span>
+                    <span className="text-sm text-[#5a5757]">{status.name}</span>
                   </label>
                 ))}
               </div>
@@ -135,7 +135,7 @@ export default function TasksTableToolbar({
 
           {/* Due Date Range (simplified) */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
               Due Date
             </label>
             <div className="space-y-2">
@@ -146,8 +146,8 @@ export default function TasksTableToolbar({
                     disabled
                     className="rounded border-gray-300 opacity-50"
                   />
-                  <span className="text-sm text-gray-500">{label}</span>
-                  <span className="text-xs text-gray-400">(coming soon)</span>
+                  <span className="text-sm text-[#A3A3A3]">{label}</span>
+                  <span className="text-xs text-[#C4C0C0]">(coming soon)</span>
                 </label>
               ))}
             </div>
