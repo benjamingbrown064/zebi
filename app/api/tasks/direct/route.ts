@@ -6,39 +6,58 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Check if user has valid session (cookies will be sent automatically)
-    // This is a public endpoint accessible to authenticated browser clients
-    // External API calls should use a dedicated API endpoint if needed
-    
     const { searchParams } = new URL(request.url)
     const workspaceId = searchParams.get('workspaceId')
-    
+
     if (!workspaceId) {
       return NextResponse.json({
         success: false,
         error: 'Missing required query parameter: workspaceId',
       }, { status: 400 })
     }
-    
-    console.log(`[API:tasks/direct] Fetching tasks for workspace ${workspaceId}`)
+
+    // By default exclude archived and completed tasks.
+    // Pass includeArchived=true or includeCompleted=true to override.
+    const includeArchived = searchParams.get('includeArchived') === 'true'
+    const includeCompleted = searchParams.get('includeCompleted') === 'true'
+
+    // Optional filters
+    const projectId = searchParams.get('projectId')
+    const goalId = searchParams.get('goalId')
+    const priority = searchParams.get('priority')
+
+    console.log(`[API:tasks/direct] Fetching tasks for workspace ${workspaceId}`, {
+      includeArchived,
+      includeCompleted,
+    })
     const startTime = Date.now()
-    
+
+    const where: any = { workspaceId }
+
+    if (!includeArchived) where.archivedAt = null
+    if (!includeCompleted) where.completedAt = null
+
+    if (projectId) where.projectId = projectId
+    if (goalId) where.goalId = goalId
+    if (priority) where.priority = parseInt(priority, 10)
+
     const tasks = await prisma.task.findMany({
-      where: { workspaceId },
+      where,
       include: {
         tags: {
-          include: { tag: true }
-        }
+          include: { tag: true },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     })
-    
+
     const duration = Date.now() - startTime
     console.log(`[API:tasks/direct] Returned ${tasks.length} tasks in ${duration}ms`)
-    
+
     return NextResponse.json({
       success: true,
       count: tasks.length,
+      filters: { includeArchived, includeCompleted },
       tasks: tasks.map(t => ({
         id: t.id,
         title: t.title,
@@ -46,6 +65,8 @@ export async function GET(request: NextRequest) {
         statusId: t.statusId,
         description: t.description || undefined,
         dueAt: t.dueAt?.toISOString(),
+        completedAt: t.completedAt?.toISOString(),
+        archivedAt: t.archivedAt?.toISOString(),
         tags: t.tags.map(tt => tt.tag.name),
         goalId: t.goalId || undefined,
         projectId: t.projectId || undefined,
@@ -59,7 +80,7 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err)
     console.error('[API:tasks/direct] Error:', errorMsg)
-    
+
     return NextResponse.json({
       success: false,
       error: errorMsg,
