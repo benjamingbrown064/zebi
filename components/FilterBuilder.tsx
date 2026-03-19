@@ -137,7 +137,7 @@ export default function FilterBuilder({
 
   if (loading) {
     return (
-      <div className="py-8 text-center text-gray-500">
+      <div className="py-8 text-center text-[#A3A3A3]">
         Loading filter options...
       </div>
     )
@@ -147,7 +147,7 @@ export default function FilterBuilder({
     <div className="space-y-6">
       {/* Statuses */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-[#5a5757] mb-2">
           Status
         </label>
         <div className="flex flex-wrap gap-2">
@@ -156,10 +156,10 @@ export default function FilterBuilder({
               key={status.id}
               type="button"
               onClick={() => toggleStatus(status.id)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+              className={`px-3 py-2 rounded-[10px] text-sm font-medium transition ${
                 selectedStatuses.includes(status.id)
                   ? 'bg-accent-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-[#f0eded] text-[#5a5757] hover:bg-[#e8e4e4]'
               }`}
             >
               {status.name}
@@ -167,13 +167,13 @@ export default function FilterBuilder({
           ))}
         </div>
         {statuses.length === 0 && (
-          <p className="text-sm text-gray-500 mt-1">No statuses available</p>
+          <p className="text-sm text-[#A3A3A3] mt-1">No statuses available</p>
         )}
       </div>
 
       {/* Priorities */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-[#5a5757] mb-2">
           Priority
         </label>
         <div className="flex flex-wrap gap-2">
@@ -182,10 +182,10 @@ export default function FilterBuilder({
               key={opt.value}
               type="button"
               onClick={() => togglePriority(opt.value)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+              className={`px-3 py-2 rounded-[10px] text-sm font-medium transition ${
                 selectedPriorities.includes(opt.value)
                   ? 'bg-accent-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-[#f0eded] text-[#5a5757] hover:bg-[#e8e4e4]'
               }`}
             >
               {opt.label}
@@ -196,7 +196,7 @@ export default function FilterBuilder({
 
       {/* Tags */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-[#5a5757] mb-2">
           Tags
         </label>
         <div className="flex gap-2 mb-2">
@@ -211,12 +211,12 @@ export default function FilterBuilder({
               }
             }}
             placeholder="Type a tag and press Enter"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
           />
           <button
             type="button"
             onClick={addTag}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition"
+            className="px-4 py-2 bg-[#f0eded] text-[#5a5757] rounded-[10px] text-sm font-medium hover:bg-[#e8e4e4] transition"
           >
             Add
           </button>
@@ -244,26 +244,26 @@ export default function FilterBuilder({
 
       {/* Due Date Range */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-[#5a5757] mb-2">
           Due Date Range
         </label>
         <div className="flex gap-4">
           <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">From</label>
+            <label className="block text-xs text-[#A3A3A3] mb-1">From</label>
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => handleDateFromChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
             />
           </div>
           <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">To</label>
+            <label className="block text-xs text-[#A3A3A3] mb-1">To</label>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => handleDateToChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
             />
           </div>
         </div>
@@ -271,8 +271,8 @@ export default function FilterBuilder({
 
       {/* Summary */}
       {(selectedStatuses.length > 0 || selectedPriorities.length > 0 || selectedTags.length > 0 || dateFrom || dateTo) && (
-        <div className="pt-4 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
+        <div className="pt-4">
+          <p className="text-sm text-[#5a5757]">
             <span className="font-medium">Filter criteria:</span>{' '}
             {selectedStatuses.length > 0 && (
               <span className="text-accent-600">
