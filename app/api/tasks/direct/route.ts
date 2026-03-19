@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // Force dynamic rendering
-export const dynamic = 'force-dynamic'
+export const revalidate = 30 // Cache for 30s — invalidated on writes
 
 export async function GET(request: NextRequest) {
   try {
