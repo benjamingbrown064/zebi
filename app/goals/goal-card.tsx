@@ -40,8 +40,8 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
   }
 
   const getProgressColor = () => {
-    if (progress >= 100) return 'bg-green-500'
-    if (progress >= 75) return 'bg-blue-500'
+    if (progress >= 100) return 'bg-[#f0fafa]0'
+    if (progress >= 75) return 'bg-[#f0fafa]0'
     if (progress >= 50) return 'bg-yellow-500'
     return 'bg-red-500'
   }
@@ -77,7 +77,7 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
           </div>
         }
         badge={
-          <span className="px-2 py-1 rounded-[6px] text-[11px] font-semibold bg-blue-100 text-blue-700">
+          <span className="px-2 py-1 rounded-[6px] text-[11px] font-semibold bg-[#e6f4f4] text-[#006766]">
             {progress}%
           </span>
         }
@@ -117,7 +117,7 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
     <div
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
-      className="bg-white rounded-[14px] border border-[#E5E5E5] p-6 hover:shadow-lg transition-shadow cursor-pointer"
+      className="bg-white rounded-[14px] p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -129,7 +129,7 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
             {formatValue()}
           </p>
         </div>
-        <span className="ml-3 px-2.5 py-1 rounded-[6px] text-[12px] font-semibold bg-blue-100 text-blue-700">
+        <span className="ml-3 px-2.5 py-1 rounded-[6px] text-[12px] font-semibold bg-[#e6f4f4] text-[#006766]">
           {progress}%
         </span>
       </div>
@@ -145,7 +145,7 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-[#E5E5E5]">
+      <div className="flex items-center justify-between pt-4">
         <div className="text-[12px] text-[#A3A3A3]">
           {daysRemaining > 0 ? (
             `${daysRemaining} days remaining`
