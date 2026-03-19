@@ -31,7 +31,7 @@ export default function SignalCard({
       color: 'text-red-600',
     },
     'due-soon': { icon: <FaClock />, label: 'Due soon', color: 'text-orange-600' },
-    mentioned: { icon: <FaAt />, label: 'Mentioned', color: 'text-blue-600' },
+    mentioned: { icon: <FaAt />, label: 'Mentioned', color: 'text-[#006766]' },
   }
 
   const config = typeConfig[type] || typeConfig.overdue
@@ -47,8 +47,8 @@ export default function SignalCard({
             <span className="text-sm">{config.icon}</span>
             {config.label}
           </p>
-          <p className="font-medium text-gray-900 mt-1">{title}</p>
-          <p className="text-xs text-gray-600 mt-1">{description}</p>
+          <p className="font-medium text-[#1c1b1b] mt-1">{title}</p>
+          <p className="text-xs text-[#5a5757] mt-1">{description}</p>
         </div>
 
         {/* Dismiss button */}
@@ -57,7 +57,7 @@ export default function SignalCard({
             e.stopPropagation()
             onDismiss?.()
           }}
-          className="ml-2 text-gray-400 hover:text-gray-600 transition flex-shrink-0"
+          className="ml-2 text-[#C4C0C0] hover:text-[#5a5757] transition flex-shrink-0"
           title="Dismiss"
         >
           ✕
