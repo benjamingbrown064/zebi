@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireWorkspace } from '@/lib/workspace'
+import { validateAIAuth } from '@/lib/doug-auth'
 import {
   getAIMemory,
   updateAIMemory,
   deleteAIMemory,
   UpdateAIMemoryInput,
 } from '@/app/actions/ai-memory'
-
 
 /**
  * GET /api/ai-memory/[id]
@@ -17,23 +17,25 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const workspaceId = await requireWorkspace()
-    const memory = await getAIMemory(workspaceId, params.id)
+    const auth = validateAIAuth(request)
+    let workspaceId: string
 
-    if (!memory) {
-      return NextResponse.json(
-        { error: 'AI memory not found' },
-        { status: 404 }
-      )
+    if (auth.valid) {
+      const wid = request.nextUrl.searchParams.get('workspaceId')
+      if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
     }
 
+    const memory = await getAIMemory(workspaceId, params.id)
+    if (!memory) {
+      return NextResponse.json({ error: 'AI memory not found' }, { status: 404 })
+    }
     return NextResponse.json(memory)
   } catch (error) {
     console.error('Error in GET /api/ai-memory/[id]:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch AI memory' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch AI memory' }, { status: 500 })
   }
 }
 
@@ -46,33 +48,27 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const workspaceId = await requireWorkspace()
-    const body: UpdateAIMemoryInput = await request.json()
+    const auth = validateAIAuth(request)
+    let workspaceId: string
 
-    // Validate confidence score if provided
-    if (
-      body.confidenceScore !== undefined &&
-      (body.confidenceScore < 1 || body.confidenceScore > 10)
-    ) {
-      return NextResponse.json(
-        { error: 'confidenceScore must be between 1 and 10' },
-        { status: 400 }
-      )
+    const body: UpdateAIMemoryInput & { workspaceId?: string } = await request.json()
+
+    if (auth.valid) {
+      if (!body.workspaceId) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = body.workspaceId
+    } else {
+      workspaceId = await requireWorkspace()
     }
 
-    const memory = await updateAIMemory(
-      workspaceId,
-      params.id,
-      body
-    )
+    if (body.confidenceScore !== undefined && (body.confidenceScore < 1 || body.confidenceScore > 10)) {
+      return NextResponse.json({ error: 'confidenceScore must be between 1 and 10' }, { status: 400 })
+    }
 
+    const memory = await updateAIMemory(workspaceId, params.id, body)
     return NextResponse.json(memory)
   } catch (error) {
     console.error('Error in PUT /api/ai-memory/[id]:', error)
-    return NextResponse.json(
-      { error: 'Failed to update AI memory' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update AI memory' }, { status: 500 })
   }
 }
 
@@ -85,15 +81,21 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const workspaceId = await requireWorkspace()
-    await deleteAIMemory(workspaceId, params.id)
+    const auth = validateAIAuth(request)
+    let workspaceId: string
 
+    if (auth.valid) {
+      const wid = request.nextUrl.searchParams.get('workspaceId')
+      if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
+    await deleteAIMemory(workspaceId, params.id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error in DELETE /api/ai-memory/[id]:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete AI memory' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete AI memory' }, { status: 500 })
   }
 }
