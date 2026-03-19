@@ -119,7 +119,7 @@ export default function ProjectDetailPage() {
     4: 'bg-gray-100 text-gray-700',
   }
 
-  const mainPaddingClass = isMobile ? 'pt-[64px]' : sidebarCollapsed ? 'ml-16' : 'ml-64'
+  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
