@@ -203,7 +203,7 @@ async function buildContextUncached(
     isRevenueLinked: !!t.companyId,
     lastActivity: t.updatedAt,
     todayPinDate: t.todayPinDate?.toISOString(),
-    plannedDate: t.plannedDate?.toISOString?.() || t.plannedDate,
+    plannedDate: t.plannedDate?.toISOString() || t.plannedDate,
   }))
 
   const enhancedProjects = projects.map(p => ({
