@@ -18,6 +18,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get current operating mode
+    let activeMode: 'pressure' | 'plateau' | 'momentum' | 'drift' | undefined
+    try {
+      const ws = await prisma.workspace.findUnique({
+        where: { id: workspaceId },
+        select: { operatingMode: true, modeSetBy: true, modeExpiresAt: true },
+      })
+      if (ws?.operatingMode) {
+        const validModes = ['pressure', 'plateau', 'momentum', 'drift']
+        if (validModes.includes(ws.operatingMode)) {
+          // Check manual override hasn't expired
+          if (ws.modeSetBy === 'manual' && ws.modeExpiresAt && new Date() > ws.modeExpiresAt) {
+            activeMode = 'momentum'
+          } else {
+            activeMode = ws.operatingMode as typeof activeMode
+          }
+        }
+      }
+    } catch (e) {
+      // Mode detection failure should not break chat
+    }
+
     // Get or create conversation
     let conversation
     let conversationHistory: { role: 'user' | 'assistant'; content: string }[] = []
@@ -65,7 +87,8 @@ export async function POST(request: NextRequest) {
       workspaceId,
       PLACEHOLDER_USER_ID,
       message,
-      conversationHistory
+      conversationHistory,
+      activeMode
     )
 
     // Save assistant message

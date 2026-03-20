@@ -22,6 +22,8 @@ export interface AIAction {
   params: Record<string, any>
 }
 
+export type OperatingMode = 'pressure' | 'plateau' | 'momentum' | 'drift'
+
 /**
  * Process user message and generate AI response
  */
@@ -29,7 +31,8 @@ export async function processMessage(
   workspaceId: string,
   userId: string,
   userMessage: string,
-  conversationHistory?: { role: 'user' | 'assistant'; content: string }[]
+  conversationHistory?: { role: 'user' | 'assistant'; content: string }[],
+  operatingMode?: OperatingMode
 ): Promise<AIResponse> {
   // Build context from workspace data
   const context = await buildContext(workspaceId, userId)
@@ -39,10 +42,10 @@ export async function processMessage(
 
   if (isPrioritization) {
     // Use prioritization engine
-    return await handlePrioritizationQuery(context, userMessage, conversationHistory)
+    return await handlePrioritizationQuery(context, userMessage, conversationHistory, operatingMode)
   } else {
     // Use general chat
-    return await handleGeneralChat(context, userMessage, conversationHistory)
+    return await handleGeneralChat(context, userMessage, conversationHistory, operatingMode)
   }
 }
 
@@ -52,7 +55,8 @@ export async function processMessage(
 async function handlePrioritizationQuery(
   context: any,
   userMessage: string,
-  conversationHistory?: { role: 'user' | 'assistant'; content: string }[]
+  conversationHistory?: { role: 'user' | 'assistant'; content: string }[],
+  operatingMode?: OperatingMode
 ): Promise<AIResponse> {
   // Run prioritization engine
   const prioritizationResult = prioritizeWorkspace(context)
@@ -64,7 +68,7 @@ async function handlePrioritizationQuery(
   const messages: ChatMessage[] = [
     {
       role: 'system',
-      content: getPrioritizationSystemPrompt(context),
+      content: getPrioritizationSystemPrompt(context, operatingMode),
     },
   ]
 
@@ -94,7 +98,7 @@ async function handlePrioritizationQuery(
   const enhancedMessages: ChatMessage[] = [
     {
       role: 'system',
-      content: getPrioritizationSystemPrompt(context),
+      content: getPrioritizationSystemPrompt(context, operatingMode),
     },
     {
       role: 'user',
@@ -134,13 +138,14 @@ async function handlePrioritizationQuery(
 async function handleGeneralChat(
   context: any,
   userMessage: string,
-  conversationHistory?: { role: 'user' | 'assistant'; content: string }[]
+  conversationHistory?: { role: 'user' | 'assistant'; content: string }[],
+  operatingMode?: OperatingMode
 ): Promise<AIResponse> {
   // Build message history
   const messages: ChatMessage[] = [
     {
       role: 'system',
-      content: getChatSystemPrompt(context),
+      content: getChatSystemPrompt(context, operatingMode),
     },
   ]
 

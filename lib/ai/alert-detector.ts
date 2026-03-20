@@ -29,13 +29,15 @@ export class AlertDetector {
     const alerts: Alert[] = []
 
     // Run all detectors in parallel
-    const [lateTaskAlerts, blockedObjAlerts, stuckTaskAlerts, momentumAlerts, deadlineAlerts] =
+    const [lateTaskAlerts, blockedObjAlerts, stuckTaskAlerts, momentumAlerts, deadlineAlerts, plateauAlerts, driftAlerts] =
       await Promise.all([
         this.detectLateTasks(workspaceId),
         this.detectBlockedObjectives(workspaceId),
         this.detectStuckTasks(workspaceId),
         this.detectMomentum(workspaceId),
         this.detectDeadlineWarnings(workspaceId),
+        this.detectPlateau(workspaceId),
+        this.detectDrift(workspaceId),
       ])
 
     alerts.push(
@@ -43,7 +45,9 @@ export class AlertDetector {
       ...blockedObjAlerts,
       ...stuckTaskAlerts,
       ...momentumAlerts,
-      ...deadlineAlerts
+      ...deadlineAlerts,
+      ...plateauAlerts,
+      ...driftAlerts
     )
 
     // Use AI to prioritize and enhance alerts
@@ -342,6 +346,88 @@ export class AlertDetector {
         }
       })
     )
+
+    return alerts
+  }
+
+  /**
+   * Detect plateau signals — objectives stagnant, repeated task patterns
+   */
+  private async detectPlateau(workspaceId: string): Promise<Alert[]> {
+    const alerts: Alert[] = []
+    const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+
+    // Objectives with <50% progress and no movement in 14 days
+    const stagnantObjectives = await prisma.objective.findMany({
+      where: {
+        workspaceId,
+        status: { in: ['active', 'on_track'] },
+        progressPercent: { lt: 50 },
+        updatedAt: { lt: fourteenDaysAgo },
+      },
+      select: {
+        id: true,
+        title: true,
+        progressPercent: true,
+        deadline: true,
+        company: { select: { name: true } },
+      },
+      take: 3,
+    })
+
+    stagnantObjectives.forEach(obj => {
+      const daysUntil = Math.ceil((new Date(obj.deadline).getTime() - Date.now()) / 86400000)
+      alerts.push({
+        type: 'warning',
+        priority: 72,
+        title: `Plateau signal: ${obj.title}`,
+        description: `${Number(obj.progressPercent).toFixed(0)}% progress, no movement in 14+ days${obj.company ? ` (${obj.company.name})` : ''}. ${daysUntil} days to deadline.`,
+        reasoning: `This objective hasn't moved in two weeks. It may need a different approach, a clearer next step, or a decision about whether it's still the right priority.`,
+        entityType: 'objective',
+        entityId: obj.id,
+        actions: [{ type: 'navigate', label: 'Review Objective', params: { url: `/objectives/${obj.id}` } }],
+      })
+    })
+
+    return alerts
+  }
+
+  /**
+   * Detect drift signals — low urgency, few priorities, business comfortable but not pushing
+   */
+  private async detectDrift(workspaceId: string): Promise<Alert[]> {
+    const alerts: Alert[] = []
+    const now = new Date()
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+
+    // Count urgent/high priority tasks
+    const urgentCount = await prisma.task.count({
+      where: { workspaceId, priority: { lte: 2 }, completedAt: null, archivedAt: null },
+    })
+
+    // Count tasks completed in last 7 days
+    const recentCompletions = await prisma.task.count({
+      where: { workspaceId, completedAt: { gte: sevenDaysAgo } },
+    })
+
+    // Count overdue tasks
+    const overdueCount = await prisma.task.count({
+      where: { workspaceId, dueAt: { lt: now }, completedAt: null, archivedAt: null },
+    })
+
+    // Drift: few urgent tasks, few completions, no overdue — comfortable but not pushing
+    if (urgentCount <= 2 && recentCompletions <= 3 && overdueCount === 0) {
+      alerts.push({
+        type: 'warning',
+        priority: 60,
+        title: 'Drift signal: low urgency and low output',
+        description: `${urgentCount} urgent task${urgentCount !== 1 ? 's' : ''}, ${recentCompletions} completions this week, no overdue items. Business may be comfortable but not pushing.`,
+        reasoning: `Low urgency combined with low output and no pressure suggests the business may be drifting. This is the time to choose a bold move, not to stay comfortable.`,
+        entityType: 'workspace',
+        entityId: null,
+        actions: [{ type: 'navigate', label: 'Review Objectives', params: { url: '/objectives' } }],
+      })
+    }
 
     return alerts
   }
