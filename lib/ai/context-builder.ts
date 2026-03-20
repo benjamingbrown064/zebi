@@ -128,6 +128,8 @@ async function buildContextUncached(
         companyId: true,
         objectiveId: true,
         projectId: true,
+        todayPinDate: true,
+        plannedDate: true,
         updatedAt: true,
         status: { select: { name: true, type: true } },
         project: { select: { name: true } },
@@ -200,6 +202,8 @@ async function buildContextUncached(
     ...t,
     isRevenueLinked: !!t.companyId,
     lastActivity: t.updatedAt,
+    todayPinDate: t.todayPinDate?.toISOString(),
+    plannedDate: t.plannedDate?.toISOString?.() || t.plannedDate,
   }))
 
   const enhancedProjects = projects.map(p => ({
@@ -278,6 +282,8 @@ async function buildContextUncached(
         company: t.company?.name,
         isRevenueLinked: t.isRevenueLinked,
         lastActivity: t.lastActivity.toISOString(),
+        todayPinDate: t.todayPinDate,
+        plannedDate: t.plannedDate,
       })),
       blockers: blockers.map((b) => ({
         id: b.id,
