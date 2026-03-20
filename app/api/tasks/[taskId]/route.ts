@@ -77,6 +77,10 @@ export async function PATCH(
         ...(body.title && { title: body.title }),
         ...(body.description !== undefined && { description: body.description }),
         ...(body.assigneeId !== undefined && { assigneeId: body.assigneeId }),
+        // Phase 2: Outcome fields
+        ...(body.expectedOutcome !== undefined && { expectedOutcome: body.expectedOutcome || null }),
+        ...(body.completionNote !== undefined && { completionNote: body.completionNote || null }),
+        ...(body.outputUrl !== undefined && { outputUrl: body.outputUrl || null }),
       },
       include: {
         tags: {

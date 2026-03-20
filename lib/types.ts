@@ -23,6 +23,10 @@ export interface Task {
   todayOrder?: number
   createdAt: string
   updatedAt: string
+  // Phase 2: Outcome fields
+  expectedOutcome?: string | null
+  completionNote?: string | null
+  outputUrl?: string | null
 }
 
 export interface TaskCreateInput {

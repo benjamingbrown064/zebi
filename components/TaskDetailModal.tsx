@@ -9,6 +9,7 @@ import RichTextEditor from './RichTextEditor'
 import AITidyMenu from './AITidyMenu'
 import AITidyPreviewModal from './AITidyPreviewModal'
 import FileUpload from './FileUpload'
+import TaskOutcomeFields from './TaskOutcomeFields'
 import { tidyDescription, TidyMode } from '@/app/actions/ai-tidy'
 
 interface TaskDetailModalProps {
@@ -57,6 +58,11 @@ export default function TaskDetailModal({
   const [assigneeId, setAssigneeId] = useState<string | null>(null)
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  
+  // Phase 2: Outcome fields
+  const [expectedOutcome, setExpectedOutcome] = useState<string | null>(null)
+  const [completionNote, setCompletionNote] = useState<string | null>(null)
+  const [outputUrl, setOutputUrl] = useState<string | null>(null)
 
   // Detect mobile on mount and resize
   useEffect(() => {
@@ -104,6 +110,11 @@ export default function TaskDetailModal({
       setDueDate(task.dueAt ? (typeof task.dueAt === 'string' ? task.dueAt.split('T')[0] : new Date(task.dueAt).toISOString().split('T')[0]) : '')
       setAssigneeId(task.assigneeId || null)
       
+      // Phase 2: Load outcome fields
+      setExpectedOutcome((task as any).expectedOutcome || null)
+      setCompletionNote((task as any).completionNote || null)
+      setOutputUrl((task as any).outputUrl || null)
+      
       console.log(`[TaskDetailModal] Task ${task.id} loaded. Description: "${taskDescription.substring(0, 30)}${taskDescription.length > 30 ? '...' : ''}"`)
     } else {
       // Reset all form fields when no task is selected
@@ -113,10 +124,22 @@ export default function TaskDetailModal({
       setDescription('')
       setDueDate('')
       setAssigneeId(null)
+      
+      // Phase 2: Reset outcome fields
+      setExpectedOutcome(null)
+      setCompletionNote(null)
+      setOutputUrl(null)
     }
   }, [task?.id])
 
   if (!isOpen) return null
+
+  // Phase 2: Determine when to show outcome fields
+  const isHighPriority = priority <= 2
+  const isLinkedToObjective = !!(task as any)?.objectiveId
+  const isAIAssigned = !!(task as any)?.botAssignee
+  const isCompleted = !!task?.completedAt
+  const showOutcomeFields = isHighPriority || isLinkedToObjective || isAIAssigned || isCompleted
 
   const handleSave = () => {
     if (!task) return
@@ -128,6 +151,12 @@ export default function TaskDetailModal({
       description: description || undefined,
       dueAt: dueDate ? new Date(dueDate).toISOString() : undefined,
       assigneeId: assigneeId || undefined,
+      // Phase 2: Include outcome fields when they should be shown
+      ...(showOutcomeFields ? {
+        expectedOutcome: expectedOutcome || undefined,
+        completionNote: completionNote || undefined,
+        outputUrl: outputUrl || undefined,
+      } : {}),
     }
 
     onUpdate?.(task.id, updates)
@@ -339,6 +368,29 @@ export default function TaskDetailModal({
               <p className="mt-2 text-sm text-red-600">{aiTidyError}</p>
             )}
           </div>
+
+          {/* Phase 2: Outcome Fields - Only show when relevant */}
+          {showOutcomeFields && task && (
+            <TaskOutcomeFields
+              expectedOutcome={expectedOutcome}
+              completionNote={completionNote}
+              outputUrl={outputUrl}
+              isCompleted={isCompleted}
+              onUpdate={(fields) => {
+                if ('expectedOutcome' in fields) setExpectedOutcome(fields.expectedOutcome ?? null)
+                if ('completionNote' in fields) setCompletionNote(fields.completionNote ?? null)
+                if ('outputUrl' in fields) setOutputUrl(fields.outputUrl ?? null)
+                // Save immediately on field update
+                if (task && workspaceId) {
+                  fetch(`/api/tasks/${task.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...fields, workspaceId }),
+                  }).catch(err => console.error('Failed to save outcome fields:', err))
+                }
+              }}
+            />
+          )}
 
           {/* Attachments */}
           {task && workspaceId && (

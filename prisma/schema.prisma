@@ -329,6 +329,11 @@ model Task {
   aiGenerated     Boolean @default(false)
   aiAgent         String?
 
+  // Phase 2: Outcome tracking
+  expectedOutcome  String?  @db.Text  // What this task should produce
+  completionNote   String?  @db.Text  // What actually happened when completed
+  outputUrl        String?  @db.Text  // Link to artefact/output
+
   workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   status     Status    @relation(fields: [statusId], references: [id])
   project    Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
