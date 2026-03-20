@@ -135,9 +135,9 @@ async function buildContextUncached(
       },
       orderBy: [
         { priority: 'asc' },
-        { dueAt: 'asc' },
+        { createdAt: 'desc' }, // Fall back to newest for undated tasks
       ],
-      take: 30, // Reduced from 50 — enough context without over-fetching
+      take: 50, // Need enough to surface all priority tasks
     }),
 
     // Active blockers
