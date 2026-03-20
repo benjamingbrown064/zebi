@@ -431,7 +431,7 @@ export async function buildContext(workspaceId: string, userId?: string) {
   const cached = contextCache.get(key)
   if (cached && Date.now() < cached.expiresAt) return cached.result
 
-  const result = await buildContextUncached(workspaceId, userId)
+  const result = await buildContextUncached(workspaceId, userId || 'anon')
   contextCache.set(key, { result, expiresAt: Date.now() + CONTEXT_CACHE_TTL })
   return result
 }

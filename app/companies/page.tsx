@@ -54,13 +54,8 @@ export default function CompaniesPage() {
   async function loadCompanies() {
     if (!workspaceId) return
     try {
-      const response = await cachedFetch<any[]>(`/api/companies?workspaceId=${workspaceId}`)
-      if (response.ok) {
-        const data = await response.json()
-        setCompanies(data)
-      } else {
-        console.error('Failed to load companies:', response.status, await response.text())
-      }
+      const data = await cachedFetch<any[]>(`/api/companies?workspaceId=${workspaceId}`)
+      setCompanies(data)
     } catch (error) {
       console.error('Failed to load companies:', error)
     } finally {
