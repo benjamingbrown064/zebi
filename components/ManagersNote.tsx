@@ -19,13 +19,13 @@ export default function ManagersNote() {
     try {
       const res = await fetch('/api/dashboard/managers-note')
       const data = await res.json()
-      if (data.note) {
-        setNote(data.note)
-        const validModes: OperatingMode[] = ['pressure', 'plateau', 'momentum', 'drift']
-        setMode(validModes.includes(data.mode) ? data.mode as OperatingMode : 'momentum')
-      }
+      const validModes: OperatingMode[] = ['pressure', 'plateau', 'momentum', 'drift']
+      const safeMode = validModes.includes(data.mode) ? data.mode as OperatingMode : 'momentum'
+      setMode(safeMode)
+      setNote(data.note || 'Your workspace is ready. Plan your day and keep priorities clear.')
     } catch (err) {
       console.error('Failed to fetch manager\'s note:', err)
+      setNote('Your workspace is ready. Plan your day and keep priorities clear.')
     } finally {
       setLoading(false)
     }

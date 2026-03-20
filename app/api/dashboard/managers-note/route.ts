@@ -77,6 +77,17 @@ Current mode: ${modeMeta.label} (${modeMeta.description})`
     return NextResponse.json({ note, mode })
   } catch (error) {
     console.error('Failed to generate manager\'s note:', error)
-    return NextResponse.json({ note: null, mode: 'momentum' })
+    // Return a fallback note so the component always renders
+    const fallbackNotes: Record<string, string> = {
+      pressure: 'Focus on clearing the most urgent blockers today — everything else can wait. Identify what creates cash fastest and do that first.',
+      plateau: 'The business is stable but progress is flat. Pick one bottleneck and push hard against it this week.',
+      momentum: 'Things are moving — protect the flow. Keep priorities clean and watch for anything that could slow execution.',
+      drift: 'Energy has softened. Pick one bold move and commit to it this week — maintenance alone won\'t move the business.',
+    }
+    const mode = 'momentum'
+    return NextResponse.json({ 
+      note: fallbackNotes[mode], 
+      mode 
+    })
   }
 }
