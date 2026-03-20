@@ -9,6 +9,10 @@
       "schedule": "0 6 * * *"
     },
     {
+      "path": "/api/cron/detect-operating-mode",
+      "schedule": "0 6 * * *"
+    },
+    {
       "path": "/api/cron/morning-briefing",
       "schedule": "0 8 * * *"
     },

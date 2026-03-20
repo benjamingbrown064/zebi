@@ -16,6 +16,8 @@ import {
 import Sidebar from '@/components/Sidebar'
 import DayPlanningModal from '@/app/components/DayPlanningModal'
 import { useWorkspace } from '@/lib/use-workspace'
+import ManagersNote from '@/components/ManagersNote'
+import OperatingModeCard from '@/components/OperatingModeCard'
 
 interface Task {
   id: string
@@ -177,6 +179,8 @@ export default function DashboardClient({
         {isMobile ? (
           /* Mobile: Vertical Stack */
           <div className="px-4 py-6 space-y-6">
+            <ManagersNote />
+            <OperatingModeCard />
             <TodaysPlanCard
               keyTask={keyTask}
               subTasks={subTasks}
@@ -203,6 +207,12 @@ export default function DashboardClient({
         ) : (
           /* Desktop: Two-Column Layout (60/40 split) */
           <div className="max-w-[1280px] mx-auto px-12 py-12">
+            {/* Full-width top row: Manager's Note + Mode */}
+            <div className="mb-6">
+              <ManagersNote />
+              <OperatingModeCard />
+            </div>
+            
             <div className="grid grid-cols-[1.5fr_1fr] gap-6">
               {/* Left Column - Today's Plan (wider) */}
               <div>

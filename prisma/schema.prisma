@@ -21,6 +21,14 @@ model Workspace {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt @db.Timestamptz()
 
+  // Founder Operating Mode
+  operatingMode    String    @default("momentum") // pressure | plateau | momentum | drift
+  modeSetBy        String    @default("auto")     // auto | manual
+  modeUpdatedAt    DateTime? @db.Timestamptz()
+  modeExpiresAt    DateTime? @db.Timestamptz()    // null = never expires (only set for manual overrides)
+  modeSuggested    String?                        // AI-suggested mode (advisory only)
+  modeSignals      Json?                          // Snapshot of signals used for detection
+
   // Existing Relations
   members      WorkspaceMember[]
   tasks        Task[]
