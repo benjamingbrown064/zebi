@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 // In-process result cache per workspace — TTL 3 minutes
 // buildContext runs 7 DB queries; this avoids doing it on every dashboard load
 const suggestionsCache = new Map<string, { result: any; expiresAt: number }>()
-const CACHE_TTL_MS = 3 * 60 * 1000
+const CACHE_TTL_MS = 60 * 1000 // 1 minute — refresh suggestions regularly
 
 /**
  * GET /api/dashboard/suggestions
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    const result = prioritizeWorkspace(context)
+    const result = prioritizeWorkspace(context, userId)
 
     const payload = {
       suggestions: result.topItems.slice(0, 10),
