@@ -28,7 +28,14 @@ export default function OperatingModeCard() {
     try {
       const res = await fetch('/api/workspaces/operating-mode')
       const data = await res.json()
-      setModeData(data)
+      if (data && data.mode) {
+        const validModes: OperatingMode[] = ['pressure', 'plateau', 'momentum', 'drift']
+        setModeData({
+          ...data,
+          mode: validModes.includes(data.mode) ? data.mode : 'momentum',
+          suggested: validModes.includes(data.suggested) ? data.suggested : null,
+        })
+      }
     } catch (err) {
       console.error('Failed to fetch mode:', err)
     } finally {
@@ -64,8 +71,8 @@ export default function OperatingModeCard() {
 
   if (!modeData) return null
 
-  const meta = MODE_META[modeData.mode]
-  const suggestedMeta = modeData.suggested ? MODE_META[modeData.suggested] : null
+  const meta = MODE_META[modeData.mode] ?? MODE_META['momentum']
+  const suggestedMeta = modeData.suggested ? (MODE_META[modeData.suggested] ?? null) : null
 
   // Format expiry
   const expiryText = modeData.expiresAt

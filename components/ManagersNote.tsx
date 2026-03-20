@@ -21,7 +21,8 @@ export default function ManagersNote() {
       const data = await res.json()
       if (data.note) {
         setNote(data.note)
-        setMode(data.mode as OperatingMode)
+        const validModes: OperatingMode[] = ['pressure', 'plateau', 'momentum', 'drift']
+        setMode(validModes.includes(data.mode) ? data.mode as OperatingMode : 'momentum')
       }
     } catch (err) {
       console.error('Failed to fetch manager\'s note:', err)
@@ -30,7 +31,7 @@ export default function ManagersNote() {
     }
   }
 
-  const meta = MODE_META[mode]
+  const meta = MODE_META[mode] ?? MODE_META['momentum']
 
   if (loading) {
     return (
