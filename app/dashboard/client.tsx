@@ -82,6 +82,9 @@ export default function DashboardClient({
   const [showPlanningModal, setShowPlanningModal] = useState(false)
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([])
   const [loadingSuggestions, setLoadingSuggestions] = useState(false)
+  const [suggestionsMode, setSuggestionsMode] = useState<string>('momentum')
+  const [suggestionsFocus, setSuggestionsFocus] = useState<string | null>(null)
+  const [suggestionsIgnore, setSuggestionsIgnore] = useState<string | null>(null)
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -111,6 +114,9 @@ export default function DashboardClient({
       const res = await fetch(`/api/dashboard/suggestions?workspaceId=${workspaceId}`)
       const data = await res.json()
       setAiSuggestions(data.suggestions || [])
+      if (data.mode) setSuggestionsMode(data.mode)
+      if (data.focusMessage) setSuggestionsFocus(data.focusMessage)
+      if (data.ignoreMessage) setSuggestionsIgnore(data.ignoreMessage)
     } catch (error) {
       console.error('Failed to load AI suggestions:', error)
     } finally {
@@ -266,6 +272,9 @@ export default function DashboardClient({
             suggestions={aiSuggestions}
             workspaceId={workspaceId!}
             onRefresh={handlePlanSaved}
+            mode={suggestionsMode}
+            focusMessage={suggestionsFocus}
+            ignoreMessage={suggestionsIgnore}
           />
         </Modal>
       )}
@@ -668,10 +677,13 @@ function BotActivityModalContent({ activity }: { activity: BotActivity[] }) {
 }
 
 // AI Suggestions Modal Content (connected to real prioritization engine)
-function SuggestionsModalContent({ suggestions, workspaceId, onRefresh }: {
+function SuggestionsModalContent({ suggestions, workspaceId, onRefresh, mode, focusMessage, ignoreMessage }: {
   suggestions: any[]
   workspaceId: string
   onRefresh: () => void
+  mode?: string
+  focusMessage?: string | null
+  ignoreMessage?: string | null
 }) {
   const [adding, setAdding] = useState<string | null>(null)
 
@@ -712,6 +724,18 @@ function SuggestionsModalContent({ suggestions, workspaceId, onRefresh }: {
       <p className="text-[14px] text-[#525252] mb-6">
         Based on your workspace, here's what to focus on today:
       </p>
+
+      {mode && focusMessage && (
+        <div className="rounded-[10px] p-3 mb-4 text-[12px]" style={{ 
+          backgroundColor: mode === 'pressure' ? '#FEF2F2' : mode === 'plateau' ? '#FFFBEB' : mode === 'drift' ? '#F5F3FF' : '#ECFDF5',
+          border: `1px solid ${mode === 'pressure' ? '#FECACA' : mode === 'plateau' ? '#FDE68A' : mode === 'drift' ? '#DDD6FE' : '#A7F3D0'}`,
+          color: mode === 'pressure' ? '#DC2626' : mode === 'plateau' ? '#D97706' : mode === 'drift' ? '#7C3AED' : '#059669',
+        }}>
+          <span className="font-semibold">{mode.charAt(0).toUpperCase() + mode.slice(1)} mode · </span>
+          {focusMessage}
+          {ignoreMessage && <p className="mt-1 opacity-70">{ignoreMessage}</p>}
+        </div>
+      )}
 
       {suggestions.slice(0, 6).map((suggestion, index) => {
         const taskId = suggestion.metadata?.id || suggestion.id
