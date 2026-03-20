@@ -130,6 +130,7 @@ async function buildContextUncached(
         projectId: true,
         todayPinDate: true,
         plannedDate: true,
+        createdAt: true,
         updatedAt: true,
         status: { select: { name: true, type: true } },
         project: { select: { name: true } },
