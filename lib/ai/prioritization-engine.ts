@@ -28,155 +28,133 @@ export interface PrioritizationResult {
 export function scoreWorkItem(
   item: any,
   type: 'task' | 'project' | 'objective',
-  context: AIContext
+  context: AIContext,
+  userId?: string
 ): ScoredItem {
   let score = 0
   const reasons: string[] = []
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
-  // 1. GOAL ALIGNMENT (+40 if directly linked to primary goal)
+  // ── 1. ASSIGNED TO ME (highest individual signal) ────────────────────────
+  if (userId && item.assigneeId === userId) {
+    score += 35
+    reasons.push('Assigned to you')
+  }
+
+  // ── 2. PLANNED / PINNED FOR TODAY ────────────────────────────────────────
+  if (type === 'task') {
+    const todayStr = today.toISOString().split('T')[0]
+    if (item.todayPinDate && item.todayPinDate.split('T')[0] === todayStr) {
+      score += 35
+      reasons.push('Pinned for today')
+    }
+    if (item.plannedDate && item.plannedDate.split('T')[0] === todayStr) {
+      score += 30
+      reasons.push('Planned for today')
+    }
+  }
+
+  // ── 3. GOAL ALIGNMENT ────────────────────────────────────────────────────
   if (context.workspace.primaryGoal) {
-    if (type === 'objective' && item.goalId === context.workspace.primaryGoal.id) {
-      score += 40
-      reasons.push(`Directly linked to primary goal: ${context.workspace.primaryGoal.name}`)
-    } else if (type === 'task' && item.goalId === context.workspace.primaryGoal.id) {
-      score += 40
-      reasons.push(`Directly linked to primary goal: ${context.workspace.primaryGoal.name}`)
-    } else if (type === 'project' && item.goalId === context.workspace.primaryGoal.id) {
-      score += 40
-      reasons.push(`Directly linked to primary goal: ${context.workspace.primaryGoal.name}`)
+    if (item.goalId === context.workspace.primaryGoal.id) {
+      score += 30
+      reasons.push(`Linked to primary goal: ${context.workspace.primaryGoal.name}`)
     }
   }
-
-  // Linked to any active goal (+25)
+  // Linked to any active goal
   if (item.goalId && !reasons.some(r => r.includes('primary goal'))) {
-    score += 25
+    score += 20
     const goal = context.workspace.activeGoals.find(g => g.id === item.goalId)
-    if (goal) {
-      reasons.push(`Linked to active goal: ${goal.name}`)
-    }
+    if (goal) reasons.push(`Linked to goal: ${goal.name}`)
   }
 
-  // 2. URGENCY (dates)
-  if (type === 'task' && item.dueAt) {
-    const dueDate = new Date(item.dueAt)
-    const now = new Date()
-    const daysDiff = Math.floor((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  // ── 4. URGENCY (due dates) ────────────────────────────────────────────────
+  const dueField = item.dueAt || item.deadline
+  if (dueField) {
+    const dueDate = new Date(dueField)
+    const daysDiff = Math.floor((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
     if (daysDiff < 0) {
-      score += 30
-      reasons.push(`Overdue by ${Math.abs(daysDiff)} days`)
+      score += 35
+      reasons.push(`Overdue by ${Math.abs(daysDiff)} day${Math.abs(daysDiff) === 1 ? '' : 's'}`)
     } else if (daysDiff === 0) {
-      score += 25
-      reasons.push('Due today')
-    } else if (daysDiff <= 3) {
-      score += 20
-      reasons.push(`Due in ${daysDiff} days`)
-    } else if (daysDiff <= 7) {
-      score += 10
-      reasons.push(`Due within a week`)
-    }
-  } else if ((type === 'objective' || type === 'project') && item.deadline) {
-    const deadline = new Date(item.deadline)
-    const now = new Date()
-    const daysDiff = Math.floor((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-
-    if (daysDiff < 0) {
       score += 30
-      reasons.push(`Overdue by ${Math.abs(daysDiff)} days`)
+      reasons.push('Due today')
+    } else if (daysDiff <= 2) {
+      score += 25
+      reasons.push(`Due in ${daysDiff} day${daysDiff === 1 ? '' : 's'}`)
     } else if (daysDiff <= 7) {
-      score += 20
-      reasons.push(`Deadline in ${daysDiff} days`)
+      score += 15
+      reasons.push('Due this week')
     } else if (daysDiff <= 14) {
-      score += 10
-      reasons.push(`Deadline approaching`)
-    }
-  }
-
-  // 3. BLOCKER VALUE
-  if (type === 'objective' && context.workspace.blockers.some(b => b.objectiveId === item.id)) {
-    score += 25
-    reasons.push('Has active blockers that need resolution')
-  }
-
-  // Check if this task is blocking other work (based on dependencies)
-  if (type === 'task' && item.isBlocking) {
-    score += 25
-    reasons.push('Blocking other tasks')
-  }
-
-  // 4. COMMERCIAL IMPACT
-  if (item.isRevenueLinked || item.companyId) {
-    score += 25
-    const company = context.workspace.companies.find(c => c.id === item.companyId)
-    if (company) {
-      reasons.push(`Tied to ${company.name} (revenue-linked)`)
-    } else {
-      reasons.push('Tied to revenue/client delivery')
-    }
-  }
-
-  // 5. PROGRESS LEVERAGE
-  if (type === 'objective' && item.progressPercent) {
-    const progress = Number(item.progressPercent)
-    if (progress >= 80) {
-      score += 15
-      reasons.push(`Nearly complete (${progress}%) - quick win`)
-    } else if (progress > 0 && progress < 20) {
-      score += 5
-      reasons.push('Early stage - momentum builder')
-    }
-  }
-
-  // Task completion state
-  if (type === 'task' && item.completionPercent && item.completionPercent >= 70) {
-    score += 15
-    reasons.push('Nearly complete - quick win')
-  }
-
-  // 6. PRIORITY METADATA
-  if (item.priority !== undefined) {
-    // Lower number = higher priority (1 = high, 3 = medium, 5 = low)
-    if (item.priority === 1) {
-      score += 15
-      reasons.push('Marked as high priority')
-    } else if (item.priority === 2) {
       score += 8
-      reasons.push('Marked as medium priority')
+      reasons.push('Due within 2 weeks')
     }
   }
 
-  // 7. OWNERSHIP AND STRUCTURE
-  if (item.assigneeId || item.owner) {
-    score += 5
-  } else {
-    score -= 5
-    reasons.push('⚠️ Missing owner')
+  // ── 5. PRIORITY METADATA ─────────────────────────────────────────────────
+  if (item.priority !== undefined && item.priority !== null) {
+    if (item.priority === 1) {
+      score += 25
+      reasons.push('High priority')
+    } else if (item.priority === 2) {
+      score += 15
+      reasons.push('Medium-high priority')
+    } else if (item.priority === 3) {
+      score += 5 // default/medium — still a small boost
+    }
+    // Low priority (4,5) gets no boost
   }
 
-  if (!item.dueAt && type === 'task') {
-    score -= 5
+  // ── 6. COMMERCIAL IMPACT ─────────────────────────────────────────────────
+  if (item.companyId || item.isRevenueLinked) {
+    score += 20
+    const company = context.workspace.companies.find(c => c.id === item.companyId)
+    if (company) reasons.push(`Client work: ${company.name}`)
+    else reasons.push('Client / revenue-linked')
   }
 
-  if (!item.deadline && (type === 'objective' || type === 'project')) {
-    score -= 5
+  // ── 7. BLOCKER VALUE ─────────────────────────────────────────────────────
+  if (type === 'objective' && context.workspace.blockers.some(b => b.objectiveId === item.id)) {
+    score += 20
+    reasons.push('Has active blockers')
+  }
+  if (type === 'task' && item.isBlocking) {
+    score += 20
+    reasons.push('Blocking other work')
   }
 
-  // 8. STALLED WORK (negative impact)
+  // ── 8. NEAR COMPLETION ───────────────────────────────────────────────────
+  if (type === 'objective' && item.progressPercent >= 80) {
+    score += 15
+    reasons.push(`Nearly complete (${item.progressPercent}%)`)
+  }
+  if (type === 'task' && item.completionPercent >= 70) {
+    score += 15
+    reasons.push('Nearly done')
+  }
+
+  // ── 9. STALLED — gentle nudge only, not a hard penalty ──────────────────
+  // Only show stale warning as a reason, don't tank the score
   if (item.lastActivity) {
-    const lastActivity = new Date(item.lastActivity)
-    const daysSinceActivity = Math.floor((Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24))
-    if (daysSinceActivity > 14) {
-      score -= 15
-      reasons.push(`⚠️ No activity for ${daysSinceActivity} days`)
+    const daysSince = Math.floor((Date.now() - new Date(item.lastActivity).getTime()) / (1000 * 60 * 60 * 24))
+    if (daysSince > 30) {
+      score -= 5 // very gentle — don't hide important stale tasks
+      reasons.push(`No activity for ${daysSince} days`)
     }
   }
+
+  // ── ENSURE TASKS ALWAYS GET A MINIMUM SCORE ───────────────────────────────
+  // So they always appear alongside objectives/projects
+  if (type === 'task' && score < 5) score = 5
 
   return {
     type,
     id: item.id,
     name: item.title || item.name,
     score,
-    reasons,
+    reasons: reasons.filter(r => !r.startsWith('⚠️')), // clean up old warning format
     metadata: item,
   }
 }
@@ -184,48 +162,44 @@ export function scoreWorkItem(
 /**
  * Prioritize all work items in the workspace
  */
-export function prioritizeWorkspace(context: AIContext): PrioritizationResult {
+export function prioritizeWorkspace(context: AIContext, userId?: string): PrioritizationResult {
   const allItems: ScoredItem[] = []
 
-  // Score all tasks
+  // Score tasks — pass userId so "assigned to me" works
   context.workspace.recentTasks.forEach(task => {
-    allItems.push(scoreWorkItem(task, 'task', context))
+    allItems.push(scoreWorkItem(task, 'task', context, userId))
   })
 
-  // Score all projects
+  // Score projects
   context.workspace.activeProjects.forEach(project => {
-    allItems.push(scoreWorkItem(project, 'project', context))
+    allItems.push(scoreWorkItem(project, 'project', context, userId))
   })
 
-  // Score all objectives
+  // Score objectives
   context.workspace.activeObjectives.forEach(objective => {
-    allItems.push(scoreWorkItem(objective, 'objective', context))
+    allItems.push(scoreWorkItem(objective, 'objective', context, userId))
   })
 
-  // Sort by score (highest first)
+  // Sort by score descending
   allItems.sort((a, b) => b.score - a.score)
 
-  // Detect missing structure
+  // Structure analysis
   const tasksWithoutDates = context.workspace.recentTasks.filter(t => !t.dueAt).length
   const tasksWithoutOwners = context.workspace.recentTasks.filter(t => !t.assigneeId).length
-  const tasksWithoutPriority = context.workspace.recentTasks.filter(t => t.priority === 3 || t.priority > 3).length
-
-  // Count projects/objectives with no tasks
+  const tasksWithoutPriority = context.workspace.recentTasks.filter(t => !t.priority || t.priority >= 4).length
   const projectsWithoutTasks = context.workspace.activeProjects.filter(
     p => !context.workspace.recentTasks.some(t => t.projectId === p.id)
   ).length
-
   const objectivesWithoutTasks = context.workspace.activeObjectives.filter(
     obj => !context.workspace.recentTasks.some(t => t.objectiveId === obj.id)
   ).length
 
-  // Find stalled work (no recent activity)
-  const stalledWork = allItems.filter(item => 
+  const stalledWork = allItems.filter(item =>
     item.reasons.some(r => r.includes('No activity'))
   )
 
   return {
-    topItems: allItems.slice(0, 10), // Top 10 items
+    topItems: allItems.slice(0, 10),
     blockers: context.workspace.blockers,
     missingStructure: {
       tasksWithoutDates,
