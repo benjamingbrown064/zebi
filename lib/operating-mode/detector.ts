@@ -146,6 +146,7 @@ export function detectOperatingMode(context: AIContext): ModeDetectionResult {
 export const MODE_META: Record<OperatingMode, {
   label: string
   description: string
+  suggestedShift: string
   colour: string
   bgColour: string
   borderColour: string
@@ -155,6 +156,7 @@ export const MODE_META: Record<OperatingMode, {
   pressure: {
     label: 'Pressure',
     description: 'High urgency. Too many open loops, rising deadlines, or active blockers.',
+    suggestedShift: 'Cut to one cash priority and defer everything ornamental.',
     colour: '#DC2626',
     bgColour: '#FEF2F2',
     borderColour: '#FECACA',
@@ -164,6 +166,7 @@ export const MODE_META: Record<OperatingMode, {
   plateau: {
     label: 'Plateau',
     description: 'Business is stable but growth is flat. Progress has stalled.',
+    suggestedShift: 'Pick one bottleneck and run a 14-day push against it.',
     colour: '#D97706',
     bgColour: '#FFFBEB',
     borderColour: '#FDE68A',
@@ -173,6 +176,7 @@ export const MODE_META: Record<OperatingMode, {
   momentum: {
     label: 'Momentum',
     description: 'Things are moving. Execution is healthy. Protect the flow.',
+    suggestedShift: 'Protect the current winning sequence and don\'t add chaos.',
     colour: '#059669',
     bgColour: '#ECFDF5',
     borderColour: '#A7F3D0',
@@ -182,6 +186,7 @@ export const MODE_META: Record<OperatingMode, {
   drift: {
     label: 'Drift',
     description: 'Business is fine, but ambition or urgency has softened.',
+    suggestedShift: 'Choose one neglected strategic bet and move it this week.',
     colour: '#7C3AED',
     bgColour: '#F5F3FF',
     borderColour: '#DDD6FE',

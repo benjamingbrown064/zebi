@@ -103,6 +103,9 @@ export default function OperatingModeCard() {
             {modeData.reasoning && (
               <p className="text-[12px] text-[#A3A3A3] mt-1">{modeData.reasoning}</p>
             )}
+            <p className="text-[12px] font-medium mt-2" style={{ color: meta.colour }}>
+              → {meta.suggestedShift}
+            </p>
           </div>
         </div>
 
