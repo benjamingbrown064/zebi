@@ -3,8 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { validateAIAuth } from '@/lib/doug-auth'
 import { requireWorkspace } from '@/lib/workspace'
 
-// Force dynamic rendering
-export const revalidate = 30 // Cache for 30s — invalidated on writes
+// Force dynamic rendering — never cache this route
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
