@@ -140,15 +140,13 @@ export default function CompanyDetailPage() {
 
   async function loadCompany() {
     try {
-      const response = await cachedFetch<any>(`/api/companies/${companyId}`)
-      if (response.ok) {
-        const data = await response.json()
-        setCompany(data)
-      } else if (response.status === 404) {
+      const data = await cachedFetch<Company>(`/api/companies/${companyId}`)
+      setCompany(data)
+    } catch (error: any) {
+      console.error('Failed to load company:', error)
+      if (error?.message?.includes('404')) {
         router.push('/companies')
       }
-    } catch (error) {
-      console.error('Failed to load company:', error)
     } finally {
       setLoading(false)
     }
