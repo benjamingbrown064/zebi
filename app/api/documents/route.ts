@@ -62,6 +62,45 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/** Convert plain markdown/text string to minimal TipTap JSON */
+function markdownToTiptap(text: string): object {
+  const lines = text.split(/\r?\n/)
+  const nodes: object[] = []
+
+  for (const line of lines) {
+    if (!line.trim()) continue
+
+    const headingMatch = line.match(/^(#{1,3})\s+(.+)/)
+    if (headingMatch) {
+      nodes.push({
+        type: 'heading',
+        attrs: { level: headingMatch[1].length },
+        content: [{ type: 'text', text: headingMatch[2] }],
+      })
+      continue
+    }
+
+    const bulletMatch = line.match(/^[-*]\s+(.+)/)
+    if (bulletMatch) {
+      nodes.push({
+        type: 'bulletList',
+        content: [{
+          type: 'listItem',
+          content: [{ type: 'paragraph', content: [{ type: 'text', text: bulletMatch[1] }] }],
+        }],
+      })
+      continue
+    }
+
+    nodes.push({
+      type: 'paragraph',
+      content: [{ type: 'text', text: line }],
+    })
+  }
+
+  return { type: 'doc', content: nodes }
+}
+
 // POST /api/documents - Create new document
 export async function POST(request: NextRequest) {
   try {
@@ -69,7 +108,15 @@ export async function POST(request: NextRequest) {
     let workspaceId: string
 
     const body = await request.json();
-    const { companyId, projectId, title, documentType, contentRich } = body;
+    // Accept: contentRich (TipTap JSON), content or body (markdown/plain text)
+    const { companyId, projectId, title, documentType } = body;
+    const rawText: string | undefined = body.content ?? body.body
+    let contentRich = body.contentRich
+
+    // If Harvey sent plain text/markdown, convert it
+    if (!contentRich || (contentRich?.content?.length === 0 && rawText)) {
+      contentRich = rawText ? markdownToTiptap(rawText) : { type: 'doc', content: [] }
+    }
 
     if (auth.valid) {
       if (!body.workspaceId) return NextResponse.json({ success: false, error: 'workspaceId is required' }, { status: 400 })
@@ -84,7 +131,7 @@ export async function POST(request: NextRequest) {
       projectId: projectId || null,
       title: title || 'Untitled Document',
       documentType: documentType || 'notes',
-      contentRich: contentRich || { type: 'doc', content: [] },
+      contentRich,
       version: 1,
       createdBy: DEFAULT_USER_ID
     };

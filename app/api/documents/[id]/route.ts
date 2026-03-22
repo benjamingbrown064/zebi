@@ -41,7 +41,24 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
-    const { title, documentType, contentRich, createVersion } = body;
+    const { title, documentType, createVersion } = body;
+
+    // Accept contentRich (TipTap JSON) or content/body (markdown/plain text)
+    const rawText: string | undefined = body.content ?? body.body
+    let contentRich = body.contentRich
+    if (!contentRich || (contentRich?.content?.length === 0 && rawText)) {
+      if (rawText) {
+        const lines = rawText.split(/\r?\n/)
+        const nodes: object[] = []
+        for (const line of lines) {
+          if (!line.trim()) continue
+          const hm = line.match(/^(#{1,3})\s+(.+)/)
+          if (hm) { nodes.push({ type: 'heading', attrs: { level: hm[1].length }, content: [{ type: 'text', text: hm[2] }] }); continue }
+          nodes.push({ type: 'paragraph', content: [{ type: 'text', text: line }] })
+        }
+        contentRich = { type: 'doc', content: nodes }
+      }
+    }
 
     const existingDoc = await prisma.document.findUnique({ where: { id: params.id } });
     if (!existingDoc) {
