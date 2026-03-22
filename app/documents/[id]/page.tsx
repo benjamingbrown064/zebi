@@ -102,6 +102,39 @@ function ExportDropdown({ onExport }: { onExport: (format: 'markdown' | 'html' |
   );
 }
 
+function VersionList({ versions, document, selectedVersion, onView }: {
+  versions: DocumentVersion[];
+  document: Document;
+  selectedVersion: DocumentVersion | null;
+  onView: (v: DocumentVersion) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      {versions.map((version) => (
+        <button
+          key={version.id}
+          onClick={() => onView(version)}
+          className={`w-full text-left p-3 rounded-[10px] border transition ${
+            selectedVersion?.id === version.id
+              ? 'border-[#DD3A44] bg-[#FEF2F2]'
+              : 'border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#f6f3f2]'
+          }`}
+        >
+          <div className="font-medium text-sm text-[#1c1b1b]">
+            Version {version.version}
+            {version.version === document.version && (
+              <span className="ml-2 px-2 py-0.5 bg-[#e6f4f4] text-[#006766] text-xs rounded">Current</span>
+            )}
+          </div>
+          <div className="text-xs text-[#A3A3A3] mt-1">
+            {new Date(version.createdAt).toLocaleString()}
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function DocumentDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -328,163 +361,136 @@ export default function DocumentDetailPage() {
   return (
     <div className="min-h-screen bg-bg-cream">
       <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
-      <div className="md:ml-64">
-      {/* Header */}
-      <div className="bg-white sticky top-0 z-20">
-        <div className="max-w-[1280px] mx-auto px-12 py-6">
-          {/* First line: Document name */}
-          <div className="flex items-center gap-4 mb-4">
-            <Link
-              href="/documents"
-              className="p-2 text-[#737373] hover:text-[#DD3A44] transition rounded-[6px]"
-            >
-              <FaArrowLeft />
-            </Link>
+      <div className={`transition-all duration-200 ${sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
 
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={saveDocument}
-              className="flex-1 text-[24px] leading-[32px] font-medium text-[#1A1A1A] border-none focus:outline-none focus:ring-2 focus:ring-[#DD3A44] rounded-[10px] px-2 py-1"
-              placeholder="Untitled Document"
-            />
-          </div>
+        {/* Header */}
+        <div className="bg-white sticky top-0 z-20 border-b border-[#F0F0F0]">
+          <div className="px-4 md:px-8 lg:px-12 py-3 md:py-5">
 
-          {/* Second line: Actions */}
-          <div className="flex items-center gap-3">
-            <select
-              value={documentType}
-              onChange={(e) => {
-                setDocumentType(e.target.value);
-                saveDocument();
-              }}
-              className="px-4 py-2  rounded-[10px] text-[13px] font-medium text-[#525252] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent"
-            >
-              {DOCUMENT_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={() => {
-                setShowVersionHistory(!showVersionHistory);
-                if (!showVersionHistory) fetchVersions();
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2  text-[#525252] rounded-[10px] hover:bg-[#F5F5F5] transition text-[13px] font-medium"
-            >
-              <FaHistory />
-              History
-            </button>
-
-            <ExportDropdown onExport={exportDocument} />
-
-            <button
-              onClick={createVersion}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#DD3A44] text-white rounded-[10px] hover:bg-[#C7333D] transition text-[13px] font-medium"
-            >
-              <FaSave />
-              Save Version
-            </button>
-
-            <button
-              onClick={deleteDocument}
-              className="p-2 text-[#DC2626] hover:bg-[#FEF2F2] rounded-[6px] transition"
-            >
-              <FaTrash />
-            </button>
-          </div>
-
-          {selectedVersion && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-[10px] flex items-center justify-between">
-              <span className="text-sm text-yellow-800">
-                Viewing version {selectedVersion.version} from{' '}
-                {new Date(selectedVersion.createdAt).toLocaleString()}
-              </span>
-              <div className="flex gap-2">
-                <button
-                  onClick={restoreVersion}
-                  className="px-3 py-1 bg-yellow-600 text-white text-sm rounded hover:bg-yellow-700"
-                >
-                  Restore This Version
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedVersion(null);
-                    setContent(document.contentRich);
-                  }}
-                  className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
-                >
-                  Back to Current
-                </button>
-              </div>
+            {/* Row 1: Back + Title */}
+            <div className="flex items-center gap-2 md:gap-4 mb-3">
+              <Link
+                href="/documents"
+                className="flex-shrink-0 p-2 text-[#737373] hover:text-[#DD3A44] transition rounded-[6px]"
+              >
+                <FaArrowLeft />
+              </Link>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onBlur={saveDocument}
+                className="flex-1 min-w-0 text-[18px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#1A1A1A] border-none focus:outline-none focus:ring-2 focus:ring-[#DD3A44] rounded-[10px] px-2 py-1"
+                placeholder="Untitled Document"
+              />
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex gap-6">
-          {/* Editor */}
-          <div className="flex-1">
-            <div className="bg-white rounded-[10px] overflow-hidden">
-              {content && (
-                <DocumentEditor
-                  content={content}
-                  onChange={setContent}
-                  onSave={saveDocument}
-                  autoSave={true}
-                  autoSaveDelay={30000}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Version history sidebar */}
-          {showVersionHistory && (
-            <div className="w-80 bg-white rounded-[14px] p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-[#1c1b1b]">Version History</h3>
-                <button
-                  onClick={() => setShowVersionHistory(false)}
-                  className="p-1 text-[#A3A3A3] hover:text-[#5a5757]"
-                >
-                  <FaTimes />
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                {versions.map((version) => (
-                  <button
-                    key={version.id}
-                    onClick={() => viewVersion(version)}
-                    className={`w-full text-left p-3 rounded-[10px] border transition ${
-                      selectedVersion?.id === version.id
-                        ? 'border-blue-500 bg-accent-50'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-[#f6f3f2]'
-                    }`}
-                  >
-                    <div className="font-medium text-sm text-[#1c1b1b]">
-                      Version {version.version}
-                      {version.version === document.version && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#e6f4f4] text-[#006766] text-xs rounded">
-                          Current
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xs text-[#A3A3A3] mt-1">
-                      {new Date(version.createdAt).toLocaleString()}
-                    </div>
-                  </button>
+            {/* Row 2: Actions — scrollable on mobile */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+              <select
+                value={documentType}
+                onChange={(e) => { setDocumentType(e.target.value); saveDocument(); }}
+                className="flex-shrink-0 px-3 py-2 rounded-[10px] text-[12px] md:text-[13px] font-medium text-[#525252] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] border border-[#E5E5E5] bg-white"
+              >
+                {DOCUMENT_TYPES.map((type) => (
+                  <option key={type.value} value={type.value}>{type.label}</option>
                 ))}
+              </select>
+
+              <button
+                onClick={() => { setShowVersionHistory(!showVersionHistory); if (!showVersionHistory) fetchVersions(); }}
+                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 text-[#525252] rounded-[10px] hover:bg-[#F5F5F5] transition text-[12px] md:text-[13px] font-medium whitespace-nowrap"
+              >
+                <FaHistory />
+                <span className="hidden sm:inline">History</span>
+              </button>
+
+              <ExportDropdown onExport={exportDocument} />
+
+              <button
+                onClick={createVersion}
+                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 bg-[#DD3A44] text-white rounded-[10px] hover:bg-[#C7333D] transition text-[12px] md:text-[13px] font-medium whitespace-nowrap"
+              >
+                <FaSave />
+                <span>Save Version</span>
+              </button>
+
+              <button
+                onClick={deleteDocument}
+                className="flex-shrink-0 p-2 text-[#DC2626] hover:bg-[#FEF2F2] rounded-[6px] transition"
+              >
+                <FaTrash />
+              </button>
+            </div>
+
+            {selectedVersion && (
+              <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-[10px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <span className="text-sm text-yellow-800">
+                  Viewing version {selectedVersion.version} from{' '}
+                  {new Date(selectedVersion.createdAt).toLocaleString()}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={restoreVersion}
+                    className="px-3 py-1 bg-yellow-600 text-white text-sm rounded hover:bg-yellow-700"
+                  >
+                    Restore
+                  </button>
+                  <button
+                    onClick={() => { setSelectedVersion(null); setContent(document.contentRich); }}
+                    className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
+                  >
+                    Back to Current
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div className="px-2 sm:px-4 md:px-8 lg:px-12 py-4 md:py-6">
+          <div className="flex gap-4 md:gap-6">
+            {/* Editor */}
+            <div className="flex-1 min-w-0">
+              <div className="bg-white rounded-[10px] overflow-hidden">
+                {content && (
+                  <DocumentEditor
+                    content={content}
+                    onChange={setContent}
+                    onSave={saveDocument}
+                    autoSave={true}
+                    autoSaveDelay={30000}
+                  />
+                )}
               </div>
             </div>
-          )}
+
+            {/* Version history sidebar — full-screen sheet on mobile */}
+            {showVersionHistory && (
+              <>
+                {/* Mobile: bottom sheet overlay */}
+                <div className="fixed inset-0 bg-black/40 z-40 md:hidden" onClick={() => setShowVersionHistory(false)} />
+                <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[20px] p-5 max-h-[60vh] overflow-y-auto md:hidden">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-[#1c1b1b]">Version History</h3>
+                    <button onClick={() => setShowVersionHistory(false)} className="p-1 text-[#A3A3A3]"><FaTimes /></button>
+                  </div>
+                  <VersionList versions={versions} document={document} selectedVersion={selectedVersion} onView={viewVersion} />
+                </div>
+
+                {/* Desktop: sidebar */}
+                <div className="hidden md:block w-72 lg:w-80 flex-shrink-0 bg-white rounded-[14px] p-4 self-start sticky top-28">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-[#1c1b1b]">Version History</h3>
+                    <button onClick={() => setShowVersionHistory(false)} className="p-1 text-[#A3A3A3] hover:text-[#5a5757]"><FaTimes /></button>
+                  </div>
+                  <VersionList versions={versions} document={document} selectedVersion={selectedVersion} onView={viewVersion} />
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

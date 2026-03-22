@@ -2,6 +2,59 @@
 import { cachedFetch } from '@/lib/client-cache'
 
 import { useEffect, useState } from 'react'
+
+// Renders TipTap JSON as readable styled HTML for preview
+function DocumentContentPreview({ content }: { content: any }) {
+  if (!content || !content.content || content.content.length === 0) {
+    return <p className="text-[#A3A3A3] text-[14px] italic">No content yet.</p>
+  }
+
+  function renderNode(node: any, index: number): React.ReactNode {
+    switch (node.type) {
+      case 'heading': {
+        const text = node.content?.map((n: any) => n.text).join('') ?? ''
+        const level = node.attrs?.level ?? 1
+        const cls = level === 1
+          ? 'text-[20px] font-bold text-[#1A1A1A] mt-5 mb-2'
+          : level === 2
+          ? 'text-[17px] font-semibold text-[#1A1A1A] mt-4 mb-1'
+          : 'text-[15px] font-semibold text-[#525252] mt-3 mb-1'
+        return <p key={index} className={cls}>{text}</p>
+      }
+      case 'paragraph': {
+        if (!node.content) return <br key={index} />
+        const children = node.content.map((n: any, i: number) => {
+          let el: React.ReactNode = n.text ?? ''
+          if (n.marks) {
+            n.marks.forEach((m: any) => {
+              if (m.type === 'bold') el = <strong key={i}>{el}</strong>
+              if (m.type === 'italic') el = <em key={i}>{el}</em>
+              if (m.type === 'link') el = <a key={i} href={m.attrs.href} className="text-[#DD3A44] underline" target="_blank" rel="noopener noreferrer">{el}</a>
+            })
+          }
+          return el
+        })
+        return <p key={index} className="text-[14px] text-[#525252] mb-2 leading-relaxed">{children}</p>
+      }
+      case 'bulletList':
+        return <ul key={index} className="list-disc pl-5 mb-2 space-y-1">{node.content?.map((n: any, i: number) => renderNode(n, i))}</ul>
+      case 'orderedList':
+        return <ol key={index} className="list-decimal pl-5 mb-2 space-y-1">{node.content?.map((n: any, i: number) => renderNode(n, i))}</ol>
+      case 'listItem':
+        return <li key={index} className="text-[14px] text-[#525252]">{node.content?.map((n: any, i: number) => renderNode(n, i))}</li>
+      case 'blockquote':
+        return <blockquote key={index} className="border-l-4 border-[#E5E5E5] pl-4 italic text-[#737373] mb-2">{node.content?.map((n: any, i: number) => renderNode(n, i))}</blockquote>
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="max-w-none">
+      {content.content.map((node: any, i: number) => renderNode(node, i))}
+    </div>
+  )
+}
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -623,23 +676,41 @@ export default function CompanyDetailPage() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {company.documents.map((doc: any) => (
-                      <div 
-                        key={doc.id} 
-                        onClick={() => setSelectedDocument(doc)}
-                        className="bg-white  rounded-[14px] p-6 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-semibold text-[#1A1A1A]">{doc.title}</h3>
-                            <p className="text-[12px] text-[#A3A3A3] mt-1">
-                              {doc.documentType} • Updated {new Date(doc.updatedAt).toLocaleDateString()}
-                            </p>
+                    {company.documents.map((doc: any) => {
+                      // Extract a short text preview from TipTap JSON
+                      const previewText = (() => {
+                        try {
+                          const nodes = doc.contentRich?.content ?? []
+                          for (const node of nodes) {
+                            if (node.type === 'paragraph' && node.content) {
+                              const text = node.content.map((n: any) => n.text ?? '').join('').trim()
+                              if (text) return text.length > 120 ? text.slice(0, 120) + '…' : text
+                            }
+                          }
+                        } catch {}
+                        return null
+                      })()
+                      return (
+                        <div 
+                          key={doc.id} 
+                          onClick={() => setSelectedDocument(doc)}
+                          className="bg-white rounded-[14px] p-5 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer border border-transparent hover:border-[#F0F0F0]"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-[#1A1A1A] truncate">{doc.title}</h3>
+                              <p className="text-[11px] text-[#A3A3A3] mt-0.5 capitalize">
+                                {doc.documentType} · Updated {new Date(doc.updatedAt).toLocaleDateString()}
+                              </p>
+                              {previewText && (
+                                <p className="text-[13px] text-[#737373] mt-2 leading-relaxed line-clamp-2">{previewText}</p>
+                              )}
+                            </div>
+                            <FontAwesomeIcon icon={faExternalLink} className="text-[#A3A3A3] mt-1 flex-shrink-0" />
                           </div>
-                          <FontAwesomeIcon icon={faExternalLink} className="text-[#A3A3A3]" />
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </div>
@@ -967,14 +1038,19 @@ export default function CompanyDetailPage() {
 
         {/* Document Modal */}
         {selectedDocument && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-[14px] max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white px-6 py-4 flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-[#1A1A1A]">{selectedDocument.title}</h2>
-                <div className="flex items-center gap-2">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-0 md:p-4">
+            <div className={`bg-white w-full overflow-y-auto ${isMobile ? 'h-full rounded-none' : 'rounded-[14px] max-w-3xl max-h-[90vh]'}`}>
+              <div className="sticky top-0 bg-white px-4 md:px-6 py-4 flex items-center justify-between border-b border-[#F0F0F0]">
+                <div className="flex-1 min-w-0 mr-4">
+                  <h2 className="text-lg font-semibold text-[#1A1A1A] truncate">{selectedDocument.title}</h2>
+                  <p className="text-[11px] text-[#A3A3A3] mt-0.5 capitalize">
+                    {selectedDocument.documentType} · Updated {new Date(selectedDocument.updatedAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <Link href={`/documents/${selectedDocument.id}`}>
-                    <button className="px-3 py-2 text-[#DD3A44] hover:bg-[#FEF2F2] rounded-[10px] text-[13px] font-medium transition">
-                      View Full
+                    <button className="px-3 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] text-[13px] font-medium transition">
+                      Open &amp; Edit
                     </button>
                   </Link>
                   <button 
@@ -985,14 +1061,8 @@ export default function CompanyDetailPage() {
                   </button>
                 </div>
               </div>
-              <div className="p-6">
-                <div className="mb-4 text-[12px] text-[#A3A3A3]">
-                  {selectedDocument.documentType} • Updated {new Date(selectedDocument.updatedAt).toLocaleDateString()}
-                </div>
-                <div className="prose max-w-none">
-                  {/* Document content would go here */}
-                  <p className="text-[#525252]">Document preview coming soon...</p>
-                </div>
+              <div className="p-4 md:p-6">
+                <DocumentContentPreview content={selectedDocument.contentRich} />
               </div>
             </div>
           </div>
