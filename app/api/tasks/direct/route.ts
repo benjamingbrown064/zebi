@@ -1,8 +1,106 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateAIAuth } from '@/lib/doug-auth'
+import { requireWorkspace } from '@/lib/workspace'
 
 // Force dynamic rendering
 export const revalidate = 30 // Cache for 30s — invalidated on writes
+
+export async function POST(request: NextRequest) {
+  try {
+    const auth = validateAIAuth(request)
+    const body = await request.json()
+
+    let workspaceId: string
+    if (auth.valid) {
+      workspaceId = body.workspaceId
+      if (!workspaceId) {
+        return NextResponse.json({ success: false, error: 'workspaceId is required' }, { status: 400 })
+      }
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
+    const { title, description, priority, dueAt, projectId, companyId, objectiveId, goalId,
+            assigneeId, botAssignee, plannedDate, expectedOutcome } = body
+
+    if (!title?.trim()) {
+      return NextResponse.json({ success: false, error: 'title is required' }, { status: 400 })
+    }
+
+    // Resolve or find a default status for the workspace
+    let statusId = body.statusId
+    if (!statusId) {
+      const defaultStatus = await prisma.status.findFirst({
+        where: { workspaceId },
+        orderBy: { sortOrder: 'asc' },
+      })
+      if (!defaultStatus) {
+        return NextResponse.json({ success: false, error: 'No statuses found for workspace' }, { status: 400 })
+      }
+      statusId = defaultStatus.id
+    }
+
+    // Resolve createdBy: use provided UUID or fall back to workspace owner
+    let createdBy = body.createdBy
+    if (!createdBy) {
+      const workspace = await prisma.workspace.findUnique({
+        where: { id: workspaceId },
+        select: { ownerId: true },
+      })
+      createdBy = workspace?.ownerId
+    }
+    if (!createdBy) {
+      return NextResponse.json({ success: false, error: 'Could not resolve createdBy' }, { status: 400 })
+    }
+
+    const task = await prisma.task.create({
+      data: {
+        workspaceId,
+        title: title.trim(),
+        statusId,
+        createdBy,
+        ...(description !== undefined && { description }),
+        ...(priority !== undefined && { priority: Number(priority) }),
+        ...(dueAt && { dueAt: new Date(dueAt) }),
+        ...(plannedDate && { plannedDate: new Date(plannedDate) }),
+        ...(projectId && { projectId }),
+        ...(companyId && { companyId }),
+        ...(objectiveId && { objectiveId }),
+        ...(goalId && { goalId }),
+        ...(assigneeId && { assigneeId }),
+        ...(botAssignee && { botAssignee }),
+        ...(expectedOutcome && { expectedOutcome }),
+      },
+    })
+
+    return NextResponse.json({
+      success: true,
+      task: {
+        id: task.id,
+        title: task.title,
+        description: task.description || undefined,
+        statusId: task.statusId,
+        priority: task.priority,
+        dueAt: task.dueAt?.toISOString(),
+        plannedDate: task.plannedDate?.toISOString(),
+        projectId: task.projectId || undefined,
+        companyId: task.companyId || undefined,
+        objectiveId: task.objectiveId || undefined,
+        goalId: task.goalId || undefined,
+        assigneeId: task.assigneeId || undefined,
+        botAssignee: task.botAssignee || undefined,
+        workspaceId: task.workspaceId,
+        createdAt: task.createdAt.toISOString(),
+        updatedAt: task.updatedAt.toISOString(),
+      },
+    }, { status: 201 })
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err)
+    console.error('[API:tasks/direct POST] Error:', errorMsg)
+    return NextResponse.json({ success: false, error: errorMsg }, { status: 500 })
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
