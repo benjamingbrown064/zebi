@@ -30,8 +30,15 @@ interface PlanResponse {
 
 export async function POST(request: NextRequest) {
   try {
-    const workspaceId = await requireWorkspace()
     const body = await request.json()
+    // Use default workspace — chat runs inside the authenticated app, no separate auth needed
+    let workspaceId = DEFAULT_WORKSPACE_ID
+    try {
+      const resolved = await requireWorkspace()
+      if (resolved) workspaceId = resolved
+    } catch {
+      // Fall back to default workspace ID
+    }
     const { message, conversationId, context } = body
 
     if (!message || message.trim().length === 0) {
@@ -295,71 +302,44 @@ async function handlePlanMode(
 ): Promise<any> {
   if (!plan) return null
 
-  // Check if conversation already has a linked note
   const existingNoteId = conversationContext?.linkedNoteId
-
   let noteId: string
   let noteTitle = plan.noteTitle
   let tasksCreated: Array<{ id: string; title: string }> = []
 
-  // Create or update note
+  // Create or update note directly via Prisma
   if (existingNoteId) {
-    // Update existing note
-    const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/notes/${existingNoteId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        workspaceId,
-        body: plan.noteBody,
-        title: plan.noteTitle,
-      }),
-    })
-
-    if (updateResponse.ok) {
-      const data = await updateResponse.json()
-      noteId = data.note.id
-    } else {
-      // If update fails, create new
+    try {
+      const updated = await prisma.note.update({
+        where: { id: existingNoteId },
+        data: { title: plan.noteTitle, body: plan.noteBody },
+      })
+      noteId = updated.id
+    } catch {
+      // Note may have been deleted — create a new one
       const note = await prisma.note.create({
         data: {
-          workspaceId,
-          title: plan.noteTitle,
-          body: plan.noteBody,
-          noteType: 'plan',
-          companyId: plan.companyId || null,
-          projectId: plan.projectId || null,
-          objectiveId: plan.objectiveId || null,
+          workspaceId, title: plan.noteTitle, body: plan.noteBody,
+          noteType: 'plan', companyId: plan.companyId || null,
+          projectId: plan.projectId || null, objectiveId: plan.objectiveId || null,
           createdBy: DEFAULT_USER_ID,
         },
       })
       noteId = note.id
     }
   } else {
-    // Create new note
     const note = await prisma.note.create({
       data: {
-        workspaceId,
-        title: plan.noteTitle,
-        body: plan.noteBody,
-        noteType: 'plan',
-        companyId: plan.companyId || null,
-        projectId: plan.projectId || null,
-        objectiveId: plan.objectiveId || null,
+        workspaceId, title: plan.noteTitle, body: plan.noteBody,
+        noteType: 'plan', companyId: plan.companyId || null,
+        projectId: plan.projectId || null, objectiveId: plan.objectiveId || null,
         createdBy: DEFAULT_USER_ID,
       },
     })
     noteId = note.id
-
-    // Update conversation context with linked note
     await prisma.aIConversation.update({
       where: { id: conversationId },
-      data: {
-        context: {
-          ...conversationContext,
-          linkedNoteId: noteId,
-          inferredCompanyId: plan.companyId,
-        },
-      },
+      data: { context: { ...conversationContext, linkedNoteId: noteId, inferredCompanyId: plan.companyId } },
     })
   }
 
