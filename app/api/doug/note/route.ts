@@ -14,7 +14,10 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const workspaceId = searchParams.get('workspaceId') || await requireWorkspace();
+    const workspaceId = searchParams.get('workspaceId');
+    if (!workspaceId) {
+      return NextResponse.json({ success: false, error: 'workspaceId query param is required' }, { status: 400 });
+    }
     const companyId = searchParams.get('companyId');
     const projectId = searchParams.get('projectId');
     const objectiveId = searchParams.get('objectiveId');
@@ -67,7 +70,11 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { title, body: noteBody, summary, noteType, author, companyId, projectId, objectiveId, taskId } = body;
-    const workspaceId = body.workspaceId || await requireWorkspace();
+    const workspaceId = body.workspaceId;
+
+    if (!workspaceId) {
+      return NextResponse.json({ success: false, error: 'workspaceId is required' }, { status: 400 });
+    }
 
     if (!title) {
       return NextResponse.json({ success: false, error: 'title is required' }, { status: 400 });
@@ -124,7 +131,11 @@ export async function PATCH(request: NextRequest) {
 
     const body = await request.json();
     const { id, title, body: noteBody, summary, noteType, author, companyId, projectId, objectiveId, taskId } = body;
-    const workspaceId = body.workspaceId || await requireWorkspace();
+    const workspaceId = body.workspaceId;
+
+    if (!workspaceId) {
+      return NextResponse.json({ success: false, error: 'workspaceId is required' }, { status: 400 });
+    }
 
     if (!id) {
       return NextResponse.json({ success: false, error: 'id is required' }, { status: 400 });
