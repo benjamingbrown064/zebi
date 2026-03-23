@@ -50,8 +50,10 @@ export async function GET(request: NextRequest) {
           },
         },
         tasks: {
+          where: { archivedAt: null },
           select: {
             id: true,
+            completedAt: true,
             status: {
               select: {
                 name: true,
@@ -61,7 +63,9 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            tasks: true,
+            tasks: {
+              where: { archivedAt: null },
+            },
           },
         },
       },
@@ -72,9 +76,7 @@ export async function GET(request: NextRequest) {
 
     const mappedProjects = projects.map(project => {
       const totalTasks = project.tasks.length
-      const completedTasks = project.tasks.filter(
-        t => t.status.name === 'Done' || t.status.name === 'Check'
-      ).length
+      const completedTasks = project.tasks.filter(t => !!t.completedAt).length
       const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
 
       let status = 'active'
