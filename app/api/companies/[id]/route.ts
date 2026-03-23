@@ -32,7 +32,6 @@ export async function GET(
           orderBy: { createdAt: 'desc' },
         },
         documents: { orderBy: { updatedAt: 'desc' } },
-        notes: { orderBy: { updatedAt: 'desc' } },
         insights: {
           where: { status: { in: ['new', 'reviewed'] } },
           orderBy: { createdAt: 'desc' },
@@ -53,7 +52,7 @@ export async function GET(
           },
         },
         _count: {
-          select: { projects: true, tasks: true, documents: true, notes: true, insights: true, memories: true, files: true, objectives: true },
+          select: { projects: true, tasks: true, documents: true, insights: true, memories: true, files: true, objectives: true },
         },
       },
     })
