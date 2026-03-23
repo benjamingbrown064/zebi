@@ -17,17 +17,13 @@ export default function AIChatButton({ workspaceId, userId }: AIChatButtonProps)
     <>
       {/* Floating button */}
       {!isOpen && (
-        <Button
-          isIconOnly
-          color="primary"
-          size="lg"
-          radius="full"
-          className="fixed bottom-6 right-6 w-14 h-14 shadow-lg z-40"
-          onPress={() => setIsOpen(true)}
+        <button
+          onClick={() => setIsOpen(true)}
           aria-label="Open Zebi Chat"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-full shadow-[0_4px_20px_rgba(221,58,68,0.4)] flex items-center justify-center z-40 transition-all hover:scale-105 active:scale-95"
         >
-          <FaCommentDots size={24} />
-        </Button>
+          <FaCommentDots size={22} />
+        </button>
       )}
 
       {/* Chat panel */}

@@ -1,27 +1,20 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { FaTimes, FaSpinner, FaPaperPlane, FaTrash, FaStickyNote, FaTasks } from 'react-icons/fa'
-import { Button } from '@heroui/react'
+import { FaTimes, FaSpinner, FaPaperPlane, FaTrash, FaStickyNote, FaTasks, FaArrowRight } from 'react-icons/fa'
 
 interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
-  actions?: AIAction[]
   metadata?: {
-    model: string
-    tokens: number
-    cost: number
+    model?: string
+    tokens?: number
+    cost?: number
     plan?: PlanMetadata
+    mode?: string
   }
   createdAt: string
-}
-
-interface AIAction {
-  type: string
-  label: string
-  params: Record<string, any>
 }
 
 interface PlanMetadata {
@@ -38,85 +31,72 @@ interface AIChatProps {
   onClose?: () => void
 }
 
+const SUGGESTED_PROMPTS = [
+  'What should I focus on today?',
+  'Make a plan for the Zebi launch',
+  'What are my active priorities?',
+]
+
 export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  // Auto-scroll to bottom
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    scrollToBottom()
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Focus input on mount
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
   const sendMessage = async (messageText?: string) => {
-    const userMessage = messageText || input.trim()
+    const userMessage = (messageText ?? input).trim()
     if (!userMessage || loading) return
-
     setInput('')
     setLoading(true)
 
-    // Add user message to UI immediately
     const tempUserMsg: Message = {
       id: `temp-${Date.now()}`,
       role: 'user',
       content: userMessage,
       createdAt: new Date().toISOString(),
     }
-    setMessages((prev) => [...prev, tempUserMsg])
+    setMessages(prev => [...prev, tempUserMsg])
 
     try {
-      const response = await fetch('/api/assistant/chat', {
+      const res = await fetch('/api/assistant/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: userMessage,
-          conversationId,
-        }),
+        body: JSON.stringify({ message: userMessage, conversationId }),
       })
+      if (!res.ok) throw new Error('Failed')
+      const data = await res.json()
+      if (!conversationId) setConversationId(data.conversationId)
 
-      if (!response.ok) {
-        throw new Error('Failed to send message')
+      // Attach plan result to message metadata
+      const msg = data.message
+      if (data.plan && msg.metadata) {
+        msg.metadata.plan = data.plan
+      } else if (data.plan) {
+        msg.metadata = { plan: data.plan }
       }
-
-      const data = await response.json()
-
-      // Set conversation ID from first response
-      if (!conversationId) {
-        setConversationId(data.conversationId)
-      }
-
-      // Add assistant message
-      setMessages((prev) => [...prev, data.message])
-    } catch (error) {
-      console.error('Failed to send message:', error)
-      // Add error message
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `error-${Date.now()}`,
-          role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again.',
-          createdAt: new Date().toISOString(),
-        },
-      ])
+      setMessages(prev => [...prev, msg])
+    } catch {
+      setMessages(prev => [...prev, {
+        id: `err-${Date.now()}`, role: 'assistant',
+        content: 'Something went wrong. Please try again.',
+        createdAt: new Date().toISOString(),
+      }])
     } finally {
       setLoading(false)
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
@@ -131,191 +111,145 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
     }
   }
 
-  const handleCompanySelection = (companyName: string) => {
-    sendMessage(`This is for ${companyName}`)
-  }
-
   return (
-    <div className="fixed right-0 top-0 bottom-0 w-full md:w-96 bg-white dark:bg-gray-900 shadow-2xl flex flex-col z-50 border-l border-gray-200 dark:border-gray-800">
+    <div className="fixed right-0 top-0 bottom-0 w-full md:w-[400px] bg-white flex flex-col z-50 shadow-[−20px_0_40px_rgba(28,27,27,0.08)] border-l border-[#F0F0F0]">
+
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[#F0F0F0] flex-shrink-0">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Zebi · Chat
-          </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Plans, tasks, and context — all from conversation
-          </p>
+          <h2 className="text-[15px] font-semibold text-[#1A1A1A]">Zebi · Chat</h2>
+          <p className="text-[11px] text-[#A3A3A3] mt-0.5">Plans, tasks, and context — all from conversation</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {messages.length > 0 && (
             <button
               onClick={clearConversation}
-              className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+              className="p-2 text-[#A3A3A3] hover:text-[#DD3A44] hover:bg-[#FEF2F2] rounded-[8px] transition"
               title="Clear conversation"
             >
-              <FaTrash size={14} />
+              <FaTrash size={13} />
             </button>
           )}
           {onClose && (
             <button
               onClick={onClose}
-              className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
-              title="Close"
+              className="p-2 text-[#A3A3A3] hover:text-[#1A1A1A] hover:bg-[#F5F5F5] rounded-[8px] transition"
             >
-              <FaTimes size={18} />
+              <FaTimes size={16} />
             </button>
           )}
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-5 space-y-4">
+
+        {/* Empty state */}
         {messages.length === 0 && (
-          <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
-            <div className="text-4xl mb-4">💬</div>
-            <p className="text-sm">Ask me anything about your workspace!</p>
-            <div className="mt-4 space-y-2 text-xs">
-              <p className="text-gray-400">Try asking:</p>
-              <button
-                onClick={() => setInput('What should I work on today?')}
-                className="block w-full text-left px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-              >
-                "What should I work on today?"
-              </button>
-              <button
-                onClick={() => setInput('Make a plan for launching my new feature')}
-                className="block w-full text-left px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-              >
-                "Make a plan for launching my new feature"
-              </button>
-              <button
-                onClick={() => setInput('What are my active goals?')}
-                className="block w-full text-left px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-              >
-                "What are my active goals?"
-              </button>
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
+            <div className="w-12 h-12 bg-[#FEF2F2] rounded-full flex items-center justify-center mb-4">
+              <FaStickyNote className="text-[#DD3A44] text-xl" />
+            </div>
+            <p className="text-[14px] font-medium text-[#1A1A1A] mb-1">What do you need to get done?</p>
+            <p className="text-[12px] text-[#A3A3A3] mb-6">Chat naturally — I'll capture plans, create tasks, and keep context as we go.</p>
+            <div className="w-full space-y-2">
+              {SUGGESTED_PROMPTS.map(p => (
+                <button
+                  key={p}
+                  onClick={() => sendMessage(p)}
+                  className="w-full text-left px-4 py-3 bg-[#F5F5F5] hover:bg-[#F0F0F0] rounded-[10px] text-[13px] text-[#525252] transition flex items-center justify-between group"
+                >
+                  <span>{p}</span>
+                  <FaArrowRight className="text-[#D4D4D4] group-hover:text-[#A3A3A3] transition text-[11px]" />
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {messages.map((message) => (
-          <div key={message.id}>
-            <div
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                  message.role === 'user'
-                    ? 'bg-accent-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                }`}
-              >
-                <div className="whitespace-pre-wrap break-words">{message.content}</div>
-                {message.metadata && !message.metadata.plan && (
-                  <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs opacity-70">
-                    {message.metadata.tokens} tokens • ${message.metadata.cost.toFixed(5)}
-                  </div>
-                )}
+        {messages.map(message => (
+          <div key={message.id} className="space-y-2">
+            {/* Message bubble */}
+            <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[85%] rounded-[14px] px-4 py-3 text-[14px] leading-relaxed ${
+                message.role === 'user'
+                  ? 'bg-[#DD3A44] text-white rounded-br-[4px]'
+                  : 'bg-[#F5F5F5] text-[#1A1A1A] rounded-bl-[4px]'
+              }`}>
+                <p className="whitespace-pre-wrap break-words">{message.content}</p>
               </div>
             </div>
 
-            {/* Plan Card */}
+            {/* Plan card */}
             {message.role === 'assistant' && message.metadata?.plan && (
-              <div className="mt-3 ml-0">
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="text-blue-600 dark:text-blue-400 mt-1">
-                      <FaStickyNote size={20} />
+              <div className="bg-[#fcf9f8] border border-[#E5E5E5] rounded-[14px] p-4 mx-0">
+                {message.metadata.plan.needsConfirmation ? (
+                  <>
+                    <p className="text-[13px] font-medium text-[#1A1A1A] mb-3">
+                      {message.metadata.plan.confirmationQuestion || 'Which company is this for?'}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {['Love Warranty', 'Zebi', 'Other'].map(name => (
+                        <button
+                          key={name}
+                          onClick={() => sendMessage(`This is for ${name}`)}
+                          className="px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[12px] font-medium text-[#525252] transition"
+                        >
+                          {name}
+                        </button>
+                      ))}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                        📋 Plan created: "{message.metadata.plan.noteTitle}"
-                      </h3>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 mb-3">
+                      <FaStickyNote className="text-[#DD3A44] flex-shrink-0" />
+                      <p className="text-[13px] font-semibold text-[#1A1A1A] truncate">
+                        {message.metadata.plan.noteTitle}
+                      </p>
+                    </div>
 
-                      {message.metadata.plan.needsConfirmation ? (
-                        <div className="space-y-3">
-                          <p className="text-sm text-gray-700 dark:text-gray-300">
-                            ❓ {message.metadata.plan.confirmationQuestion || 'Which company is this for?'}
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            <Button
-                              size="sm"
-                              color="primary"
-                              variant="flat"
-                              onPress={() => handleCompanySelection('Love Warranty')}
-                            >
-                              Love Warranty
-                            </Button>
-                            <Button
-                              size="sm"
-                              color="primary"
-                              variant="flat"
-                              onPress={() => handleCompanySelection('Zebi')}
-                            >
-                              Zebi
-                            </Button>
-                            <Button
-                              size="sm"
-                              color="default"
-                              variant="flat"
-                              onPress={() => handleCompanySelection('Other')}
-                            >
-                              Other
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
+                    <div className="space-y-1.5 mb-3">
+                      <div className="flex items-center gap-2 text-[12px] text-[#525252]">
+                        <span className="text-[#006766]">✓</span>
+                        <span>Note saved</span>
+                      </div>
+                      {message.metadata.plan.tasksCreated.length > 0 && (
                         <>
-                          <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                            <div className="flex items-center gap-2">
-                              <span className="text-green-600 dark:text-green-400">✅</span>
-                              <span>Note saved</span>
-                            </div>
-                            {message.metadata.plan.tasksCreated.length > 0 && (
-                              <>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-green-600 dark:text-green-400">✅</span>
-                                  <span>{message.metadata.plan.tasksCreated.length} tasks created</span>
-                                </div>
-                                <ul className="ml-6 mt-2 space-y-1">
-                                  {message.metadata.plan.tasksCreated.map((task) => (
-                                    <li key={task.id} className="text-xs text-gray-600 dark:text-gray-400">
-                                      · {task.title}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </>
-                            )}
+                          <div className="flex items-center gap-2 text-[12px] text-[#525252]">
+                            <span className="text-[#006766]">✓</span>
+                            <span>{message.metadata.plan.tasksCreated.length} tasks created</span>
                           </div>
-
-                          <div className="flex gap-2 mt-4">
-                            <Button
-                              size="sm"
-                              color="primary"
-                              variant="flat"
-                              startContent={<FaStickyNote />}
-                              onPress={() => window.location.href = `/notes`}
-                            >
-                              View Note
-                            </Button>
-                            {message.metadata.plan.tasksCreated.length > 0 && (
-                              <Button
-                                size="sm"
-                                color="primary"
-                                variant="flat"
-                                startContent={<FaTasks />}
-                                onPress={() => window.location.href = `/tasks`}
-                              >
-                                View Tasks
-                              </Button>
-                            )}
-                          </div>
+                          <ul className="ml-5 space-y-1 mt-1">
+                            {message.metadata.plan.tasksCreated.map(task => (
+                              <li key={task.id} className="text-[11px] text-[#737373] flex items-center gap-1.5">
+                                <span className="w-1 h-1 rounded-full bg-[#D4D4D4] flex-shrink-0" />
+                                {task.title}
+                              </li>
+                            ))}
+                          </ul>
                         </>
                       )}
                     </div>
-                  </div>
-                </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => window.location.href = '/companies'}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[11px] font-medium text-[#525252] transition"
+                      >
+                        <FaStickyNote size={10} /> View Note
+                      </button>
+                      {message.metadata.plan.tasksCreated.length > 0 && (
+                        <button
+                          onClick={() => window.location.href = '/tasks'}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[11px] font-medium text-[#525252] transition"
+                        >
+                          <FaTasks size={10} /> View Tasks
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -323,9 +257,9 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2">
-              <FaSpinner className="animate-spin text-gray-500" />
-              <span className="text-sm text-gray-500">Thinking...</span>
+            <div className="bg-[#F5F5F5] rounded-[14px] rounded-bl-[4px] px-4 py-3 flex items-center gap-2">
+              <FaSpinner className="animate-spin text-[#A3A3A3] text-[12px]" />
+              <span className="text-[13px] text-[#A3A3A3]">Thinking…</span>
             </div>
           </div>
         )}
@@ -334,30 +268,33 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-        <div className="flex items-end gap-2">
-          <input
+      <div className="px-4 pb-4 pt-3 border-t border-[#F0F0F0] flex-shrink-0">
+        <div className="flex items-end gap-2 bg-[#F5F5F5] rounded-[12px] px-4 py-3">
+          <textarea
             ref={inputRef}
-            type="text"
+            rows={1}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask me anything..."
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKey}
+            placeholder="Message Zebi…"
             disabled={loading}
+            className="flex-1 bg-transparent text-[14px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none resize-none leading-snug max-h-32 overflow-y-auto"
+            style={{ height: 'auto' }}
+            onInput={e => {
+              const el = e.currentTarget
+              el.style.height = 'auto'
+              el.style.height = el.scrollHeight + 'px'
+            }}
           />
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="p-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
-            title="Send message"
+            className="flex-shrink-0 w-8 h-8 bg-[#DD3A44] disabled:bg-[#E5E5E5] text-white disabled:text-[#A3A3A3] rounded-[8px] flex items-center justify-center transition"
           >
-            <FaPaperPlane size={18} />
+            <FaPaperPlane size={13} />
           </button>
         </div>
-        <p className="text-xs text-gray-400 mt-2">
-          Press Enter to send, Shift+Enter for new line
-        </p>
+        <p className="text-[10px] text-[#D4D4D4] text-center mt-2">Enter to send · Shift+Enter for new line</p>
       </div>
     </div>
   )
