@@ -21,7 +21,9 @@ export async function POST(request: NextRequest) {
       workspaceId = await requireWorkspace()
     }
 
-    const { title, description, priority, dueAt, projectId, companyId, objectiveId, goalId,
+    // Accept description, notes, or body as aliases
+    const description = body.description ?? body.notes ?? body.body
+    const { title, priority, dueAt, projectId, companyId, objectiveId, goalId,
             assigneeId, botAssignee, plannedDate, expectedOutcome } = body
 
     if (!title?.trim()) {

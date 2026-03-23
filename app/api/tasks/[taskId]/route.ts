@@ -75,7 +75,10 @@ export async function PATCH(
           plannedDate: body.plannedDate ? new Date(body.plannedDate) : null 
         }),
         ...(body.title && { title: body.title }),
-        ...(body.description !== undefined && { description: body.description }),
+        // Accept description, notes, or body as aliases
+        ...((body.description !== undefined || body.notes !== undefined || body.body !== undefined) && {
+          description: body.description ?? body.notes ?? body.body
+        }),
         ...(body.assigneeId !== undefined && { assigneeId: body.assigneeId }),
         // Phase 2: Outcome fields
         ...(body.expectedOutcome !== undefined && { expectedOutcome: body.expectedOutcome || null }),
