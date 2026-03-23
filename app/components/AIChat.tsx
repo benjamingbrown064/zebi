@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { FaTimes, FaSpinner, FaPaperPlane, FaTrash } from 'react-icons/fa'
+import { FaTimes, FaSpinner, FaPaperPlane, FaTrash, FaStickyNote, FaTasks } from 'react-icons/fa'
+import { Button } from '@heroui/react'
 
 interface Message {
   id: string
@@ -12,6 +13,7 @@ interface Message {
     model: string
     tokens: number
     cost: number
+    plan?: PlanMetadata
   }
   createdAt: string
 }
@@ -20,6 +22,14 @@ interface AIAction {
   type: string
   label: string
   params: Record<string, any>
+}
+
+interface PlanMetadata {
+  noteId: string
+  noteTitle: string
+  tasksCreated: Array<{ id: string; title: string }>
+  needsConfirmation: boolean
+  confirmationQuestion?: string
 }
 
 interface AIChatProps {
@@ -50,10 +60,10 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
     inputRef.current?.focus()
   }, [])
 
-  const sendMessage = async () => {
-    if (!input.trim() || loading) return
+  const sendMessage = async (messageText?: string) => {
+    const userMessage = messageText || input.trim()
+    if (!userMessage || loading) return
 
-    const userMessage = input.trim()
     setInput('')
     setLoading(true)
 
@@ -121,16 +131,20 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
     }
   }
 
+  const handleCompanySelection = (companyName: string) => {
+    sendMessage(`This is for ${companyName}`)
+  }
+
   return (
     <div className="fixed right-0 top-0 bottom-0 w-full md:w-96 bg-white dark:bg-gray-900 shadow-2xl flex flex-col z-50 border-l border-gray-200 dark:border-gray-800">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
         <div>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            AI Assistant
+            Zebi · Chat
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Powered by GPT-4o-mini
+            Plans, tasks, and context — all from conversation
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -170,10 +184,10 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                 "What should I work on today?"
               </button>
               <button
-                onClick={() => setInput('How many tasks do I have?')}
+                onClick={() => setInput('Make a plan for launching my new feature')}
                 className="block w-full text-left px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
               >
-                "How many tasks do I have?"
+                "Make a plan for launching my new feature"
               </button>
               <button
                 onClick={() => setInput('What are my active goals?')}
@@ -186,24 +200,124 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
         )}
 
         {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+          <div key={message.id}>
             <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                message.role === 'user'
-                  ? 'bg-accent-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-              }`}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className="whitespace-pre-wrap break-words">{message.content}</div>
-              {message.metadata && (
-                <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs opacity-70">
-                  {message.metadata.tokens} tokens • ${message.metadata.cost.toFixed(5)}
-                </div>
-              )}
+              <div
+                className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                  message.role === 'user'
+                    ? 'bg-accent-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                }`}
+              >
+                <div className="whitespace-pre-wrap break-words">{message.content}</div>
+                {message.metadata && !message.metadata.plan && (
+                  <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs opacity-70">
+                    {message.metadata.tokens} tokens • ${message.metadata.cost.toFixed(5)}
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Plan Card */}
+            {message.role === 'assistant' && message.metadata?.plan && (
+              <div className="mt-3 ml-0">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="text-blue-600 dark:text-blue-400 mt-1">
+                      <FaStickyNote size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                        📋 Plan created: "{message.metadata.plan.noteTitle}"
+                      </h3>
+
+                      {message.metadata.plan.needsConfirmation ? (
+                        <div className="space-y-3">
+                          <p className="text-sm text-gray-700 dark:text-gray-300">
+                            ❓ {message.metadata.plan.confirmationQuestion || 'Which company is this for?'}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              size="sm"
+                              color="primary"
+                              variant="flat"
+                              onPress={() => handleCompanySelection('Love Warranty')}
+                            >
+                              Love Warranty
+                            </Button>
+                            <Button
+                              size="sm"
+                              color="primary"
+                              variant="flat"
+                              onPress={() => handleCompanySelection('Zebi')}
+                            >
+                              Zebi
+                            </Button>
+                            <Button
+                              size="sm"
+                              color="default"
+                              variant="flat"
+                              onPress={() => handleCompanySelection('Other')}
+                            >
+                              Other
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-600 dark:text-green-400">✅</span>
+                              <span>Note saved</span>
+                            </div>
+                            {message.metadata.plan.tasksCreated.length > 0 && (
+                              <>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-green-600 dark:text-green-400">✅</span>
+                                  <span>{message.metadata.plan.tasksCreated.length} tasks created</span>
+                                </div>
+                                <ul className="ml-6 mt-2 space-y-1">
+                                  {message.metadata.plan.tasksCreated.map((task) => (
+                                    <li key={task.id} className="text-xs text-gray-600 dark:text-gray-400">
+                                      · {task.title}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="flex gap-2 mt-4">
+                            <Button
+                              size="sm"
+                              color="primary"
+                              variant="flat"
+                              startContent={<FaStickyNote />}
+                              onPress={() => window.location.href = `/notes`}
+                            >
+                              View Note
+                            </Button>
+                            {message.metadata.plan.tasksCreated.length > 0 && (
+                              <Button
+                                size="sm"
+                                color="primary"
+                                variant="flat"
+                                startContent={<FaTasks />}
+                                onPress={() => window.location.href = `/tasks`}
+                              >
+                                View Tasks
+                              </Button>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ))}
 
@@ -233,7 +347,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
             disabled={loading}
           />
           <button
-            onClick={sendMessage}
+            onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
             className="p-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
             title="Send message"
