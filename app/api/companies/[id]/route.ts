@@ -52,7 +52,15 @@ export async function GET(
           },
         },
         _count: {
-          select: { projects: true, tasks: true, documents: true, insights: true, memories: true, files: true, objectives: true },
+          select: {
+            projects: { where: { archivedAt: null } },
+            tasks: { where: { archivedAt: null, completedAt: null } },
+            documents: true,
+            insights: true,
+            memories: true,
+            files: true,
+            objectives: { where: { status: { in: ['active', 'on_track', 'at_risk', 'blocked'] } } },
+          },
         },
       },
     })

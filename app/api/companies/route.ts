@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            projects: true,
-            tasks: true,
+            projects: { where: { archivedAt: null } },
+            tasks: { where: { archivedAt: null, completedAt: null } },
             documents: true,
             insights: true,
           },
@@ -99,8 +99,8 @@ export async function POST(request: NextRequest) {
       include: {
         _count: {
           select: {
-            projects: true,
-            tasks: true,
+            projects: { where: { archivedAt: null } },
+            tasks: { where: { archivedAt: null, completedAt: null } },
             documents: true,
             insights: true,
           },
