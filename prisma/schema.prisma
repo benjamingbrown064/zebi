@@ -47,6 +47,7 @@ model Workspace {
   objectives     Objective[]
   companies      Company[]
   documents      Document[]
+  notes          Note[]
   aiMemories     AIMemory[]
   aiInsights     AIInsight[]
   files          File[]
@@ -152,6 +153,7 @@ model Company {
   objectives     Objective[]
   projects       Project[]
   documents      Document[]
+  notes          Note[]
   memories       AIMemory[]
   insights       AIInsight[]
   files          File[]
@@ -214,6 +216,7 @@ model Objective {
   blockers        ObjectiveBlocker[]
   projects        Project[]
   tasks           Task[]
+  notes           Note[]
 
   @@index([workspaceId])
   @@index([companyId])
@@ -351,6 +354,7 @@ model Task {
   comments     TaskComment[]
   attachments  TaskAttachment[]
   activityLogs ActivityLog[]
+  notes        Note[]
 
   // Existing indexes
   @@index([workspaceId, statusId])
@@ -483,6 +487,7 @@ model Project {
   company        Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
   objective      Objective?      @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
   documents      Document[]
+  notes          Note[]
   memories       AIMemory[]
   files          File[]
   repeatingTasks RepeatingTask[]
@@ -594,6 +599,39 @@ model DocumentVersion {
 
   @@index([documentId])
   @@index([version])
+}
+
+// ==================== NOTES (NEW) ====================
+
+model Note {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId String   @db.Text
+  title       String
+  body        String   @db.Text
+  summary     String?  @db.Text
+  noteType    String   @default("general") // general, strategy, plan, meeting, briefing, ops, partnership
+  author      String?  @db.Text
+
+  companyId   String?  @db.Text
+  projectId   String?  @db.Text
+  objectiveId String?  @db.Text
+  taskId      String?  @db.Text
+
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @db.Timestamptz()
+  createdBy   String   @db.Uuid
+
+  workspace  Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  company    Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  project    Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  objective  Objective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  task       Task?      @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([companyId])
+  @@index([projectId])
+  @@index([objectiveId])
+  @@index([updatedAt])
 }
 
 // ==================== AI MEMORY (NEW) ====================

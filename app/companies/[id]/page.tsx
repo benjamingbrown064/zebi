@@ -74,6 +74,7 @@ import {
   faPlus,
   faTimes,
   faExternalLink,
+  faStickyNote,
 } from '@fortawesome/pro-duotone-svg-icons'
 import Sidebar from '@/components/Sidebar'
 import CompanyForm from '@/components/CompanyForm'
@@ -100,6 +101,7 @@ interface Company {
   updatedAt: string
   projects: any[]
   documents: any[]
+  notes: any[]
   insights: any[]
   memories: any[]
   files: any[]
@@ -109,6 +111,7 @@ interface Company {
     projects: number
     tasks: number
     documents: number
+    notes: number
     insights: number
     memories: number
     files: number
@@ -116,7 +119,7 @@ interface Company {
   }
 }
 
-type TabType = 'overview' | 'projects' | 'documents' | 'objectives' | 'tasks'
+type TabType = 'overview' | 'projects' | 'documents' | 'notes' | 'objectives' | 'tasks'
 type MoreMenuType = 'insights' | 'memory' | 'files' | 'activity'
 
 export default function CompanyDetailPage() {
@@ -138,6 +141,7 @@ export default function CompanyDetailPage() {
 
   // Modal states
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
+  const [selectedNote, setSelectedNote] = useState<any>(null)
   const [selectedInsight, setSelectedInsight] = useState<any>(null)
   const [selectedMemory, setSelectedMemory] = useState<any>(null)
   const [selectedFile, setSelectedFile] = useState<any>(null)
@@ -158,6 +162,11 @@ export default function CompanyDetailPage() {
   const [showCreateTask, setShowCreateTask] = useState(false)
   const [taskFormData, setTaskFormData] = useState({ title: '', description: '' })
   const [creatingTask, setCreatingTask] = useState(false)
+  
+  const [showCreateNote, setShowCreateNote] = useState(false)
+  const [noteFormData, setNoteFormData] = useState({ title: '', body: '', noteType: 'general' })
+  const [creatingNote, setCreatingNote] = useState(false)
+  const [editingNote, setEditingNote] = useState(false)
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -381,6 +390,75 @@ export default function CompanyDetailPage() {
     }
   }
 
+  async function handleCreateNote() {
+    if (!noteFormData.title.trim()) {
+      alert('Note title is required')
+      return
+    }
+
+    setCreatingNote(true)
+    try {
+      const response = await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId: 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
+          companyId: companyId,
+          title: noteFormData.title,
+          body: noteFormData.body,
+          noteType: noteFormData.noteType,
+        }),
+      })
+
+      if (response.ok) {
+        await loadCompany()
+        setShowCreateNote(false)
+        setNoteFormData({ title: '', body: '', noteType: 'general' })
+      } else {
+        alert('Failed to create note')
+      }
+    } catch (error) {
+      console.error('Failed to create note:', error)
+      alert('Failed to create note')
+    } finally {
+      setCreatingNote(false)
+    }
+  }
+
+  async function handleUpdateNote() {
+    if (!selectedNote || !noteFormData.title.trim()) {
+      alert('Note title is required')
+      return
+    }
+
+    setEditingNote(true)
+    try {
+      const response = await fetch(`/api/notes/${selectedNote.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId: 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
+          title: noteFormData.title,
+          body: noteFormData.body,
+          noteType: noteFormData.noteType,
+        }),
+      })
+
+      if (response.ok) {
+        await loadCompany()
+        setSelectedNote(null)
+        setNoteFormData({ title: '', body: '', noteType: 'general' })
+      } else {
+        alert('Failed to update note')
+      }
+    } catch (error) {
+      console.error('Failed to update note:', error)
+      alert('Failed to update note')
+    } finally {
+      setEditingNote(false)
+    }
+  }
+
   function handleMoreMenuClick(tab: MoreMenuType) {
     setActiveTab('overview' as any) // Reset main tab
     setMoreMenuTab(tab)
@@ -403,6 +481,7 @@ export default function CompanyDetailPage() {
     { id: 'overview', label: 'Overview', icon: faBuilding },
     { id: 'projects', label: 'Projects', icon: faFolderOpen, count: company._count.projects },
     { id: 'documents', label: 'Documents', icon: faFileLines, count: company._count.documents },
+    { id: 'notes', label: 'Notes', icon: faStickyNote, count: company._count.notes },
     { id: 'objectives', label: 'Objectives', icon: faBullseye, count: company._count.objectives },
     { id: 'tasks', label: 'Tasks', icon: faListCheck, count: company._count.tasks },
   ]
@@ -704,6 +783,64 @@ export default function CompanyDetailPage() {
                               </p>
                               {previewText && (
                                 <p className="text-[13px] text-[#737373] mt-2 leading-relaxed line-clamp-2">{previewText}</p>
+                              )}
+                            </div>
+                            <FontAwesomeIcon icon={faExternalLink} className="text-[#A3A3A3] mt-1 flex-shrink-0" />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Notes Tab */}
+            {activeView === 'notes' && (
+              <div className="w-full">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-[20px] font-medium text-[#1A1A1A]">Notes</h2>
+                  <button 
+                    onClick={() => {
+                      setNoteFormData({ title: '', body: '', noteType: 'general' })
+                      setShowCreateNote(true)
+                    }}
+                    className="px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] flex items-center gap-2 text-[13px] font-medium transition"
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                    Add Note
+                  </button>
+                </div>
+
+                {company.notes.length === 0 ? (
+                  <div className="bg-white rounded-[14px] p-8 text-center">
+                    <FontAwesomeIcon icon={faStickyNote} className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
+                    <p className="text-[#A3A3A3] text-[15px]">No notes yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {company.notes.map((note: any) => {
+                      const previewText = note.body.length > 150 ? note.body.slice(0, 150) + '…' : note.body
+                      return (
+                        <div 
+                          key={note.id} 
+                          onClick={() => setSelectedNote(note)}
+                          className="bg-white rounded-[14px] p-5 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer border border-transparent hover:border-[#F0F0F0]"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-semibold text-[#1A1A1A] truncate">{note.title}</h3>
+                                <span className="px-2 py-0.5 rounded-[6px] text-[11px] font-medium bg-[#f6f3f2] text-[#5a5757] capitalize flex-shrink-0">
+                                  {note.noteType}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-[#A3A3A3] mt-0.5">
+                                Updated {new Date(note.updatedAt).toLocaleDateString()}
+                                {note.author && ` · ${note.author}`}
+                              </p>
+                              {previewText && (
+                                <p className="text-[13px] text-[#737373] mt-2 leading-relaxed line-clamp-2 whitespace-pre-wrap">{previewText}</p>
                               )}
                             </div>
                             <FontAwesomeIcon icon={faExternalLink} className="text-[#A3A3A3] mt-1 flex-shrink-0" />
@@ -1455,6 +1592,254 @@ export default function CompanyDetailPage() {
                   {creatingTask ? 'Creating...' : 'Create Task'}
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Create Note Modal */}
+        {showCreateNote && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-[14px] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between sticky top-0 bg-white">
+                <h2 className="text-xl font-semibold text-[#1A1A1A]">Create Note</h2>
+                <button 
+                  onClick={() => {
+                    setShowCreateNote(false)
+                    setNoteFormData({ title: '', body: '', noteType: 'general' })
+                  }}
+                  className="w-8 h-8 flex items-center justify-center hover:bg-[#F5F5F5] rounded-[10px] transition"
+                >
+                  <FontAwesomeIcon icon={faTimes} className="text-[#A3A3A3]" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={noteFormData.title}
+                    onChange={(e) => setNoteFormData({ ...noteFormData, title: e.target.value })}
+                    placeholder="Enter note title"
+                    className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
+                    Note Type
+                  </label>
+                  <select
+                    value={noteFormData.noteType}
+                    onChange={(e) => setNoteFormData({ ...noteFormData, noteType: e.target.value })}
+                    className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] focus:outline-none focus:border-[#DD3A44] transition"
+                  >
+                    <option value="general">General</option>
+                    <option value="strategy">Strategy</option>
+                    <option value="plan">Plan</option>
+                    <option value="meeting">Meeting</option>
+                    <option value="briefing">Briefing</option>
+                    <option value="ops">Ops</option>
+                    <option value="partnership">Partnership</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
+                    Body
+                  </label>
+                  <textarea
+                    value={noteFormData.body}
+                    onChange={(e) => setNoteFormData({ ...noteFormData, body: e.target.value })}
+                    placeholder="Write your note here... (supports basic markdown)"
+                    rows={12}
+                    className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition font-mono"
+                  />
+                </div>
+
+                <div className="text-[13px] text-[#A3A3A3]">
+                  This note will be linked to <span className="font-medium text-[#1A1A1A]">{company?.name}</span>
+                </div>
+              </div>
+              <div className="border-t border-[#E5E5E5] px-6 py-4 flex items-center justify-end gap-3 sticky bottom-0 bg-white">
+                <button
+                  onClick={() => {
+                    setShowCreateNote(false)
+                    setNoteFormData({ title: '', body: '', noteType: 'general' })
+                  }}
+                  className="px-4 py-2 text-[#525252] hover:bg-[#F5F5F5] rounded-[10px] text-[13px] font-medium transition"
+                  disabled={creatingNote}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateNote}
+                  disabled={creatingNote || !noteFormData.title.trim()}
+                  className="px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] text-[13px] font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {creatingNote ? 'Creating...' : 'Create Note'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* View/Edit Note Modal */}
+        {selectedNote && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-[14px] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between sticky top-0 bg-white">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-semibold text-[#1A1A1A]">
+                    {editingNote ? 'Edit Note' : 'Note'}
+                  </h2>
+                  <span className="px-2 py-1 rounded-[6px] text-[12px] font-medium bg-[#f6f3f2] text-[#5a5757] capitalize">
+                    {selectedNote.noteType}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {!editingNote && (
+                    <button 
+                      onClick={() => {
+                        setNoteFormData({
+                          title: selectedNote.title,
+                          body: selectedNote.body,
+                          noteType: selectedNote.noteType,
+                        })
+                        setEditingNote(true)
+                      }}
+                      className="px-3 py-1.5 text-[#DD3A44] hover:bg-[#FFF5F5] rounded-[8px] text-[13px] font-medium transition"
+                    >
+                      <FontAwesomeIcon icon={faEdit} className="mr-1.5" />
+                      Edit
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => {
+                      setSelectedNote(null)
+                      setEditingNote(false)
+                      setNoteFormData({ title: '', body: '', noteType: 'general' })
+                    }}
+                    className="w-8 h-8 flex items-center justify-center hover:bg-[#F5F5F5] rounded-[10px] transition"
+                  >
+                    <FontAwesomeIcon icon={faTimes} className="text-[#A3A3A3]" />
+                  </button>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                {editingNote ? (
+                  <>
+                    <div>
+                      <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
+                        Title *
+                      </label>
+                      <input
+                        type="text"
+                        value={noteFormData.title}
+                        onChange={(e) => setNoteFormData({ ...noteFormData, title: e.target.value })}
+                        placeholder="Enter note title"
+                        className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
+                        Note Type
+                      </label>
+                      <select
+                        value={noteFormData.noteType}
+                        onChange={(e) => setNoteFormData({ ...noteFormData, noteType: e.target.value })}
+                        className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] focus:outline-none focus:border-[#DD3A44] transition"
+                      >
+                        <option value="general">General</option>
+                        <option value="strategy">Strategy</option>
+                        <option value="plan">Plan</option>
+                        <option value="meeting">Meeting</option>
+                        <option value="briefing">Briefing</option>
+                        <option value="ops">Ops</option>
+                        <option value="partnership">Partnership</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
+                        Body
+                      </label>
+                      <textarea
+                        value={noteFormData.body}
+                        onChange={(e) => setNoteFormData({ ...noteFormData, body: e.target.value })}
+                        placeholder="Write your note here..."
+                        rows={12}
+                        className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition font-mono"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-2xl font-bold text-[#1A1A1A]">{selectedNote.title}</h1>
+                    <div className="text-[12px] text-[#A3A3A3]">
+                      Updated {new Date(selectedNote.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {selectedNote.author && ` · ${selectedNote.author}`}
+                    </div>
+                    <div className="prose prose-sm max-w-none">
+                      <div className="whitespace-pre-wrap text-[15px] text-[#1A1A1A] leading-relaxed">
+                        {selectedNote.body.split('\n').map((line: string, i: number) => {
+                          // Basic markdown rendering
+                          if (line.startsWith('# ')) {
+                            return <h1 key={i} className="text-2xl font-bold mt-6 mb-3">{line.slice(2)}</h1>
+                          }
+                          if (line.startsWith('## ')) {
+                            return <h2 key={i} className="text-xl font-bold mt-5 mb-2">{line.slice(3)}</h2>
+                          }
+                          if (line.startsWith('### ')) {
+                            return <h3 key={i} className="text-lg font-semibold mt-4 mb-2">{line.slice(4)}</h3>
+                          }
+                          if (line.trim() === '') {
+                            return <br key={i} />
+                          }
+                          // Simple bold/italic (very basic)
+                          const parts = line.split(/(\*\*.*?\*\*|\*.*?\*)/g)
+                          return (
+                            <p key={i} className="mb-2">
+                              {parts.map((part, j) => {
+                                if (part.startsWith('**') && part.endsWith('**')) {
+                                  return <strong key={j}>{part.slice(2, -2)}</strong>
+                                }
+                                if (part.startsWith('*') && part.endsWith('*')) {
+                                  return <em key={j}>{part.slice(1, -1)}</em>
+                                }
+                                return part
+                              })}
+                            </p>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+              {editingNote && (
+                <div className="border-t border-[#E5E5E5] px-6 py-4 flex items-center justify-end gap-3 sticky bottom-0 bg-white">
+                  <button
+                    onClick={() => {
+                      setEditingNote(false)
+                      setNoteFormData({ title: '', body: '', noteType: 'general' })
+                    }}
+                    className="px-4 py-2 text-[#525252] hover:bg-[#F5F5F5] rounded-[10px] text-[13px] font-medium transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleUpdateNote}
+                    disabled={!noteFormData.title.trim()}
+                    className="px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] text-[13px] font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
