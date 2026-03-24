@@ -133,12 +133,13 @@ export async function POST(request: NextRequest) {
         orderBy: [{ priority: 'asc' }, { dueAt: 'asc' }],
         select: { id: true, title: true, priority: true, dueAt: true, companyId: true, objectiveId: true, description: true },
       }),
-      prisma.note.findMany({
-        where: { workspaceId },
-        orderBy: { updatedAt: 'desc' },
-        take: 5,
-        select: { id: true, title: true, body: true, noteType: true, companyId: true, updatedAt: true },
-      }),
+      prisma.$queryRaw<{id: string, title: string, body: string, noteType: string, companyId: string | null, updatedAt: Date}[]>`
+        SELECT id, title, body, "noteType", "companyId", "updatedAt"
+        FROM "Note"
+        WHERE "workspaceId" = ${workspaceId}
+        ORDER BY "updatedAt" DESC
+        LIMIT 5
+      `,
     ])
 
     // Build system prompt with workspace context
@@ -458,36 +459,34 @@ async function handlePlanMode(
   let noteTitle = plan.noteTitle
   let tasksCreated: Array<{ id: string; title: string }> = []
 
-  // Create or update note directly via Prisma
+  // Create or update note via raw SQL (Note model added after Prisma client was last generated)
   if (existingNoteId) {
     try {
-      const updated = await prisma.note.update({
-        where: { id: existingNoteId },
-        data: { title: plan.noteTitle, body: plan.noteBody },
-      })
-      noteId = updated.id
+      await prisma.$executeRaw`
+        UPDATE "Note" SET title = ${plan.noteTitle}, body = ${plan.noteBody}, "updatedAt" = now()
+        WHERE id = ${existingNoteId}
+      `
+      noteId = existingNoteId
     } catch {
-      // Note may have been deleted — create a new one
-      const note = await prisma.note.create({
-        data: {
-          workspaceId, title: plan.noteTitle, body: plan.noteBody,
-          noteType: 'plan', companyId: plan.companyId || null,
-          projectId: plan.projectId || null, objectiveId: plan.objectiveId || null,
-          createdBy: DEFAULT_USER_ID,
-        },
-      })
-      noteId = note.id
+      // Fall through to create new
+      const rows = await prisma.$queryRaw<{id: string}[]>`
+        INSERT INTO "Note" (id, "workspaceId", title, body, "noteType", "companyId", "projectId", "objectiveId", "createdBy", "createdAt", "updatedAt")
+        VALUES (gen_random_uuid()::text, ${workspaceId}, ${plan.noteTitle}, ${plan.noteBody}, 'plan',
+          ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null},
+          ${DEFAULT_USER_ID}::uuid, now(), now())
+        RETURNING id
+      `
+      noteId = rows[0].id
     }
   } else {
-    const note = await prisma.note.create({
-      data: {
-        workspaceId, title: plan.noteTitle, body: plan.noteBody,
-        noteType: 'plan', companyId: plan.companyId || null,
-        projectId: plan.projectId || null, objectiveId: plan.objectiveId || null,
-        createdBy: DEFAULT_USER_ID,
-      },
-    })
-    noteId = note.id
+    const rows = await prisma.$queryRaw<{id: string}[]>`
+      INSERT INTO "Note" (id, "workspaceId", title, body, "noteType", "companyId", "projectId", "objectiveId", "createdBy", "createdAt", "updatedAt")
+      VALUES (gen_random_uuid()::text, ${workspaceId}, ${plan.noteTitle}, ${plan.noteBody}, 'plan',
+        ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null},
+        ${DEFAULT_USER_ID}::uuid, now(), now())
+      RETURNING id
+    `
+    noteId = rows[0].id
     await prisma.aIConversation.update({
       where: { id: conversationId },
       data: { context: { ...conversationContext, linkedNoteId: noteId, inferredCompanyId: plan.companyId } },
