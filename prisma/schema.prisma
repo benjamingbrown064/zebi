@@ -160,7 +160,7 @@ model Space {
   tasks          Task[]
   repeatingTasks RepeatingTask[]
 
-  @@map("company")
+  @@map("Company")
   @@index([workspaceId])
   @@index([archivedAt])
 }
