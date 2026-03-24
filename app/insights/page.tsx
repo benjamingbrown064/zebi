@@ -427,7 +427,7 @@ export default function InsightsPage() {
                     {insight.space && (
                       <div className="mb-3">
                         <span className="px-2 py-1 text-xs rounded-full bg-white text-[#5a5757] border border-gray-300">
-                          🏢 {insight.space.name}
+                          📦 {insight.space.name}
                         </span>
                       </div>
                     )}
@@ -553,7 +553,7 @@ function InsightDetailModal({
               </span>
               {insight.space && (
                 <span className="px-3 py-1 text-sm rounded-full bg-accent-50 text-accent-700">
-                  🏢 {insight.space.name}
+                  📦 {insight.space.name}
                 </span>
               )}
             </div>

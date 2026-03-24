@@ -36,7 +36,7 @@ const ENTITY_CONFIG = {
   space: {
     singular: 'Space',
     plural: 'Spaces',
-    icon: '🏢',
+    icon: '📦',
     openingQuestion: "Tell me about this space. What's the name, industry, and what do they do?",
     redirectPath: '/spaces'
   },

@@ -432,7 +432,7 @@ function MemoryDetailModal({
                   </span>
                   {memory.space && (
                     <span className="px-2 py-1 text-xs rounded-full bg-accent-50 text-accent-700">
-                      🏢 {memory.space.name}
+                      📦 {memory.space.name}
                     </span>
                   )}
                   {memory.project && (

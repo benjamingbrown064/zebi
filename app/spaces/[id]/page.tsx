@@ -67,7 +67,7 @@ import {
   faHistory,
   faGlobe,
   faEdit,
-  faBuilding,
+  faBox,
   faListCheck,
   faBullseye,
   faEllipsisH,
@@ -478,7 +478,7 @@ export default function SpaceDetailPage() {
   }
 
   const mainTabs = [
-    { id: 'overview', label: 'Overview', icon: faBuilding },
+    { id: 'overview', label: 'Overview', icon: faBox },
     { id: 'projects', label: 'Projects', icon: faFolderOpen, count: space._count.projects },
     { id: 'documents', label: 'Documents', icon: faFileLines, count: space._count.documents },
     { id: 'notes', label: 'Notes', icon: faStickyNote, count: space._count.notes },
@@ -595,7 +595,7 @@ export default function SpaceDetailPage() {
                       className="w-full h-full object-cover rounded-[14px]"
                     />
                   ) : (
-                    <FontAwesomeIcon icon={faBuilding} className="text-[#737373] text-2xl md:text-3xl" />
+                    <FontAwesomeIcon icon={faBox} className="text-[#737373] text-2xl md:text-3xl" />
                   )}
                 </div>
 
