@@ -9,7 +9,7 @@ const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-type IntentType = 'daily_priority' | 'goal_progress' | 'planning' | 'task_creation' | 'summary' | 'chat'
+type IntentType = 'daily_priority' | 'goal_progress' | 'planning' | 'task_creation' | 'summary' | 'chat' | 'completion_report' | 'task_update_confirm'
 
 interface PlanResponse {
   intent?: string
@@ -186,6 +186,72 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Handle completion_report intent
+    if (intent === 'completion_report') {
+      const contextData = conversation.context as any
+      const lastSuggestedActions = contextData?.lastSuggestedActions || []
+      
+      // Fetch open tasks to match against
+      const openTasks = await prisma.task.findMany({
+        where: { 
+          workspaceId, 
+          archivedAt: null, 
+          completedAt: null 
+        },
+        select: { id: true, title: true }
+      })
+      
+      // Find matches
+      const matchedTasks = lastSuggestedActions
+        .filter((action: any) => action.taskId)
+        .map((action: any) => {
+          const task = openTasks.find(t => t.id === action.taskId)
+          return task ? { taskId: task.id, title: task.title } : null
+        })
+        .filter((t: any) => t !== null)
+      
+      // Store pending completions
+      if (matchedTasks.length > 0) {
+        await prisma.aIConversation.update({
+          where: { id: conversation.id },
+          data: {
+            context: {
+              ...contextData,
+              pendingCompletions: matchedTasks
+            }
+          }
+        })
+      }
+    }
+
+    // Handle task_update_confirm intent
+    if (intent === 'task_update_confirm') {
+      const contextData = conversation.context as any
+      const pendingCompletions = contextData?.pendingCompletions || []
+      
+      if (pendingCompletions.length > 0) {
+        // Mark tasks as complete
+        await prisma.task.updateMany({
+          where: { 
+            id: { in: pendingCompletions.map((t: any) => t.taskId) },
+            workspaceId 
+          },
+          data: { completedAt: new Date() }
+        })
+        
+        // Clear pending completions from context
+        await prisma.aIConversation.update({
+          where: { id: conversation.id },
+          data: {
+            context: {
+              ...contextData,
+              pendingCompletions: []
+            }
+          }
+        })
+      }
+    }
+
     // Save assistant message
     const assistantMessage = await prisma.aIMessage.create({
       data: {
@@ -202,6 +268,17 @@ export async function POST(request: NextRequest) {
         } as any,
       },
     })
+
+    // Extract and store suggested actions after daily_priority or goal_progress
+    if (intent === 'daily_priority' || intent === 'goal_progress') {
+      await extractAndStoreLastActions(
+        aiResponse.response,
+        tasks,
+        conversation.id,
+        conversation.context as any,
+        intent
+      )
+    }
 
     return NextResponse.json({
       conversationId: conversation.id,
@@ -262,6 +339,14 @@ function buildSystemPrompt(
 
   const modeCtx = operatingMode ? `\nOperating mode: ${operatingMode}` : ''
 
+  const lastActionsCtx = conversationContext?.lastSuggestedActions?.length > 0
+    ? `\n### Last suggested actions\n${conversationContext.lastSuggestedActions.map((a: any) => `- ${a.title}${a.taskId ? ` (task ID: ${a.taskId})` : ' (recommendation only)'}`).join('\n')}`
+    : ''
+
+  const pendingCtx = conversationContext?.pendingCompletions?.length > 0
+    ? `\n### Pending task completions (awaiting confirmation)\n${conversationContext.pendingCompletions.map((t: any) => `- ${t.title} (ID: ${t.taskId})`).join('\n')}`
+    : ''
+
   return `You are Zebi Chat — an operating partner for a founder.
 
 You are not a task manager assistant.
@@ -282,6 +367,8 @@ ${taskCtx}
 ### Recent notes and plans
 ${noteCtx}
 ${modeCtx}
+${lastActionsCtx}
+${pendingCtx}
 
 ---
 
@@ -289,7 +376,7 @@ ${modeCtx}
 
 You must ALWAYS return valid JSON in this exact shape:
 {
-  "intent": "daily_priority" | "goal_progress" | "planning" | "task_creation" | "summary" | "chat",
+  "intent": "daily_priority" | "goal_progress" | "planning" | "task_creation" | "summary" | "chat" | "completion_report" | "task_update_confirm",
   "mode": "chat" | "plan",
   "response": "your response text here",
   "plan": { ... } // only when mode is "plan"
@@ -306,6 +393,8 @@ Classify the user's intent before forming your answer:
 - **planning**: "make a plan for X", "plan out X", "help me organise X", "create tasks for X", "turn this into a plan"
 - **task_creation**: "create a task", "add a task", "turn that into tasks"
 - **summary**: "what have I been working on?", "what's the status of X?"
+- **completion_report**: "I've done those", "sorted", "done", "finished", "completed", "all done", "that's done", "I did those", "done now"
+- **task_update_confirm**: "yes", "yes please", "go ahead", "do it", "yep", "sure", "confirm"
 - **chat**: everything else
 
 ---
@@ -365,6 +454,25 @@ Only create tasks if all of these pass:
 4. It's clearly useful within the next few days
 
 If criteria don't pass, suggest the task in the response text and ask: "Want me to create that as a task?"
+
+### completion_report
+The user is saying work is done.
+- Check lastSuggestedActions from conversation context to map against real tasks
+- Apply confidence threshold: high (2+ matches) / medium (1 match) / low (no matches)
+- Ask for confirmation before marking anything complete
+- Use these exact patterns:
+  - High: "Nice. Want me to mark those as complete in Zebi?"
+  - Medium: "I can match [N] of those to tasks in Zebi. Want me to close those?"
+  - Low: "Those looked more like recommendations than tracked tasks. I can log that as progress or move to the next priority — which works better?"
+- Never auto-complete without confirmation
+- Keep it short and direct
+
+### task_update_confirm
+The user has confirmed they want tasks marked complete.
+- Confirm the updates were applied
+- Keep it brief: "Done. [number] tasks marked complete."
+- Do NOT generate a new priority list yet (that is Pass 2)
+- End with something natural like: "What's next?" or "Want me to pull up the next priority?"
 
 ### summary / chat
 Answer naturally and concisely.
@@ -537,4 +645,41 @@ function calculateCost(tokens: number): number {
   // GPT-4o-mini pricing: $0.150 / 1M input tokens, $0.600 / 1M output tokens
   // Rough estimate: assume 50/50 split
   return (tokens / 1_000_000) * 0.375
+}
+
+async function extractAndStoreLastActions(
+  response: string,
+  tasks: any[],
+  conversationId: string,
+  conversationContext: any,
+  intentType: string
+): Promise<void> {
+  // Extract numbered action items from the response
+  const actionLines = response.match(/^\d+\.\s+(.+)$/gm) || []
+  const actions = actionLines.map(line => line.replace(/^\d+\.\s+/, '').trim())
+  
+  // Try to match each action to a real task (fuzzy: substring match)
+  const lastSuggestedActions = actions.map(actionTitle => {
+    const matchedTask = tasks.find(t => 
+      t.title.toLowerCase().includes(actionTitle.toLowerCase().slice(0, 20)) ||
+      actionTitle.toLowerCase().includes(t.title.toLowerCase().slice(0, 20))
+    )
+    return {
+      title: actionTitle,
+      taskId: matchedTask?.id || null
+    }
+  })
+
+  if (lastSuggestedActions.length > 0) {
+    await prisma.aIConversation.update({
+      where: { id: conversationId },
+      data: {
+        context: {
+          ...conversationContext,
+          lastSuggestedActions,
+          lastIntentType: intentType
+        }
+      }
+    })
+  }
 }
