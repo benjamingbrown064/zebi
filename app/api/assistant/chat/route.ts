@@ -470,9 +470,9 @@ async function handlePlanMode(
     } catch {
       // Fall through to create new
       const rows = await prisma.$queryRaw<{id: string}[]>`
-        INSERT INTO "Note" (id, "workspaceId", title, body, "noteType", "companyId", "projectId", "objectiveId", "createdBy", "createdAt", "updatedAt")
-        VALUES (gen_random_uuid()::text, ${workspaceId}, ${plan.noteTitle}, ${plan.noteBody}, 'plan',
-          ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null},
+        INSERT INTO "Note" (id, "workspaceId", title, body, summary, "noteType", author, "companyId", "projectId", "objectiveId", "taskId", "createdBy", "createdAt", "updatedAt")
+        VALUES (gen_random_uuid()::text, ${workspaceId}, ${plan.noteTitle}, ${plan.noteBody}, NULL, 'plan', NULL,
+          ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null}, NULL,
           ${DEFAULT_USER_ID}::uuid, now(), now())
         RETURNING id
       `
@@ -480,9 +480,9 @@ async function handlePlanMode(
     }
   } else {
     const rows = await prisma.$queryRaw<{id: string}[]>`
-      INSERT INTO "Note" (id, "workspaceId", title, body, "noteType", "companyId", "projectId", "objectiveId", "createdBy", "createdAt", "updatedAt")
-      VALUES (gen_random_uuid()::text, ${workspaceId}, ${plan.noteTitle}, ${plan.noteBody}, 'plan',
-        ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null},
+      INSERT INTO "Note" (id, "workspaceId", title, body, summary, "noteType", author, "companyId", "projectId", "objectiveId", "taskId", "createdBy", "createdAt", "updatedAt")
+      VALUES (gen_random_uuid()::text, ${workspaceId}, ${plan.noteTitle}, ${plan.noteBody}, NULL, 'plan', NULL,
+        ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null}, NULL,
         ${DEFAULT_USER_ID}::uuid, now(), now())
       RETURNING id
     `
