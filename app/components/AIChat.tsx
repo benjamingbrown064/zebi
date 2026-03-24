@@ -3,6 +3,13 @@
 import { useState, useRef, useEffect } from 'react'
 import { FaTimes, FaSpinner, FaPaperPlane, FaTrash, FaStickyNote, FaTasks, FaArrowRight } from 'react-icons/fa'
 
+interface ObjectRef {
+  type: 'task' | 'note' | 'document' | 'project' | 'objective'
+  id: string
+  title: string
+  meta?: Record<string, any>
+}
+
 interface Message {
   id: string
   role: 'user' | 'assistant'
@@ -14,6 +21,7 @@ interface Message {
     plan?: PlanMetadata
     mode?: string
   }
+  objects?: ObjectRef[]
   createdAt: string
 }
 
@@ -83,6 +91,10 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
         msg.metadata.plan = data.plan
       } else if (data.plan) {
         msg.metadata = { plan: data.plan }
+      }
+      // Attach resolved objects (Pass B)
+      if (data.objects?.length) {
+        msg.objects = data.objects
       }
       setMessages(prev => [...prev, msg])
     } catch {
@@ -179,6 +191,33 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                 <p className="whitespace-pre-wrap break-words">{message.content}</p>
               </div>
             </div>
+
+            {/* Object cards (Pass B — task list / resolved objects) */}
+            {message.role === 'assistant' && message.objects && message.objects.length > 0 && (
+              <div className="space-y-1.5 mt-1">
+                {message.objects.map(obj => (
+                  <button
+                    key={obj.id}
+                    onClick={() => {
+                      if (obj.type === 'task') window.location.href = '/tasks'
+                      else if (obj.type === 'note') window.location.href = '/notes'
+                      else if (obj.type === 'document') window.location.href = '/documents'
+                    }}
+                    className="w-full text-left flex items-center justify-between px-3 py-2.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] rounded-[10px] group transition"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-[11px] font-medium text-[#A3A3A3] uppercase tracking-wide w-10 flex-shrink-0">
+                        {obj.type === 'task' ? (
+                          obj.meta?.priority === 1 ? '🔴' : obj.meta?.priority === 2 ? '🟡' : '⚪'
+                        ) : obj.type === 'note' ? '📝' : '📄'}
+                      </span>
+                      <span className="text-[13px] text-[#1A1A1A] truncate">{obj.title}</span>
+                    </div>
+                    <FaArrowRight className="text-[#D4D4D4] group-hover:text-[#DD3A44] transition text-[10px] flex-shrink-0 ml-2" />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Plan card */}
             {message.role === 'assistant' && message.metadata?.plan && (

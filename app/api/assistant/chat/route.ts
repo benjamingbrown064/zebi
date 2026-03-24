@@ -9,12 +9,20 @@ const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-type IntentType = 'daily_priority' | 'goal_progress' | 'planning' | 'task_creation' | 'summary' | 'chat' | 'completion_report' | 'task_update_confirm' | 'priority_rejection'
+type IntentType = 'daily_priority' | 'goal_progress' | 'planning' | 'task_creation' | 'summary' | 'chat' | 'completion_report' | 'task_update_confirm' | 'priority_rejection' | 'task_list' | 'object_reference'
+
+export interface ObjectRef {
+  type: 'task' | 'note' | 'document' | 'project' | 'objective'
+  id: string
+  title: string
+  meta?: Record<string, any>
+}
 
 interface PlanResponse {
   intent?: string
   mode: 'chat' | 'plan'
   response: string
+  referencedObjectTitle?: string   // Pass B: for object_reference intent
   plan?: {
     noteTitle: string
     noteBody: string
@@ -252,6 +260,105 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // --- Pass B: Object grounding ---
+    // Collect real objects to surface in UI
+    let resolvedObjects: ObjectRef[] = []
+    const ctxData = conversation.context as any
+
+    if (intent === 'task_list') {
+      // Return real tasks with IDs
+      const listedTasks = await prisma.task.findMany({
+        where: { workspaceId, archivedAt: null, completedAt: null },
+        orderBy: [{ priority: 'asc' }, { dueAt: 'asc' }],
+        take: 10,
+        select: { id: true, title: true, priority: true, dueAt: true, description: true, companyId: true },
+      })
+      resolvedObjects = listedTasks.map(t => ({
+        type: 'task' as const,
+        id: t.id,
+        title: t.title,
+        meta: {
+          priority: t.priority,
+          dueAt: t.dueAt,
+          description: t.description,
+          companyId: t.companyId,
+        },
+      }))
+      // Store in context so future refs can use them
+      await prisma.aIConversation.update({
+        where: { id: conversation.id },
+        data: {
+          context: {
+            ...ctxData,
+            lastListedObjects: resolvedObjects,
+          },
+        },
+      })
+    }
+
+    if (intent === 'object_reference') {
+      // Resolve "this task", "that note", "add this to it" etc.
+      const refTitle = aiResponse.referencedObjectTitle?.toLowerCase() || ''
+      const lastListed: ObjectRef[] = ctxData?.lastListedObjects || []
+      const lastSuggested: any[] = ctxData?.lastSuggestedActions || []
+
+      // Try to match against last listed objects first
+      let match = lastListed.find(o =>
+        refTitle && o.title.toLowerCase().includes(refTitle.slice(0, 20))
+      )
+
+      // Fallback: last suggested actions that have a real taskId
+      if (!match && lastSuggested.length > 0) {
+        const withId = lastSuggested.filter(a => a.taskId)
+        if (withId.length === 1) {
+          // Unambiguous — use it
+          match = { type: 'task', id: withId[0].taskId, title: withId[0].title }
+        }
+      }
+
+      if (match) {
+        resolvedObjects = [match]
+        // Store resolved object for follow-up references
+        await prisma.aIConversation.update({
+          where: { id: conversation.id },
+          data: {
+            context: {
+              ...ctxData,
+              lastResolvedObject: match,
+            },
+          },
+        })
+      }
+    }
+
+    // Track newly created objects from plan mode
+    if (planResult && planResult.tasksCreated?.length > 0) {
+      const createdRefs: ObjectRef[] = planResult.tasksCreated.map((t: any) => ({
+        type: 'task' as const,
+        id: t.id,
+        title: t.title,
+        meta: { source: 'plan' },
+      }))
+      if (planResult.noteId) {
+        createdRefs.push({
+          type: 'note' as const,
+          id: planResult.noteId,
+          title: planResult.noteTitle || 'Plan note',
+          meta: { source: 'plan' },
+        })
+      }
+      await prisma.aIConversation.update({
+        where: { id: conversation.id },
+        data: {
+          context: {
+            ...((conversation.context as any) || {}),
+            lastCreatedObjects: createdRefs,
+          },
+        },
+      })
+    }
+    // --- End Pass B ---
+
     // Save assistant message
     const assistantMessage = await prisma.aIMessage.create({
       data: {
@@ -290,6 +397,7 @@ export async function POST(request: NextRequest) {
         createdAt: assistantMessage.createdAt,
       },
       ...(planResult && { plan: planResult }),
+      ...(resolvedObjects.length > 0 && { objects: resolvedObjects }),
     })
   } catch (error) {
     console.error('[AI Chat] Error:', error)
@@ -347,7 +455,22 @@ function buildSystemPrompt(
     ? `\n### Pending task completions (awaiting confirmation)\n${conversationContext.pendingCompletions.map((t: any) => `- ${t.title} (ID: ${t.taskId})`).join('\n')}`
     : ''
 
+  const lastListedCtx = conversationContext?.lastListedObjects?.length > 0
+    ? `\n### Last listed objects (use these IDs for references)\n${conversationContext.lastListedObjects.map((o: any) => `- [${o.type}] ${o.title} (ID: ${o.id})`).join('\n')}`
+    : ''
+
+  const lastCreatedCtx = conversationContext?.lastCreatedObjects?.length > 0
+    ? `\n### Last created objects\n${conversationContext.lastCreatedObjects.map((o: any) => `- [${o.type}] ${o.title} (ID: ${o.id})`).join('\n')}`
+    : ''
+
+  const lastResolvedCtx = conversationContext?.lastResolvedObject
+    ? `\n### Currently resolved object (the "it"/"this" in conversation)\n- [${conversationContext.lastResolvedObject.type}] ${conversationContext.lastResolvedObject.title} (ID: ${conversationContext.lastResolvedObject.id})`
+    : ''
+
   return `You are Zebi Chat — an operating partner for a founder.
+${lastListedCtx}
+${lastCreatedCtx}
+${lastResolvedCtx}
 
 You are not a task manager assistant.
 You are not a polite backlog printer.
@@ -431,6 +554,8 @@ Classify the user's intent before forming your answer:
 - **completion_report**: "I've done those", "sorted", "done", "finished", "completed", "all done", "that's done", "I did those", "done now"
 - **task_update_confirm**: "yes", "yes please", "go ahead", "do it", "yep", "sure", "confirm"
 - **priority_rejection**: "I can't work on that", "what else should I work on", "something else", "not today", "can't do that one", "skip that", "not that one"
+- **task_list**: "show me my tasks", "list tasks", "what tasks do I have", "show tasks", "what's open", "what's in my backlog"
+- **object_reference**: "this task", "that one", "add this to it", "attach it to", "link that to" — the user is referencing an object from earlier in the conversation
 - **chat**: everything else
 
 ---
@@ -522,6 +647,19 @@ Do these instead:
 
 The "because" must be specific — tied to a real objective, deadline, blocker, or revenue path from the workspace context.
 Do not just pick the next item. Explain the trade-off.
+
+### task_list
+Return up to 10 open tasks. Format each as a clear one-liner with priority emoji.
+The server will attach real task objects with IDs to the response.
+In your response text, summarise briefly: "Here are your [N] open tasks." then list them.
+Do NOT make up IDs — the server handles object attachment.
+
+### object_reference
+The user is referencing a specific object (task, note, doc) from earlier in the conversation.
+- Check "Last listed objects" and "Last suggested actions" context above for IDs
+- If you can identify the object: include "referencedObjectTitle" in your JSON response with the matched title
+- If ambiguous: ask which object they mean, name the candidates
+- Once resolved, confirm the action and the specific object name + ID
 
 ### summary / chat
 Answer naturally and concisely.
