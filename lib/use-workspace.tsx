@@ -51,13 +51,13 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const hasFetched = useRef(false)
 
-  // Boot from localStorage immediately — zero-latency on navigation
-  const cached = readLocalCache()
+  // Boot with loading state — hydration-safe (no localStorage on server)
+  // Cache is applied after mount via useEffect to avoid server/client mismatch
   const [state, setState] = useState<WorkspaceContextValue>({
-    workspaceId: cached?.workspaceId ?? null,
-    workspaceName: cached?.workspaceName ?? null,
-    role: cached?.role ?? null,
-    loading: !cached, // if we have cache, loading is already false
+    workspaceId: null,
+    workspaceName: null,
+    role: null,
+    loading: true,
     error: null,
     refetch: async () => {},
   })
@@ -110,11 +110,22 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
   }, [pathname])
 
-  // Fetch once on mount (skip if localStorage hit)
+  // Fetch once on mount — apply localStorage cache immediately if available
   useEffect(() => {
     if (!hasFetched.current) {
       hasFetched.current = true
-      fetchWorkspace()
+      const cached = readLocalCache()
+      if (cached) {
+        setState(prev => ({
+          ...prev,
+          workspaceId: cached.workspaceId,
+          workspaceName: cached.workspaceName,
+          role: cached.role,
+          loading: false,
+        }))
+      } else {
+        fetchWorkspace()
+      }
     }
   }, [])
 
