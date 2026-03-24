@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Get current workspace context
-    const [companies, goals, objectives] = await Promise.all([
-      prisma.company.findMany({
+    const [spaces, goals, objectives] = await Promise.all([
+      prisma.space.findMany({
         where: { workspaceId, archivedAt: null },
         select: { id: true, name: true, industry: true, stage: true, revenue: true },
       }),
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     // Build context for Claude
     const context = {
-      companies: companies.map((c) => ({
+      spaces: spaces.map((c) => ({
         id: c.id,
         name: c.name,
         industry: c.industry,
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       })),
       activeObjectives: objectives.map((o) => ({
         title: o.title,
-        company: o.company?.name,
+        space: o.company?.name,
         progress: `${o.currentValue}/${o.targetValue} ${o.unit || ''}`,
       })),
     }

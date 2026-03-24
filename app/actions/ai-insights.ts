@@ -16,7 +16,7 @@ export interface AIInsight {
   createdAt: Date
   reviewedAt: Date | null
   reviewedBy: string | null
-  company?: {
+  space?: {
     id: string
     name: string
   } | null

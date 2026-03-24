@@ -9,7 +9,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 interface VoiceToTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  contextType: 'project' | 'objective' | 'company' | 'general';
+  contextType: 'project' | 'objective' | 'space' | 'general';
   contextId?: string;
   onComplete?: () => void;
 }

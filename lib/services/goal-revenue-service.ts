@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
 /**
- * Calculate financial goal progress based on linked company revenue
+ * Calculate financial goal progress based on linked space revenue
  */
 export async function calculateGoalRevenue(goalId: string, workspaceId: string) {
   try {
@@ -22,14 +22,14 @@ export async function calculateGoalRevenue(goalId: string, workspaceId: string) 
       return null
     }
 
-    // If no companies linked, return 0
+    // If no spaces linked, return 0
     const companyIds = goal.companyIds as string[] | null
     if (!companyIds || companyIds.length === 0) {
       return 0
     }
 
-    // Sum revenue from all linked companies
-    const companies = await prisma.company.findMany({
+    // Sum revenue from all linked spaces
+    const spaces = await prisma.space.findMany({
       where: {
         id: { in: companyIds },
         workspaceId,
@@ -41,8 +41,8 @@ export async function calculateGoalRevenue(goalId: string, workspaceId: string) 
       },
     })
 
-    const totalRevenue = companies.reduce((sum, company) => {
-      return sum + (company.revenue ? Number(company.revenue) : 0)
+    const totalRevenue = spaces.reduce((sum, space) => {
+      return sum + (space.revenue ? Number(space.revenue) : 0)
     }, 0)
 
     return totalRevenue
@@ -63,7 +63,7 @@ export async function getGoalWithRevenue(goalId: string, workspaceId: string) {
 
     if (!goal) return null
 
-    // If financial goal, calculate current value from companies
+    // If financial goal, calculate current value from spaces
     if (goal.metricType === 'currency') {
       const calculatedRevenue = await calculateGoalRevenue(goalId, workspaceId)
       if (calculatedRevenue !== null) {
@@ -123,9 +123,9 @@ export async function getGoalsWithRevenue(workspaceId: string) {
 }
 
 /**
- * Link companies to a financial goal
+ * Link spaces to a financial goal
  */
-export async function linkCompaniesToGoal(
+export async function linkSpacesToGoal(
   goalId: string,
   companyIds: string[],
   workspaceId: string
@@ -140,15 +140,15 @@ export async function linkCompaniesToGoal(
 
     return goal
   } catch (error) {
-    console.error('Error linking companies to goal:', error)
+    console.error('Error linking spaces to goal:', error)
     throw error
   }
 }
 
 /**
- * Get companies linked to a goal
+ * Get spaces linked to a goal
  */
-export async function getLinkedCompanies(goalId: string, workspaceId: string) {
+export async function getLinkedSpaces(goalId: string, workspaceId: string) {
   try {
     const goal = await prisma.goal.findUnique({
       where: { id: goalId },
@@ -159,7 +159,7 @@ export async function getLinkedCompanies(goalId: string, workspaceId: string) {
 
     const companyIds = goal.companyIds as string[]
 
-    const companies = await prisma.company.findMany({
+    const spaces = await prisma.space.findMany({
       where: {
         id: { in: companyIds },
         workspaceId,
@@ -172,9 +172,9 @@ export async function getLinkedCompanies(goalId: string, workspaceId: string) {
       },
     })
 
-    return companies
+    return spaces
   } catch (error) {
-    console.error('Error fetching linked companies:', error)
+    console.error('Error fetching linked spaces:', error)
     return []
   }
 }

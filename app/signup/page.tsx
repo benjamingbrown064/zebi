@@ -162,7 +162,7 @@ export default function SignupPage() {
               </label>
               <input
                 type="text"
-                placeholder="My Company"
+                placeholder="My Space"
                 value={workspaceName}
                 onChange={(e) => setWorkspaceName(e.target.value)}
                 disabled={loading}

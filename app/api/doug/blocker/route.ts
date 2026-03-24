@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         objective: {
           id: blocker.objective.id,
           title: blocker.objective.title,
-          company: blocker.objective.company?.name,
+          space: blocker.objective.company?.name,
         },
       },
     }, { status: 201 })

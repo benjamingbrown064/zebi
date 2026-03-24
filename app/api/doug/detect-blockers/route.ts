@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
       staleObjectives: staleObjectives.map((o) => ({
         id: o.id,
         title: o.title,
-        company: o.company?.name,
+        space: o.company?.name,
         daysSinceUpdate: Math.ceil((now.getTime() - o.updatedAt.getTime()) / (1000 * 60 * 60 * 24)),
         progress: `${o.currentValue}/${o.targetValue} ${o.unit || ''}`,
         suggestion: 'No progress logged in ' + 
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
         return {
           id: o.id,
           title: o.title,
-          company: o.company?.name,
+          space: o.company?.name,
           daysUntilDeadline,
           progressPercent: Number(o.progressPercent),
           suggestion: `Only ${daysUntilDeadline} days left and ${Number(o.progressPercent)}% complete. Need to accelerate?`,

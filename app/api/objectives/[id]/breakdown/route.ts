@@ -15,7 +15,7 @@ export async function POST(
     const body = await request.json();
     const { createEntities = true } = body;
 
-    // Get objective with company context
+    // Get objective with space context
     const objective = await prisma.objective.findUnique({
       where: { id: params.id },
       include: {
@@ -39,9 +39,9 @@ export async function POST(
     }
 
     // Generate breakdown
-    let companyContext;
+    let spaceContext;
     if (objective.company) {
-      companyContext = {
+      spaceContext = {
         name: objective.company.name,
         industry: objective.company.industry || undefined,
         stage: objective.company.stage || undefined,
@@ -57,7 +57,7 @@ export async function POST(
       objective.unit || 'units',
       objective.startDate,
       objective.deadline,
-      companyContext
+      spaceContext
     );
 
     // Optionally create entities

@@ -11,7 +11,7 @@ export default async function ObjectivesPage() {
     const workspaceId = await requireWorkspace()
     
     // Fetch objectives with related data
-    const [objectives, companies, goals] = await Promise.all([
+    const [objectives, spaces, goals] = await Promise.all([
       prisma.objective.findMany({
         where: { workspaceId },
         include: {
@@ -42,7 +42,7 @@ export default async function ObjectivesPage() {
         },
         orderBy: { deadline: 'asc' },
       }),
-      prisma.company.findMany({
+      prisma.space.findMany({
         where: { workspaceId, archivedAt: null },
         select: { id: true, name: true },
         orderBy: { name: 'asc' },
@@ -76,7 +76,7 @@ export default async function ObjectivesPage() {
         title: obj.title,
         description: obj.description,
         companyId: obj.company?.id,
-        companyName: obj.company?.name,
+        spaceName: obj.company?.name,
         goalId: obj.goal?.id,
         goalName: obj.goal?.name,
         objectiveType: obj.objectiveType,
@@ -108,7 +108,7 @@ export default async function ObjectivesPage() {
     return (
       <ObjectivesClient
         initialObjectives={mappedObjectives}
-        companies={companies}
+        spaces={spaces}
         goals={goals}
         workspaceId={workspaceId}
       />

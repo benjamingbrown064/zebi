@@ -1,4 +1,4 @@
-import { analyzeCompany, getActiveCompanies, CompanyAnalysis } from './insight-analyzers/company-analyzer';
+import { analyzeSpace, getActiveSpaces, SpaceAnalysis } from './insight-analyzers/space-analyzer';
 import { detectPatterns, prioritizePatterns, DetectedPattern } from './insight-analyzers/pattern-detector';
 import { generateJSONCompletion } from './anthropic';
 import { prisma } from './prisma';
@@ -27,14 +27,14 @@ interface AIInsightResponse {
 }
 
 /**
- * Generate AI insights for a single company
+ * Generate AI insights for a single space
  */
-export async function generateCompanyInsights(
+export async function generateSpaceInsights(
   workspaceId: string,
   companyId: string
 ): Promise<GeneratedInsight[]> {
-  // Step 1: Analyze company
-  const analysis = await analyzeCompany(workspaceId, companyId);
+  // Step 1: Analyze space
+  const analysis = await analyzeSpace(workspaceId, companyId);
   
   // Step 2: Detect patterns
   const patterns = detectPatterns(analysis);
@@ -50,34 +50,34 @@ export async function generateCompanyInsights(
 }
 
 /**
- * Generate insights for all active companies in a workspace
+ * Generate insights for all active spaces in a workspace
  */
 export async function generateWorkspaceInsights(workspaceId: string): Promise<{
   companyId: string;
-  companyName: string;
+  spaceName: string;
   insightCount: number;
   insights: GeneratedInsight[];
 }[]> {
-  const companyIds = await getActiveCompanies(workspaceId);
+  const companyIds = await getActiveSpaces(workspaceId);
   const results = [];
 
   for (const companyId of companyIds) {
     try {
-      const insights = await generateCompanyInsights(workspaceId, companyId);
-      const company = await prisma.company.findUnique({
+      const insights = await generateSpaceInsights(workspaceId, companyId);
+      const space = await prisma.space.findUnique({
         where: { id: companyId },
         select: { name: true },
       });
 
       results.push({
         companyId,
-        companyName: company?.name || 'Unknown',
+        spaceName: space?.name || 'Unknown',
         insightCount: insights.length,
         insights,
       });
     } catch (error) {
-      console.error(`Failed to generate insights for company ${companyId}:`, error);
-      // Continue with other companies
+      console.error(`Failed to generate insights for space ${companyId}:`, error);
+      // Continue with other spaces
     }
   }
 
@@ -85,10 +85,10 @@ export async function generateWorkspaceInsights(workspaceId: string): Promise<{
 }
 
 /**
- * Use Claude to generate strategic insights based on company analysis and patterns
+ * Use Claude to generate strategic insights based on space analysis and patterns
  */
 async function generateInsightsWithAI(
-  analysis: CompanyAnalysis,
+  analysis: SpaceAnalysis,
   patterns: DetectedPattern[]
 ): Promise<GeneratedInsight[]> {
   const prompt = buildInsightPrompt(analysis, patterns);
@@ -120,14 +120,14 @@ async function generateInsightsWithAI(
  * Build the prompt for Claude to generate insights
  */
 function buildInsightPrompt(
-  analysis: CompanyAnalysis,
+  analysis: SpaceAnalysis,
   patterns: DetectedPattern[]
 ): string {
   const { metrics, recentActivity, strategicContext } = analysis;
 
-  return `You are a strategic business analyst for Zebi. Analyze the following company data and generate 2-4 strategic insights.
+  return `You are a strategic business analyst for Zebi. Analyze the following space data and generate 2-4 strategic insights.
 
-**Company:** ${metrics.companyName}
+**Space:** ${metrics.spaceName}
 **Industry:** ${metrics.industry || 'Not specified'}
 **Stage:** ${metrics.stage || 'Not specified'}
 **Revenue:** ${metrics.revenue ? `$${metrics.revenue.toLocaleString()}` : 'Not specified'}
@@ -197,7 +197,7 @@ Return ONLY valid JSON in this exact format:
 
 Focus on insights that are:
 - Actionable (not just observations)
-- Specific to this company's situation
+- Specific to this space's situation
 - Based on the actual data provided
 - Strategic (not tactical minutiae)`;
 }

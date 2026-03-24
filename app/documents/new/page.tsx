@@ -10,7 +10,7 @@ import ResponsivePageContainer from '@/components/responsive/ResponsivePageConta
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader';
 import { useWorkspace } from '@/lib/use-workspace';
 
-interface Company {
+interface Space {
   id: string;
   name: string;
 }
@@ -36,10 +36,10 @@ export default function NewDocumentPage() {
   
   const [title, setTitle] = useState('');
   const [documentType, setDocumentType] = useState('notes');
-  const [companyId, setCompanyId] = useState('');
+  const [companyId, setSpaceId] = useState('');
   const [projectId, setProjectId] = useState('');
   
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const [spaces, setSpaces] = useState<Space[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   
   const [loading, setLoading] = useState(false);
@@ -62,14 +62,14 @@ export default function NewDocumentPage() {
 
   const fetchOptions = async () => {
     try {
-      const [companiesRes, projectsRes] = await Promise.all([
-        fetch(`/api/companies?workspaceId=${workspaceId}`),
+      const [spacesRes, projectsRes] = await Promise.all([
+        fetch(`/api/spaces?workspaceId=${workspaceId}`),
         fetch(`/api/projects?workspaceId=${workspaceId}`)
       ]);
 
-      if (companiesRes.ok) {
-        const data = await companiesRes.json();
-        setCompanies(data || []);
+      if (spacesRes.ok) {
+        const data = await spacesRes.json();
+        setSpaces(data || []);
       }
 
       if (projectsRes.ok) {
@@ -209,27 +209,27 @@ export default function NewDocumentPage() {
                     </Select>
                   </div>
 
-                  {/* Company */}
-                  {companies.length > 0 && (
+                  {/* Space */}
+                  {spaces.length > 0 && (
                     <div>
                       <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
-                        Company
+                        Space
                       </label>
                       <Select
                         selectedKeys={companyId ? [companyId] : []}
                         onSelectionChange={(keys) => {
                           const value = Array.from(keys)[0] as string;
-                          setCompanyId(value || '');
+                          setSpaceId(value || '');
                         }}
-                        placeholder="Select a company (optional)"
+                        placeholder="Select a space (optional)"
                         classNames={{
                           trigger: 'h-12 border-[#E5E5E5]',
                           value: 'text-[15px]'
                         }}
                       >
-                        {companies.map((company) => (
-                          <SelectItem key={company.id}>
-                            {company.name}
+                        {spaces.map((space) => (
+                          <SelectItem key={space.id}>
+                            {space.name}
                           </SelectItem>
                         ))}
                       </Select>

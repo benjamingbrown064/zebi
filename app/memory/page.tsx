@@ -30,7 +30,7 @@ export default function MemoryPage() {
   const [minConfidence, setMinConfidence] = useState<number>(1)
 
   // Use inline array for memory types
-  const memoryTypes = ["company", "project", "strategic", "research", "conversation"]
+  const memoryTypes = ["space", "project", "strategic", "research", "conversation"]
 
   // Load memories
   useEffect(() => {
@@ -293,9 +293,9 @@ export default function MemoryPage() {
                           <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700 capitalize">
                             {memory.memoryType}
                           </span>
-                          {memory.company && (
+                          {memory.space && (
                             <span className="px-2 py-1 text-xs rounded-full bg-accent-50 text-accent-700">
-                              {memory.company.name}
+                              {memory.space.name}
                             </span>
                           )}
                         </div>
@@ -430,9 +430,9 @@ function MemoryDetailModal({
                   <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700 capitalize">
                     {memory.memoryType}
                   </span>
-                  {memory.company && (
+                  {memory.space && (
                     <span className="px-2 py-1 text-xs rounded-full bg-accent-50 text-accent-700">
-                      🏢 {memory.company.name}
+                      🏢 {memory.space.name}
                     </span>
                   )}
                   {memory.project && (
@@ -529,12 +529,12 @@ function CreateMemoryModal({
 }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [memoryType, setMemoryType] = useState('company')
+  const [memoryType, setMemoryType] = useState('space')
   const [confidenceScore, setConfidenceScore] = useState(7)
   const [source, setSource] = useState('')
 
   // Use inline array for memory types
-  const memoryTypes = ["company", "project", "strategic", "research", "conversation"]
+  const memoryTypes = ["space", "project", "strategic", "research", "conversation"]
 
   const handleSubmit = () => {
     if (!title || !description) {

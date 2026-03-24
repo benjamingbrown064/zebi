@@ -15,7 +15,7 @@ async function main() {
     let workspace = await prisma.workspace.findFirst({
       include: {
         statuses: true,
-        companies: true,
+        spaces: true,
       },
     });
 
@@ -35,7 +35,7 @@ async function main() {
         },
         include: {
           statuses: true,
-          companies: true,
+          spaces: true,
         },
       });
     }
@@ -43,11 +43,11 @@ async function main() {
 
     // Step 2: Get or create a test company
     console.log('2️⃣ Finding test company...');
-    let company = workspace.companies[0];
+    let company = workspace.spaces[0];
     
     if (!company) {
       console.log('   No company found. Creating test company...');
-      company = await prisma.company.create({
+      company = await prisma.space.create({
         data: {
           workspaceId: workspace.id,
           name: 'Test Company',

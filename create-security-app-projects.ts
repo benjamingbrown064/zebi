@@ -3103,7 +3103,7 @@ async function main() {
   console.log(`   ✅ In Progress status: ${IN_PROGRESS_STATUS_ID}\n`);
 
   // Verify company exists
-  const company = await prisma.company.findUnique({
+  const company = await prisma.space.findUnique({
     where: { id: COMPANY_ID }
   });
 

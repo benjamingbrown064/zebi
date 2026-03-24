@@ -222,7 +222,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                   <button
                     onClick={() => {
                       const type = message.metadata?.creation?.objectType
-                      if (type === 'company') window.location.href = '/companies'
+                      if (type === 'space') window.location.href = '/spaces'
                       else if (type === 'objective') window.location.href = '/objectives'
                       else if (type === 'project') window.location.href = '/projects'
                       else if (type === 'task') window.location.href = '/tasks'
@@ -278,7 +278,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                 {message.metadata.plan.needsConfirmation ? (
                   <>
                     <p className="text-[13px] font-medium text-[#1A1A1A] mb-3">
-                      {message.metadata.plan.confirmationQuestion || 'Which company is this for?'}
+                      {message.metadata.plan.confirmationQuestion || 'Which space is this for?'}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {['Love Warranty', 'Zebi', 'Other'].map(name => (
@@ -326,7 +326,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
 
                     <div className="flex gap-2">
                       <button
-                        onClick={() => window.location.href = '/companies'}
+                        onClick={() => window.location.href = '/spaces'}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[11px] font-medium text-[#525252] transition"
                       >
                         <FaStickyNote size={10} /> View Note

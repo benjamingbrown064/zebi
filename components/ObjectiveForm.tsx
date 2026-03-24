@@ -8,7 +8,7 @@ interface ObjectiveFormProps {
   onClose: () => void
   onSave: (objective: ObjectiveInput) => Promise<void>
   workspaceId: string
-  companies?: Array<{ id: string; name: string }>
+  spaces?: Array<{ id: string; name: string }>
   goals?: Array<{ id: string; name: string }>
   initialData?: Partial<ObjectiveInput>
 }
@@ -32,14 +32,14 @@ export default function ObjectiveForm({
   onClose,
   onSave,
   workspaceId,
-  companies = [],
+  spaces = [],
   goals = [],
   initialData,
 }: ObjectiveFormProps) {
   console.log('[ObjectiveForm] Received props:', { 
-    companiesCount: companies.length, 
+    spacesCount: spaces.length, 
     goalsCount: goals.length,
-    companies,
+    spaces,
     goals 
   })
 
@@ -76,7 +76,7 @@ export default function ObjectiveForm({
       return
     }
     if (!formData.companyId) {
-      setError('Company is required')
+      setError('Space is required')
       return
     }
     if (formData.targetValue <= 0) {
@@ -169,20 +169,20 @@ export default function ObjectiveForm({
             />
           </div>
 
-          {/* Company & Goal */}
+          {/* Space & Goal */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">Company *</label>
+              <label className="block text-sm font-medium text-[#5a5757] mb-2">Space *</label>
               <select
                 value={formData.companyId}
                 onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                 required
               >
-                <option value="">Select a company...</option>
-                {companies.map((company) => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
+                <option value="">Select a space...</option>
+                {spaces.map((space) => (
+                  <option key={space.id} value={space.id}>
+                    {space.name}
                   </option>
                 ))}
               </select>

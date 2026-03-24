@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
       objective: {
         id: objective.id,
         title: objective.title,
-        company: objective.company?.name,
+        space: objective.company?.name,
         goal: objective.goal?.name,
         status: objective.status,
         progress: `${objective.currentValue}/${objective.targetValue} ${objective.unit || ''}`,
@@ -213,7 +213,7 @@ export async function PATCH(request: NextRequest) {
       objective: {
         id: updated.id,
         title: updated.title,
-        company: updated.company?.name,
+        space: updated.company?.name,
         status: updated.status,
         progress: `${updated.currentValue}/${updated.targetValue} ${updated.unit || ''}`,
         progressPercent: Number(updated.progressPercent),

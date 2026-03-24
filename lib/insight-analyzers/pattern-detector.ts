@@ -1,4 +1,4 @@
-import { CompanyAnalysis, CompanyMetrics } from './company-analyzer';
+import { SpaceAnalysis, SpaceMetrics } from './space-analyzer';
 
 export interface DetectedPattern {
   type: 'positive' | 'negative' | 'neutral';
@@ -10,9 +10,9 @@ export interface DetectedPattern {
 }
 
 /**
- * Detect patterns and anomalies in company data
+ * Detect patterns and anomalies in space data
  */
-export function detectPatterns(analysis: CompanyAnalysis): DetectedPattern[] {
+export function detectPatterns(analysis: SpaceAnalysis): DetectedPattern[] {
   const patterns: DetectedPattern[] = [];
   const { metrics, recentActivity, strategicContext } = analysis;
 
@@ -195,7 +195,7 @@ export function detectPatterns(analysis: CompanyAnalysis): DetectedPattern[] {
       type: 'positive',
       category: 'opportunity',
       title: 'Strong Strategic Foundation',
-      description: 'Company has clear mission, target customers, and competitive positioning. Ready for accelerated execution.',
+      description: 'Space has clear mission, target customers, and competitive positioning. Ready for accelerated execution.',
       severity: 'low',
     });
   }
@@ -226,7 +226,7 @@ export function detectPatterns(analysis: CompanyAnalysis): DetectedPattern[] {
       type: 'positive',
       category: 'opportunity',
       title: 'Ready for Scale',
-      description: 'High completion rate, strong velocity, and objectives on track. Company is executing well and ready to take on more.',
+      description: 'High completion rate, strong velocity, and objectives on track. Space is executing well and ready to take on more.',
       severity: 'low',
       metrics: {
         completionRate: metrics.completionRate,

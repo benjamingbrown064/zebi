@@ -5,7 +5,7 @@ import OpenAI from 'openai'
 import {
   executeCreation,
   validateCreationPayload,
-  resolveCompanyId,
+  resolveSpaceId,
   FIELD_QUESTIONS,
   type CreationPayload,
 } from '@/lib/chat-create'
@@ -139,8 +139,8 @@ export async function POST(request: NextRequest) {
     })
 
     // Load workspace context
-    const [companies, objectives, tasks, notes] = await Promise.all([
-      prisma.company.findMany({
+    const [spaces, objectives, tasks, notes] = await Promise.all([
+      prisma.space.findMany({
         where: { workspaceId, archivedAt: null },
         select: { id: true, name: true, industry: true, stage: true, revenue: true },
       }),
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
     ])
 
     // Build system prompt with workspace context
-    const systemPrompt = buildSystemPrompt(companies, objectives, tasks, notes, activeMode, conversation.context as any)
+    const systemPrompt = buildSystemPrompt(spaces, objectives, tasks, notes, activeMode, conversation.context as any)
 
     // Call OpenAI with conversation history
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
@@ -545,7 +545,7 @@ export async function POST(request: NextRequest) {
 }
 
 function buildSystemPrompt(
-  companies: any[],
+  spaces: any[],
   objectives: any[],
   tasks: any[],
   notes: any[],
@@ -553,13 +553,13 @@ function buildSystemPrompt(
   conversationContext?: any
 ): string {
 
-  const companyCtx = companies.length > 0
-    ? companies.map(c => `- ${c.name} (ID: ${c.id}, industry: ${c.industry || 'unknown'}, stage: ${c.stage || 'unknown'}${c.revenue ? `, MRR: £${Number(c.revenue)/1000}k` : ''})`).join('\n')
-    : 'No companies yet.'
+  const spaceCtx = spaces.length > 0
+    ? spaces.map(c => `- ${c.name} (ID: ${c.id}, industry: ${c.industry || 'unknown'}, stage: ${c.stage || 'unknown'}${c.revenue ? `, MRR: £${Number(c.revenue)/1000}k` : ''})`).join('\n')
+    : 'No spaces yet.'
 
   const objectiveCtx = objectives.length > 0
     ? objectives.map(o => {
-        const co = companies.find(c => c.id === o.companyId)
+        const co = spaces.find(c => c.id === o.companyId)
         const deadline = o.deadline ? ` — deadline ${new Date(o.deadline).toLocaleDateString('en-GB')}` : ''
         return `- [${o.status.toUpperCase()}] ${o.title}${deadline}${co ? ` (${co.name})` : ''}${o.description ? `\n  Context: ${o.description.slice(0, 120)}` : ''}`
       }).join('\n')
@@ -567,7 +567,7 @@ function buildSystemPrompt(
 
   const taskCtx = tasks.length > 0
     ? tasks.map(t => {
-        const co = companies.find(c => c.id === t.companyId)
+        const co = spaces.find(c => c.id === t.companyId)
         const due = t.dueAt ? ` due ${new Date(t.dueAt).toLocaleDateString('en-GB')}` : ''
         const pri = t.priority === 1 ? '🔴' : t.priority === 2 ? '🟡' : '⚪'
         return `${pri} ${t.title}${due}${co ? ` [${co.name}]` : ''}${t.description ? ` — ${t.description.slice(0, 80)}` : ''}`
@@ -616,8 +616,8 @@ You are a sharp, calm operator who helps the founder decide what matters and wha
 
 ## Your workspace context
 
-### Companies
-${companyCtx}
+### Spaces
+${spaceCtx}
 
 ### Active objectives (ordered by deadline)
 ${objectiveCtx}
@@ -692,7 +692,7 @@ Classify the user's intent before forming your answer:
 - **completion_report**: "I've done those", "sorted", "done", "finished", "completed", "all done", "that's done", "I did those", "done now"
 - **task_update_confirm**: "yes", "yes please", "go ahead", "do it", "yep", "sure", "confirm"
 - **priority_rejection**: "I can't work on that", "what else should I work on", "something else", "not today", "can't do that one", "skip that", "not that one"
-- **create_object**: "create a company", "add an objective", "make a project", "create a task for X", "add a document to this", "save to inbox", "capture this", "create a new X" — any intent to create a real object in the system
+- **create_object**: "create a space", "add an objective", "make a project", "create a task for X", "add a document to this", "save to inbox", "capture this", "create a new X" — any intent to create a real object in the system
 - **task_list**: "show me my tasks", "list tasks", "what tasks do I have", "show tasks", "what's open", "what's in my backlog"
 - **object_reference**: "this task", "that one", "add this to it", "attach it to", "link that to" — the user is referencing an object from earlier in the conversation
 - **chat**: everything else
@@ -798,9 +798,9 @@ Return a "creation" object in your JSON response (example):
   {
     "intent": "create_object",
     "mode": "chat",
-    "response": "Done. I created a company called Security App. Want me to add its first objective?",
+    "response": "Done. I created a space called Security App. Want me to add its first objective?",
     "creation": {
-      "objectType": "company",
+      "objectType": "space",
       "fields": { "name": "Security App", "industry": "security" },
       "missingRequired": null,
       "clarificationQuestion": null,
@@ -811,7 +811,7 @@ Return a "creation" object in your JSON response (example):
 
 Field extraction rules:
 - Extract every field you can from the message and conversation context
-- "companyId" field: use company name — the server will resolve to ID. Use companies from workspace context above.
+- "companyId" field: use space name — the server will resolve to ID. Use spaces from workspace context above.
 - "projectId" field: use project name — the server will resolve to ID
 - For document: set generateContent=true ONLY when the user clearly wants substantive content ("write a doc", "draft a how-to", "create a guide"). For "add a document to this task", set generateContent=false.
 - For objective: if deadline/dates not given, leave blank — the server uses sensible defaults (today, 90 days out)
@@ -819,10 +819,10 @@ Field extraction rules:
 Missing field rules:
 - If a genuinely required field is missing AND cannot be inferred from context, set missingRequired to the field name and clarificationQuestion to a single short question
 - Ask AT MOST ONE question. Do not ask for optional fields.
-- Required fields: company=name, objective=title+companyId, project=name, task=title, document=title, inbox=content
+- Required fields: space=name, objective=title+companyId, project=name, task=title, document=title, inbox=content
 
 Object type mapping:
-- "company", "startup", "business" => objectType: "company"
+- "space", "startup", "business" => objectType: "space"
 - "objective", "goal", "OKR", "target" => objectType: "objective"
 - "project", "workstream", "initiative" => objectType: "project"
 - "task", "to-do", "action item" => objectType: "task"
@@ -835,7 +835,7 @@ Response text rules:
 - Always use object-aware language
 
 Parent context from conversation:
-Use "Last created objects" and "Currently resolved object" from context above to infer parent IDs when the user says "under it", "for this company", etc.
+Use "Last created objects" and "Currently resolved object" from context above to infer parent IDs when the user says "under it", "for this space", etc.
 
 ### task_list
 Return up to 10 open tasks. Format each as a clear one-liner with priority emoji.
@@ -974,7 +974,7 @@ async function handlePlanMode(
     noteId = rows[0].id
     await prisma.aIConversation.update({
       where: { id: conversationId },
-      data: { context: { ...conversationContext, linkedNoteId: noteId, inferredCompanyId: plan.companyId } },
+      data: { context: { ...conversationContext, linkedNoteId: noteId, inferredSpaceId: plan.companyId } },
     })
   }
 

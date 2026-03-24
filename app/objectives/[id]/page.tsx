@@ -161,8 +161,8 @@ export default async function ObjectiveDetailPage({ params }: { params: { id: st
       return notFound()
     }
 
-    // Now fetch memories/insights with correct company ID
-    const [additionalMemories, companyInsights] = await Promise.all([
+    // Now fetch memories/insights with correct space ID
+    const [additionalMemories, spaceInsights] = await Promise.all([
       objective.companyId
         ? prisma.aIMemory.findMany({
             where: {
@@ -210,7 +210,7 @@ export default async function ObjectiveDetailPage({ params }: { params: { id: st
       .slice(0, 10)
 
     // Merge and deduplicate insights
-    const allInsights = [...insights, ...companyInsights]
+    const allInsights = [...insights, ...spaceInsights]
       .filter((i, idx, arr) => arr.findIndex(x => x.id === i.id) === idx)
       .slice(0, 10)
 
@@ -260,7 +260,7 @@ export default async function ObjectiveDetailPage({ params }: { params: { id: st
       completedAt: objective.completedAt?.toISOString() || null,
       lastChecked: objective.lastChecked?.toISOString() || null,
       lastProgressRecalc: objective.lastProgressRecalc?.toISOString() || null,
-      company: objective.company
+      space: objective.company
         ? {
             ...objective.company,
             revenue: objective.company.revenue ? Number(objective.company.revenue) : null,

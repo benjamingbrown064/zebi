@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
         return {
           id: o.id,
           title: o.title,
-          company: o.company?.name,
+          space: o.company?.name,
           status: o.status,
           priority: o.priority,
           daysUntilDeadline,
@@ -163,7 +163,7 @@ export async function GET(request: NextRequest) {
         id: b.id,
         title: b.title,
         objective: b.objective.title,
-        company: b.objective.company?.name,
+        space: b.objective.company?.name,
         severity: b.severity,
       })),
 

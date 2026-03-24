@@ -30,7 +30,7 @@ export interface ObjectiveBreakdown {
   }[];
 }
 
-export interface CompanyContext {
+export interface SpaceContext {
   name: string;
   industry?: string;
   stage?: string;
@@ -46,25 +46,25 @@ export async function generateObjectiveBreakdown(
   unit: string,
   startDate: Date,
   deadline: Date,
-  companyContext?: CompanyContext
+  spaceContext?: SpaceContext
 ): Promise<ObjectiveBreakdown> {
   const daysAvailable = Math.ceil(
     (deadline.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  const contextSection = companyContext
+  const contextSection = spaceContext
     ? `
-Company Context:
-- Name: ${companyContext.name}
-- Industry: ${companyContext.industry || 'Unknown'}
-- Stage: ${companyContext.stage || 'Unknown'}
-- Current Revenue: ${companyContext.revenue ? `£${companyContext.revenue.toLocaleString()}` : 'Unknown'}
-- Resources: ${companyContext.teamSize || 'Small team (1-3 people)'}
-- Competitive Position: ${companyContext.positioning || 'Unknown'}
+Space Context:
+- Name: ${spaceContext.name}
+- Industry: ${spaceContext.industry || 'Unknown'}
+- Stage: ${spaceContext.stage || 'Unknown'}
+- Current Revenue: ${spaceContext.revenue ? `£${spaceContext.revenue.toLocaleString()}` : 'Unknown'}
+- Resources: ${spaceContext.teamSize || 'Small team (1-3 people)'}
+- Competitive Position: ${spaceContext.positioning || 'Unknown'}
 
-${companyContext.relevantMemories && companyContext.relevantMemories.length > 0 ? `
-Company Memories (relevant context):
-${companyContext.relevantMemories.map(m => `- ${m}`).join('\n')}
+${spaceContext.relevantMemories && spaceContext.relevantMemories.length > 0 ? `
+Space Memories (relevant context):
+${spaceContext.relevantMemories.map(m => `- ${m}`).join('\n')}
 ` : ''}
 `
     : '';

@@ -61,7 +61,7 @@ async function hasAskedRecently(
 
   if (!recentQuestion) return false;
 
-  // Check if context matches (same project/company/etc)
+  // Check if context matches (same project/space/etc)
   const payload = recentQuestion.eventPayload as any;
   return payload.context?.contextKey === contextKey;
 }
@@ -82,7 +82,7 @@ async function generateStalledProjectQuestion(
   const prompt = `You are an AI assistant helping manage projects. A project has stalled.
 
 Project: ${pattern.projectName}
-${pattern.companyName ? `Company: ${pattern.companyName}` : ''}
+${pattern.spaceName ? `Space: ${pattern.spaceName}` : ''}
 Last Activity: ${pattern.lastActivity.toLocaleDateString()}
 Days Stalled: ${pattern.daysStalled}
 Active Tasks: ${pattern.taskCount}
@@ -117,7 +117,7 @@ Respond in JSON format:
         projectId: pattern.projectId,
         projectName: pattern.projectName,
         companyId: pattern.companyId,
-        companyName: pattern.companyName,
+        spaceName: pattern.spaceName,
         lastActivity: pattern.lastActivity.toISOString(),
         daysStalled: pattern.daysStalled,
         taskCount: pattern.taskCount,
@@ -144,9 +144,9 @@ async function generateRevenueDropQuestion(
     return null;
   }
 
-  const prompt = `You are an AI assistant helping manage company performance. A company's revenue has dropped significantly.
+  const prompt = `You are an AI assistant helping manage space performance. A space's revenue has dropped significantly.
 
-Company: ${pattern.companyName}
+Space: ${pattern.spaceName}
 Current Revenue: $${pattern.currentRevenue.toFixed(2)}
 Previous Revenue: $${pattern.previousRevenue.toFixed(2)}
 Drop: ${pattern.dropPercent.toFixed(1)}%
@@ -180,7 +180,7 @@ Respond in JSON format:
       options: response.options,
       context: {
         companyId: pattern.companyId,
-        companyName: pattern.companyName,
+        spaceName: pattern.spaceName,
         currentRevenue: pattern.currentRevenue,
         previousRevenue: pattern.previousRevenue,
         dropPercent: pattern.dropPercent,
@@ -210,7 +210,7 @@ async function generateVelocityIssueQuestion(
 
   const scopeLabel = 
     pattern.scope === 'workspace' ? 'Workspace' :
-    pattern.scope === 'company' ? `Company: ${pattern.companyName}` :
+    pattern.scope === 'space' ? `Space: ${pattern.spaceName}` :
     `Project: ${pattern.projectName}`;
 
   const prompt = `You are an AI assistant helping manage team velocity. Task completion has dropped significantly.
@@ -250,7 +250,7 @@ Respond in JSON format:
       context: {
         scope: pattern.scope,
         companyId: pattern.companyId,
-        companyName: pattern.companyName,
+        spaceName: pattern.spaceName,
         projectId: pattern.projectId,
         projectName: pattern.projectName,
         currentVelocity: pattern.currentVelocity,

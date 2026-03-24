@@ -7,7 +7,7 @@ import { FaChevronUp, FaChevronDown, FaCheck } from 'react-icons/fa'
 interface TasksTableProps {
   tasks: (Task & { 
     goal?: { id: string; name: string }
-    company?: { id: string; name: string }
+    space?: { id: string; name: string }
     project?: { id: string; name: string }
     objective?: { id: string; title: string }
   })[]
@@ -191,7 +191,7 @@ export default function TasksTable({
               <SortHeader label="Priority" sortKey="priority" />
             </th>
             <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
-              Company
+              Space
             </th>
             <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
               Project
@@ -255,9 +255,9 @@ export default function TasksTable({
                   {PRIORITY_LABELS[task.priority]}
                 </td>
                 <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
-                  {task.company ? (
-                    <span className="truncate max-w-[150px] block" title={task.company.name}>
-                      {task.company.name}
+                  {task.space ? (
+                    <span className="truncate max-w-[150px] block" title={task.space.name}>
+                      {task.space.name}
                     </span>
                   ) : (
                     <span className="text-[#C4C0C0]">—</span>

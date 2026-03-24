@@ -1191,7 +1191,7 @@ async function main() {
   TODO_STATUS_ID = await getOrCreateStatus(WORKSPACE_ID, 'To Do', 'todo');
   console.log(`   ✅ Todo status: ${TODO_STATUS_ID}\n`);
 
-  const company = await prisma.company.findUnique({
+  const company = await prisma.space.findUnique({
     where: { id: COMPANY_ID }
   });
 

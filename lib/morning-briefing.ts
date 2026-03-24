@@ -19,13 +19,13 @@ export interface MorningBriefingData {
     id: string;
     title: string;
     effortPoints: number | null;
-    companyName: string | null;
+    spaceName: string | null;
     priority: number;
   }>;
   objectivesNeedingAttention: Array<{
     id: string;
     title: string;
-    companyName: string | null;
+    spaceName: string | null;
     progressPercent: number;
     daysLeft: number;
     status: string;
@@ -205,7 +205,7 @@ export async function generateMorningBriefing(
     id: task.id,
     title: task.title,
     effortPoints: task.effortPoints,
-    companyName: task.company?.name || null,
+    spaceName: task.company?.name || null,
     priority: task.priority,
   }));
 
@@ -235,7 +235,7 @@ export async function generateMorningBriefing(
       objectivesNeedingAttention.push({
         id: obj.id,
         title: obj.title,
-        companyName: obj.company?.name || null,
+        spaceName: obj.company?.name || null,
         progressPercent: progress,
         daysLeft,
         status: obj.status,
@@ -314,8 +314,8 @@ export function formatMorningBriefingForTelegram(briefing: MorningBriefingData):
     lines.push('👤 *Your Tasks Today:*');
     for (const task of briefing.todayTasks.slice(0, 5)) {
       const effortStr = task.effortPoints ? ` (${task.effortPoints}pt)` : '';
-      const companyStr = task.companyName ? ` \\- ${escapeMarkdown(task.companyName)}` : '';
-      lines.push(`• ${escapeMarkdown(task.title)}${effortStr}${companyStr}`);
+      const spaceStr = task.spaceName ? ` \\- ${escapeMarkdown(task.spaceName)}` : '';
+      lines.push(`• ${escapeMarkdown(task.title)}${effortStr}${spaceStr}`);
     }
     lines.push('');
   }
@@ -324,10 +324,10 @@ export function formatMorningBriefingForTelegram(briefing: MorningBriefingData):
   if (briefing.objectivesNeedingAttention.length > 0) {
     lines.push('🎯 *Objectives Needing Attention:*');
     for (const obj of briefing.objectivesNeedingAttention) {
-      const companyStr = obj.companyName ? `${escapeMarkdown(obj.companyName)} \\- ` : '';
+      const spaceStr = obj.spaceName ? `${escapeMarkdown(obj.spaceName)} \\- ` : '';
       const statusEmoji = obj.hasBlockers ? '🚫' : obj.daysLeft < 7 ? '⚠️' : '⏰';
       const blockerNote = obj.hasBlockers ? ` \\- BLOCKED (${obj.blockerCount} issues)` : '';
-      lines.push(`• ${companyStr}${escapeMarkdown(obj.title)}: ${obj.progressPercent}% complete, ${obj.daysLeft} days left ${statusEmoji}${blockerNote}`);
+      lines.push(`• ${spaceStr}${escapeMarkdown(obj.title)}: ${obj.progressPercent}% complete, ${obj.daysLeft} days left ${statusEmoji}${blockerNote}`);
     }
     lines.push('');
   }

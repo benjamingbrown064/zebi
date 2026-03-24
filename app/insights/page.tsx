@@ -424,10 +424,10 @@ export default function InsightsPage() {
                       {insight.summary}
                     </p>
 
-                    {insight.company && (
+                    {insight.space && (
                       <div className="mb-3">
                         <span className="px-2 py-1 text-xs rounded-full bg-white text-[#5a5757] border border-gray-300">
-                          🏢 {insight.company.name}
+                          🏢 {insight.space.name}
                         </span>
                       </div>
                     )}
@@ -551,9 +551,9 @@ function InsightDetailModal({
               <span className="px-3 py-1 text-sm rounded-full bg-[#e6f4f4] text-[#006766]">
                 Priority {insight.priority}
               </span>
-              {insight.company && (
+              {insight.space && (
                 <span className="px-3 py-1 text-sm rounded-full bg-accent-50 text-accent-700">
-                  🏢 {insight.company.name}
+                  🏢 {insight.space.name}
                 </span>
               )}
             </div>

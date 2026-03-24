@@ -2,10 +2,10 @@ import { prisma } from '@/lib/prisma';
 
 export interface VelocityIssuePattern {
   companyId?: string;
-  companyName?: string;
+  spaceName?: string;
   projectId?: string;
   projectName?: string;
-  scope: 'workspace' | 'company' | 'project';
+  scope: 'workspace' | 'space' | 'project';
   currentVelocity: number; // tasks/week
   previousVelocity: number; // tasks/week
   dropPercent: number;
@@ -66,7 +66,7 @@ export async function detectVelocityIssues(
 
   // ==================== COMPANY LEVEL ====================
   
-  const companies = await prisma.company.findMany({
+  const spaces = await prisma.space.findMany({
     where: {
       workspaceId,
       archivedAt: null,
@@ -77,10 +77,10 @@ export async function detectVelocityIssues(
     },
   });
 
-  for (const company of companies) {
-    const thisWeekCompletedCompany = await prisma.task.count({
+  for (const space of spaces) {
+    const thisWeekCompletedSpace = await prisma.task.count({
       where: {
-        companyId: company.id,
+        companyId: space.id,
         completedAt: {
           gte: sevenDaysAgo,
           lte: today,
@@ -88,9 +88,9 @@ export async function detectVelocityIssues(
       },
     });
 
-    const lastWeekCompletedCompany = await prisma.task.count({
+    const lastWeekCompletedSpace = await prisma.task.count({
       where: {
-        companyId: company.id,
+        companyId: space.id,
         completedAt: {
           gte: fourteenDaysAgo,
           lt: sevenDaysAgo,
@@ -98,18 +98,18 @@ export async function detectVelocityIssues(
       },
     });
 
-    if (lastWeekCompletedCompany > 0) {
+    if (lastWeekCompletedSpace > 0) {
       const dropPercent =
-        ((lastWeekCompletedCompany - thisWeekCompletedCompany) / lastWeekCompletedCompany) *
+        ((lastWeekCompletedSpace - thisWeekCompletedSpace) / lastWeekCompletedSpace) *
         100;
 
       if (dropPercent > 30) {
         issues.push({
-          scope: 'company',
-          companyId: company.id,
-          companyName: company.name,
-          currentVelocity: thisWeekCompletedCompany,
-          previousVelocity: lastWeekCompletedCompany,
+          scope: 'space',
+          companyId: space.id,
+          spaceName: space.name,
+          currentVelocity: thisWeekCompletedSpace,
+          previousVelocity: lastWeekCompletedSpace,
           dropPercent,
           weekRange: `${sevenDaysAgo.toLocaleDateString()} - ${today.toLocaleDateString()}`,
         });
@@ -164,7 +164,7 @@ export async function detectVelocityIssues(
           scope: 'project',
           projectId: project.id,
           projectName: project.name,
-          companyName: project.company?.name,
+          spaceName: project.company?.name,
           currentVelocity: thisWeekCompletedProject,
           previousVelocity: lastWeekCompletedProject,
           dropPercent,

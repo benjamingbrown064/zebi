@@ -70,7 +70,7 @@ export async function detectOpportunities(
         context: {
           insightCount: insights.length,
           insightTypes: insights.map(i => i.insightType),
-          companies: [
+          spaces: [
             ...new Set(insights.map(i => i.companyId).filter(Boolean)),
           ],
         },
@@ -106,17 +106,17 @@ export async function detectOpportunities(
   for (const objective of behindObjectives) {
     if (!objective.companyId) continue;
 
-    // Find insights for this company
-    const companyInsights = recentInsights.filter(
+    // Find insights for this space
+    const spaceInsights = recentInsights.filter(
       i => i.companyId === objective.companyId
     );
 
-    if (companyInsights.length >= 2) {
+    if (spaceInsights.length >= 2) {
       opportunities.push({
         opportunityType: 'strategic_alignment',
         title: `Insights Available for At-Risk Objective`,
-        description: `Objective "${objective.title}" is behind schedule (${Number(objective.progressPercent).toFixed(0)}% complete) with ${companyInsights.length} recent insights that could help.`,
-        relatedInsightIds: companyInsights.map(i => i.id),
+        description: `Objective "${objective.title}" is behind schedule (${Number(objective.progressPercent).toFixed(0)}% complete) with ${spaceInsights.length} recent insights that could help.`,
+        relatedInsightIds: spaceInsights.map(i => i.id),
         suggestedAction: 'review_insights_for_objective',
         confidence: 75,
         context: {
@@ -124,8 +124,8 @@ export async function detectOpportunities(
           objectiveTitle: objective.title,
           progress: Number(objective.progressPercent),
           deadline: objective.deadline,
-          companyName: objective.company?.name,
-          insightCount: companyInsights.length,
+          spaceName: objective.company?.name,
+          insightCount: spaceInsights.length,
         },
       });
     }
@@ -133,8 +133,8 @@ export async function detectOpportunities(
 
   // ==================== MOMENTUM OPPORTUNITIES ====================
   
-  // Find companies with high velocity + positive insights
-  const companies = await prisma.company.findMany({
+  // Find spaces with high velocity + positive insights
+  const spaces = await prisma.space.findMany({
     where: {
       workspaceId,
       archivedAt: null,
@@ -148,11 +148,11 @@ export async function detectOpportunities(
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  for (const company of companies) {
+  for (const space of spaces) {
     // Check task completion velocity
     const completedTasks = await prisma.task.count({
       where: {
-        companyId: company.id,
+        companyId: space.id,
         completedAt: {
           gte: sevenDaysAgo,
         },
@@ -161,21 +161,21 @@ export async function detectOpportunities(
 
     // Check for positive insights
     const positiveInsights = recentInsights.filter(
-      i => i.companyId === company.id && i.priority <= 2
+      i => i.companyId === space.id && i.priority <= 2
     );
 
     // High velocity (5+ tasks/week) + 2+ positive insights = momentum opportunity
     if (completedTasks >= 5 && positiveInsights.length >= 2) {
       opportunities.push({
         opportunityType: 'momentum',
-        title: `Strong Momentum at ${company.name}`,
-        description: `${company.name} completed ${completedTasks} tasks this week with ${positiveInsights.length} positive insights. Great time to scale up.`,
+        title: `Strong Momentum at ${space.name}`,
+        description: `${space.name} completed ${completedTasks} tasks this week with ${positiveInsights.length} positive insights. Great time to scale up.`,
         relatedInsightIds: positiveInsights.map(i => i.id),
-        suggestedAction: 'scale_up_company',
+        suggestedAction: 'scale_up_space',
         confidence: 80,
         context: {
-          companyId: company.id,
-          companyName: company.name,
+          companyId: space.id,
+          spaceName: space.name,
           weeklyVelocity: completedTasks,
           positiveInsightCount: positiveInsights.length,
         },

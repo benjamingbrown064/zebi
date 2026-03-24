@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 Rules:
 - Maximum 4 sentences
 - No bullet points — flowing prose only
-- Name real things from the workspace (tasks, objectives, projects, companies)
+- Name real things from the workspace (tasks, objectives, projects, spaces)
 - Sound like a sharp operator, not a chatbot
 - Never say "I" — write in second person ("You have...", "The key blocker is...", "This week...")
 - No filler phrases like "it looks like" or "it seems"

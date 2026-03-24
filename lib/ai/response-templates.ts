@@ -171,8 +171,8 @@ function generateEmptyWorkspaceResponse(context: AIContext): string {
   lines.push('3. The next actionable task for each project')
   lines.push('')
 
-  if (context.workspace.companies.length > 0) {
-    lines.push(`I can see you have ${context.workspace.companies.length} ${context.workspace.companies.length === 1 ? 'company' : 'companies'} in the system: ${context.workspace.companies.slice(0, 3).map(c => c.name).join(', ')}.`)
+  if (context.workspace.spaces.length > 0) {
+    lines.push(`I can see you have ${context.workspace.spaces.length} ${context.workspace.spaces.length === 1 ? 'space' : 'spaces'} in the system: ${context.workspace.spaces.slice(0, 3).map(c => c.name).join(', ')}.`)
     lines.push('')
     lines.push('Would you like help creating objectives or projects for any of them?')
   } else {

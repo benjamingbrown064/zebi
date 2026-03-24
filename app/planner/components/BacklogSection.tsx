@@ -24,7 +24,7 @@ interface Task {
     id: string
     name: string
   } | null
-  company?: {
+  space?: {
     id: string
     name: string
   } | null
@@ -90,7 +90,7 @@ export default function BacklogSection({
           task.title.toLowerCase().includes(query) ||
           task.description?.toLowerCase().includes(query) ||
           task.project?.name.toLowerCase().includes(query) ||
-          task.company?.name.toLowerCase().includes(query)
+          task.space?.name.toLowerCase().includes(query)
       )
     }
 

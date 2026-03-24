@@ -7,24 +7,24 @@
 import { prisma } from './prisma'
 
 /**
- * Get full company context (memories + insights + projects + tasks)
+ * Get full space context (memories + insights + projects + tasks)
  * Used by AI to make informed decisions
  */
-export async function getCompanyIntelligence(
+export async function getSpaceIntelligence(
   workspaceId: string,
   companyId: string
 ) {
   const startTime = Date.now()
 
-  const [company, memories, insights, projects, tasks] = await Promise.all([
-    // Company profile
-    prisma.company.findFirst({
+  const [space, memories, insights, projects, tasks] = await Promise.all([
+    // Space profile
+    prisma.space.findFirst({
       where: {
         id: companyId,
       },
     }),
 
-    // All memories for this company
+    // All memories for this space
     prisma.aIMemory.findMany({
       where: {
         companyId,
@@ -36,7 +36,7 @@ export async function getCompanyIntelligence(
       take: 50, // Top 50 memories
     }),
 
-    // All insights for this company
+    // All insights for this space
     prisma.aIInsight.findMany({
       where: {
         companyId,
@@ -81,7 +81,7 @@ export async function getCompanyIntelligence(
   const elapsed = Date.now() - startTime
 
   return {
-    company,
+    space,
     memories,
     insights,
     projects,
@@ -97,7 +97,7 @@ export async function getCompanyIntelligence(
 }
 
 /**
- * Get project context (memories + tasks + company context)
+ * Get project context (memories + tasks + space context)
  */
 export async function getProjectIntelligence(
   workspaceId: string,
@@ -119,7 +119,7 @@ export async function getProjectIntelligence(
     return null
   }
 
-  const [memories, tasks, companyMemories] = await Promise.all([
+  const [memories, tasks, spaceMemories] = await Promise.all([
     // Project-specific memories
     prisma.aIMemory.findMany({
       where: {
@@ -143,7 +143,7 @@ export async function getProjectIntelligence(
       },
     }),
 
-    // Related company memories (if project has a company)
+    // Related space memories (if project has a space)
     project.companyId
       ? prisma.aIMemory.findMany({
           where: {
@@ -163,11 +163,11 @@ export async function getProjectIntelligence(
   return {
     project,
     memories,
-    companyMemories,
+    spaceMemories,
     tasks,
     stats: {
       memoryCount: memories.length,
-      companyMemoryCount: companyMemories.length,
+      spaceMemoryCount: spaceMemories.length,
       taskCount: tasks.length,
       queryTimeMs: elapsed,
     },

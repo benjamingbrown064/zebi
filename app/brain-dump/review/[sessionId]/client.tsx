@@ -81,7 +81,7 @@ interface ReviewData {
 interface WorkspaceEntity {
   id: string;
   name: string;
-  type: 'company' | 'project' | 'objective';
+  type: 'space' | 'project' | 'objective';
 }
 
 export default function ReviewClient({ sessionId }: { sessionId: string }) {
@@ -117,18 +117,18 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
 
   const loadWorkspaceEntities = async () => {
     try {
-      const [companiesRes, projectsRes, objectivesRes] = await Promise.all([
-        fetch('/api/companies'),
+      const [spacesRes, projectsRes, objectivesRes] = await Promise.all([
+        fetch('/api/spaces'),
         fetch('/api/projects'),
         fetch('/api/objectives')
       ]);
 
-      const companies = await companiesRes.json();
+      const spaces = await spacesRes.json();
       const projects = await projectsRes.json();
       const objectives = await objectivesRes.json();
 
       const entities: WorkspaceEntity[] = [
-        ...companies.map((c: any) => ({ id: c.id, name: c.name, type: 'company' as const })),
+        ...spaces.map((c: any) => ({ id: c.id, name: c.name, type: 'space' as const })),
         ...projects.map((p: any) => ({ id: p.id, name: p.name, type: 'project' as const })),
         ...objectives.map((o: any) => ({ id: o.id, name: o.title, type: 'objective' as const }))
       ];

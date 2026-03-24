@@ -31,33 +31,33 @@ export function formatSummaryForTelegram(summary: DailySummaryData): string {
     lines.push('');
   }
 
-  // Companies section
-  if (summary.companies.length > 0) {
-    lines.push('💼 *Companies:*');
-    for (const company of summary.companies) {
+  // Spaces section
+  if (summary.spaces.length > 0) {
+    lines.push('💼 *Spaces:*');
+    for (const space of summary.spaces) {
       const activities: string[] = [];
       
-      if (company.tasksCompleted > 0) {
-        activities.push(`${company.tasksCompleted} tasks completed`);
+      if (space.tasksCompleted > 0) {
+        activities.push(`${space.tasksCompleted} tasks completed`);
       }
-      if (company.documentsCreated > 0) {
-        activities.push(`${company.documentsCreated} docs created`);
+      if (space.documentsCreated > 0) {
+        activities.push(`${space.documentsCreated} docs created`);
       }
-      if (company.documentsUpdated > 0) {
-        activities.push(`${company.documentsUpdated} docs updated`);
+      if (space.documentsUpdated > 0) {
+        activities.push(`${space.documentsUpdated} docs updated`);
       }
-      if (company.insightsGenerated > 0) {
-        activities.push(`${company.insightsGenerated} insights`);
+      if (space.insightsGenerated > 0) {
+        activities.push(`${space.insightsGenerated} insights`);
       }
-      if (company.memoriesStored > 0) {
-        activities.push(`${company.memoriesStored} memories`);
+      if (space.memoriesStored > 0) {
+        activities.push(`${space.memoriesStored} memories`);
       }
-      if (company.projectsProgressed > 0) {
-        activities.push(`${company.projectsProgressed} projects progressed`);
+      if (space.projectsProgressed > 0) {
+        activities.push(`${space.projectsProgressed} projects progressed`);
       }
 
       if (activities.length > 0) {
-        lines.push(`• ${escapeMarkdown(company.name)}: ${activities.join(', ')}`);
+        lines.push(`• ${escapeMarkdown(space.name)}: ${activities.join(', ')}`);
       }
     }
     lines.push('');
@@ -111,13 +111,13 @@ export function formatSummaryForTelegram(summary: DailySummaryData): string {
       lines.push(`   ${priorityStats.join(' • ')}`);
     }
 
-    // Top companies in queue
-    if (summary.tomorrowQueue.byCompany.length > 0) {
-      const topCompanies = summary.tomorrowQueue.byCompany
+    // Top spaces in queue
+    if (summary.tomorrowQueue.bySpace.length > 0) {
+      const topSpaces = summary.tomorrowQueue.bySpace
         .slice(0, 3)
-        .map(c => `${escapeMarkdown(c.companyName)} (${c.taskCount})`)
+        .map(c => `${escapeMarkdown(c.spaceName)} (${c.taskCount})`)
         .join(', ');
-      lines.push(`   Top: ${topCompanies}`);
+      lines.push(`   Top: ${topSpaces}`);
     }
   }
 
@@ -158,24 +158,24 @@ export function formatSummaryPlain(summary: DailySummaryData): string {
     lines.push('');
   }
 
-  // Companies
-  if (summary.companies.length > 0) {
-    lines.push('💼 Companies:');
-    for (const company of summary.companies) {
+  // Spaces
+  if (summary.spaces.length > 0) {
+    lines.push('💼 Spaces:');
+    for (const space of summary.spaces) {
       const activities: string[] = [];
       
-      if (company.tasksCompleted > 0) {
-        activities.push(`${company.tasksCompleted} tasks completed`);
+      if (space.tasksCompleted > 0) {
+        activities.push(`${space.tasksCompleted} tasks completed`);
       }
-      if (company.documentsCreated > 0) {
-        activities.push(`${company.documentsCreated} docs created`);
+      if (space.documentsCreated > 0) {
+        activities.push(`${space.documentsCreated} docs created`);
       }
-      if (company.insightsGenerated > 0) {
-        activities.push(`${company.insightsGenerated} insights`);
+      if (space.insightsGenerated > 0) {
+        activities.push(`${space.insightsGenerated} insights`);
       }
 
       if (activities.length > 0) {
-        lines.push(`- ${company.name}: ${activities.join(', ')}`);
+        lines.push(`- ${space.name}: ${activities.join(', ')}`);
       }
     }
     lines.push('');

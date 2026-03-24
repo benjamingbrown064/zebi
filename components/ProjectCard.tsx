@@ -7,7 +7,7 @@ interface ProjectCardProps {
   id: string
   name: string
   description?: string | null
-  companyName?: string | null
+  spaceName?: string | null
   companyId?: string | null
   objectiveTitle?: string | null
   objectiveStatus?: string | null
@@ -20,7 +20,7 @@ export default function ProjectCard({
   id,
   name,
   description,
-  companyName,
+  spaceName,
   companyId,
   objectiveTitle,
   objectiveStatus,
@@ -58,23 +58,23 @@ export default function ProjectCard({
               {name}
             </h3>
 
-            {/* Breadcrumb: Company → Objective */}
+            {/* Breadcrumb: Space → Objective */}
             <div className="flex items-center gap-1 mt-1 text-xs text-[#A3A3A3]">
-              {companyName && (
+              {spaceName && (
                 <>
                   <FaBuilding className="text-[#C4C0C0]" />
                   <Link
-                    href={`/companies/${companyId}`}
+                    href={`/spaces/${companyId}`}
                     className="hover:text-accent-600 transition truncate"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {companyName}
+                    {spaceName}
                   </Link>
                 </>
               )}
               {objectiveTitle && (
                 <>
-                  {companyName && <span>•</span>}
+                  {spaceName && <span>•</span>}
                   <FaBullseye className="text-[#C4C0C0]" />
                   <span className="truncate">🎯 {objectiveTitle}</span>
                   {objectiveStatus && (

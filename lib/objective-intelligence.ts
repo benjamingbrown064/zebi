@@ -4,7 +4,7 @@ import type { Objective, Task, ObjectiveProgress, ObjectiveBlocker } from '@pris
 
 export interface ObjectiveContext {
   objective: Objective;
-  company?: {
+  space?: {
     name: string;
     industry?: string;
     stage?: string;
@@ -172,7 +172,7 @@ export async function gatherObjectiveContext(objectiveId: string): Promise<Objec
 
   return {
     objective,
-    company: objective.company as any || undefined,
+    space: objective.company as any || undefined,
     projects: projectsWithCounts,
     tasks: {
       total: objective.tasks.length,

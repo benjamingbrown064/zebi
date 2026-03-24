@@ -9,7 +9,7 @@ interface Task {
   priority?: number
   dueAt?: string
   project?: { name: string }
-  company?: { name: string }
+  space?: { name: string }
   status?: { name: string; type: string }
 }
 
@@ -92,7 +92,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
         priority: suggestion!.metadata.priority,
         dueAt: suggestion!.metadata.dueAt,
         project: suggestion!.metadata.project,
-        company: suggestion!.metadata.company,
+        space: suggestion!.metadata.space,
       }
 
       // Add to appropriate slot
@@ -528,10 +528,10 @@ function AllTasksTab({ tasks, onAdd, isTaskInPlan }: {
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-medium text-[#1A1A1A] mb-1">{task.title}</p>
-                {(task.project || task.company) && (
+                {(task.project || task.space) && (
                   <p className="text-[11px] text-[#A3A3A3]">
-                    {task.company?.name && <span>{task.company.name}</span>}
-                    {task.company?.name && task.project?.name && <span> · </span>}
+                    {task.space?.name && <span>{task.space.name}</span>}
+                    {task.space?.name && task.project?.name && <span> · </span>}
                     {task.project?.name && <span>{task.project.name}</span>}
                   </p>
                 )}

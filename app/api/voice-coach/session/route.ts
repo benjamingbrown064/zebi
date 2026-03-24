@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     // Accept all valid session types
     const validTypes = [
       'goal_planning',
-      'company_creation',
+      'space_creation',
       'objective_creation',
       'project_creation'
     ];
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     // Opening questions by type
     const openingQuestions: Record<string, string> = {
       goal_planning: "What are you trying to achieve? Speak naturally — I'll structure it.",
-      company_creation: "Tell me about this company. What's the name, industry, and what do they do?",
+      space_creation: "Tell me about this space. What's the name, industry, and what do they do?",
       objective_creation: "What objective do you want to achieve? Be specific about the outcome and timeline.",
       project_creation: "Tell me about this project. What's the goal, scope, and key deliverables?"
     };

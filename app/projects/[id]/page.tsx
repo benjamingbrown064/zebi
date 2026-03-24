@@ -138,14 +138,14 @@ export default function ProjectDetailPage() {
               {project.company && (
                 <>
                   <Link
-                    href="/companies"
+                    href="/spaces"
                     className="hover:text-accent-600 transition"
                   >
-                    Companies
+                    Spaces
                   </Link>
                   <span>/</span>
                   <Link
-                    href={`/companies/${project.company.id}`}
+                    href={`/spaces/${project.company.id}`}
                     className="hover:text-accent-600 transition"
                   >
                     {project.company.name}
@@ -176,10 +176,10 @@ export default function ProjectDetailPage() {
 
                   {/* Metadata */}
                   <div className="flex items-center gap-3 mt-2 flex-wrap">
-                    {/* Company Badge */}
+                    {/* Space Badge */}
                     {project.company && (
                       <Link
-                        href={`/companies/${project.company.id}`}
+                        href={`/spaces/${project.company.id}`}
                         className="flex items-center gap-1 px-3 py-1 bg-[#f0eded] text-[#5a5757] rounded-[10px] hover:bg-[#e8e4e4] transition text-sm"
                       >
                         <FaBuilding />

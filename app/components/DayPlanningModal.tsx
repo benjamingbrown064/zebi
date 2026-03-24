@@ -25,7 +25,7 @@ interface Task {
   priority?: number
   dueAt?: string
   project?: { name: string } | null
-  company?: { name: string } | null
+  space?: { name: string } | null
   status?: { name: string; type: string } | null
 }
 
@@ -95,7 +95,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
         priority: t.priority,
         dueAt: t.dueAt,
         project: t.projectId ? { name: t.projectId } : null, // minimal until we enrich
-        company: null,
+        space: null,
         status: null,
       }))
       setAllTasks(tasks)
@@ -135,7 +135,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
       priority: suggestion?.metadata?.priority,
       dueAt: suggestion?.metadata?.dueAt,
       project: suggestion?.metadata?.project ? { name: suggestion.metadata.project } : null,
-      company: suggestion?.metadata?.company ? { name: suggestion.metadata.company } : null,
+      space: suggestion?.metadata?.space ? { name: suggestion.metadata.space } : null,
     }
 
     if (category === 'main' && !primaryTask) {
@@ -628,9 +628,9 @@ function AllTasksTab({ tasks, onAdd, isTaskInPlan }: {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-medium text-[#1A1A1A] mb-0.5">{task.title}</p>
-                    {(task.project || task.company) && (
+                    {(task.project || task.space) && (
                       <p className="text-[11px] text-[#A3A3A3]">
-                        {[task.company?.name, task.project?.name].filter(Boolean).join(' · ')}
+                        {[task.space?.name, task.project?.name].filter(Boolean).join(' · ')}
                       </p>
                     )}
                   </div>

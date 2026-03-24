@@ -9,20 +9,20 @@ export interface DefaultTemplate {
   frequency: 'daily' | 'weekly' | 'monthly' | 'custom';
   customInterval?: any;
   taskTemplate: TaskTemplateData;
-  requiresCompany?: boolean;
+  requiresSpace?: boolean;
   requiresProject?: boolean;
 }
 
 export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
   // ==================== WEEKLY TEMPLATES ====================
   {
-    title: 'Weekly Market Research - {company}',
-    description: 'Automated weekly market research scan for {company}',
+    title: 'Weekly Market Research - {space}',
+    description: 'Automated weekly market research scan for {space}',
     frequency: 'weekly',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Market Research: {company} - {week} {year}',
-      description: `Conduct weekly market research for {company}:
+      title: 'Market Research: {space} - {week} {year}',
+      description: `Conduct weekly market research for {space}:
 
 • Monitor competitor activity and product updates
 • Track industry news and trends
@@ -43,13 +43,13 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
   },
 
   {
-    title: 'Weekly Social Media Monitoring - {company}',
+    title: 'Weekly Social Media Monitoring - {space}',
     description: 'Track brand mentions, sentiment, and engagement',
     frequency: 'weekly',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Social Media Monitor: {company} - {week}',
-      description: `Weekly social media analysis for {company}:
+      title: 'Social Media Monitor: {space} - {week}',
+      description: `Weekly social media analysis for {space}:
 
 • Track brand mentions across platforms
 • Monitor sentiment and engagement
@@ -70,13 +70,13 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
   },
 
   {
-    title: 'Weekly Content Planning - {company}',
+    title: 'Weekly Content Planning - {space}',
     description: 'Plan and schedule content for the upcoming week',
     frequency: 'weekly',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Content Planning: {company} - {week}',
-      description: `Plan content strategy for {company}:
+      title: 'Content Planning: {space} - {week}',
+      description: `Plan content strategy for {space}:
 
 • Review previous week's performance
 • Plan blog posts and articles
@@ -96,13 +96,13 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
 
   // ==================== MONTHLY TEMPLATES ====================
   {
-    title: 'Monthly Revenue Analysis - {company}',
+    title: 'Monthly Revenue Analysis - {space}',
     description: 'Automated monthly revenue and financial review',
     frequency: 'monthly',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Revenue Analysis: {company} - {month} {year}',
-      description: `Monthly financial review for {company}:
+      title: 'Revenue Analysis: {space} - {month} {year}',
+      description: `Monthly financial review for {space}:
 
 • Analyze revenue vs. targets
 • Review customer acquisition metrics (CAC, LTV)
@@ -129,13 +129,13 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
   },
 
   {
-    title: 'Monthly Product Roadmap Review - {company}',
+    title: 'Monthly Product Roadmap Review - {space}',
     description: 'Review and update product roadmap based on learnings',
     frequency: 'monthly',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Roadmap Review: {company} - {month}',
-      description: `Monthly product roadmap review for {company}:
+      title: 'Roadmap Review: {space} - {month}',
+      description: `Monthly product roadmap review for {space}:
 
 • Review completed features and outcomes
 • Assess current priorities and timeline
@@ -156,13 +156,13 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
   },
 
   {
-    title: 'Monthly Competitive Analysis - {company}',
+    title: 'Monthly Competitive Analysis - {space}',
     description: 'Deep dive into competitor positioning and strategy',
     frequency: 'monthly',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Competitive Analysis: {company} - {month}',
-      description: `Monthly competitive intelligence for {company}:
+      title: 'Competitive Analysis: {space} - {month}',
+      description: `Monthly competitive intelligence for {space}:
 
 • Deep analysis of top 3-5 competitors
 • Feature comparison and gap analysis
@@ -183,13 +183,13 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
   },
 
   {
-    title: 'Monthly Customer Feedback Review - {company}',
+    title: 'Monthly Customer Feedback Review - {space}',
     description: 'Analyze customer feedback and identify patterns',
     frequency: 'monthly',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Customer Feedback Review: {company} - {month}',
-      description: `Monthly customer insight analysis for {company}:
+      title: 'Customer Feedback Review: {space} - {month}',
+      description: `Monthly customer insight analysis for {space}:
 
 • Review all customer feedback channels
 • Identify common themes and requests
@@ -218,13 +218,13 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
 
   // ==================== DAILY TEMPLATES ====================
   {
-    title: 'Daily Competitor Monitoring - {company}',
+    title: 'Daily Competitor Monitoring - {space}',
     description: 'Quick daily scan of competitor activity',
     frequency: 'daily',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Competitor Scan: {company} - {date}',
-      description: `Daily competitor monitoring for {company}:
+      title: 'Competitor Scan: {space} - {date}',
+      description: `Daily competitor monitoring for {space}:
 
 • Check competitor blogs and changelogs
 • Monitor social media for announcements
@@ -246,13 +246,13 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
   },
 
   {
-    title: 'Daily Metrics Check - {company}',
+    title: 'Daily Metrics Check - {space}',
     description: 'Quick review of key business metrics',
     frequency: 'daily',
-    requiresCompany: true,
+    requiresSpace: true,
     taskTemplate: {
-      title: 'Metrics Check: {company} - {date}',
-      description: `Daily metrics review for {company}:
+      title: 'Metrics Check: {space} - {date}',
+      description: `Daily metrics review for {space}:
 
 • Review yesterday's key metrics
 • Check for anomalies or significant changes
@@ -334,8 +334,8 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
 /**
  * Get templates filtered by requirements
  */
-export function getTemplatesForCompany(): DefaultTemplate[] {
-  return DEFAULT_TEMPLATES.filter(t => t.requiresCompany);
+export function getTemplatesForSpace(): DefaultTemplate[] {
+  return DEFAULT_TEMPLATES.filter(t => t.requiresSpace);
 }
 
 export function getTemplatesForProject(): DefaultTemplate[] {
@@ -343,5 +343,5 @@ export function getTemplatesForProject(): DefaultTemplate[] {
 }
 
 export function getGeneralTemplates(): DefaultTemplate[] {
-  return DEFAULT_TEMPLATES.filter(t => !t.requiresCompany && !t.requiresProject);
+  return DEFAULT_TEMPLATES.filter(t => !t.requiresSpace && !t.requiresProject);
 }

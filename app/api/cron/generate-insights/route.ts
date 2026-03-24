@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     const results = [];
     let totalInsights = 0;
-    let totalCompanies = 0;
+    let totalSpaces = 0;
 
     for (const wsId of workspaceIds) {
       try {
@@ -62,21 +62,21 @@ export async function POST(request: NextRequest) {
         );
         
         totalInsights += insightCount;
-        totalCompanies += workspaceResults.length;
+        totalSpaces += workspaceResults.length;
 
         results.push({
           workspaceId: wsId,
-          companies: workspaceResults.length,
+          spaces: workspaceResults.length,
           insights: insightCount,
           details: workspaceResults.map(r => ({
             companyId: r.companyId,
-            companyName: r.companyName,
+            spaceName: r.spaceName,
             insights: r.insightCount,
           })),
         });
 
         console.log(
-          `✓ Workspace ${wsId}: ${insightCount} insights for ${workspaceResults.length} companies`
+          `✓ Workspace ${wsId}: ${insightCount} insights for ${workspaceResults.length} spaces`
         );
       } catch (error) {
         console.error(`Failed to generate insights for workspace ${wsId}:`, error);
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
             eventType: 'ai.insights.generated',
             eventPayload: {
               totalWorkspaces: workspaceIds.length,
-              totalCompanies,
+              totalSpaces,
               totalInsights,
               timestamp: new Date().toISOString(),
             },
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
       summary: {
         workspaces: workspaceIds.length,
-        companies: totalCompanies,
+        spaces: totalSpaces,
         insights: totalInsights,
       },
       results,
@@ -157,11 +157,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       workspaceId,
-      companies: results.length,
+      spaces: results.length,
       totalInsights: results.reduce((sum, r) => sum + r.insightCount, 0),
       results: results.map(r => ({
         companyId: r.companyId,
-        companyName: r.companyName,
+        spaceName: r.spaceName,
         insights: r.insights,
       })),
     });

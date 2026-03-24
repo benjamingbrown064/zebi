@@ -12,7 +12,7 @@ interface Objective {
   title: string
   description?: string | null
   companyId?: string | null
-  companyName?: string | null
+  spaceName?: string | null
   goalId?: string | null
   goalName?: string | null
   objectiveType: string
@@ -38,7 +38,7 @@ interface Objective {
   projectCount: number
 }
 
-interface Company {
+interface Space {
   id: string
   name: string
 }
@@ -50,7 +50,7 @@ interface Goal {
 
 interface ObjectivesClientProps {
   initialObjectives: Objective[]
-  companies: Company[]
+  spaces: Space[]
   goals: Goal[]
   workspaceId: string
 }
@@ -59,7 +59,7 @@ const PAGE_SIZE = 25
 
 export default function ObjectivesClient({
   initialObjectives,
-  companies,
+  spaces,
   goals,
   workspaceId,
 }: ObjectivesClientProps) {
@@ -75,7 +75,7 @@ export default function ObjectivesClient({
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [companyFilter, setCompanyFilter] = useState<string>('all')
+  const [spaceFilter, setSpaceFilter] = useState<string>('all')
 
   // Load more objectives
   const loadMoreObjectives = useCallback(async () => {
@@ -137,7 +137,7 @@ export default function ObjectivesClient({
   // Apply filters
   const filteredObjectives = objectives.filter((obj) => {
     if (statusFilter !== 'all' && obj.status !== statusFilter) return false
-    if (companyFilter !== 'all' && obj.companyId !== companyFilter) return false
+    if (spaceFilter !== 'all' && obj.companyId !== spaceFilter) return false
     return true
   })
 
@@ -273,17 +273,17 @@ export default function ObjectivesClient({
               ))}
             </div>
 
-            {/* Company Filter */}
-            {companies.length > 0 && (
+            {/* Space Filter */}
+            {spaces.length > 0 && (
               <select
-                value={companyFilter}
-                onChange={(e) => setCompanyFilter(e.target.value)}
+                value={spaceFilter}
+                onChange={(e) => setSpaceFilter(e.target.value)}
                 className="px-4 py-2 bg-white border border-[#E5E5E5] rounded-[10px] text-[13px] text-[#525252] focus:outline-none focus:border-[#DD3A44] focus:ring-2 focus:ring-[#DD3A44] focus:ring-offset-2"
               >
-                <option value="all">All Companies</option>
-                {companies.map((company) => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
+                <option value="all">All Spaces</option>
+                {spaces.map((space) => (
+                  <option key={space.id} value={space.id}>
+                    {space.name}
                   </option>
                 ))}
               </select>
@@ -309,7 +309,7 @@ export default function ObjectivesClient({
                     key={objective.id}
                     id={objective.id}
                     title={objective.title}
-                    companyName={objective.companyName || undefined}
+                    spaceName={objective.spaceName || undefined}
                     companyId={objective.companyId || undefined}
                     currentValue={objective.currentValue}
                     targetValue={objective.targetValue}
@@ -355,7 +355,7 @@ export default function ObjectivesClient({
         onClose={() => setIsFormOpen(false)}
         onSave={handleCreateObjective}
         workspaceId={workspaceId}
-        companies={companies}
+        spaces={spaces}
         goals={goals}
       />
     </div>

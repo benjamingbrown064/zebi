@@ -33,7 +33,7 @@ interface Project {
 interface Objective {
   id: string
   title: string
-  companyName?: string
+  spaceName?: string
   currentValue: number
   targetValue: number
   unit: string
@@ -419,13 +419,13 @@ function ObjectivesCard({
               onClick={() => onObjectiveClick(obj.id)}
               className="p-4 border border-[#E5E5E5] rounded-[10px] cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
             >
-              {/* Company */}
-              {obj.companyName && (
+              {/* Space */}
+              {obj.spaceName && (
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-5 h-5 rounded-[4px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
                     <FaBuilding className="text-[#737373] text-[10px]" />
                   </div>
-                  <span className="text-[12px] font-medium text-[#737373]">{obj.companyName}</span>
+                  <span className="text-[12px] font-medium text-[#737373]">{obj.spaceName}</span>
                 </div>
               )}
 

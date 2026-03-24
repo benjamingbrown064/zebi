@@ -6,7 +6,7 @@ export interface AIContext {
     name: string
     primaryGoal: any | null
     activeGoals: any[]
-    companies: any[]
+    spaces: any[]
     activeObjectives: any[]
     activeProjects: any[]
     recentTasks: any[]
@@ -36,7 +36,7 @@ async function buildContextUncached(
   userId: string
 ): Promise<AIContext> {
   // Fetch workspace data in parallel
-  const [goals, companies, objectives, projects, tasks, blockers] = await Promise.all([
+  const [goals, spaces, objectives, projects, tasks, blockers] = await Promise.all([
     // Active goals (sorted by end date, most urgent first)
     prisma.goal.findMany({
       where: { workspaceId, status: 'active' },
@@ -54,8 +54,8 @@ async function buildContextUncached(
       take: 10,
     }),
 
-    // Active companies
-    prisma.company.findMany({
+    // Active spaces
+    prisma.space.findMany({
       where: { workspaceId, archivedAt: null },
       select: {
         id: true,
@@ -198,7 +198,7 @@ async function buildContextUncached(
     memory.map((m) => [m.key, m.value])
   )
 
-  // Add "isRevenueLinked" flag to items based on company presence
+  // Add "isRevenueLinked" flag to items based on space presence
   const enhancedTasks = tasks.map(t => ({
     ...t,
     isRevenueLinked: !!t.companyId,
@@ -232,7 +232,7 @@ async function buildContextUncached(
         endDate: g.endDate.toISOString(),
         owner: g.owner,
       })),
-      companies: companies.map(c => ({
+      spaces: spaces.map(c => ({
         id: c.id,
         name: c.name,
         industry: c.industry,
@@ -248,7 +248,7 @@ async function buildContextUncached(
         priority: obj.priority,
         goalId: obj.goalId,
         companyId: obj.companyId,
-        company: obj.company?.name,
+        space: obj.company?.name,
         status: obj.status,
         isRevenueLinked: obj.isRevenueLinked,
         lastActivity: obj.lastActivity.toISOString(),
@@ -263,7 +263,7 @@ async function buildContextUncached(
         priority: p.priority,
         owner: p.owner,
         deadline: null, // Projects don't have explicit deadlines in schema
-        company: p.company?.name,
+        space: p.company?.name,
         isRevenueLinked: p.isRevenueLinked,
         lastActivity: p.lastActivity.toISOString(),
       })),
@@ -280,7 +280,7 @@ async function buildContextUncached(
         objectiveId: t.objectiveId,
         projectId: t.projectId,
         project: t.project?.name,
-        company: t.company?.name,
+        space: t.company?.name,
         isRevenueLinked: t.isRevenueLinked,
         lastActivity: t.lastActivity.toISOString(),
         todayPinDate: t.todayPinDate?.toISOString(),
@@ -345,11 +345,11 @@ export function formatContextForPrompt(context: AIContext): string {
   )
   lines.push('')
 
-  // Companies
-  if (context.workspace.companies.length > 0) {
-    lines.push('## Companies')
+  // Spaces
+  if (context.workspace.spaces.length > 0) {
+    lines.push('## Spaces')
     lines.push(
-      context.workspace.companies
+      context.workspace.spaces
         .map((c) => `- ${c.name}${c.stage ? ` (${c.stage})` : ''}${c.revenue ? ` - Revenue: ${c.revenue}` : ''}`)
         .join('\n')
     )
@@ -363,7 +363,7 @@ export function formatContextForPrompt(context: AIContext): string {
       ? context.workspace.activeObjectives
           .map(
             (obj) =>
-              `- ${obj.title}${obj.company ? ` (${obj.company})` : ''}: ${obj.progressPercent}% complete (deadline: ${obj.deadline.split('T')[0]}) [${obj.status}]`
+              `- ${obj.title}${obj.company ? ` (${obj.space})` : ''}: ${obj.progressPercent}% complete (deadline: ${obj.deadline.split('T')[0]}) [${obj.status}]`
           )
           .join('\n')
       : '- No active objectives'
@@ -378,7 +378,7 @@ export function formatContextForPrompt(context: AIContext): string {
           .slice(0, 10)
           .map(
             (p) =>
-              `- ${p.name}${p.company ? ` (${p.company})` : ''}${p.deadline ? ` - deadline: ${p.deadline.split('T')[0]}` : ''}${p.priority ? ` [P${p.priority}]` : ''}`
+              `- ${p.name}${p.company ? ` (${p.space})` : ''}${p.deadline ? ` - deadline: ${p.deadline.split('T')[0]}` : ''}${p.priority ? ` [P${p.priority}]` : ''}`
           )
           .join('\n')
       : '- No active projects'
@@ -393,7 +393,7 @@ export function formatContextForPrompt(context: AIContext): string {
           .slice(0, 15)
           .map(
             (t) =>
-              `- [P${t.priority}] ${t.title}${t.company ? ` (${t.company})` : ''} (${t.status})${t.dueAt ? ` - due ${t.dueAt.split('T')[0]}` : ''}`
+              `- [P${t.priority}] ${t.title}${t.company ? ` (${t.space})` : ''} (${t.status})${t.dueAt ? ` - due ${t.dueAt.split('T')[0]}` : ''}`
           )
           .join('\n')
       : '- No active tasks'

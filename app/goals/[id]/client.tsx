@@ -7,7 +7,7 @@ import Sidebar from '@/components/Sidebar'
 import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import { deleteGoal } from '@/app/actions/goals'
-import GoalCompanyLinker from '@/components/GoalCompanyLinker'
+import GoalSpaceLinker from '@/components/GoalSpaceLinker'
 
 interface GoalDetailClientProps {
   goal: any
@@ -163,8 +163,8 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
             </div>
 
 
-            {/* Company Links for Financial Goals */}
-            <GoalCompanyLinker
+            {/* Space Links for Financial Goals */}
+            <GoalSpaceLinker
               goalId={goal.id}
               workspaceId={goal.workspaceId}
               isFinancial={goal.metricType === 'currency'}

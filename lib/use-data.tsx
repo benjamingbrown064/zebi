@@ -67,13 +67,13 @@ export function useProjects() {
   })
 }
 
-export function useCompanies() {
+export function useSpaces() {
   const { workspaceId } = useWorkspace()
   return useQuery({
-    queryKey: ['companies', workspaceId],
-    queryFn: () => apiFetch<any[]>(`/api/companies?workspaceId=${workspaceId}`),
+    queryKey: ['spaces', workspaceId],
+    queryFn: () => apiFetch<any[]>(`/api/spaces?workspaceId=${workspaceId}`),
     enabled: !!workspaceId,
-    staleTime: 5 * 60 * 1000, // companies rarely change — 5min
+    staleTime: 5 * 60 * 1000, // spaces rarely change — 5min
   })
 }
 

@@ -7,7 +7,7 @@ import Recorder from '@/components/brain-dump/Recorder';
 import ParentSelector from './ParentSelector';
 import { FaEdit } from 'react-icons/fa';
 
-type EntityType = 'company' | 'objective' | 'project';
+type EntityType = 'space' | 'objective' | 'project';
 
 interface VoiceEntityModalProps {
   isOpen: boolean;
@@ -15,10 +15,10 @@ interface VoiceEntityModalProps {
   entityType: EntityType;
   onSuccess?: (entityId: string) => void;
   parentId?: string | null;
-  parentType?: 'goal' | 'company' | 'objective' | null;
+  parentType?: 'goal' | 'space' | 'objective' | null;
   context?: {
     existingGoals?: Array<{ id: string; name: string }>;
-    existingCompanies?: Array<{ id: string; name: string }>;
+    existingSpaces?: Array<{ id: string; name: string }>;
     existingObjectives?: Array<{ id: string; title: string }>;
   };
 }
@@ -33,12 +33,12 @@ type ModalState =
   | 'success';     // Confirmation
 
 const ENTITY_CONFIG = {
-  company: {
-    singular: 'Company',
-    plural: 'Companies',
+  space: {
+    singular: 'Space',
+    plural: 'Spaces',
     icon: '🏢',
-    openingQuestion: "Tell me about this company. What's the name, industry, and what do they do?",
-    redirectPath: '/companies'
+    openingQuestion: "Tell me about this space. What's the name, industry, and what do they do?",
+    redirectPath: '/spaces'
   },
   objective: {
     singular: 'Objective',
@@ -76,7 +76,7 @@ export default function VoiceEntityModal({
   
   // Parent selection state
   const [selectedParentId, setSelectedParentId] = useState<string | null>(initialParentId || null);
-  const [selectedParentType, setSelectedParentType] = useState<'goal' | 'company' | 'objective' | null>(initialParentType || null);
+  const [selectedParentType, setSelectedParentType] = useState<'goal' | 'space' | 'objective' | null>(initialParentType || null);
 
   const config = ENTITY_CONFIG[entityType];
 
@@ -210,7 +210,7 @@ export default function VoiceEntityModal({
       
       // Extract the created ID based on entity type
       let createdId = null;
-      if (entityType === 'company') {
+      if (entityType === 'space') {
         createdId = data.created.companyId;
       } else if (entityType === 'objective') {
         createdId = data.created.objectiveId;
@@ -257,21 +257,21 @@ export default function VoiceEntityModal({
     if (!proposal) return null;
 
     switch (entityType) {
-      case 'company':
+      case 'space':
         return (
           <>
             <div className="mb-6 p-4 bg-white rounded-[10px]">
               <h4 className="text-sm font-semibold text-[#A3A3A3] mb-2">{config.icon} COMPANY</h4>
-              <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.company.name}</h5>
+              <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.space.name}</h5>
               <div className="space-y-1 text-sm text-[#5a5757]">
-                <p><span className="font-medium">Industry:</span> {proposal.company.industry}</p>
-                {proposal.company.stage && (
-                  <p><span className="font-medium">Stage:</span> {proposal.company.stage}</p>
+                <p><span className="font-medium">Industry:</span> {proposal.space.industry}</p>
+                {proposal.space.stage && (
+                  <p><span className="font-medium">Stage:</span> {proposal.space.stage}</p>
                 )}
-                {proposal.company.businessModel && (
-                  <p><span className="font-medium">Model:</span> {proposal.company.businessModel}</p>
+                {proposal.space.businessModel && (
+                  <p><span className="font-medium">Model:</span> {proposal.space.businessModel}</p>
                 )}
-                <p className="mt-2">{proposal.company.description}</p>
+                <p className="mt-2">{proposal.space.description}</p>
               </div>
             </div>
 

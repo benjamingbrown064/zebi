@@ -7,9 +7,9 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-type EntityType = 'company' | 'objective' | 'project';
+type EntityType = 'space' | 'objective' | 'project';
 
-interface CompanyProposal {
+interface SpaceProposal {
   company: {
     name: string;
     industry: string;
@@ -61,16 +61,16 @@ interface ProjectProposal {
 }
 
 const ENTITY_PROMPTS: Record<EntityType, string> = {
-  company: `You are extracting company information from a voice conversation.
+  space: `You are extracting space information from a voice conversation.
 
 Extract:
 
-Company:
-- name: Company name (clear and concise)
+Space:
+- name: Space name (clear and concise)
 - industry: Industry sector (e.g., "SaaS", "E-commerce", "Healthcare")
 - stage: Business stage (e.g., "startup", "growth", "enterprise")
 - businessModel: Business model (e.g., "B2B", "B2C", "Marketplace")
-- description: 2-3 sentences about the company
+- description: 2-3 sentences about the space
 
 Objectives (0-3):
 - title: Strategic objective
@@ -86,7 +86,7 @@ Rules:
 
 Return ONLY valid JSON:
 {
-  "company": { "name": "...", "industry": "...", "stage": "...", "businessModel": "...", "description": "..." },
+  "space": { "name": "...", "industry": "...", "stage": "...", "businessModel": "...", "description": "..." },
   "objectives": [{ "title": "...", "description": "...", "priority": "medium", "deadline": null }]
 }`,
 
@@ -171,9 +171,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!['company', 'objective', 'project'].includes(entityType)) {
+    if (!['space', 'objective', 'project'].includes(entityType)) {
       return NextResponse.json(
-        { error: 'Invalid entityType. Must be: company, objective, or project' },
+        { error: 'Invalid entityType. Must be: space, objective, or project' },
         { status: 400 }
       );
     }
@@ -210,8 +210,8 @@ export async function POST(req: NextRequest) {
     const proposal = JSON.parse(responseText);
 
     // Validate structure based on entity type
-    if (entityType === 'company' && !proposal.company?.name) {
-      throw new Error('Invalid company proposal: missing company.name');
+    if (entityType === 'space' && !proposal.space?.name) {
+      throw new Error('Invalid space proposal: missing space.name');
     } else if (entityType === 'objective' && !proposal.objective?.title) {
       throw new Error('Invalid objective proposal: missing objective.title');
     } else if (entityType === 'project' && !proposal.project?.name) {
@@ -219,7 +219,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Ensure optional arrays exist
-    if (entityType === 'company') {
+    if (entityType === 'space') {
       proposal.objectives = proposal.objectives || [];
     } else if (entityType === 'objective') {
       proposal.projects = proposal.projects || [];

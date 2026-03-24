@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
 
       overdueObjectives: overdueObjectives.map((o) => ({
         title: o.title,
-        company: o.company?.name,
+        space: o.company?.name,
         deadline: o.deadline.toISOString().split('T')[0],
         daysOverdue: Math.ceil((now.getTime() - o.deadline.getTime()) / (1000 * 60 * 60 * 24)),
         progress: `${o.currentValue}/${o.targetValue} ${o.unit || ''}`,
@@ -157,13 +157,13 @@ export async function GET(request: NextRequest) {
       newBlockers: recentBlockers.map((b) => ({
         title: b.title,
         objective: b.objective.title,
-        company: b.objective.company?.name,
+        space: b.objective.company?.name,
         severity: b.severity,
       })),
 
       topObjectives: objectives.slice(0, 5).map((o) => ({
         title: o.title,
-        company: o.company?.name,
+        space: o.company?.name,
         status: o.status,
         deadline: o.deadline.toISOString().split('T')[0],
         daysUntil: Math.ceil((o.deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),

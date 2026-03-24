@@ -160,17 +160,17 @@ export default function ObjectiveDetailClient({
 
             {/* Intro Card */}
             <div className="bg-white rounded-[14px] p-4 md:p-8 mb-6 md:mb-8">
-              {/* Company */}
-              {objective.company && (
+              {/* Space */}
+              {objective.space && (
                 <div className="flex items-center gap-2 mb-3 md:mb-4">
                   <div className="w-6 h-6 rounded-[6px] bg-[#F5F5F5] flex items-center justify-center">
                     <FaBuilding className="text-[#737373] text-xs" />
                   </div>
                   <Link
-                    href={`/companies/${objective.company.id}`}
+                    href={`/spaces/${objective.space.id}`}
                     className="text-[13px] md:text-[15px] font-medium text-[#525252] hover:text-[#DD3A44] transition"
                   >
-                    {objective.company.name}
+                    {objective.space.name}
                   </Link>
                 </div>
               )}

@@ -2,7 +2,7 @@
  * chat-create.ts
  * Pass 1 — Chat object creation execution layer
  *
- * Handles creation of: company, objective, project, task, document, inbox item
+ * Handles creation of: space, objective, project, task, document, inbox item
  * Called from the chat API route when intent = create_object and all required
  * fields are present. Returns a structured result for confirmation + UI card.
  */
@@ -18,7 +18,7 @@ const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type CreatableObjectType =
-  | 'company'
+  | 'space'
   | 'objective'
   | 'project'
   | 'task'
@@ -45,7 +45,7 @@ export interface CreationResult {
 // ─── Required-field specs ──────────────────────────────────────────────────────
 
 const REQUIRED_FIELDS: Record<CreatableObjectType, string[]> = {
-  company:   ['name'],
+  space:   ['name'],
   objective: ['title', 'companyId'],
   project:   ['name'],
   task:      ['title'],
@@ -57,26 +57,26 @@ const REQUIRED_FIELDS: Record<CreatableObjectType, string[]> = {
 const FIELD_QUESTIONS: Record<string, string> = {
   name:      'What do you want to call it?',
   title:     'What should the title be?',
-  companyId: 'Which company should I attach this to?',
+  companyId: 'Which space should I attach this to?',
   content:   'What do you want to capture?',
 }
 
-// ─── Utility: resolve company name → ID ───────────────────────────────────────
+// ─── Utility: resolve space name → ID ───────────────────────────────────────
 
-export async function resolveCompanyId(
+export async function resolveSpaceId(
   nameOrId: string,
   workspaceId: string
 ): Promise<string | null> {
   // If it looks like a UUID, use directly
   if (/^[0-9a-f-]{36}$/i.test(nameOrId)) return nameOrId
 
-  const companies = await prisma.company.findMany({
+  const spaces = await prisma.space.findMany({
     where: { workspaceId, archivedAt: null },
     select: { id: true, name: true },
   })
 
   const lower = nameOrId.toLowerCase()
-  const match = companies.find(
+  const match = spaces.find(
     c =>
       c.name.toLowerCase() === lower ||
       c.name.toLowerCase().includes(lower) ||
@@ -181,11 +181,11 @@ function markdownToTiptap(markdown: string): any {
 
 // ─── Executors ────────────────────────────────────────────────────────────────
 
-async function createCompany(
+async function createSpace(
   fields: Record<string, any>,
   workspaceId: string
 ): Promise<CreationResult> {
-  const company = await prisma.company.create({
+  const space = await prisma.space.create({
     data: {
       workspaceId,
       name: fields.name,
@@ -199,9 +199,9 @@ async function createCompany(
 
   return {
     success: true,
-    objectType: 'company',
-    object: { type: 'task', id: company.id, title: company.name, meta: { objectType: 'company' } },
-    confirmationText: `Done. I created a company called \`${company.name}\`.`,
+    objectType: 'space',
+    object: { type: 'task', id: space.id, title: space.name, meta: { objectType: 'space' } },
+    confirmationText: `Done. I created a space called \`${space.name}\`.`,
     suggestedNextStep: `Want me to add its first objective as well?`,
   }
 }
@@ -212,14 +212,14 @@ async function createObjective(
 ): Promise<CreationResult> {
   // Resolve companyId if given as name
   let companyId: string | null = fields.companyId || null
-  let companyName: string | null = null
+  let spaceName: string | null = null
 
   if (companyId) {
-    const resolved = await resolveCompanyId(companyId, workspaceId)
+    const resolved = await resolveSpaceId(companyId, workspaceId)
     if (resolved) {
       companyId = resolved
-      const co = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } })
-      companyName = co?.name ?? null
+      const co = await prisma.space.findUnique({ where: { id: companyId }, select: { name: true } })
+      spaceName = co?.name ?? null
     }
   }
 
@@ -248,12 +248,12 @@ async function createObjective(
     },
   })
 
-  const companyPart = companyName ? ` under \`${companyName}\`` : ''
+  const spacePart = spaceName ? ` under \`${spaceName}\`` : ''
   return {
     success: true,
     objectType: 'objective',
-    object: { type: 'objective', id: objective.id, title: objective.title, meta: { companyId, companyName, objectType: 'objective' } },
-    confirmationText: `Done. I created an **objective**${companyPart}: \`${objective.title}\`.`,
+    object: { type: 'objective', id: objective.id, title: objective.title, meta: { companyId, spaceName, objectType: 'objective' } },
+    confirmationText: `Done. I created an **objective**${spacePart}: \`${objective.title}\`.`,
     suggestedNextStep: `Want me to create a project under it to get started?`,
   }
 }
@@ -263,15 +263,15 @@ async function createProject(
   workspaceId: string
 ): Promise<CreationResult> {
   let companyId: string | null = fields.companyId || null
-  let companyName: string | null = null
+  let spaceName: string | null = null
   let objectiveId: string | null = fields.objectiveId || null
 
   if (companyId) {
-    const resolved = await resolveCompanyId(companyId, workspaceId)
+    const resolved = await resolveSpaceId(companyId, workspaceId)
     if (resolved) {
       companyId = resolved
-      const co = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } })
-      companyName = co?.name ?? null
+      const co = await prisma.space.findUnique({ where: { id: companyId }, select: { name: true } })
+      spaceName = co?.name ?? null
     }
   }
 
@@ -286,11 +286,11 @@ async function createProject(
     },
   })
 
-  const parentPart = companyName ? ` under \`${companyName}\`` : ''
+  const parentPart = spaceName ? ` under \`${spaceName}\`` : ''
   return {
     success: true,
     objectType: 'project',
-    object: { type: 'project', id: project.id, title: project.name, meta: { companyId, companyName, objectType: 'project' } },
+    object: { type: 'project', id: project.id, title: project.name, meta: { companyId, spaceName, objectType: 'project' } },
     confirmationText: `Done. I created a **project** called \`${project.name}\`${parentPart}.`,
     suggestedNextStep: `Want me to add a starter task to it?`,
   }
@@ -302,15 +302,15 @@ async function createTask(
 ): Promise<CreationResult> {
   let companyId: string | null = fields.companyId || null
   let projectId: string | null = fields.projectId || null
-  let companyName: string | null = null
+  let spaceName: string | null = null
   let projectName: string | null = null
 
   if (companyId && !/^[0-9a-f-]{36}$/i.test(companyId)) {
-    const resolved = await resolveCompanyId(companyId, workspaceId)
+    const resolved = await resolveSpaceId(companyId, workspaceId)
     if (resolved) {
       companyId = resolved
-      const co = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } })
-      companyName = co?.name ?? null
+      const co = await prisma.space.findUnique({ where: { id: companyId }, select: { name: true } })
+      spaceName = co?.name ?? null
     }
   }
 
@@ -345,7 +345,7 @@ async function createTask(
     },
   })
 
-  const parentParts = [projectName, companyName].filter(Boolean)
+  const parentParts = [projectName, spaceName].filter(Boolean)
   const parentStr = parentParts.length > 0 ? ` under \`${parentParts.join(' / ')}\`` : ''
   return {
     success: true,
@@ -362,16 +362,16 @@ async function createDocument(
 ): Promise<CreationResult> {
   let companyId: string | null = fields.companyId || null
   let projectId: string | null = fields.projectId || null
-  let companyName: string | null = null
+  let spaceName: string | null = null
   let parentLabel: string | null = null
 
   if (companyId) {
-    const resolved = await resolveCompanyId(companyId, workspaceId)
+    const resolved = await resolveSpaceId(companyId, workspaceId)
     if (resolved) {
       companyId = resolved
-      const co = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } })
-      companyName = co?.name ?? null
-      parentLabel = companyName
+      const co = await prisma.space.findUnique({ where: { id: companyId }, select: { name: true } })
+      spaceName = co?.name ?? null
+      parentLabel = spaceName
     }
   }
 
@@ -468,7 +468,7 @@ export async function executeCreation(
   }
 
   switch (payload.objectType) {
-    case 'company':   return createCompany(payload.fields, workspaceId)
+    case 'space':   return createSpace(payload.fields, workspaceId)
     case 'objective': return createObjective(payload.fields, workspaceId)
     case 'project':   return createProject(payload.fields, workspaceId)
     case 'task':      return createTask(payload.fields, workspaceId)

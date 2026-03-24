@@ -6,9 +6,9 @@ import { prisma } from '@/lib/prisma'
 const DEFAULT_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
 
 /**
- * POST /api/doug/company
+ * POST /api/doug/space
  * 
- * Create a new company
+ * Create a new space
  * 
  * Body:
  * {
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const company = await prisma.company.create({
+    const space = await prisma.space.create({
       data: {
         workspaceId,
         name,
@@ -74,17 +74,17 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       company: {
-        id: company.id,
-        name: company.name,
-        industry: company.industry,
-        stage: company.stage,
-        revenue: company.revenue ? Number(company.revenue) : null,
+        id: space.id,
+        name: space.name,
+        industry: space.industry,
+        stage: space.stage,
+        revenue: space.revenue ? Number(space.revenue) : null,
       },
     }, { status: 201 })
   } catch (error) {
-    console.error('[Doug API] Failed to create company:', error)
+    console.error('[Doug API] Failed to create space:', error)
     return NextResponse.json(
-      { error: 'Failed to create company' },
+      { error: 'Failed to create space' },
       { status: 500 }
     )
   }

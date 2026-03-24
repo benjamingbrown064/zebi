@@ -24,7 +24,7 @@ interface Task {
     id: string
     name: string
   } | null
-  company?: {
+  space?: {
     id: string
     name: string
   } | null

@@ -23,7 +23,7 @@ interface Document {
   contentRich: any;
   version: number;
   updatedAt: string;
-  company?: { id: string; name: string };
+  space?: { id: string; name: string };
   project?: { id: string; name: string };
   versions: Array<{
     id: string;

@@ -110,8 +110,8 @@ export function scoreWorkItem(
   // ── 6. COMMERCIAL IMPACT ─────────────────────────────────────────────────
   if (item.companyId || item.isRevenueLinked) {
     score += 20
-    const company = context.workspace.companies.find(c => c.id === item.companyId)
-    if (company) reasons.push(`Client work: ${company.name}`)
+    const space = context.workspace.spaces.find(c => c.id === item.companyId)
+    if (space) reasons.push(`Client work: ${space.name}`)
     else reasons.push('Client / revenue-linked')
   }
 

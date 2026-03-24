@@ -72,7 +72,7 @@ export async function POST(
             ...(session.contextType === 'objective' && {
               objectiveId: session.contextId,
             }),
-            ...(session.contextType === 'company' && {
+            ...(session.contextType === 'space' && {
               companyId: session.contextId,
             }),
           },
@@ -108,12 +108,12 @@ export async function POST(
           });
           contextName = objective?.title;
           break;
-        case 'company':
-          const company = await prisma.company.findUnique({
+        case 'space':
+          const space = await prisma.space.findUnique({
             where: { id: session.contextId },
             select: { name: true },
           });
-          contextName = company?.name;
+          contextName = space?.name;
           break;
       }
     }

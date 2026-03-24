@@ -3,7 +3,7 @@ import { prisma } from './prisma'
 
 const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'
 
-export type MemoryType = 'company' | 'project' | 'strategic' | 'research'
+export type MemoryType = 'space' | 'project' | 'strategic' | 'research'
 
 export interface MemoryExtractionInput {
   context: string
@@ -135,7 +135,7 @@ function buildExtractionPrompt(contextType: string): string {
 
 Extract 4 types of memories:
 
-1. **Company Memory** (memoryType: "company")
+1. **Space Memory** (memoryType: "space")
    - Customer preferences, needs, pain points
    - Competitive advantages or differentiators
    - Market positioning insights
@@ -162,7 +162,7 @@ Extract 4 types of memories:
 For each memory, provide:
 - **title**: Short, descriptive title (max 100 chars)
 - **description**: Detailed explanation of the insight (2-4 sentences)
-- **memoryType**: One of: company, project, strategic, research
+- **memoryType**: One of: space, project, strategic, research
 - **confidenceScore**: 1-10 (how confident you are this is valuable knowledge)
 - **source**: Brief description of where this came from
 
@@ -175,7 +175,7 @@ Return a JSON object with this structure:
 {
   "memories": [
     {
-      "memoryType": "company",
+      "memoryType": "space",
       "title": "...",
       "description": "...",
       "confidenceScore": 8,
@@ -355,8 +355,8 @@ function buildTaskContext(task: any): string {
     parts.push(`Description: ${task.description}`)
   }
 
-  if (task.company?.name) {
-    parts.push(`Company: ${task.company.name}`)
+  if (task.space?.name) {
+    parts.push(`Space: ${task.space.name}`)
   }
 
   if (task.project?.name) {
@@ -388,8 +388,8 @@ function buildDocumentContext(document: any): string {
   parts.push(`Document: ${document.title}`)
   parts.push(`Type: ${document.documentType}`)
 
-  if (document.company?.name) {
-    parts.push(`Company: ${document.company.name}`)
+  if (document.space?.name) {
+    parts.push(`Space: ${document.space.name}`)
   }
 
   if (document.project?.name) {
@@ -415,8 +415,8 @@ function buildProjectContext(project: any): string {
     parts.push(`Description: ${project.description}`)
   }
 
-  if (project.company?.name) {
-    parts.push(`Company: ${project.company.name}`)
+  if (project.space?.name) {
+    parts.push(`Space: ${project.space.name}`)
   }
 
   if (project.objective?.title) {

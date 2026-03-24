@@ -19,7 +19,7 @@ interface Task {
     id: string
     name: string
   } | null
-  company?: {
+  space?: {
     id: string
     name: string
   } | null
@@ -97,9 +97,9 @@ export default function PlannerTaskCard({
                 {task.project.name}
               </span>
             )}
-            {task.company && (
+            {task.space && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5F5F5] rounded-[6px]">
-                {task.company.name}
+                {task.space.name}
               </span>
             )}
             {task.effortPoints && (

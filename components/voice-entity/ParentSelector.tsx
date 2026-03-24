@@ -5,11 +5,11 @@ import { Select, SelectItem } from '@heroui/react';
 interface ParentSelectorProps {
   entityType: 'objective' | 'project';
   selectedParentId: string | null;
-  selectedParentType: 'goal' | 'company' | 'objective' | null;
-  onParentChange: (parentId: string | null, parentType: 'goal' | 'company' | 'objective' | null) => void;
+  selectedParentType: 'goal' | 'space' | 'objective' | null;
+  onParentChange: (parentId: string | null, parentType: 'goal' | 'space' | 'objective' | null) => void;
   context?: {
     existingGoals?: Array<{ id: string; name: string }>;
-    existingCompanies?: Array<{ id: string; name: string }>;
+    existingSpaces?: Array<{ id: string; name: string }>;
     existingObjectives?: Array<{ id: string; title: string }>;
   };
 }
@@ -27,8 +27,8 @@ export default function ParentSelector({
     <div className="mb-6 p-4 bg-[#f0fafa] border border-transparent rounded-[10px]">
       <p className="text-sm font-medium text-blue-900 mb-3">
         {entityType === 'objective' 
-          ? 'Link to Goal or Company (optional)' 
-          : 'Link to Objective or Company (optional)'}
+          ? 'Link to Goal or Space (optional)' 
+          : 'Link to Objective or Space (optional)'}
       </p>
       <div className="space-y-3">
         {entityType === 'objective' && context.existingGoals && context.existingGoals.length > 0 && (
@@ -81,15 +81,15 @@ export default function ParentSelector({
           </Select>
         )}
         
-        {context.existingCompanies && context.existingCompanies.length > 0 && (
+        {context.existingSpaces && context.existingSpaces.length > 0 && (
           <Select
-            label={entityType === 'objective' ? 'Or Select Company' : 'Or Select Company'}
-            placeholder="No company"
-            selectedKeys={selectedParentType === 'company' && selectedParentId ? [selectedParentId] : []}
+            label={entityType === 'objective' ? 'Or Select Space' : 'Or Select Space'}
+            placeholder="No space"
+            selectedKeys={selectedParentType === 'space' && selectedParentId ? [selectedParentId] : []}
             onSelectionChange={(keys) => {
               const selectedKey = Array.from(keys)[0];
               if (selectedKey) {
-                onParentChange(String(selectedKey), 'company');
+                onParentChange(String(selectedKey), 'space');
               } else {
                 onParentChange(null, null);
               }
@@ -98,9 +98,9 @@ export default function ParentSelector({
               trigger: 'min-h-[44px]',
             }}
           >
-            {context.existingCompanies.map((company) => (
-              <SelectItem key={company.id}>
-                {company.name}
+            {context.existingSpaces.map((space) => (
+              <SelectItem key={space.id}>
+                {space.name}
               </SelectItem>
             ))}
           </Select>

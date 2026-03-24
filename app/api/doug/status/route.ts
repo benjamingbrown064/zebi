@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 /**
  * GET /api/doug/status
  * 
- * Get workspace overview - objectives, companies, tasks, blockers
+ * Get workspace overview - objectives, spaces, tasks, blockers
  * Used by Doug to understand current state before taking action
  */
 export async function GET(request: NextRequest) {
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const workspaceId = await getDougWorkspaceId()
 
     // Fetch overview data in parallel
-    const [objectives, companies, tasks, blockers, goals] = await Promise.all([
+    const [objectives, spaces, tasks, blockers, goals] = await Promise.all([
       // Active objectives with progress
       prisma.objective.findMany({
         where: {
@@ -47,8 +47,8 @@ export async function GET(request: NextRequest) {
         take: 10,
       }),
 
-      // Companies with active projects
-      prisma.company.findMany({
+      // Spaces with active projects
+      prisma.space.findMany({
         where: {
           workspaceId,
           archivedAt: null,
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
       },
       summary: {
         objectives: objectives.length,
-        companies: companies.length,
+        spaces: spaces.length,
         tasks: tasks.length,
         blockers: blockers.length,
         goals: goals.length,
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
       objectives: objectives.map((obj) => ({
         id: obj.id,
         title: obj.title,
-        company: obj.company?.name,
+        space: obj.company?.name,
         goal: obj.goal?.name,
         status: obj.status,
         progress: `${obj.currentValue}/${obj.targetValue} ${obj.unit || ''}`,
@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
         taskCount: obj._count.tasks,
         projectCount: obj._count.projects,
       })),
-      companies: companies.map((c) => ({
+      spaces: spaces.map((c) => ({
         id: c.id,
         name: c.name,
         industry: c.industry,
@@ -181,7 +181,7 @@ export async function GET(request: NextRequest) {
         objective: {
           id: b.objective.id,
           title: b.objective.title,
-          company: b.objective.company?.name,
+          space: b.objective.company?.name,
         },
         detectedAt: b.detectedAt.toISOString(),
       })),

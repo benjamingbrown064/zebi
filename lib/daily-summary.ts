@@ -1,7 +1,7 @@
 /**
  * Daily Summary Generator
  * 
- * Aggregates daily work stats across missions, companies, tasks, documents,
+ * Aggregates daily work stats across missions, spaces, tasks, documents,
  * insights, and memories. Tracks progress and prepares tomorrow's queue.
  */
 
@@ -22,7 +22,7 @@ export interface DailySummaryData {
       change: number;
     };
   } | null;
-  companies: Array<{
+  spaces: Array<{
     id: string;
     name: string;
     tasksCompleted: number;
@@ -54,8 +54,8 @@ export interface DailySummaryData {
       medium: number;
       low: number;
     };
-    byCompany: Array<{
-      companyName: string;
+    bySpace: Array<{
+      spaceName: string;
       taskCount: number;
     }>;
   };
@@ -87,7 +87,7 @@ export async function generateDailySummary(
   // Fetch all data in parallel
   const [
     mission,
-    companies,
+    spaces,
     tasksCompleted,
     tasksCreated,
     documentsCreated,
@@ -100,8 +100,8 @@ export async function generateDailySummary(
     // Mission progress (current vs yesterday)
     getMissionProgress(workspaceId),
     
-    // All active companies
-    prisma.company.findMany({
+    // All active spaces
+    prisma.space.findMany({
       where: { workspaceId, archivedAt: null },
       select: { id: true, name: true },
     }),
@@ -211,15 +211,15 @@ export async function generateDailySummary(
     }),
   ]);
 
-  // Aggregate by company
-  const companyStats = companies.map(company => {
-    const companyId = company.id;
+  // Aggregate by space
+  const spaceStats = spaces.map(space => {
+    const companyId = space.id;
     
     return {
       id: companyId,
-      name: company.name,
+      name: space.name,
       tasksCompleted: tasksCompleted.filter(t => t.companyId === companyId).length,
-      tasksCreated: 0, // We don't have per-company created count from the query
+      tasksCreated: 0, // We don't have per-space created count from the query
       insightsGenerated: insightsGenerated.filter(i => i.companyId === companyId).length,
       documentsCreated: documentsCreated.filter(d => d.companyId === companyId).length,
       documentsUpdated: documentsUpdated.filter(d => d.companyId === companyId).length,
@@ -228,8 +228,8 @@ export async function generateDailySummary(
     };
   });
 
-  // Filter companies with activity
-  const activeCompanies = companyStats.filter(c =>
+  // Filter spaces with activity
+  const activeSpaces = spaceStats.filter(c =>
     c.tasksCompleted > 0 ||
     c.insightsGenerated > 0 ||
     c.documentsCreated > 0 ||
@@ -265,7 +265,7 @@ export async function generateDailySummary(
       medium: tomorrowTasks.filter(t => t.priority === 3).length,
       low: tomorrowTasks.filter(t => t.priority >= 4).length,
     },
-    byCompany: Array.from(
+    bySpace: Array.from(
       tomorrowTasks
         .filter(t => t.company)
         .reduce((acc, t) => {
@@ -274,9 +274,9 @@ export async function generateDailySummary(
           return acc;
         }, new Map<string, number>())
     )
-      .map(([companyName, taskCount]) => ({ companyName, taskCount }))
+      .map(([spaceName, taskCount]) => ({ spaceName, taskCount }))
       .sort((a, b) => b.taskCount - a.taskCount)
-      .slice(0, 5), // Top 5 companies
+      .slice(0, 5), // Top 5 spaces
   };
 
   // Generate highlights
@@ -290,8 +290,8 @@ export async function generateDailySummary(
   if (totals.documentsCreated > 0) {
     highlights.push(`Created ${totals.documentsCreated} new documents`);
   }
-  if (activeCompanies.length > 1) {
-    highlights.push(`Progress across ${activeCompanies.length} companies`);
+  if (activeSpaces.length > 1) {
+    highlights.push(`Progress across ${activeSpaces.length} spaces`);
   }
 
   return {
@@ -301,7 +301,7 @@ export async function generateDailySummary(
       name: workspace.name,
     },
     mission,
-    companies: activeCompanies,
+    spaces: activeSpaces,
     totals,
     tomorrowQueue,
     topHighlights: highlights,

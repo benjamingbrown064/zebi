@@ -17,7 +17,7 @@ export default async function GoalDetailPage({ params }: { params: { id: string 
         _count: {
           select: { tasks: true }
         },
-        // Load only essential objective fields - no company lookup to avoid extra queries
+        // Load only essential objective fields - no space lookup to avoid extra queries
         objectives: {
           where: { status: { in: ['active', 'on_track', 'at_risk', 'blocked'] } },
           select: {

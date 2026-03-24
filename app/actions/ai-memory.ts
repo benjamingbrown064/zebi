@@ -15,7 +15,7 @@ export interface AIMemory {
   createdAt: Date
   updatedAt: Date
   createdBy: string | null // "doug", "harvey", user UUID, or null
-  company?: {
+  space?: {
     id: string
     name: string
   } | null
@@ -260,7 +260,7 @@ export async function deleteAIMemory(
  */
 export async function getMemoryTypes(): Promise<string[]> {
   return [
-    'company',
+    'space',
     'project',
     'strategic',
     'research',

@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
         color: null,
         startDate: null,
         deadline: null,
-        company: project.company,
+        space: project.company,
         objective: project.objective,
         _count: project._count,
       }

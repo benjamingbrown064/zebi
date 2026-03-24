@@ -7,7 +7,7 @@ export interface StalledProjectPattern {
   daysStalled: number;
   taskCount: number;
   companyId?: string;
-  companyName?: string;
+  spaceName?: string;
 }
 
 /**
@@ -74,7 +74,7 @@ export async function detectStalledProjects(
         daysStalled,
         taskCount,
         companyId: project.companyId || undefined,
-        companyName: project.company?.name || undefined,
+        spaceName: project.company?.name || undefined,
       });
     }
   }

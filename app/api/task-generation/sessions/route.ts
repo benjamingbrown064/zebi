@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     console.log('[task-gen] Context:', contextType, contextId);
 
     // Validate context type
-    const validContextTypes = ['project', 'objective', 'company', 'general'];
+    const validContextTypes = ['project', 'objective', 'space', 'general'];
     if (!validContextTypes.includes(contextType)) {
       return NextResponse.json(
         { error: 'Invalid context type' },
@@ -74,18 +74,18 @@ export async function POST(request: NextRequest) {
           contextName = objective.title;
           break;
         }
-        case 'company': {
-          const company = await prisma.company.findFirst({
+        case 'space': {
+          const space = await prisma.space.findFirst({
             where: { id: contextId, workspaceId },
             select: { name: true },
           });
-          if (!company) {
+          if (!space) {
             return NextResponse.json(
-              { error: 'Company not found' },
+              { error: 'Space not found' },
               { status: 404 }
             );
           }
-          contextName = company.name;
+          contextName = space.name;
           break;
         }
         }

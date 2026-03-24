@@ -45,7 +45,7 @@ model Workspace {
   // New Relations
   missions       Mission[]
   objectives     Objective[]
-  companies      Company[]
+  spaces         Space[]
   documents      Document[]
   notes          Note[]
   aiMemories     AIMemory[]
@@ -111,7 +111,7 @@ model Mission {
 
 // ==================== COMPANIES (NEW) ====================
 
-model Company {
+model Space {
   id            String  @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
   workspaceId   String  @db.Text
   name          String
@@ -160,6 +160,7 @@ model Company {
   tasks          Task[]
   repeatingTasks RepeatingTask[]
 
+  @@map("company")
   @@index([workspaceId])
   @@index([archivedAt])
 }
@@ -208,7 +209,7 @@ model Objective {
   completedAt DateTime? @db.Timestamptz()
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  company   Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company   Space?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   goal      Goal?     @relation(fields: [goalId], references: [id], onDelete: SetNull)
 
   milestones      ObjectiveMilestone[]
@@ -345,7 +346,7 @@ model Task {
   subtasks   Task[]    @relation("ParentChild")
 
   // NEW RELATIONS
-  company       Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company       Space?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
   objective     Objective?     @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
   repeatingTask RepeatingTask? @relation(fields: [repeatingTaskId], references: [id], onDelete: SetNull)
   files         File[]
@@ -484,7 +485,7 @@ model Project {
   tasks     Task[]
 
   // NEW RELATIONS
-  company        Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company        Space?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
   objective      Objective?      @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
   documents      Document[]
   notes          Note[]
@@ -575,7 +576,7 @@ model Document {
   createdBy    String   @db.Uuid
 
   workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  company   Company?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company   Space?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
   project   Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
   files     File[]
   versions  DocumentVersion[]
@@ -622,7 +623,7 @@ model Note {
   createdBy   String   @db.Uuid
 
   workspace  Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  company    Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company    Space?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
   project    Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
   objective  Objective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
   task       Task?      @relation(fields: [taskId], references: [id], onDelete: SetNull)
@@ -651,7 +652,7 @@ model AIMemory {
   updatedAt       DateTime @updatedAt @db.Timestamptz()
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  company   Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company   Space?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
   project   Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@index([workspaceId])
@@ -681,7 +682,7 @@ model AIInsight {
   reviewedBy       String?   @db.Uuid
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  company   Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company   Space?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
 
   @@index([workspaceId])
   @@index([companyId])
@@ -708,7 +709,7 @@ model File {
   uploadedBy  String   @db.Uuid
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  company   Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company   Space?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
   project   Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
   task      Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
   document  Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
@@ -740,7 +741,7 @@ model RepeatingTask {
   createdBy      String    @db.Uuid
 
   workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  company        Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company        Space?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
   project        Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
   generatedTasks Task[]
 

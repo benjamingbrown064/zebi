@@ -17,7 +17,7 @@ interface Document {
   documentType: string;
   updatedAt: string;
   version: number;
-  company?: { id: string; name: string };
+  space?: { id: string; name: string };
   project?: { id: string; name: string };
 }
 
@@ -251,7 +251,7 @@ export default function DocumentsPage() {
                       }
                       badge={getTypeBadge(doc.documentType)}
                       metadata={[
-                        ...(doc.company ? [{ label: 'Company', value: doc.company.name }] : []),
+                        ...(doc.space ? [{ label: 'Space', value: doc.space.name }] : []),
                         ...(doc.project ? [{ label: 'Project', value: doc.project.name }] : []),
                         { label: 'Updated', value: formatDate(doc.updatedAt) },
                         { label: 'Version', value: `v${doc.version}` },
@@ -286,10 +286,10 @@ export default function DocumentsPage() {
 
                       {/* Metadata */}
                       <div className="space-y-2 mb-4">
-                        {doc.company && (
+                        {doc.space && (
                           <div className="flex items-center gap-2 text-[12px] text-[#525252]">
                             <FaBuilding className="text-[#A3A3A3]" />
-                            <span>{doc.company.name}</span>
+                            <span>{doc.space.name}</span>
                           </div>
                         )}
                         {doc.project && (

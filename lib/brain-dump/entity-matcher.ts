@@ -84,8 +84,8 @@ export async function matchEntity(
       case 'objective':
         return await matchObjective(workspaceId, entity);
       
-      case 'company':
-        return await matchCompany(workspaceId, entity);
+      case 'space':
+        return await matchSpace(workspaceId, entity);
       
       case 'person':
         // For MVP, people are handled as text notes (no User matching yet)
@@ -316,8 +316,8 @@ async function matchObjective(workspaceId: string, entity: ExtractedEntity): Pro
   };
 }
 
-async function matchCompany(workspaceId: string, entity: ExtractedEntity): Promise<MatchedEntity> {
-  const companies = await prisma.company.findMany({
+async function matchSpace(workspaceId: string, entity: ExtractedEntity): Promise<MatchedEntity> {
+  const spaces = await prisma.space.findMany({
     where: {
       workspaceId,
       archivedAt: null
@@ -329,11 +329,11 @@ async function matchCompany(workspaceId: string, entity: ExtractedEntity): Promi
     take: 50
   });
   
-  const candidates = companies
-    .map(company => ({
-      id: company.id,
-      name: company.name,
-      score: similarity(entity.value, company.name)
+  const candidates = spaces
+    .map(space => ({
+      id: space.id,
+      name: space.name,
+      score: similarity(entity.value, space.name)
     }))
     .filter(c => c.score > 0.4)
     .sort((a, b) => b.score - a.score)
@@ -346,7 +346,7 @@ async function matchCompany(workspaceId: string, entity: ExtractedEntity): Promi
       ...entity,
       match: {
         entityId: bestMatch.id,
-        entityType: 'company',
+        entityType: 'space',
         entityName: bestMatch.name,
         confidence: bestMatch.score,
         isNewEntity: false,
@@ -359,7 +359,7 @@ async function matchCompany(workspaceId: string, entity: ExtractedEntity): Promi
     ...entity,
     match: {
       entityId: null,
-      entityType: 'company',
+      entityType: 'space',
       entityName: entity.value,
       confidence: 0.7,
       isNewEntity: true,

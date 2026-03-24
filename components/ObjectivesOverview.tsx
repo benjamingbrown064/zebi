@@ -6,7 +6,7 @@ import { FaFlag, FaRobot, FaUser, FaExclamationTriangle } from 'react-icons/fa'
 interface Objective {
   id: string
   title: string
-  companyName?: string
+  spaceName?: string
   status: string
   progressPercent: number
   currentValue: number
@@ -92,8 +92,8 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
               {/* Header */}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  {objective.companyName && (
-                    <p className="text-xs text-[#A3A3A3] mb-1">{objective.companyName}</p>
+                  {objective.spaceName && (
+                    <p className="text-xs text-[#A3A3A3] mb-1">{objective.spaceName}</p>
                   )}
                   <Link
                     href={`/objectives/${objective.id}`}

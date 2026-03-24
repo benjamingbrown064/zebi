@@ -18,7 +18,7 @@ export interface ExtractedIntent {
 }
 
 export interface ExtractedEntity {
-  type: 'task' | 'project' | 'objective' | 'company' | 'person' | 'date' | 'priority' | 'status';
+  type: 'task' | 'project' | 'objective' | 'space' | 'person' | 'date' | 'priority' | 'status';
   value: string;
   mentionText: string; // Original text from transcript
   context: string; // Surrounding context
@@ -47,7 +47,7 @@ Your job: Extract ALL actionable items with maximum detail and context.
 
 2. **Entities** - Extract with high precision:
    - **Task names**: Be specific. "Review claims" not "claims"
-   - **Project/Company names**: Exact mentions (Love Warranty, DGS, Taskbox)
+   - **Project/Space names**: Exact mentions (Love Warranty, DGS, Taskbox)
    - **Objectives**: Goals, milestones, targets
    - **People**: Names mentioned (assign, collaborate, waiting on)
    - **Dates**: ALL temporal references (Friday, tomorrow, next week, EOD, Q1, March 15)
@@ -55,7 +55,7 @@ Your job: Extract ALL actionable items with maximum detail and context.
    - **Status**: Completion/progress indicators (done, started, blocked, at risk, complete)
 
 3. **Relationships** - Understand connections:
-   - Which company/project does a task belong to?
+   - Which space/project does a task belong to?
    - Which objective does a project support?
    - What's blocking what?
    - What depends on what?
@@ -80,7 +80,7 @@ Your job: Extract ALL actionable items with maximum detail and context.
       "action": "create_task" | "update_task" | "assign_task" | "set_due_date" | "set_priority" | "set_status" | "create_project" | "update_project" | "create_objective" | "update_objective" | "add_note",
       "entities": [
         {
-          "type": "task" | "project" | "objective" | "company" | "person" | "date" | "priority" | "status",
+          "type": "task" | "project" | "objective" | "space" | "person" | "date" | "priority" | "status",
           "value": "normalized value (task name, project name, etc.)",
           "mentionText": "exact text from transcript",
           "context": "full surrounding sentence or phrase",
@@ -103,7 +103,7 @@ Output:
       "action": "create_task",
       "entities": [
         {"type": "task", "value": "Claims review", "mentionText": "claims review", "context": "finish the Love Warranty claims review by Friday", "confidence": 0.95},
-        {"type": "company", "value": "Love Warranty", "mentionText": "Love Warranty", "context": "Love Warranty claims review", "confidence": 1.0},
+        {"type": "space", "value": "Love Warranty", "mentionText": "Love Warranty", "context": "Love Warranty claims review", "confidence": 1.0},
         {"type": "date", "value": "Friday", "mentionText": "Friday", "context": "by Friday", "confidence": 1.0},
         {"type": "priority", "value": "high", "mentionText": "urgent", "context": "it's urgent", "confidence": 0.9}
       ],
@@ -121,7 +121,7 @@ Output:
       "action": "update_objective",
       "entities": [
         {"type": "objective", "value": "DGS integration", "mentionText": "DGS integration", "context": "The DGS integration is at risk", "confidence": 0.95},
-        {"type": "company", "value": "DGS", "mentionText": "DGS", "context": "DGS integration", "confidence": 1.0},
+        {"type": "space", "value": "DGS", "mentionText": "DGS", "context": "DGS integration", "confidence": 1.0},
         {"type": "status", "value": "at_risk", "mentionText": "at risk", "context": "is at risk", "confidence": 1.0}
       ],
       "context": "DGS integration objective status changed to at risk",

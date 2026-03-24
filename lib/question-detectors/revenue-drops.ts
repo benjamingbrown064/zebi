@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 
 export interface RevenueDropPattern {
   companyId: string;
-  companyName: string;
+  spaceName: string;
   currentRevenue: number;
   previousRevenue: number;
   dropPercent: number;
@@ -10,9 +10,9 @@ export interface RevenueDropPattern {
 }
 
 /**
- * Detect companies with >10% revenue drop week-over-week
+ * Detect spaces with >10% revenue drop week-over-week
  * 
- * Note: This looks at the company.revenue field which should be updated regularly.
+ * Note: This looks at the space.revenue field which should be updated regularly.
  * For more sophisticated tracking, implement ObjectiveProgress tracking for revenue objectives.
  */
 export async function detectRevenueDrops(
@@ -20,8 +20,8 @@ export async function detectRevenueDrops(
 ): Promise<RevenueDropPattern[]> {
   const drops: RevenueDropPattern[] = [];
 
-  // Get all active companies with revenue
-  const companies = await prisma.company.findMany({
+  // Get all active spaces with revenue
+  const spaces = await prisma.space.findMany({
     where: {
       workspaceId,
       archivedAt: null,
@@ -50,9 +50,9 @@ export async function detectRevenueDrops(
     },
   });
 
-  for (const company of companies) {
+  for (const space of spaces) {
     // Find revenue objectives with progress tracking
-    const revenueObjective = company.objectives.find(
+    const revenueObjective = space.objectives.find(
       obj => obj.progressEntries.length >= 2
     );
 
@@ -91,8 +91,8 @@ export async function detectRevenueDrops(
     // Only flag if drop is >10%
     if (dropPercent > 10) {
       drops.push({
-        companyId: company.id,
-        companyName: company.name,
+        companyId: space.id,
+        spaceName: space.name,
         currentRevenue: thisWeekAvg,
         previousRevenue: lastWeekAvg,
         dropPercent,

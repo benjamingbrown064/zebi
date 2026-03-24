@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         dueAt: t.dueAt?.toISOString(),
         objective: t.objective?.title,
         project: t.project?.name,
-        company: t.company?.name,
+        space: t.company?.name,
         botAssignee: t.botAssignee,
         createdAt: t.createdAt.toISOString(),
         aiGenerated: t.aiGenerated,

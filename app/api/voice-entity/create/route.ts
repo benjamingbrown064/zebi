@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic';
 
 const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74';
 
-type EntityType = 'company' | 'objective' | 'project';
+type EntityType = 'space' | 'objective' | 'project';
 
-interface CompanyProposal {
+interface SpaceProposal {
   company: {
     name: string;
     industry: string;
@@ -60,20 +60,20 @@ interface ProjectProposal {
 }
 
 /**
- * Create company with optional objectives
+ * Create space with optional objectives
  */
-async function createCompany(proposal: CompanyProposal, workspaceId: string, tx: any) {
-  const { company, objectives } = proposal;
+async function createSpace(proposal: SpaceProposal, workspaceId: string, tx: any) {
+  const { company: space, objectives } = proposal;
 
-  // Create company
-  const createdCompany = await tx.company.create({
+  // Create space
+  const createdSpace = await tx.company.create({
     data: {
       workspaceId,
-      name: company.name,
-      industry: company.industry || null,
-      stage: company.stage || 'startup',
-      businessModel: company.businessModel || null,
-      executiveSummary: company.description || null,
+      name: space.name,
+      industry: space.industry || null,
+      stage: space.stage || 'startup',
+      businessModel: space.businessModel || null,
+      executiveSummary: space.description || null,
       createdBy: PLACEHOLDER_USER_ID
     }
   });
@@ -90,7 +90,7 @@ async function createCompany(proposal: CompanyProposal, workspaceId: string, tx:
       const createdObjective = await tx.objective.create({
         data: {
           workspaceId,
-          companyId: createdCompany.id,
+          companyId: createdSpace.id,
           title: obj.title,
           description: obj.description || '',
           objectiveType: 'milestone',
@@ -108,7 +108,7 @@ async function createCompany(proposal: CompanyProposal, workspaceId: string, tx:
   }
 
   return {
-    company: createdCompany,
+    space: createdSpace,
     objectives: createdObjectives
   };
 }
@@ -119,7 +119,7 @@ async function createCompany(proposal: CompanyProposal, workspaceId: string, tx:
 async function createObjective(
   proposal: ObjectiveProposal,
   parentId: string | null,
-  parentType: 'goal' | 'company' | null,
+  parentType: 'goal' | 'space' | null,
   workspaceId: string,
   tx: any
 ) {
@@ -147,7 +147,7 @@ async function createObjective(
     data: {
       workspaceId,
       ...(parentType === 'goal' && parentId ? { goalId: parentId } : {}),
-      ...(parentType === 'company' && parentId ? { companyId: parentId } : {}),
+      ...(parentType === 'space' && parentId ? { companyId: parentId } : {}),
       title: objective.title,
       description: objective.description || '',
       objectiveType: objective.objectiveType,
@@ -171,7 +171,7 @@ async function createObjective(
           workspaceId,
           objectiveId: createdObjective.id,
           ...(parentType === 'goal' && parentId ? { goalId: parentId } : {}),
-          ...(parentType === 'company' && parentId ? { companyId: parentId } : {}),
+          ...(parentType === 'space' && parentId ? { companyId: parentId } : {}),
           name: proj.name,
           description: proj.description || '',
           priority: 2,
@@ -234,7 +234,7 @@ async function createObjective(
 async function createProject(
   proposal: ProjectProposal,
   parentId: string | null,
-  parentType: 'goal' | 'company' | 'objective' | null,
+  parentType: 'goal' | 'space' | 'objective' | null,
   workspaceId: string,
   tx: any
 ) {
@@ -247,7 +247,7 @@ async function createProject(
     data: {
       workspaceId,
       ...(parentType === 'goal' && parentId ? { goalId: parentId } : {}),
-      ...(parentType === 'company' && parentId ? { companyId: parentId } : {}),
+      ...(parentType === 'space' && parentId ? { companyId: parentId } : {}),
       ...(parentType === 'objective' && parentId ? { objectiveId: parentId } : {}),
       name: project.name,
       description: project.description || '',
@@ -310,9 +310,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!['company', 'objective', 'project'].includes(entityType)) {
+    if (!['space', 'objective', 'project'].includes(entityType)) {
       return NextResponse.json(
-        { error: 'Invalid entityType. Must be: company, objective, or project' },
+        { error: 'Invalid entityType. Must be: space, objective, or project' },
         { status: 400 }
       );
     }
@@ -322,8 +322,8 @@ export async function POST(req: NextRequest) {
     // Create entities in transaction
     const result = await prisma.$transaction(async (tx) => {
       switch (entityType) {
-        case 'company':
-          return createCompany(proposal as CompanyProposal, workspaceId, tx);
+        case 'space':
+          return createSpace(proposal as SpaceProposal, workspaceId, tx);
         
         case 'objective':
           return createObjective(
@@ -354,15 +354,15 @@ export async function POST(req: NextRequest) {
       entityType
     };
 
-    if (entityType === 'company') {
-      const companyResult = result as Awaited<ReturnType<typeof createCompany>>;
+    if (entityType === 'space') {
+      const spaceResult = result as Awaited<ReturnType<typeof createSpace>>;
       response.created = {
-        companyId: companyResult.company.id,
-        objectiveIds: companyResult.objectives.map(o => o.id)
+        companyId: spaceResult.space.id,
+        objectiveIds: spaceResult.objectives.map(o => o.id)
       };
       response.summary = {
-        companies: 1,
-        objectives: companyResult.objectives.length
+        spaces: 1,
+        objectives: spaceResult.objectives.length
       };
     } else if (entityType === 'objective') {
       const objectiveResult = result as Awaited<ReturnType<typeof createObjective>>;

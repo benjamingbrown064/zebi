@@ -28,7 +28,7 @@ export async function POST(
             targetValue: Number(context.objective.targetValue),
             progressPercent: Number(context.objective.progressPercent),
           },
-          company: context.company,
+          space: context.space,
           tasks: context.tasks,
           velocity: context.velocity,
           activeBlockers: context.activeBlockers.length,

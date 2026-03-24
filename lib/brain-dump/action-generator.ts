@@ -66,7 +66,7 @@ async function generateActionForIntent(
   const taskEntity = matchedEntities.find(e => e.type === 'task');
   const projectEntity = matchedEntities.find(e => e.type === 'project');
   const objectiveEntity = matchedEntities.find(e => e.type === 'objective');
-  const companyEntity = matchedEntities.find(e => e.type === 'company');
+  const spaceEntity = matchedEntities.find(e => e.type === 'space');
   const dateEntity = matchedEntities.find(e => e.type === 'date');
   const priorityEntity = matchedEntities.find(e => e.type === 'priority');
   const statusEntity = matchedEntities.find(e => e.type === 'status');
@@ -78,7 +78,7 @@ async function generateActionForIntent(
         taskEntity,
         projectEntity,
         objectiveEntity,
-        companyEntity,
+        spaceEntity,
         dateEntity,
         priorityEntity,
         context,
@@ -131,7 +131,7 @@ async function generateActionForIntent(
     case 'create_project':
       return generateCreateProjectAction(
         projectEntity,
-        companyEntity,
+        spaceEntity,
         context,
         confidence
       );
@@ -147,7 +147,7 @@ async function generateActionForIntent(
     case 'create_objective':
       return generateCreateObjectiveAction(
         objectiveEntity,
-        companyEntity,
+        spaceEntity,
         context,
         confidence
       );
@@ -178,7 +178,7 @@ function generateCreateTaskAction(
   taskEntity: MatchedEntity | undefined,
   projectEntity: MatchedEntity | undefined,
   objectiveEntity: MatchedEntity | undefined,
-  companyEntity: MatchedEntity | undefined,
+  spaceEntity: MatchedEntity | undefined,
   dateEntity: MatchedEntity | undefined,
   priorityEntity: MatchedEntity | undefined,
   context: string,
@@ -189,9 +189,9 @@ function generateCreateTaskAction(
     workspaceId
   };
   
-  // Check if entity is a company (not a project)
-  if (companyEntity?.match.entityId && companyEntity.match.entityType === 'company') {
-    payload.companyId = companyEntity.match.entityId;
+  // Check if entity is a space (not a project)
+  if (spaceEntity?.match.entityId && spaceEntity.match.entityType === 'space') {
+    payload.companyId = spaceEntity.match.entityId;
   }
   
   if (projectEntity?.match.entityId && projectEntity.match.entityType === 'project') {
@@ -223,8 +223,8 @@ function generateCreateTaskAction(
   
   // Build context description
   let contextDesc = '';
-  if (companyEntity?.match.entityType === 'company') {
-    contextDesc = ` for company "${companyEntity.match.entityName}"`;
+  if (spaceEntity?.match.entityType === 'space') {
+    contextDesc = ` for space "${spaceEntity.match.entityName}"`;
   } else if (projectEntity?.match.entityType === 'project') {
     contextDesc = ` in project "${projectEntity.match.entityName}"`;
   } else if (objectiveEntity) {
@@ -402,7 +402,7 @@ function generateSetStatusAction(
 
 function generateCreateProjectAction(
   projectEntity: MatchedEntity | undefined,
-  companyEntity: MatchedEntity | undefined,
+  spaceEntity: MatchedEntity | undefined,
   context: string,
   confidence: number
 ): ProposedAction | null {
@@ -414,8 +414,8 @@ function generateCreateProjectAction(
     name: projectEntity.match.entityName
   };
   
-  if (companyEntity?.match.entityId) {
-    payload.companyId = companyEntity.match.entityId;
+  if (spaceEntity?.match.entityId) {
+    payload.companyId = spaceEntity.match.entityId;
   }
   
   return {
@@ -423,7 +423,7 @@ function generateCreateProjectAction(
     targetEntityType: 'project',
     targetEntityId: null,
     payload,
-    reasoning: `Create project: "${payload.name}"${companyEntity ? ` for ${companyEntity.match.entityName}` : ''}`,
+    reasoning: `Create project: "${payload.name}"${spaceEntity ? ` for ${spaceEntity.match.entityName}` : ''}`,
     confidenceScore: projectEntity.match.confidence,
     needsReview: projectEntity.match.confidence < 0.7
   };
@@ -462,7 +462,7 @@ function generateUpdateProjectAction(
 
 function generateCreateObjectiveAction(
   objectiveEntity: MatchedEntity | undefined,
-  companyEntity: MatchedEntity | undefined,
+  spaceEntity: MatchedEntity | undefined,
   context: string,
   confidence: number
 ): ProposedAction | null {
@@ -474,8 +474,8 @@ function generateCreateObjectiveAction(
     title: objectiveEntity.match.entityName
   };
   
-  if (companyEntity?.match.entityId) {
-    payload.companyId = companyEntity.match.entityId;
+  if (spaceEntity?.match.entityId) {
+    payload.companyId = spaceEntity.match.entityId;
   }
   
   return {
@@ -483,7 +483,7 @@ function generateCreateObjectiveAction(
     targetEntityType: 'objective',
     targetEntityId: null,
     payload,
-    reasoning: `Create objective: "${payload.title}"${companyEntity ? ` for ${companyEntity.match.entityName}` : ''}`,
+    reasoning: `Create objective: "${payload.title}"${spaceEntity ? ` for ${spaceEntity.match.entityName}` : ''}`,
     confidenceScore: objectiveEntity.match.confidence,
     needsReview: objectiveEntity.match.confidence < 0.7
   };

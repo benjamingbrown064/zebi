@@ -32,7 +32,7 @@ const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000' // System user fo
  *   "mode": "direct",
  *   "context": "text content to analyze",
  *   "contextType": "task" | "document" | "project" | "note",
- *   "companyId": "optional-company-id",
+ *   "companyId": "optional-space-id",
  *   "projectId": "optional-project-id"
  * }
  * 

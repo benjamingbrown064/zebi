@@ -42,7 +42,7 @@ interface Objective {
   title: string
 }
 
-interface Company {
+interface Space {
   id: string
   name: string
 }
@@ -51,7 +51,7 @@ export default function ProjectsPage() {
   const { workspaceId, loading: workspaceLoading } = useWorkspace()
   const [projects, setProjects] = useState<Project[]>([])
   const [objectives, setObjectives] = useState<Objective[]>([])
-  const [companies, setCompanies] = useState<Company[]>([])
+  const [spaces, setSpaces] = useState<Space[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -75,10 +75,10 @@ export default function ProjectsPage() {
 
   const fetchData = async () => {
     try {
-      const [projectsRes, objectivesRes, companiesRes] = await Promise.all([
+      const [projectsRes, objectivesRes, spacesRes] = await Promise.all([
         fetch(`/api/projects?workspaceId=${workspaceId}`),
         fetch(`/api/objectives?workspaceId=${workspaceId}`),
-        fetch(`/api/companies?workspaceId=${workspaceId}`)
+        fetch(`/api/spaces?workspaceId=${workspaceId}`)
       ])
       
       if (projectsRes.ok) {
@@ -95,13 +95,13 @@ export default function ProjectsPage() {
         setObjectives(objectivesList)
       }
       
-      if (companiesRes.ok) {
-        const data = await companiesRes.json()
-        const companiesList = (data || []).map((company: any) => ({
-          id: company.id,
-          name: company.name
+      if (spacesRes.ok) {
+        const data = await spacesRes.json()
+        const spacesList = (data || []).map((space: any) => ({
+          id: space.id,
+          name: space.name
         }))
-        setCompanies(companiesList)
+        setSpaces(spacesList)
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
@@ -265,7 +265,7 @@ export default function ProjectsPage() {
                       }
                       badge={getStatusBadge(project.status)}
                       metadata={[
-                        ...(project.company ? [{ label: 'Company', value: project.company.name }] : []),
+                        ...(project.company ? [{ label: 'Space', value: project.company.name }] : []),
                         ...(project.objective ? [{ label: 'Objective', value: project.objective.title }] : []),
                         { label: 'Tasks', value: `${project._count.tasks}` },
                         { label: 'Progress', value: `${project.progress}%` },
@@ -295,7 +295,7 @@ export default function ProjectsPage() {
                           </h3>
                         </div>
 
-                        {/* Company */}
+                        {/* Space */}
                         {project.company && (
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-5 h-5 rounded-[4px] bg-[#F5F5F5] flex items-center justify-center">
@@ -386,7 +386,7 @@ export default function ProjectsPage() {
         onSuccess={() => fetchData()}
         context={{
           existingObjectives: objectives,
-          existingCompanies: companies,
+          existingSpaces: spaces,
         }}
       />
     </div>

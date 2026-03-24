@@ -14,7 +14,7 @@ export interface Task {
   tags?: string[]
   goal?: any // Full goal object with { id, name, ... }
   goalId?: string
-  company?: { id: string; name: string }
+  space?: { id: string; name: string }
   companyId?: string
   project?: { id: string; name: string }
   projectId?: string
@@ -85,7 +85,7 @@ export async function getTasks(workspaceId: string, options?: { limit?: number; 
       tags: t.tags.map(tt => tt.tag.name),
       goal: t.goal || undefined,
       goalId: t.goalId || undefined,
-      company: t.company || undefined,
+      space: t.company || undefined,
       companyId: t.companyId || undefined,
       project: t.project || undefined,
       projectId: t.projectId || undefined,

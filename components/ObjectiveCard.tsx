@@ -6,7 +6,7 @@ import { FaFlag, FaBuilding, FaCalendarAlt, FaRobot, FaUser } from 'react-icons/
 interface ObjectiveCardProps {
   id: string
   title: string
-  companyName?: string
+  spaceName?: string
   companyId?: string
   currentValue: number
   targetValue: number
@@ -27,7 +27,7 @@ interface ObjectiveCardProps {
 export default function ObjectiveCard({
   id,
   title,
-  companyName,
+  spaceName,
   companyId,
   currentValue,
   targetValue,
@@ -106,18 +106,18 @@ export default function ObjectiveCard({
           </div>
 
           <div className="flex-1 min-w-0">
-            {/* Company */}
-            {companyName && (
+            {/* Space */}
+            {spaceName && (
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-6 h-6 rounded-[6px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
                   <FaBuilding className="text-[#737373] text-xs" />
                 </div>
                 <Link
-                  href={`/companies/${companyId}`}
+                  href={`/spaces/${companyId}`}
                   className="text-[15px] font-medium text-[#525252] hover:text-[#DD3A44] transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {companyName}
+                  {spaceName}
                 </Link>
               </div>
             )}

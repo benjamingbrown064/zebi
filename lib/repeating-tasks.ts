@@ -109,7 +109,7 @@ export function parseRelativeDate(relativeDate: string): Date {
 export function expandTemplate(
   template: TaskTemplateData,
   context: {
-    companyName?: string;
+    spaceName?: string;
     projectName?: string;
     date: Date;
   }
@@ -123,7 +123,7 @@ export function expandTemplate(
   // Replace variables in title
   if (expanded.title) {
     expanded.title = expanded.title
-      .replace(/\{company\}/g, context.companyName || 'Company')
+      .replace(/\{space\}/g, context.spaceName || 'Space')
       .replace(/\{project\}/g, context.projectName || 'Project')
       .replace(/\{date\}/g, dateStr)
       .replace(/\{week\}/g, `Week ${weekNum}`)
@@ -134,7 +134,7 @@ export function expandTemplate(
   // Replace variables in description
   if (expanded.description) {
     expanded.description = expanded.description
-      .replace(/\{company\}/g, context.companyName || 'Company')
+      .replace(/\{space\}/g, context.spaceName || 'Space')
       .replace(/\{project\}/g, context.projectName || 'Project')
       .replace(/\{date\}/g, dateStr)
       .replace(/\{week\}/g, `Week ${weekNum}`)
@@ -171,15 +171,15 @@ export async function generateTaskFromTemplate(
   const now = new Date();
 
   // Fetch context for template expansion
-  let companyName: string | undefined;
+  let spaceName: string | undefined;
   let projectName: string | undefined;
 
   if (template.companyId) {
-    const company = await prisma.company.findUnique({
+    const space = await prisma.space.findUnique({
       where: { id: template.companyId },
       select: { name: true },
     });
-    companyName = company?.name;
+    spaceName = space?.name;
   }
 
   if (template.projectId) {
@@ -192,7 +192,7 @@ export async function generateTaskFromTemplate(
 
   // Expand template
   const expandedTemplate = expandTemplate(template.taskTemplate, {
-    companyName,
+    spaceName,
     projectName,
     date: now,
   });

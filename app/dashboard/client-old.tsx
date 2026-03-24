@@ -26,7 +26,7 @@ interface Project {
 interface Objective {
   id: string
   title: string
-  companyName?: string
+  spaceName?: string
   currentValue: number
   targetValue: number
   unit: string
@@ -354,8 +354,8 @@ function ObjectivesList({ objectives, onObjectiveClick }: { objectives: Objectiv
           className="p-4 bg-white rounded-[14px] border border-[#E5E5E5] cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
         >
           <p className="text-[15px] font-medium text-[#1A1A1A] mb-1">{obj.title}</p>
-          {obj.companyName && (
-            <p className="text-[12px] text-[#A3A3A3] mb-2">{obj.companyName}</p>
+          {obj.spaceName && (
+            <p className="text-[12px] text-[#A3A3A3] mb-2">{obj.spaceName}</p>
           )}
           <p className="text-[13px] text-[#525252]">
             {obj.currentValue} / {obj.targetValue} {obj.unit}

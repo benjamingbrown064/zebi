@@ -144,7 +144,7 @@ export async function GET(
         currentValue: Number(objective.currentValue),
         targetValue: Number(objective.targetValue),
         progressPercent: Number(objective.progressPercent),
-        company: objective.company
+        space: objective.company
           ? {
               ...objective.company,
               revenue: objective.company.revenue ? Number(objective.company.revenue) : null,

@@ -227,12 +227,12 @@ export async function calculateGoalProgress(workspaceId: string, goalId: string)
 
     let currentValue = new Decimal(0)
 
-    // For financial goals, calculate from linked company revenue
+    // For financial goals, calculate from linked space revenue
     if (goal.metricType === 'currency' && goal.companyIds) {
       const companyIds = goal.companyIds as string[]
       
       if (companyIds.length > 0) {
-        const companies = await prisma.company.findMany({
+        const spaces = await prisma.space.findMany({
           where: {
             id: { in: companyIds },
             workspaceId,
@@ -240,14 +240,14 @@ export async function calculateGoalProgress(workspaceId: string, goalId: string)
           select: { revenue: true }
         })
 
-        const totalRevenue = companies.reduce((sum, company) => {
-          return sum + (company.revenue ? Number(company.revenue) : 0)
+        const totalRevenue = spaces.reduce((sum, space) => {
+          return sum + (space.revenue ? Number(space.revenue) : 0)
         }, 0)
 
         currentValue = new Decimal(totalRevenue)
-        console.log(`[calculateGoalProgress] Goal ${goalId} (financial): £${totalRevenue} from ${companyIds.length} companies`)
+        console.log(`[calculateGoalProgress] Goal ${goalId} (financial): £${totalRevenue} from ${companyIds.length} spaces`)
       } else {
-        console.log(`[calculateGoalProgress] Goal ${goalId} (financial): no linked companies`)
+        console.log(`[calculateGoalProgress] Goal ${goalId} (financial): no linked spaces`)
       }
     } else {
       // For non-financial goals, count completed tasks
@@ -296,9 +296,9 @@ export async function calculateGoalProgress(workspaceId: string, goalId: string)
 }
 
 /**
- * Link companies to a financial goal
+ * Link spaces to a financial goal
  */
-export async function linkCompaniesToGoal(
+export async function linkSpacesToGoal(
   workspaceId: string,
   goalId: string,
   companyIds: string[]
@@ -309,17 +309,17 @@ export async function linkCompaniesToGoal(
     })
 
     if (!goal) {
-      console.error('linkCompaniesToGoal: goal not found')
+      console.error('linkSpacesToGoal: goal not found')
       return null
     }
 
     // Only allow linking for financial goals
     if (goal.metricType !== 'currency') {
-      console.warn('linkCompaniesToGoal: goal is not financial, skipping')
+      console.warn('linkSpacesToGoal: goal is not financial, skipping')
       return null
     }
 
-    // Update goal with company links
+    // Update goal with space links
     const updated = await prisma.goal.update({
       where: { id: goalId },
       data: {
@@ -330,15 +330,15 @@ export async function linkCompaniesToGoal(
     // Recalculate progress immediately
     return calculateGoalProgress(workspaceId, goalId)
   } catch (err) {
-    console.error('linkCompaniesToGoal error:', err)
+    console.error('linkSpacesToGoal error:', err)
     return null
   }
 }
 
 /**
- * Get companies linked to a goal
+ * Get spaces linked to a goal
  */
-export async function getLinkedCompanies(
+export async function getLinkedSpaces(
   workspaceId: string,
   goalId: string
 ): Promise<Array<{ id: string; name: string; revenue: number | null }>> {
@@ -353,7 +353,7 @@ export async function getLinkedCompanies(
 
     const companyIds = goal.companyIds as string[]
 
-    const companies = await prisma.company.findMany({
+    const spaces = await prisma.space.findMany({
       where: {
         id: { in: companyIds },
         workspaceId,
@@ -366,13 +366,13 @@ export async function getLinkedCompanies(
       orderBy: { name: 'asc' }
     })
 
-    return companies.map(c => ({
+    return spaces.map(c => ({
       id: c.id,
       name: c.name,
       revenue: c.revenue ? Number(c.revenue) : null,
     }))
   } catch (err) {
-    console.error('getLinkedCompanies error:', err)
+    console.error('getLinkedSpaces error:', err)
     return []
   }
 }

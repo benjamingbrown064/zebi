@@ -71,7 +71,7 @@ export default function Sidebar({
     { href: '/dashboard', icon: <FontAwesomeIcon icon={faHouse} />, label: 'Dashboard' },
     { href: '/inbox', icon: <FontAwesomeIcon icon={faInbox} />, label: 'Inbox' },
     { href: '/goals', icon: <FontAwesomeIcon icon={faBullseyeArrow} />, label: 'Goals' },
-    { href: '/companies', icon: <FontAwesomeIcon icon={faBuildings} />, label: 'Companies' },
+    { href: '/spaces', icon: <FontAwesomeIcon icon={faBuildings} />, label: 'Spaces' },
     { href: '/objectives', icon: <FontAwesomeIcon icon={faFlagCheckered} />, label: 'Objectives' },
     { href: '/projects', icon: <FontAwesomeIcon icon={faFolderOpen} />, label: 'Projects' },
     { href: '/tasks', icon: <FontAwesomeIcon icon={faListCheck} />, label: 'Tasks' },

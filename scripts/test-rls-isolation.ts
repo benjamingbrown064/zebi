@@ -59,7 +59,7 @@ async function cleanup() {
     })
     
     // Delete test companies
-    await prisma.company.deleteMany({
+    await prisma.space.deleteMany({
       where: {
         name: {
           startsWith: '[RLS TEST]'
@@ -181,7 +181,7 @@ async function main() {
     
     // Test 4: Create companies in each workspace
     console.log('')
-    const company1 = await prisma.company.create({
+    const company1 = await prisma.space.create({
       data: {
         workspaceId: workspace1.id,
         name: '[RLS TEST] Company 1',
@@ -189,7 +189,7 @@ async function main() {
       }
     })
     
-    const company2 = await prisma.company.create({
+    const company2 = await prisma.space.create({
       data: {
         workspaceId: workspace2.id,
         name: '[RLS TEST] Company 2',
@@ -221,11 +221,11 @@ async function main() {
     
     // Test 6: Verify company counts per workspace
     console.log('')
-    const workspace1Companies = await prisma.company.findMany({
+    const workspace1Companies = await prisma.space.findMany({
       where: { workspaceId: workspace1.id, name: { startsWith: '[RLS TEST]' } }
     })
     
-    const workspace2Companies = await prisma.company.findMany({
+    const workspace2Companies = await prisma.space.findMany({
       where: { workspaceId: workspace2.id, name: { startsWith: '[RLS TEST]' } }
     })
     

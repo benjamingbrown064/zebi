@@ -151,7 +151,7 @@ export default async function DashboardPage() {
       return {
         id: obj.id,
         title: obj.title,
-        companyName: obj.company?.name,
+        spaceName: obj.company?.name,
         currentValue: Number(obj.currentValue),
         targetValue: Number(obj.targetValue),
         unit: obj.unit || '',

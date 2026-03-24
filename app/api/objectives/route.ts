@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
         title: obj.title,
         description: obj.description,
         companyId: obj.company?.id,
-        companyName: obj.company?.name,
+        spaceName: obj.company?.name,
         goalId: obj.goal?.id,
         goalName: obj.goal?.name,
         objectiveType: obj.objectiveType,
@@ -204,10 +204,10 @@ export async function POST(request: NextRequest) {
 
     if (autoBreakdown) {
       try {
-        // Get company context if available
-        let companyContext;
+        // Get space context if available
+        let spaceContext;
         if (companyId) {
-          const company = await prisma.company.findUnique({
+          const space = await prisma.space.findUnique({
             where: { id: companyId },
             include: {
               memories: {
@@ -218,14 +218,14 @@ export async function POST(request: NextRequest) {
             },
           });
 
-          if (company) {
-            companyContext = {
-              name: company.name,
-              industry: company.industry || undefined,
-              stage: company.stage || undefined,
-              revenue: company.revenue ? Number(company.revenue) : undefined,
-              positioning: company.positioning || undefined,
-              relevantMemories: company.memories.map(m => m.description),
+          if (space) {
+            spaceContext = {
+              name: space.name,
+              industry: space.industry || undefined,
+              stage: space.stage || undefined,
+              revenue: space.revenue ? Number(space.revenue) : undefined,
+              positioning: space.positioning || undefined,
+              relevantMemories: space.memories.map(m => m.description),
             };
           }
         }
@@ -236,7 +236,7 @@ export async function POST(request: NextRequest) {
           unit || 'units',
           new Date(startDate),
           new Date(deadline),
-          companyContext
+          spaceContext
         );
 
         // Create milestones
