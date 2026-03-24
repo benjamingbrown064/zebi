@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireWorkspace } from '@/lib/workspace'
 import OpenAI from 'openai'
+import {
+  executeCreation,
+  validateCreationPayload,
+  resolveCompanyId,
+  FIELD_QUESTIONS,
+  type CreationPayload,
+} from '@/lib/chat-create'
 
 const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
 const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'
@@ -9,7 +16,7 @@ const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-type IntentType = 'daily_priority' | 'goal_progress' | 'planning' | 'task_creation' | 'summary' | 'chat' | 'completion_report' | 'task_update_confirm' | 'priority_rejection' | 'task_list' | 'object_reference'
+type IntentType = 'daily_priority' | 'goal_progress' | 'planning' | 'task_creation' | 'summary' | 'chat' | 'completion_report' | 'task_update_confirm' | 'priority_rejection' | 'task_list' | 'object_reference' | 'create_object'
 
 export interface ObjectRef {
   type: 'task' | 'note' | 'document' | 'project' | 'objective'
@@ -23,6 +30,14 @@ interface PlanResponse {
   mode: 'chat' | 'plan'
   response: string
   referencedObjectTitle?: string   // Pass B: for object_reference intent
+  creation?: {                     // Pass 1: create_object intent
+    objectType: string
+    fields: Record<string, any>
+    missingRequired?: string
+    clarificationQuestion?: string
+    inferredFields?: Record<string, string>
+    generateContent?: boolean      // document: generate first-draft content
+  }
   plan?: {
     noteTitle: string
     noteBody: string
@@ -260,6 +275,122 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // --- Pass 1: create_object intent ---
+    let creationResult: any = null
+    if (intent === 'create_object' && aiResponse.creation) {
+      const creation = aiResponse.creation
+      const payload: CreationPayload = {
+        objectType: creation.objectType as any,
+        fields: {
+          ...creation.fields,
+          generateContent: creation.generateContent || false,
+        },
+        inferredFields: creation.inferredFields,
+      }
+
+      // Check if we need to resolve a pending creation from context
+      const ctxBefore = conversation.context as any
+      const pendingCreation: CreationPayload | undefined = ctxBefore?.pendingCreation
+
+      // If LLM signals a missing field, store partial payload and ask
+      if (creation.missingRequired) {
+        const question = creation.clarificationQuestion
+          || FIELD_QUESTIONS[creation.missingRequired]
+          || `What should I use for ${creation.missingRequired}?`
+
+        await prisma.aIConversation.update({
+          where: { id: conversation.id },
+          data: {
+            context: {
+              ...ctxBefore,
+              pendingCreation: payload,
+              pendingCreationQuestion: creation.missingRequired,
+            },
+          },
+        })
+        // Response text is the clarification question — already set by LLM
+      } else {
+        // If we have a pending creation being completed (user answered the question)
+        const payloadToExecute: CreationPayload = pendingCreation
+          ? {
+              ...pendingCreation,
+              fields: {
+                ...pendingCreation.fields,
+                // Merge in any new fields the LLM extracted from the answer
+                ...creation.fields,
+              },
+            }
+          : payload
+
+        try {
+          creationResult = await executeCreation(payloadToExecute, workspaceId)
+
+          // Clear pending creation from context
+          await prisma.aIConversation.update({
+            where: { id: conversation.id },
+            data: {
+              context: {
+                ...ctxBefore,
+                pendingCreation: null,
+                pendingCreationQuestion: null,
+                lastCreatedObjects: [
+                  ...(ctxBefore?.lastCreatedObjects || []),
+                  creationResult.object,
+                ],
+              },
+            },
+          })
+        } catch (err) {
+          console.error('[create_object] Execution error:', err)
+          // Don't crash the whole response — let the LLM's response stand
+        }
+      }
+    }
+
+    // Also check if user is answering a pending creation question (non-create_object intent)
+    if (intent !== 'create_object') {
+      const ctxBefore = conversation.context as any
+      const pendingCreation: CreationPayload | undefined = ctxBefore?.pendingCreation
+      const pendingQuestion: string | undefined = ctxBefore?.pendingCreationQuestion
+
+      if (pendingCreation && pendingQuestion) {
+        // The user's message is likely the answer to our question
+        // Merge the answer into the pending payload
+        const answer = message.trim()
+        const updatedPayload: CreationPayload = {
+          ...pendingCreation,
+          fields: {
+            ...pendingCreation.fields,
+            [pendingQuestion]: answer,
+          },
+        }
+
+        const stillMissing = validateCreationPayload(updatedPayload)
+        if (!stillMissing) {
+          try {
+            creationResult = await executeCreation(updatedPayload, workspaceId)
+            await prisma.aIConversation.update({
+              where: { id: conversation.id },
+              data: {
+                context: {
+                  ...ctxBefore,
+                  pendingCreation: null,
+                  pendingCreationQuestion: null,
+                  lastCreatedObjects: [
+                    ...(ctxBefore?.lastCreatedObjects || []),
+                    creationResult.object,
+                  ],
+                },
+              },
+            })
+          } catch (err) {
+            console.error('[pending_creation] Execution error:', err)
+          }
+        }
+      }
+    }
+    // --- End Pass 1 ---
+
     // --- Pass B: Object grounding ---
     // Collect real objects to surface in UI
     let resolvedObjects: ObjectRef[] = []
@@ -372,6 +503,7 @@ export async function POST(request: NextRequest) {
           mode: aiResponse.mode,
           intent,
           ...(planResult && { plan: planResult }),
+          ...(creationResult && { creation: creationResult }),
         } as any,
       },
     })
@@ -397,6 +529,7 @@ export async function POST(request: NextRequest) {
         createdAt: assistantMessage.createdAt,
       },
       ...(planResult && { plan: planResult }),
+      ...(creationResult && { creation: creationResult }),
       ...(resolvedObjects.length > 0 && { objects: resolvedObjects }),
     })
   } catch (error) {
@@ -467,10 +600,15 @@ function buildSystemPrompt(
     ? `\n### Currently resolved object (the "it"/"this" in conversation)\n- [${conversationContext.lastResolvedObject.type}] ${conversationContext.lastResolvedObject.title} (ID: ${conversationContext.lastResolvedObject.id})`
     : ''
 
+  const pendingCreationCtx = conversationContext?.pendingCreation
+    ? `\n### Pending creation (awaiting answer to clarifying question)\nObject type: ${conversationContext.pendingCreation.objectType}\nFields collected so far: ${JSON.stringify(conversationContext.pendingCreation.fields)}\nWaiting for field: ${conversationContext.pendingCreationQuestion}\nThe user's next message is the answer to this question. Set intent=create_object, merge their answer into the fields, and complete the creation.`
+    : ''
+
   return `You are Zebi Chat — an operating partner for a founder.
 ${lastListedCtx}
 ${lastCreatedCtx}
 ${lastResolvedCtx}
+${pendingCreationCtx}
 
 You are not a task manager assistant.
 You are not a polite backlog printer.
@@ -554,6 +692,7 @@ Classify the user's intent before forming your answer:
 - **completion_report**: "I've done those", "sorted", "done", "finished", "completed", "all done", "that's done", "I did those", "done now"
 - **task_update_confirm**: "yes", "yes please", "go ahead", "do it", "yep", "sure", "confirm"
 - **priority_rejection**: "I can't work on that", "what else should I work on", "something else", "not today", "can't do that one", "skip that", "not that one"
+- **create_object**: "create a company", "add an objective", "make a project", "create a task for X", "add a document to this", "save to inbox", "capture this", "create a new X" — any intent to create a real object in the system
 - **task_list**: "show me my tasks", "list tasks", "what tasks do I have", "show tasks", "what's open", "what's in my backlog"
 - **object_reference**: "this task", "that one", "add this to it", "attach it to", "link that to" — the user is referencing an object from earlier in the conversation
 - **chat**: everything else
@@ -647,6 +786,56 @@ Do these instead:
 
 The "because" must be specific — tied to a real objective, deadline, blocker, or revenue path from the workspace context.
 Do not just pick the next item. Explain the trade-off.
+
+### create_object
+
+The user wants to create a real object. This is the most important intent — default to execution.
+
+**Never refuse a creation request.** Never say "I can't create that." If you can create it, create it.
+
+Return a "creation" object in your JSON response (example):
+
+  {
+    "intent": "create_object",
+    "mode": "chat",
+    "response": "Done. I created a company called Security App. Want me to add its first objective?",
+    "creation": {
+      "objectType": "company",
+      "fields": { "name": "Security App", "industry": "security" },
+      "missingRequired": null,
+      "clarificationQuestion": null,
+      "inferredFields": { "industry": "inferred from context" },
+      "generateContent": false
+    }
+  }
+
+Field extraction rules:
+- Extract every field you can from the message and conversation context
+- "companyId" field: use company name — the server will resolve to ID. Use companies from workspace context above.
+- "projectId" field: use project name — the server will resolve to ID
+- For document: set generateContent=true ONLY when the user clearly wants substantive content ("write a doc", "draft a how-to", "create a guide"). For "add a document to this task", set generateContent=false.
+- For objective: if deadline/dates not given, leave blank — the server uses sensible defaults (today, 90 days out)
+
+Missing field rules:
+- If a genuinely required field is missing AND cannot be inferred from context, set missingRequired to the field name and clarificationQuestion to a single short question
+- Ask AT MOST ONE question. Do not ask for optional fields.
+- Required fields: company=name, objective=title+companyId, project=name, task=title, document=title, inbox=content
+
+Object type mapping:
+- "company", "startup", "business" => objectType: "company"
+- "objective", "goal", "OKR", "target" => objectType: "objective"
+- "project", "workstream", "initiative" => objectType: "project"
+- "task", "to-do", "action item" => objectType: "task"
+- "document", "doc", "note", "write-up" => objectType: "document"
+- "inbox", "capture", "save this", "idea" => objectType: "inbox"
+
+Response text rules:
+- If creating: short confirmation + one follow-up suggestion
+- If asking a clarifying question: just the question, nothing else
+- Always use object-aware language
+
+Parent context from conversation:
+Use "Last created objects" and "Currently resolved object" from context above to infer parent IDs when the user says "under it", "for this company", etc.
 
 ### task_list
 Return up to 10 open tasks. Format each as a clear one-liner with priority emoji.

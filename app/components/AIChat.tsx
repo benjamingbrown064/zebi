@@ -10,6 +10,14 @@ interface ObjectRef {
   meta?: Record<string, any>
 }
 
+interface CreationResult {
+  success: boolean
+  objectType: string
+  object: ObjectRef
+  confirmationText: string
+  suggestedNextStep?: string
+}
+
 interface Message {
   id: string
   role: 'user' | 'assistant'
@@ -19,6 +27,7 @@ interface Message {
     tokens?: number
     cost?: number
     plan?: PlanMetadata
+    creation?: CreationResult
     mode?: string
   }
   objects?: ObjectRef[]
@@ -95,6 +104,11 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
       // Attach resolved objects (Pass B)
       if (data.objects?.length) {
         msg.objects = data.objects
+      }
+      // Attach creation result (Pass 1)
+      if (data.creation) {
+        if (!msg.metadata) msg.metadata = {}
+        msg.metadata.creation = data.creation
       }
       setMessages(prev => [...prev, msg])
     } catch {
@@ -191,6 +205,45 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                 <p className="whitespace-pre-wrap break-words">{message.content}</p>
               </div>
             </div>
+
+            {/* Creation card (Pass 1) */}
+            {message.role === 'assistant' && message.metadata?.creation?.success && (
+              <div className="bg-[#fcf9f8] border border-[#E5E5E5] rounded-[14px] p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[11px] font-semibold text-[#DD3A44] uppercase tracking-wide">
+                    {message.metadata.creation.objectType}
+                  </span>
+                  <span className="text-[10px] text-[#A3A3A3]">created</span>
+                </div>
+                <p className="text-[13px] font-medium text-[#1A1A1A] mb-3 truncate">
+                  {message.metadata.creation.object.title}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      const type = message.metadata?.creation?.objectType
+                      if (type === 'company') window.location.href = '/companies'
+                      else if (type === 'objective') window.location.href = '/objectives'
+                      else if (type === 'project') window.location.href = '/projects'
+                      else if (type === 'task') window.location.href = '/tasks'
+                      else if (type === 'document') window.location.href = '/documents'
+                      else if (type === 'inbox') window.location.href = '/inbox'
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[11px] font-medium text-[#525252] transition"
+                  >
+                    <FaArrowRight size={9} /> View
+                  </button>
+                  {message.metadata.creation.suggestedNextStep && (
+                    <button
+                      onClick={() => sendMessage(message.metadata?.creation?.suggestedNextStep?.replace(/^Want me to /, '').replace(/\?$/, '') || '')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#DD3A44] text-white hover:bg-[#C73040] rounded-[8px] text-[11px] font-medium transition"
+                    >
+                      {message.metadata.creation.suggestedNextStep}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Object cards (Pass B — task list / resolved objects) */}
             {message.role === 'assistant' && message.objects && message.objects.length > 0 && (
