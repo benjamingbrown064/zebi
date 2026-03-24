@@ -459,31 +459,32 @@ async function handlePlanMode(
   let noteTitle = plan.noteTitle
   let tasksCreated: Array<{ id: string; title: string }> = []
 
-  // Create or update note via raw SQL (Note model added after Prisma client was last generated)
+  // Create or update note using Task model pattern (which works)
   if (existingNoteId) {
     try {
       await prisma.$executeRaw`
-        UPDATE "Note" SET title = ${plan.noteTitle}, body = ${plan.noteBody}, "updatedAt" = now()
+        UPDATE "Note" SET title = ${plan.noteTitle || 'Untitled'}, body = ${plan.noteBody || ''}, "updatedAt" = now()
         WHERE id = ${existingNoteId}
       `
       noteId = existingNoteId
-    } catch {
+    } catch (e) {
+      console.error('[handlePlanMode] Note update failed:', e)
       // Fall through to create new
       const rows = await prisma.$queryRaw<{id: string}[]>`
-        INSERT INTO "Note" (id, "workspaceId", title, body, summary, "noteType", author, "companyId", "projectId", "objectiveId", "taskId", "createdBy", "createdAt", "updatedAt")
-        VALUES (gen_random_uuid()::text, ${workspaceId}, ${plan.noteTitle}, ${plan.noteBody}, NULL, 'plan', NULL,
-          ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null}, NULL,
-          ${DEFAULT_USER_ID}::uuid, now(), now())
+        INSERT INTO "Note" ("workspaceId", title, body, "noteType", "companyId", "projectId", "objectiveId", "createdBy")
+        VALUES (${workspaceId}, ${plan.noteTitle || 'Untitled'}, ${plan.noteBody || ''}, 'plan',
+          ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null},
+          ${DEFAULT_USER_ID}::uuid)
         RETURNING id
       `
       noteId = rows[0].id
     }
   } else {
     const rows = await prisma.$queryRaw<{id: string}[]>`
-      INSERT INTO "Note" (id, "workspaceId", title, body, summary, "noteType", author, "companyId", "projectId", "objectiveId", "taskId", "createdBy", "createdAt", "updatedAt")
-      VALUES (gen_random_uuid()::text, ${workspaceId}, ${plan.noteTitle}, ${plan.noteBody}, NULL, 'plan', NULL,
-        ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null}, NULL,
-        ${DEFAULT_USER_ID}::uuid, now(), now())
+      INSERT INTO "Note" ("workspaceId", title, body, "noteType", "companyId", "projectId", "objectiveId", "createdBy")
+      VALUES (${workspaceId}, ${plan.noteTitle || 'Untitled'}, ${plan.noteBody || ''}, 'plan',
+        ${plan.companyId || null}, ${plan.projectId || null}, ${plan.objectiveId || null},
+        ${DEFAULT_USER_ID}::uuid)
       RETURNING id
     `
     noteId = rows[0].id
