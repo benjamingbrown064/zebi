@@ -15,7 +15,8 @@ import { AIAssistant } from '@/lib/doug-auth'
  */
 const AI_USER_IDS: Record<AIAssistant, string> = {
   doug: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
-  harvey: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74', // Same workspace as Doug (One Beyond)
+  harvey: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
+  theo: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74', // Same workspace as Doug & Harvey
 }
 
 /**
