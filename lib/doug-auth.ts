@@ -9,8 +9,9 @@ import { NextRequest } from 'next/server'
 
 const DOUG_API_TOKEN = process.env.DOUG_API_TOKEN
 const HARVEY_API_TOKEN = process.env.HARVEY_API_TOKEN
+const THEO_API_TOKEN = process.env.THEO_API_TOKEN
 
-export type AIAssistant = 'doug' | 'harvey'
+export type AIAssistant = 'doug' | 'harvey' | 'theo'
 
 /**
  * Validate AI assistant token and return which assistant it is
@@ -32,6 +33,10 @@ export function validateAIAuth(request: NextRequest): { valid: boolean; assistan
 
   if (HARVEY_API_TOKEN && token === HARVEY_API_TOKEN) {
     return { valid: true, assistant: 'harvey' }
+  }
+
+  if (THEO_API_TOKEN && token === THEO_API_TOKEN) {
+    return { valid: true, assistant: 'theo' }
   }
 
   return { valid: false }
