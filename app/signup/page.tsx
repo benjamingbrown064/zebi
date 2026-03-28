@@ -100,8 +100,8 @@ export default function SignupPage() {
         return
       }
 
-      // Step 5: All good! Redirect to dashboard
-      router.push('/dashboard')
+      // Step 5: All good! Send new users through the first-value flow
+      router.push('/start')
       router.refresh()
     } catch (err) {
       setError('An unexpected error occurred')

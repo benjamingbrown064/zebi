@@ -78,6 +78,7 @@ export async function middleware(req: NextRequest) {
     '/api/migrate-action-plans', // Migration endpoint (one-time use)
     '/api/brain-dump', // Brain Dump API (internal processing, no auth needed for server-to-server)
     '/api/doug',      // Doug AI Assistant API (uses DOUG_API_TOKEN auth)
+    '/api/build',     // First-value flow — session-authenticated via Supabase cookie
   ]
   // Allow root path (landing page) without auth
   // Check if path starts with any public route
