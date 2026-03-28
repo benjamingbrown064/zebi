@@ -72,6 +72,8 @@ export async function PUT(
     if (title !== undefined) updateData.title = title;
     if (documentType !== undefined) updateData.documentType = documentType;
     if (contentRich !== undefined) updateData.contentRich = contentRich;
+    if (body.projectId !== undefined) updateData.projectId = body.projectId || null;
+    if (body.companyId !== undefined) updateData.companyId = body.companyId || null;
     if (contentChanged && createVersion) {
       updateData.version = existingDoc.version + 1;
     }
