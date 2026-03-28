@@ -216,20 +216,34 @@ export async function POST(request: NextRequest) {
       created.company = { success: false, error: 'Failed to create company' }
     }
 
-    // Step 2: Project
+    // Step 2: Project (with dedup — same company + normalised name)
     let projectId: string | null = null
     try {
-      const project = await prisma.project.create({
-        data: {
-          workspaceId,
-          name: aiPackage.project.title,
-          description: aiPackage.project.description || null,
-          companyId,
-          priority: 2,
-        },
+      const normalisedProjectTarget = normalise(aiPackage.project.title)
+      const existingProjects = await prisma.project.findMany({
+        where: { workspaceId, archivedAt: null, ...(companyId ? { companyId } : {}) },
+        select: { id: true, name: true },
       })
-      projectId = project.id
-      created.project = { success: true, id: project.id, title: project.name }
+      const matchedProject = existingProjects.find(
+        (p) => normalise(p.name) === normalisedProjectTarget
+      )
+
+      if (matchedProject) {
+        projectId = matchedProject.id
+        created.project = { success: true, id: matchedProject.id, title: matchedProject.name, reused: true }
+      } else {
+        const project = await prisma.project.create({
+          data: {
+            workspaceId,
+            name: aiPackage.project.title,
+            description: aiPackage.project.description || null,
+            companyId,
+            priority: 2,
+          },
+        })
+        projectId = project.id
+        created.project = { success: true, id: project.id, title: project.name, reused: false }
+      }
     } catch (e) {
       console.error('[build] project step failed:', e)
       created.project = { success: false, error: 'Failed to create project' }
