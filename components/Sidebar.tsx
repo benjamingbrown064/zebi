@@ -17,6 +17,7 @@ import {
   faFileLines,
   faBrain,
   faLightbulb,
+  faChartLine,
   faGear,
   faRightFromBracket,
   faChevronLeft,
@@ -78,6 +79,7 @@ export default function Sidebar({
     { href: '/board', icon: <FontAwesomeIcon icon={faGrid2} />, label: 'Board' },
     { href: '/planner', icon: <FontAwesomeIcon icon={faCalendarWeek} />, label: 'Weekly Planner' },
     { href: '/documents', icon: <FontAwesomeIcon icon={faFileLines} />, label: 'Documents' },
+    { href: '/founder', icon: <FontAwesomeIcon icon={faChartLine} />, label: 'Founder View' },
     { href: '/memory', icon: <FontAwesomeIcon icon={faBrain} />, label: 'AI Memory' },
     { href: '/insights', icon: <FontAwesomeIcon icon={faLightbulb} />, label: 'AI Insights' },
   ]
