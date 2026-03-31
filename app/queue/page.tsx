@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { Suspense, useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Sidebar from '@/components/Sidebar'
@@ -141,7 +141,7 @@ function HandoffRow({ h }: { h: Handoff }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function QueuePage() {
+function QueueContent() {
   const { workspaceId, loading: wsLoading } = useWorkspace()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -325,5 +325,17 @@ export default function QueuePage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function QueuePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center">
+        <p className="text-[#A3A3A3] text-[13px]">Loading queue…</p>
+      </div>
+    }>
+      <QueueContent />
+    </Suspense>
   )
 }

@@ -1,50 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
 import { prisma } from '@/lib/prisma'
+import { requireWorkspace } from '@/lib/workspace'
+import { validateAIAuth } from '@/lib/doug-auth'
 
-export const revalidate = 30 // Cache 30s for read-heavy route
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    const user = session?.user ?? (await supabase.auth.getUser()).data.user
+    const auth = validateAIAuth(request)
+    const { searchParams } = request.nextUrl
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    let workspaceId: string
+    if (auth.valid) {
+      const wid = searchParams.get('workspaceId')
+      if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
     }
 
-    const { searchParams } = new URL(request.url)
-    const companyId = searchParams.get('companyId')
-    const projectId = searchParams.get('projectId')
+    const companyId   = searchParams.get('companyId')
+    const projectId   = searchParams.get('projectId')
     const objectiveId = searchParams.get('objectiveId')
-    const taskId = searchParams.get('taskId')
-    const limit = parseInt(searchParams.get('limit') || '50')
+    const taskId      = searchParams.get('taskId')
+    const agentFilter = searchParams.get('agent')
+    const limit       = Math.min(parseInt(searchParams.get('limit') || '100'), 200)
 
-    // Get user's workspaces
-    const workspaces = await prisma.workspace.findMany({
-      where: {
-        members: {
-          some: { userId: user.id },
-        },
-      },
-      select: { id: true },
-    })
+    const where: any = { workspaceId }
 
-    const workspaceIds = workspaces.map((w) => w.id)
-
-    if (workspaceIds.length === 0) {
-      return NextResponse.json({ logs: [] })
-    }
-
-    const where: any = {
-      workspaceId: { in: workspaceIds },
-    }
-
-    if (companyId) where.companyId = companyId
-    if (projectId) where.projectId = projectId
+    if (companyId)   where.companyId   = companyId
+    if (projectId)   where.projectId   = projectId
     if (objectiveId) where.objectiveId = objectiveId
-    if (taskId) where.taskId = taskId
+    if (taskId)      where.taskId      = taskId
+    if (agentFilter) where.aiAgent     = agentFilter
 
     const logs = await prisma.activityLog.findMany({
       where,
