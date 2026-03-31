@@ -10,6 +10,8 @@ import AITidyMenu from './AITidyMenu'
 import AITidyPreviewModal from './AITidyPreviewModal'
 import FileUpload from './FileUpload'
 import TaskOutcomeFields from './TaskOutcomeFields'
+import TaskAgentFields, { AgentFieldValues } from './TaskAgentFields'
+import TaskHandoffPanel from './TaskHandoffPanel'
 import { tidyDescription, TidyMode } from '@/app/actions/ai-tidy'
 
 interface TaskDetailModalProps {
@@ -64,6 +66,21 @@ export default function TaskDetailModal({
   const [completionNote, setCompletionNote] = useState<string | null>(null)
   const [outputUrl, setOutputUrl] = useState<string | null>(null)
 
+  // Multi-agent OS fields
+  const [agentFields, setAgentFields] = useState<AgentFieldValues>({
+    ownerAgent:       null,
+    reviewerAgent:    null,
+    handoffToAgent:   null,
+    requestedBy:      null,
+    taskType:         null,
+    decisionNeeded:   false,
+    decisionSummary:  null,
+    waitingOn:        null,
+    blockedReason:    null,
+    definitionOfDone: null,
+    nextAction:       null,
+  })
+
   // Detect mobile on mount and resize
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -114,6 +131,21 @@ export default function TaskDetailModal({
       setExpectedOutcome((task as any).expectedOutcome || null)
       setCompletionNote((task as any).completionNote || null)
       setOutputUrl((task as any).outputUrl || null)
+
+      // Multi-agent OS fields
+      setAgentFields({
+        ownerAgent:       (task as any).ownerAgent       ?? null,
+        reviewerAgent:    (task as any).reviewerAgent    ?? null,
+        handoffToAgent:   (task as any).handoffToAgent   ?? null,
+        requestedBy:      (task as any).requestedBy      ?? null,
+        taskType:         (task as any).taskType         ?? null,
+        decisionNeeded:   (task as any).decisionNeeded   ?? false,
+        decisionSummary:  (task as any).decisionSummary  ?? null,
+        waitingOn:        (task as any).waitingOn        ?? null,
+        blockedReason:    (task as any).blockedReason    ?? null,
+        definitionOfDone: (task as any).definitionOfDone ?? null,
+        nextAction:       (task as any).nextAction       ?? null,
+      })
       
       console.log(`[TaskDetailModal] Task ${task.id} loaded. Description: "${taskDescription.substring(0, 30)}${taskDescription.length > 30 ? '...' : ''}"`)
     } else {
@@ -129,6 +161,14 @@ export default function TaskDetailModal({
       setExpectedOutcome(null)
       setCompletionNote(null)
       setOutputUrl(null)
+
+      // Multi-agent OS fields reset
+      setAgentFields({
+        ownerAgent: null, reviewerAgent: null, handoffToAgent: null,
+        requestedBy: null, taskType: null, decisionNeeded: false,
+        decisionSummary: null, waitingOn: null, blockedReason: null,
+        definitionOfDone: null, nextAction: null,
+      })
     }
   }, [task?.id])
 
@@ -157,6 +197,8 @@ export default function TaskDetailModal({
         completionNote: completionNote || undefined,
         outputUrl: outputUrl || undefined,
       } : {}),
+      // Multi-agent OS fields (always save)
+      ...agentFields,
     }
 
     onUpdate?.(task.id, updates)
@@ -389,6 +431,33 @@ export default function TaskDetailModal({
                   }).catch(err => console.error('Failed to save outcome fields:', err))
                 }
               }}
+            />
+          )}
+
+          {/* Agent & Workflow fields */}
+          {task && (
+            <TaskAgentFields
+              values={agentFields}
+              onChange={values => {
+                setAgentFields(values)
+                // Auto-save agent fields immediately on change
+                if (workspaceId) {
+                  fetch(`/api/tasks/${task.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...values, workspaceId }),
+                  }).catch(err => console.error('Failed to save agent fields:', err))
+                }
+              }}
+            />
+          )}
+
+          {/* Handoff panel */}
+          {task && workspaceId && (
+            <TaskHandoffPanel
+              taskId={task.id}
+              workspaceId={workspaceId}
+              ownerAgent={agentFields.ownerAgent}
             />
           )}
 
