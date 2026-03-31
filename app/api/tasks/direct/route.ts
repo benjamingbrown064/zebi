@@ -24,7 +24,11 @@ export async function POST(request: NextRequest) {
     // Accept description, notes, or body as aliases
     const description = body.description ?? body.notes ?? body.body
     const { title, priority, dueAt, projectId, companyId, objectiveId, goalId,
-            assigneeId, botAssignee, plannedDate, expectedOutcome } = body
+            assigneeId, botAssignee, plannedDate, expectedOutcome,
+            // Multi-agent OS fields
+            ownerAgent, reviewerAgent, handoffToAgent, requestedBy, taskType,
+            decisionNeeded, decisionSummary, waitingOn, blockedReason,
+            definitionOfDone, nextAction, dependencyIds, outputDocId } = body
 
     if (!title?.trim()) {
       return NextResponse.json({ success: false, error: 'title is required' }, { status: 400 })
@@ -73,6 +77,20 @@ export async function POST(request: NextRequest) {
         ...(assigneeId && { assigneeId }),
         ...(botAssignee && { botAssignee }),
         ...(expectedOutcome && { expectedOutcome }),
+        // Multi-agent OS fields
+        ...(ownerAgent       && { ownerAgent }),
+        ...(reviewerAgent    && { reviewerAgent }),
+        ...(handoffToAgent   && { handoffToAgent }),
+        ...(requestedBy      && { requestedBy }),
+        ...(taskType         && { taskType }),
+        ...(decisionNeeded !== undefined && { decisionNeeded: Boolean(decisionNeeded) }),
+        ...(decisionSummary  && { decisionSummary }),
+        ...(waitingOn        && { waitingOn }),
+        ...(blockedReason    && { blockedReason }),
+        ...(definitionOfDone && { definitionOfDone }),
+        ...(nextAction       && { nextAction }),
+        ...(dependencyIds    && { dependencyIds }),
+        ...(outputDocId      && { outputDocId }),
       },
     })
 
@@ -92,6 +110,21 @@ export async function POST(request: NextRequest) {
         goalId: task.goalId || undefined,
         assigneeId: task.assigneeId || undefined,
         botAssignee: task.botAssignee || undefined,
+        // Multi-agent OS fields
+        ownerAgent:       task.ownerAgent       || undefined,
+        reviewerAgent:    task.reviewerAgent     || undefined,
+        handoffToAgent:   task.handoffToAgent    || undefined,
+        requestedBy:      task.requestedBy       || undefined,
+        taskType:         task.taskType          || undefined,
+        decisionNeeded:   task.decisionNeeded,
+        decisionSummary:  task.decisionSummary   || undefined,
+        waitingOn:        task.waitingOn         || undefined,
+        blockedReason:    task.blockedReason     || undefined,
+        definitionOfDone: task.definitionOfDone  || undefined,
+        nextAction:       task.nextAction        || undefined,
+        dependencyIds:    task.dependencyIds,
+        outputDocId:      task.outputDocId       || undefined,
+        expectedOutcome:  task.expectedOutcome   || undefined,
         workspaceId: task.workspaceId,
         createdAt: task.createdAt.toISOString(),
         updatedAt: task.updatedAt.toISOString(),
@@ -122,9 +155,14 @@ export async function GET(request: NextRequest) {
     const includeCompleted = searchParams.get('includeCompleted') === 'true'
 
     // Optional filters
-    const projectId = searchParams.get('projectId')
-    const goalId = searchParams.get('goalId')
-    const priority = searchParams.get('priority')
+    const projectId  = searchParams.get('projectId')
+    const goalId     = searchParams.get('goalId')
+    const priority   = searchParams.get('priority')
+    // Agent queue filters
+    const ownerAgent      = searchParams.get('ownerAgent')
+    const decisionNeeded  = searchParams.get('decisionNeeded')
+    const waitingOn       = searchParams.get('waitingOn')
+    const taskType        = searchParams.get('taskType')
 
     console.log(`[API:tasks/direct] Fetching tasks for workspace ${workspaceId}`, {
       includeArchived,
@@ -137,9 +175,13 @@ export async function GET(request: NextRequest) {
     if (!includeArchived) where.archivedAt = null
     if (!includeCompleted) where.completedAt = null
 
-    if (projectId) where.projectId = projectId
-    if (goalId) where.goalId = goalId
-    if (priority) where.priority = parseInt(priority, 10)
+    if (projectId)  where.projectId  = projectId
+    if (goalId)     where.goalId     = goalId
+    if (priority)   where.priority   = parseInt(priority, 10)
+    if (ownerAgent) where.ownerAgent = ownerAgent
+    if (waitingOn)  where.waitingOn  = waitingOn
+    if (taskType)   where.taskType   = taskType
+    if (decisionNeeded === 'true') where.decisionNeeded = true
 
     const tasks = await prisma.task.findMany({
       where,
@@ -170,6 +212,26 @@ export async function GET(request: NextRequest) {
         tags: t.tags.map(tt => tt.tag.name),
         goalId: t.goalId || undefined,
         projectId: t.projectId || undefined,
+        companyId: t.companyId || undefined,
+        objectiveId: t.objectiveId || undefined,
+        botAssignee: t.botAssignee || undefined,
+        // Multi-agent OS fields
+        ownerAgent:       t.ownerAgent       || undefined,
+        reviewerAgent:    t.reviewerAgent     || undefined,
+        handoffToAgent:   t.handoffToAgent    || undefined,
+        requestedBy:      t.requestedBy       || undefined,
+        taskType:         t.taskType          || undefined,
+        decisionNeeded:   t.decisionNeeded,
+        decisionSummary:  t.decisionSummary   || undefined,
+        waitingOn:        t.waitingOn         || undefined,
+        blockedReason:    t.blockedReason     || undefined,
+        definitionOfDone: t.definitionOfDone  || undefined,
+        nextAction:       t.nextAction        || undefined,
+        dependencyIds:    t.dependencyIds,
+        outputDocId:      t.outputDocId       || undefined,
+        expectedOutcome:  t.expectedOutcome   || undefined,
+        completionNote:   t.completionNote    || undefined,
+        outputUrl:        t.outputUrl         || undefined,
         workspaceId: t.workspaceId,
         createdAt: t.createdAt.toISOString(),
         updatedAt: t.updatedAt.toISOString(),
