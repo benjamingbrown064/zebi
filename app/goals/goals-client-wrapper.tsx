@@ -129,7 +129,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
         isCollapsed={false}
         onCollapsedChange={() => {}}
       />
-      <div className="md:ml-64 flex flex-col overflow-hidden">
+      <div className="md:ml-64 flex flex-col">
       <ResponsiveHeader
         title="Goals"
         subtitle="Track your long-term objectives"

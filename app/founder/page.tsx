@@ -205,10 +205,10 @@ export default function FounderPage() {
       <main className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-[60px]' : 'ml-[220px]'} p-6 md:p-8`}>
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
+        <div className="flex items-start justify-between mb-8 gap-4">
+          <div className="min-w-0">
             <h1 className="text-[26px] font-semibold text-[#1A1A1A]">Founder View</h1>
-            <p className="text-[13px] text-[#A3A3A3] mt-1">
+            <p className="text-[13px] text-[#A3A3A3] mt-1 truncate">
               {lastRefresh
                 ? `Updated ${lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
                 : 'Loading…'}

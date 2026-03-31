@@ -256,7 +256,7 @@ export default function TaskDetailModal({
 
   return (
     <div className={`fixed inset-0 bg-black z-50 flex items-end md:items-center justify-center ${isMobile ? 'bg-opacity-0 p-0' : 'bg-opacity-50 p-4'}`}>
-      <div className={`bg-white w-full shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-y-auto flex flex-col ${
+      <div className={`bg-white w-full shadow-[0_20px_40px_rgba(28,27,27,0.06)] flex flex-col ${
         isMobile 
           ? 'h-full rounded-none' 
           : 'max-w-2xl max-h-[90vh] rounded-[14px]'

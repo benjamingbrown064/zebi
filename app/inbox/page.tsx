@@ -155,7 +155,7 @@ export default function InboxPage() {
     await loadStats()
   }
 
-  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64'
+  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
