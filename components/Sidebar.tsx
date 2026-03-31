@@ -18,6 +18,8 @@ import {
   faBrain,
   faLightbulb,
   faChartLine,
+  faMicrochip,
+  faTimeline,
   faGear,
   faRightFromBracket,
   faChevronLeft,
@@ -80,6 +82,8 @@ export default function Sidebar({
     { href: '/planner', icon: <FontAwesomeIcon icon={faCalendarWeek} />, label: 'Weekly Planner' },
     { href: '/documents', icon: <FontAwesomeIcon icon={faFileLines} />, label: 'Documents' },
     { href: '/founder', icon: <FontAwesomeIcon icon={faChartLine} />, label: 'Founder View' },
+    { href: '/queue', icon: <FontAwesomeIcon icon={faMicrochip} />, label: 'Agent Queue' },
+    { href: '/activity', icon: <FontAwesomeIcon icon={faTimeline} />, label: 'Activity Feed' },
     { href: '/memory', icon: <FontAwesomeIcon icon={faBrain} />, label: 'AI Memory' },
     { href: '/insights', icon: <FontAwesomeIcon icon={faLightbulb} />, label: 'AI Insights' },
   ]

@@ -46,7 +46,7 @@ export async function PATCH(
       )
     }
 
-    // If updating status, verify it exists
+    // If updating status, verify it exists + enforce transition gates
     if (body.statusId) {
       const status = await prisma.status.findFirst({
         where: { id: body.statusId, workspaceId }
@@ -56,6 +56,58 @@ export async function PATCH(
           { success: false, error: 'Invalid status' },
           { status: 400 }
         )
+      }
+
+      // ── Workflow transition gates ────────────────────────────────────────
+      // Merge incoming body with existing task fields for gate evaluation
+      const merged = {
+        ownerAgent:       body.ownerAgent       ?? existingTask.ownerAgent,
+        expectedOutcome:  body.expectedOutcome   ?? existingTask.expectedOutcome,
+        definitionOfDone: body.definitionOfDone  ?? existingTask.definitionOfDone,
+        blockedReason:    body.blockedReason      ?? existingTask.blockedReason,
+        waitingOn:        body.waitingOn          ?? existingTask.waitingOn,
+        handoffToAgent:   body.handoffToAgent     ?? existingTask.handoffToAgent,
+        completionNote:   body.completionNote     ?? existingTask.completionNote,
+        outputDocId:      body.outputDocId        ?? existingTask.outputDocId,
+        outputUrl:        body.outputUrl          ?? existingTask.outputUrl,
+      }
+
+      const statusName = status.name.toLowerCase().replace(/\s+/g, '_')
+      const gateErrors: string[] = []
+
+      if (statusName === 'in_progress' || statusName === 'doing' || statusName === 'in progress') {
+        if (!merged.ownerAgent)       gateErrors.push('ownerAgent is required to start work')
+        if (!merged.expectedOutcome && !merged.definitionOfDone)
+          gateErrors.push('expectedOutcome or definitionOfDone is required to start work')
+      }
+
+      if (statusName === 'blocked') {
+        if (!merged.blockedReason) gateErrors.push('blockedReason is required when blocking a task')
+        if (!merged.waitingOn)     gateErrors.push('waitingOn is required when blocking a task')
+      }
+
+      if (statusName === 'handed_off' || statusName === 'handoff') {
+        if (!merged.handoffToAgent) gateErrors.push('handoffToAgent is required for a handoff')
+        // Check a handoff record exists for this task
+        const handoff = await prisma.handoff.findFirst({
+          where: { taskId, workspaceId, status: { in: ['pending', 'accepted'] } }
+        })
+        if (!handoff) gateErrors.push('A handoff record must be created before marking as handed_off')
+      }
+
+      if (statusName === 'done' || statusName === 'complete' || statusName === 'completed') {
+        const hasOutput = merged.completionNote || merged.outputDocId || merged.outputUrl
+        if (!hasOutput) gateErrors.push('completionNote, outputDocId, or outputUrl is required to mark done')
+      }
+
+      // Soft gates — return warnings but allow bypass with { force: true }
+      if (gateErrors.length > 0 && !body.force) {
+        return NextResponse.json({
+          success: false,
+          gateBlocked: true,
+          errors: gateErrors,
+          hint: 'Pass force: true to bypass these gates'
+        }, { status: 422 })
       }
     }
 
