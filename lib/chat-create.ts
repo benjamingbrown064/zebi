@@ -24,6 +24,8 @@ export type CreatableObjectType =
   | 'task'
   | 'document'
   | 'inbox'
+  | 'memory'
+  | 'insight'
 
 export interface CreationPayload {
   objectType: CreatableObjectType
@@ -45,12 +47,14 @@ export interface CreationResult {
 // ─── Required-field specs ──────────────────────────────────────────────────────
 
 const REQUIRED_FIELDS: Record<CreatableObjectType, string[]> = {
-  space:   ['name'],
+  space:     ['name'],
   objective: ['title', 'companyId'],
   project:   ['name'],
   task:      ['title'],
   document:  ['title'],
   inbox:     ['content'],
+  memory:    ['title', 'description'],
+  insight:   ['title', 'summary'],
 }
 
 // Human-readable field names for missing-field questions
@@ -450,6 +454,71 @@ async function createInboxItem(
   }
 }
 
+async function createMemoryEntry(
+  fields: Record<string, any>,
+  workspaceId: string
+): Promise<CreationResult> {
+  const memory = await prisma.aIMemory.create({
+    data: {
+      workspaceId,
+      companyId:      fields.companyId    || null,
+      projectId:      fields.projectId    || null,
+      objectiveId:    fields.objectiveId  || null,
+      taskId:         fields.taskId       || null,
+      memoryType:     fields.memoryType   || 'note',
+      entryType:      fields.entryType    || 'note',
+      title:          fields.title,
+      description:    fields.description,
+      confidenceScore: fields.confidenceScore ?? 8,
+      authorAgent:    fields.authorAgent  || 'doug',
+      createdBy:      fields.authorAgent  || 'doug',
+      completed:      fields.completed    || null,
+      decisions:      fields.decisions    || null,
+      blockers:       fields.blockers     || null,
+      pending:        fields.pending      || null,
+      tomorrowFirst:  fields.tomorrowFirst || null,
+    },
+  })
+  return {
+    success: true,
+    objectType: 'memory',
+    object: { type: 'note', id: memory.id, title: memory.title, meta: { objectType: 'memory' } },
+    confirmationText: `Done. I saved a **memory note** titled \`${memory.title}\` to AI Memory.`,
+    suggestedNextStep: `Want me to promote any of this to AI Insights for longer-term reference?`,
+  }
+}
+
+async function createInsightEntry(
+  fields: Record<string, any>,
+  workspaceId: string
+): Promise<CreationResult> {
+  const insight = await prisma.aIInsight.create({
+    data: {
+      workspaceId,
+      companyId:      fields.companyId   || null,
+      projectId:      fields.projectId   || null,
+      objectiveId:    fields.objectiveId || null,
+      taskId:         fields.taskId      || null,
+      insightType:    fields.insightType || 'research',
+      title:          fields.title,
+      summary:        fields.summary,
+      detailedAnalysis: fields.detailedAnalysis || { content: fields.summary },
+      suggestedActions: fields.suggestedActions || null,
+      priority:       fields.priority ?? 2,
+      status:         'new',
+      tags:           fields.tags        || [],
+      createdBy:      fields.authorAgent || 'doug',
+    },
+  })
+  return {
+    success: true,
+    objectType: 'insight',
+    object: { type: 'document', id: insight.id, title: insight.title, meta: { objectType: 'insight' } },
+    confirmationText: `Done. I published an **AI Insight** titled \`${insight.title}\` — visible to all agents.`,
+    suggestedNextStep: `Want me to link this to a specific task or project?`,
+  }
+}
+
 // ─── Main execute function ────────────────────────────────────────────────────
 
 export async function executeCreation(
@@ -474,6 +543,8 @@ export async function executeCreation(
     case 'task':      return createTask(payload.fields, workspaceId)
     case 'document':  return createDocument(payload.fields, workspaceId)
     case 'inbox':     return createInboxItem(payload.fields, workspaceId)
+    case 'memory':    return createMemoryEntry(payload.fields, workspaceId)
+    case 'insight':   return createInsightEntry(payload.fields, workspaceId)
     default:
       throw new Error(`Unknown objectType: ${payload.objectType}`)
   }

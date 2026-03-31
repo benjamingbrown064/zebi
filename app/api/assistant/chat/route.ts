@@ -16,7 +16,10 @@ const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-type IntentType = 'daily_priority' | 'goal_progress' | 'planning' | 'task_creation' | 'summary' | 'chat' | 'completion_report' | 'task_update_confirm' | 'priority_rejection' | 'task_list' | 'object_reference' | 'create_object'
+type IntentType = 'daily_priority' | 'goal_progress' | 'planning' | 'task_creation' | 'summary' | 'chat' | 'completion_report' | 'task_update_confirm' | 'priority_rejection' | 'task_list' | 'object_reference' | 'create_object' | 'next_priority'
+
+// Intents that need the high-quality model
+const HIGH_QUALITY_INTENTS = new Set(['daily_priority', 'goal_progress', 'planning', 'priority_rejection', 'next_priority'])
 
 export interface ObjectRef {
   type: 'task' | 'note' | 'document' | 'project' | 'objective'
@@ -138,8 +141,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Load workspace context
-    const [spaces, objectives, tasks, notes] = await Promise.all([
+    // Load workspace context — rich version with agent fields
+    const [spaces, objectives, tasks, notes, recentMemory, openHandoffs] = await Promise.all([
       prisma.space.findMany({
         where: { workspaceId, archivedAt: null },
         select: { id: true, name: true, industry: true, stage: true, revenue: true },
@@ -152,9 +155,15 @@ export async function POST(request: NextRequest) {
       }),
       prisma.task.findMany({
         where: { workspaceId, archivedAt: null, completedAt: null },
-        take: 20,
+        take: 30,
         orderBy: [{ priority: 'asc' }, { dueAt: 'asc' }],
-        select: { id: true, title: true, priority: true, dueAt: true, companyId: true, objectiveId: true, description: true },
+        select: {
+          id: true, title: true, priority: true, dueAt: true, updatedAt: true,
+          companyId: true, objectiveId: true, description: true,
+          ownerAgent: true, taskType: true, blockedReason: true,
+          waitingOn: true, decisionNeeded: true, nextAction: true,
+          definitionOfDone: true,
+        },
       }),
       prisma.$queryRaw<{id: string, title: string, body: string, noteType: string, companyId: string | null, updatedAt: Date}[]>`
         SELECT id, title, body, "noteType", "companyId", "updatedAt"
@@ -163,10 +172,46 @@ export async function POST(request: NextRequest) {
         ORDER BY "updatedAt" DESC
         LIMIT 5
       `,
+      // Recent AI Memory entries
+      prisma.aIMemory.findMany({
+        where: { workspaceId },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        select: { id: true, title: true, description: true, entryType: true, authorAgent: true, createdAt: true },
+      }),
+      // Open handoffs addressed to any agent
+      prisma.handoff.findMany({
+        where: { workspaceId, status: 'pending' },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        select: { id: true, fromAgent: true, toAgent: true, summary: true, requestedOutcome: true, decisionNeeded: true },
+      }),
     ])
 
     // Build system prompt with workspace context
-    const systemPrompt = buildSystemPrompt(spaces, objectives, tasks, notes, activeMode, conversation.context as any)
+    const systemPrompt = buildSystemPrompt(spaces, objectives, tasks, notes, recentMemory, openHandoffs, activeMode, conversation.context as any)
+
+    // Quick intent pre-classification to pick the right model
+    // Only run if we don't have pending creation or confirmation context
+    const ctx = conversation.context as any
+    let modelToUse = 'gpt-4o-mini'
+    if (!ctx?.pendingCreation && !ctx?.pendingCompletions?.length) {
+      try {
+        const quickClassify = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: 'Classify the user message into one of these intents: daily_priority, goal_progress, planning, priority_rejection, next_priority, task_update_confirm, completion_report, create_object, task_list, object_reference, summary, chat. Reply with ONLY the intent word, nothing else.' },
+            { role: 'user', content: message },
+          ],
+          max_tokens: 10,
+          temperature: 0,
+        })
+        const quickIntent = quickClassify.choices[0].message.content?.trim().toLowerCase() ?? 'chat'
+        if (HIGH_QUALITY_INTENTS.has(quickIntent)) modelToUse = 'gpt-4o'
+      } catch {
+        // If pre-classification fails, use mini — don't break chat
+      }
+    }
 
     // Call OpenAI with conversation history
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
@@ -176,10 +221,10 @@ export async function POST(request: NextRequest) {
     ]
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: modelToUse,
       messages,
       response_format: { type: 'json_object' },
-      temperature: 0.7,
+      temperature: modelToUse === 'gpt-4o' ? 0.6 : 0.7,
     })
 
     const responseText = completion.choices[0].message.content || '{}'
@@ -262,13 +307,15 @@ export async function POST(request: NextRequest) {
           data: { completedAt: new Date() }
         })
         
-        // Clear pending completions from context
+        // Clear pending completions from context + flag that we should surface next priority
         await prisma.aIConversation.update({
           where: { id: conversation.id },
           data: {
             context: {
               ...contextData,
-              pendingCompletions: []
+              pendingCompletions: [],
+              justCompletedCount: pendingCompletions.length,
+              surfaceNextPriority: true,
             }
           }
         })
@@ -497,7 +544,7 @@ export async function POST(request: NextRequest) {
         role: 'assistant',
         content: aiResponse.response,
         metadata: {
-          model: 'gpt-4o-mini',
+          model: modelToUse,
           tokens: completion.usage?.total_tokens || 0,
           cost: calculateCost(completion.usage?.total_tokens || 0),
           mode: aiResponse.mode,
@@ -508,8 +555,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Extract and store suggested actions after daily_priority or goal_progress
-    if (intent === 'daily_priority' || intent === 'goal_progress') {
+    // Extract and store suggested actions after quality priority intents
+    if (['daily_priority', 'goal_progress', 'next_priority', 'task_update_confirm'].includes(intent)) {
       await extractAndStoreLastActions(
         aiResponse.response,
         tasks,
@@ -517,6 +564,15 @@ export async function POST(request: NextRequest) {
         conversation.context as any,
         intent
       )
+    }
+
+    // Clear surfaceNextPriority flag if it was set
+    const ctxAfter = conversation.context as any
+    if (ctxAfter?.surfaceNextPriority) {
+      await prisma.aIConversation.update({
+        where: { id: conversation.id },
+        data: { context: { ...ctxAfter, surfaceNextPriority: false } },
+      }).catch(() => {})
     }
 
     return NextResponse.json({
@@ -549,6 +605,8 @@ function buildSystemPrompt(
   objectives: any[],
   tasks: any[],
   notes: any[],
+  recentMemory: any[],
+  openHandoffs: any[],
   operatingMode?: string,
   conversationContext?: any
 ): string {
@@ -565,14 +623,59 @@ function buildSystemPrompt(
       }).join('\n')
     : 'No active objectives.'
 
-  const taskCtx = tasks.length > 0
-    ? tasks.map(t => {
+  const now = Date.now()
+  const blockedTasks = tasks.filter(t => t.blockedReason)
+  const waitingOnBen = tasks.filter(t => t.waitingOn === 'ben' && !t.blockedReason)
+  const staleTasks   = tasks.filter(t => !t.blockedReason && (now - new Date(t.updatedAt).getTime()) > 48 * 60 * 60 * 1000)
+  const decisionTasks = tasks.filter(t => t.decisionNeeded && !t.blockedReason)
+  const readyTasks   = tasks.filter(t => !t.blockedReason && !t.decisionNeeded && t.waitingOn !== 'ben')
+
+  const taskCtx = readyTasks.length > 0
+    ? readyTasks.slice(0, 20).map(t => {
         const co = spaces.find(c => c.id === t.companyId)
         const due = t.dueAt ? ` due ${new Date(t.dueAt).toLocaleDateString('en-GB')}` : ''
         const pri = t.priority === 1 ? '🔴' : t.priority === 2 ? '🟡' : '⚪'
-        return `${pri} ${t.title}${due}${co ? ` [${co.name}]` : ''}${t.description ? ` — ${t.description.slice(0, 80)}` : ''}`
+        const agent = t.ownerAgent ? ` [${t.ownerAgent}]` : ''
+        const type = t.taskType ? ` (${t.taskType})` : ''
+        return `${pri} ${t.title}${due}${co ? ` [${co.name}]` : ''}${agent}${type}${t.description ? ` — ${t.description.slice(0, 80)}` : ''}`
       }).join('\n')
     : 'No open tasks.'
+
+  const blockedCtx = blockedTasks.length > 0
+    ? `\n### Blocked tasks (${blockedTasks.length})\n` + blockedTasks.map(t =>
+        `- ${t.title} — BLOCKED: ${t.blockedReason}${t.waitingOn ? ` (waiting on: ${t.waitingOn})` : ''}`
+      ).join('\n')
+    : ''
+
+  const waitingCtx = waitingOnBen.length > 0
+    ? `\n### Waiting on Ben (${waitingOnBen.length})\n` + waitingOnBen.map(t =>
+        `- ${t.title}${t.nextAction ? ` — Ben needs to: ${t.nextAction}` : ''}`
+      ).join('\n')
+    : ''
+
+  const staleCtx = staleTasks.length > 0
+    ? `\n### Stale tasks — no update in 48h+ (${staleTasks.length})\n` + staleTasks.slice(0, 5).map(t =>
+        `- ${t.title} [${t.ownerAgent ?? 'unassigned'}]`
+      ).join('\n')
+    : ''
+
+  const decisionCtx = decisionTasks.length > 0
+    ? `\n### Decisions needed from Ben (${decisionTasks.length})\n` + decisionTasks.map(t =>
+        `- ${t.title}`
+      ).join('\n')
+    : ''
+
+  const memoryCtx = recentMemory.length > 0
+    ? `\n### Recent AI Memory entries\n` + recentMemory.map(m =>
+        `- [${m.entryType ?? 'note'}] ${m.title}: ${m.description.slice(0, 120)}${m.authorAgent ? ` (${m.authorAgent})` : ''}`
+      ).join('\n')
+    : ''
+
+  const handoffCtx = openHandoffs.length > 0
+    ? `\n### Open handoffs (${openHandoffs.length} pending)\n` + openHandoffs.map(h =>
+        `- ${h.fromAgent} → ${h.toAgent}: ${h.summary}${h.decisionNeeded ? ' [DECISION NEEDED]' : ''}`
+      ).join('\n')
+    : ''
 
   const noteCtx = notes.length > 0
     ? notes.map(n => `- [${n.noteType}] ${n.title}: ${n.body.slice(0, 150)}...`).join('\n')
@@ -622,8 +725,14 @@ ${spaceCtx}
 ### Active objectives (ordered by deadline)
 ${objectiveCtx}
 
-### Open tasks (ordered by priority then due date)
+### Open tasks (ready — ordered by priority then due date)
 ${taskCtx}
+${blockedCtx}
+${waitingCtx}
+${staleCtx}
+${decisionCtx}
+${memoryCtx}
+${handoffCtx}
 
 ### Recent notes and plans
 ${noteCtx}
@@ -695,6 +804,7 @@ Classify the user's intent before forming your answer:
 - **create_object**: "create a space", "add an objective", "make a project", "create a task for X", "add a document to this", "save to inbox", "capture this", "create a new X" — any intent to create a real object in the system
 - **task_list**: "show me my tasks", "list tasks", "what tasks do I have", "show tasks", "what's open", "what's in my backlog"
 - **object_reference**: "this task", "that one", "add this to it", "attach it to", "link that to" — the user is referencing an object from earlier in the conversation
+- **next_priority**: "what's next?", "what now?", "next", "what should I do next?" — user wants the next priority after completing something
 - **chat**: everything else
 
 ---
@@ -771,8 +881,14 @@ The user is saying work is done.
 The user has confirmed they want tasks marked complete.
 - Confirm the updates were applied
 - Keep it brief: "Done. [number] tasks marked complete."
-- Do NOT generate a new priority list yet (that is Pass 2)
-- End with something natural like: "What's next?" or "Want me to pull up the next priority?"
+- Immediately surface the next best move — do not just ask "what's next?"
+- Format: "Done. [N] tasks marked complete. **Next up:** [specific action] — [one line why]."
+
+### next_priority
+User wants the next move after completing work.
+- Respond the same way as daily_priority but acknowledge the completion context
+- Surface the highest-leverage next action
+- Tie it to an objective, deadline, or blocker
 
 ### priority_rejection
 The user has rejected or deprioritised the recommended task.
@@ -828,6 +944,10 @@ Object type mapping:
 - "task", "to-do", "action item" => objectType: "task"
 - "document", "doc", "note", "write-up" => objectType: "document"
 - "inbox", "capture", "save this", "idea" => objectType: "inbox"
+- "remember this", "log this", "save to memory", "daily wrap", "end of day note", "write to memory" => objectType: "memory"
+  - fields: title (required), description (required), entryType (daily_wrap|progress|blocker|decision|handoff|note|routine), authorAgent, companyId, projectId
+- "publish research", "add to insights", "save as insight", "reusable reference", "architecture doc", "SOP", "playbook" => objectType: "insight"
+  - fields: title (required), summary (required), insightType (research|opportunity|risk|strategy|optimization), authorAgent, companyId, projectId, tags
 
 Response text rules:
 - If creating: short confirmation + one follow-up suggestion
