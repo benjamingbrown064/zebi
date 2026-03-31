@@ -54,6 +54,9 @@ model Workspace {
   repeatingTasks RepeatingTask[]
   aiWorkQueue    AIWorkQueue[]
 
+  // Multi-agent operating system
+  handoffs          Handoff[]
+
   // AI Assistant Relations (Week 1 Day 1-2)
   aiConversations   AIConversation[]
   aiSuggestions     AISuggestion[]
@@ -338,6 +341,21 @@ model Task {
   completionNote   String?  @db.Text  // What actually happened when completed
   outputUrl        String?  @db.Text  // Link to artefact/output
 
+  // Multi-agent operating system fields
+  ownerAgent       String?  @db.Text  // "harvey" | "theo" | "doug" | "casper"
+  reviewerAgent    String?  @db.Text  // optional reviewer
+  handoffToAgent   String?  @db.Text  // target agent for handoff
+  requestedBy      String?  @db.Text  // "ben" | "harvey" | "theo" | "doug" | "casper" | "system"
+  taskType         String?  @db.Text  // "strategy" | "research" | "build" | "ops" | "routine" | "admin" | "review" | "bug" | "briefing"
+  decisionNeeded   Boolean  @default(false)
+  decisionSummary  String?  @db.Text
+  waitingOn        String?  @db.Text  // "ben" | "harvey" | "theo" | "doug" | "casper" | "external" | "none"
+  blockedReason    String?  @db.Text
+  definitionOfDone String?  @db.Text
+  nextAction       String?  @db.Text
+  dependencyIds    String[]
+  outputDocId      String?  @db.Text  // link to Document or AIInsight id
+
   workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   status     Status    @relation(fields: [statusId], references: [id])
   project    Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
@@ -385,6 +403,12 @@ model Task {
   // Weekly planner indexes (2026-03-15)
   @@index([workspaceId, plannedDate]) // Weekly planner queries
   @@index([workspaceId, plannedDate, archivedAt]) // Active planned tasks
+  // Multi-agent operating system indexes (2026-03-31)
+  @@index([ownerAgent]) // Agent queue queries
+  @@index([workspaceId, ownerAgent, archivedAt]) // Agent queue filtered by workspace
+  @@index([decisionNeeded]) // Decision inbox
+  @@index([waitingOn]) // Waiting-on-Ben view
+  @@index([taskType]) // Task type filtering
 }
 
 // ==================== TAGS ====================
@@ -642,12 +666,22 @@ model AIMemory {
   workspaceId     String   @db.Text
   companyId       String?  @db.Text
   projectId       String?  @db.Text
+  objectiveId     String?  @db.Text
+  taskId          String?  @db.Text
   memoryType      String
   title           String
   description     String   @db.Text
   confidenceScore Int
   source          String?
   createdBy       String?  @db.Text // "doug", "harvey", user UUID, or null
+  authorAgent     String?  @db.Text // explicit agent: "harvey" | "theo" | "doug" | "casper"
+  entryType       String?  @db.Text // "daily_wrap" | "progress" | "blocker" | "decision" | "handoff" | "note" | "routine"
+  // Structured daily wrap fields
+  completed       Json?    // array of completed items
+  decisions       Json?    // array of decisions made
+  blockers        Json?    // array of blockers discovered
+  pending         Json?    // array of carry-over items
+  tomorrowFirst   Json?    // array of next-day priorities
   createdAt       DateTime @default(now()) @db.Timestamptz()
   updatedAt       DateTime @updatedAt @db.Timestamptz()
 
@@ -660,6 +694,8 @@ model AIMemory {
   @@index([projectId])
   @@index([memoryType])
   @@index([createdBy])
+  @@index([authorAgent])
+  @@index([entryType])
   @@index([updatedAt])
 }
 
@@ -669,6 +705,9 @@ model AIInsight {
   id               String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
   workspaceId      String    @db.Text
   companyId        String?   @db.Text
+  projectId        String?   @db.Text
+  objectiveId      String?   @db.Text
+  taskId           String?   @db.Text // source task that produced this insight
   insightType      String
   title            String
   summary          String    @db.Text
@@ -676,6 +715,7 @@ model AIInsight {
   suggestedActions Json?
   priority         Int
   status           String    @default("new")
+  tags             String[]
   createdBy        String?   @db.Text // "doug", "harvey", user UUID, or null
   createdAt        DateTime  @default(now()) @db.Timestamptz()
   reviewedAt       DateTime? @db.Timestamptz()
@@ -686,9 +726,44 @@ model AIInsight {
 
   @@index([workspaceId])
   @@index([companyId])
+  @@index([projectId])
+  @@index([objectiveId])
   @@index([insightType])
   @@index([status])
   @@index([createdBy])
+  @@index([createdAt])
+}
+
+// ==================== HANDOFFS (NEW) ====================
+
+model Handoff {
+  id               String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId      String   @db.Text
+  taskId           String?  @db.Text
+  companyId        String?  @db.Text
+  projectId        String?  @db.Text
+  fromAgent        String   @db.Text // "harvey" | "theo" | "doug" | "casper" | "ben"
+  toAgent          String   @db.Text // target agent
+  summary          String   @db.Text // short summary of what this handoff is
+  requestedOutcome String   @db.Text // what the receiving agent needs to produce
+  completedWork    String   @db.Text // what was done before handoff
+  remainingWork    String   @db.Text // what still needs doing
+  blockers         String   @db.Text // current blockers, or "none"
+  filesChanged     String[] // list of files/paths changed
+  linkedDocIds     String[] // linked AIInsight or Document ids
+  decisionNeeded   Boolean  @default(false)
+  decisionSummary  String?  @db.Text
+  status           String   @default("pending") // "pending" | "accepted" | "rejected" | "done"
+  createdAt        DateTime @default(now()) @db.Timestamptz()
+  acceptedAt       DateTime? @db.Timestamptz()
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([taskId])
+  @@index([fromAgent])
+  @@index([toAgent])
+  @@index([status])
   @@index([createdAt])
 }
 
