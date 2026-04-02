@@ -1,33 +1,42 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
-import { createClient } from '@/lib/supabase-client'
+import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faHouse,
-  faInbox,
-  faBullseyeArrow,
   faBox,
-  faFlagCheckered,
-  faFolderOpen,
-  faListCheck,
-  faGrid2,
-  faFileLines,
   faBrain,
-  faLightbulb,
-  faChartLine,
-  faMicrochip,
-  faTimeline,
   faGear,
   faRightFromBracket,
   faChevronLeft,
   faChevronRight,
   faBars,
   faTimes,
+  faChevronDown,
+  faChevronUp,
+  faInbox,
+  faBullseyeArrow,
+  faFlagCheckered,
+  faFolderOpen,
+  faListCheck,
+  faGrid2,
   faCalendarWeek,
+  faFileLines,
+  faLightbulb,
+  faChartLine,
+  faMicrochip,
+  faTimeline,
 } from '@fortawesome/pro-duotone-svg-icons'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface NavItem {
+  href: string
+  icon: any
+  label: string
+}
 
 interface SidebarProps {
   workspaceName?: string
@@ -35,258 +44,319 @@ interface SidebarProps {
   onCollapsedChange?: (collapsed: boolean) => void
 }
 
-interface NavItem {
-  href: string
-  icon: React.ReactNode
-  label: string
+// ─── Nav definitions ─────────────────────────────────────────────────────────
+
+const PRIMARY_NAV: NavItem[] = [
+  { href: '/now',      icon: faHouse,  label: 'Now' },
+  { href: '/spaces',   icon: faBox,    label: 'Spaces' },
+  { href: '/memory',   icon: faBrain,  label: 'Memory' },
+]
+
+const MORE_NAV: NavItem[] = [
+  { href: '/tasks',       icon: faListCheck,     label: 'Tasks' },
+  { href: '/board',       icon: faGrid2,         label: 'Board' },
+  { href: '/planner',     icon: faCalendarWeek,  label: 'Weekly Planner' },
+  { href: '/projects',    icon: faFolderOpen,    label: 'Projects' },
+  { href: '/objectives',  icon: faFlagCheckered, label: 'Objectives' },
+  { href: '/goals',       icon: faBullseyeArrow, label: 'Goals' },
+  { href: '/documents',   icon: faFileLines,     label: 'Documents' },
+  { href: '/inbox',       icon: faInbox,         label: 'Inbox' },
+  { href: '/insights',    icon: faLightbulb,     label: 'AI Insights' },
+  { href: '/founder',     icon: faChartLine,     label: 'Founder View' },
+  { href: '/queue',       icon: faMicrochip,     label: 'Agent Queue' },
+  { href: '/activity',    icon: faTimeline,      label: 'Activity Feed' },
+]
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function NavLink({
+  item,
+  collapsed,
+  onClick,
+}: {
+  item: NavItem
+  collapsed: boolean
+  onClick?: () => void
+}) {
+  const pathname = usePathname()
+  const active = pathname === item.href || pathname?.startsWith(item.href + '/')
+
+  return (
+    <Link
+      href={item.href}
+      onClick={onClick}
+      title={collapsed ? item.label : undefined}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px] ${
+        collapsed ? 'justify-center' : ''
+      } ${
+        active
+          ? 'bg-[#1A1A1A] text-white'
+          : 'text-[#525252] hover:bg-[#EBEBEB]'
+      }`}
+    >
+      <span className="text-base w-5 flex items-center justify-center flex-shrink-0">
+        <FontAwesomeIcon icon={item.icon} />
+      </span>
+      {!collapsed && <span className="truncate">{item.label}</span>}
+    </Link>
+  )
 }
+
+// ─── Desktop Sidebar ──────────────────────────────────────────────────────────
+
+function DesktopSidebar({
+  workspaceName,
+  isCollapsed,
+  onCollapsedChange,
+}: {
+  workspaceName: string
+  isCollapsed: boolean
+  onCollapsedChange: (v: boolean) => void
+}) {
+  const [showMore, setShowMore] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const pathname = usePathname()
+
+  // Auto-expand More if current route is in MORE_NAV
+  useEffect(() => {
+    const inMore = MORE_NAV.some(
+      item => pathname === item.href || pathname?.startsWith(item.href + '/')
+    )
+    if (inMore) setShowMore(true)
+  }, [pathname])
+
+  async function handleLogout() {
+    setIsLoading(true)
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+      if (typeof window !== 'undefined') { localStorage.clear(); sessionStorage.clear() }
+      window.location.href = '/login'
+    } catch {
+      window.location.href = '/login'
+    }
+  }
+
+  return (
+    <div
+      className={`fixed left-0 top-0 h-screen bg-[#f6f3f2] flex flex-col transition-all duration-300 z-20 ${
+        isCollapsed ? 'w-[60px]' : 'w-64'
+      }`}
+    >
+      {/* Logo */}
+      <div className={`flex items-center gap-3 px-4 py-5 ${isCollapsed ? 'justify-center' : ''}`}>
+        <div className="w-8 h-8 bg-[#DD3A44] rounded-[10px] flex items-center justify-center flex-shrink-0 text-sm font-bold text-white">
+          Z
+        </div>
+        {!isCollapsed && (
+          <span className="font-semibold text-[14px] text-[#1A1A1A] truncate">{workspaceName}</span>
+        )}
+      </div>
+
+      {/* Primary nav */}
+      <nav className="flex-1 px-3 overflow-y-auto">
+        <div className="space-y-0.5 mb-2">
+          {PRIMARY_NAV.map(item => (
+            <NavLink key={item.href} item={item} collapsed={isCollapsed} />
+          ))}
+        </div>
+
+        {/* Divider */}
+        {!isCollapsed && (
+          <div className="my-2 border-t border-[#E5E5E5]" />
+        )}
+
+        {/* More toggle */}
+        {isCollapsed ? (
+          <div className="space-y-0.5">
+            {MORE_NAV.map(item => (
+              <NavLink key={item.href} item={item} collapsed={true} />
+            ))}
+          </div>
+        ) : (
+          <>
+            <button
+              onClick={() => setShowMore(v => !v)}
+              className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] hover:text-[#737373] transition rounded-[8px] hover:bg-[#EBEBEB]"
+            >
+              <span>More</span>
+              <FontAwesomeIcon icon={showMore ? faChevronUp : faChevronDown} className="text-[10px]" />
+            </button>
+
+            {showMore && (
+              <div className="space-y-0.5 mt-1">
+                {MORE_NAV.map(item => (
+                  <NavLink key={item.href} item={item} collapsed={false} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </nav>
+
+      {/* Bottom: settings + logout */}
+      <div className="px-3 py-4 space-y-0.5 border-t border-[#E5E5E5]">
+        <NavLink item={{ href: '/settings', icon: faGear, label: 'Settings' }} collapsed={isCollapsed} />
+        <button
+          onClick={handleLogout}
+          disabled={isLoading}
+          title={isCollapsed ? 'Sign out' : undefined}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-[#525252] hover:bg-[#EBEBEB] transition disabled:opacity-50 min-h-[44px] ${
+            isCollapsed ? 'justify-center' : ''
+          }`}
+        >
+          <span className="text-base w-5 flex items-center justify-center flex-shrink-0">
+            <FontAwesomeIcon icon={faRightFromBracket} />
+          </span>
+          {!isCollapsed && <span>{isLoading ? 'Signing out…' : 'Sign out'}</span>}
+        </button>
+      </div>
+
+      {/* Collapse toggle */}
+      <div className="px-3 pb-4">
+        <button
+          onClick={() => onCollapsedChange(!isCollapsed)}
+          title={isCollapsed ? 'Expand' : 'Collapse'}
+          className="w-full flex items-center justify-center py-2 rounded-[8px] text-[#A3A3A3] hover:text-[#525252] hover:bg-[#EBEBEB] transition"
+        >
+          <FontAwesomeIcon icon={isCollapsed ? faChevronRight : faChevronLeft} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── Mobile Sidebar ───────────────────────────────────────────────────────────
+
+function MobileSidebar({ workspaceName }: { workspaceName: string }) {
+  const [open, setOpen] = useState(false)
+  const [showMore, setShowMore] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const pathname = usePathname()
+
+  useEffect(() => {
+    const inMore = MORE_NAV.some(
+      item => pathname === item.href || pathname?.startsWith(item.href + '/')
+    )
+    if (inMore) setShowMore(true)
+  }, [pathname])
+
+  async function handleLogout() {
+    setIsLoading(true)
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+      if (typeof window !== 'undefined') { localStorage.clear(); sessionStorage.clear() }
+      window.location.href = '/login'
+    } catch {
+      window.location.href = '/login'
+    }
+  }
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="fixed top-0 left-0 right-0 h-14 bg-[#f6f3f2] border-b border-[#E5E5E5] flex items-center px-4 z-30">
+        <button
+          onClick={() => setOpen(v => !v)}
+          className="p-2 text-[#525252] rounded-[8px] hover:bg-[#EBEBEB] transition"
+        >
+          <FontAwesomeIcon icon={open ? faTimes : faBars} />
+        </button>
+        <div className="ml-3 flex items-center gap-2">
+          <div className="w-7 h-7 bg-[#DD3A44] rounded-[8px] flex items-center justify-center text-xs font-bold text-white">Z</div>
+          <span className="font-semibold text-[13px] text-[#1A1A1A]">Zebi</span>
+        </div>
+      </div>
+
+      {/* Overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/30 z-20"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      {/* Drawer */}
+      <div
+        className={`fixed left-0 top-14 w-64 h-[calc(100vh-56px)] bg-[#f6f3f2] flex flex-col z-30 transition-transform duration-300 overflow-y-auto ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <nav className="flex-1 px-3 py-4">
+          <div className="space-y-0.5 mb-2">
+            {PRIMARY_NAV.map(item => (
+              <NavLink key={item.href} item={item} collapsed={false} onClick={() => setOpen(false)} />
+            ))}
+          </div>
+
+          <div className="my-2 border-t border-[#E5E5E5]" />
+
+          <button
+            onClick={() => setShowMore(v => !v)}
+            className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] rounded-[8px] hover:bg-[#EBEBEB] transition"
+          >
+            <span>More</span>
+            <FontAwesomeIcon icon={showMore ? faChevronUp : faChevronDown} className="text-[10px]" />
+          </button>
+
+          {showMore && (
+            <div className="space-y-0.5 mt-1">
+              {MORE_NAV.map(item => (
+                <NavLink key={item.href} item={item} collapsed={false} onClick={() => setOpen(false)} />
+              ))}
+            </div>
+          )}
+        </nav>
+
+        <div className="px-3 py-4 border-t border-[#E5E5E5] space-y-0.5">
+          <NavLink item={{ href: '/settings', icon: faGear, label: 'Settings' }} collapsed={false} onClick={() => setOpen(false)} />
+          <button
+            onClick={handleLogout}
+            disabled={isLoading}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-[#525252] hover:bg-[#EBEBEB] transition min-h-[44px]"
+          >
+            <span className="text-base w-5 flex items-center justify-center flex-shrink-0">
+              <FontAwesomeIcon icon={faRightFromBracket} />
+            </span>
+            <span>{isLoading ? 'Signing out…' : 'Sign out'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Spacer so page content clears the top bar */}
+      <div className="h-14" />
+    </>
+  )
+}
+
+// ─── Export ───────────────────────────────────────────────────────────────────
 
 export default function Sidebar({
   workspaceName = 'My Workspace',
   isCollapsed: initialCollapsed = false,
   onCollapsedChange,
 }: SidebarProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(initialCollapsed)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(initialCollapsed)
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
   }, [])
 
-  const toggleCollapse = () => {
-    const newState = !isCollapsed
-    setIsCollapsed(newState)
-    onCollapsedChange?.(newState)
+  const handleCollapse = (v: boolean) => {
+    setIsCollapsed(v)
+    onCollapsedChange?.(v)
   }
 
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false)
-  }
+  if (isMobile) return <MobileSidebar workspaceName={workspaceName} />
 
-  const NAV_ITEMS: NavItem[] = [
-    { href: '/now', icon: <FontAwesomeIcon icon={faHouse} />, label: 'Now' },
-    { href: '/inbox', icon: <FontAwesomeIcon icon={faInbox} />, label: 'Inbox' },
-    { href: '/goals', icon: <FontAwesomeIcon icon={faBullseyeArrow} />, label: 'Goals' },
-    { href: '/spaces', icon: <FontAwesomeIcon icon={faBox} />, label: 'Spaces' },
-    { href: '/objectives', icon: <FontAwesomeIcon icon={faFlagCheckered} />, label: 'Objectives' },
-    { href: '/projects', icon: <FontAwesomeIcon icon={faFolderOpen} />, label: 'Projects' },
-    { href: '/tasks', icon: <FontAwesomeIcon icon={faListCheck} />, label: 'Tasks' },
-    { href: '/board', icon: <FontAwesomeIcon icon={faGrid2} />, label: 'Board' },
-    { href: '/planner', icon: <FontAwesomeIcon icon={faCalendarWeek} />, label: 'Weekly Planner' },
-    { href: '/documents', icon: <FontAwesomeIcon icon={faFileLines} />, label: 'Documents' },
-    { href: '/founder', icon: <FontAwesomeIcon icon={faChartLine} />, label: 'Founder View' },
-    { href: '/queue', icon: <FontAwesomeIcon icon={faMicrochip} />, label: 'Agent Queue' },
-    { href: '/activity', icon: <FontAwesomeIcon icon={faTimeline} />, label: 'Activity Feed' },
-    { href: '/memory', icon: <FontAwesomeIcon icon={faBrain} />, label: 'AI Memory' },
-    { href: '/insights', icon: <FontAwesomeIcon icon={faLightbulb} />, label: 'AI Insights' },
-  ]
-
-  async function handleLogout() {
-    setIsLoading(true)
-    try {
-      // Call server-side logout API to clear all cookies
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      })
-      
-      // Clear localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.clear()
-        sessionStorage.clear()
-      }
-      
-      // Force a hard redirect to clear all client state
-      window.location.href = '/login'
-    } catch (error) {
-      console.error('Logout error:', error)
-      // Even if API fails, try to redirect
-      window.location.href = '/login'
-    }
-  }
-
-  const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/')
-
-  // Mobile
-  if (isMobile) {
-    return (
-      <>
-        {/* Mobile Header */}
-        <div className="fixed top-0 left-0 right-0 h-16 bg-[#f6f3f2] flex items-center px-4 z-30">
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 text-[#525252] hover:bg-[#F5F5F5] rounded-[10px] transition min-h-[44px] min-w-[44px] flex items-center justify-center"
-          >
-            {isMobileMenuOpen ? <FontAwesomeIcon icon={faTimes} /> : <FontAwesomeIcon icon={faBars} />}
-          </button>
-          <div className="ml-4 flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#DD3A44] rounded-[10px] flex items-center justify-center flex-shrink-0 text-sm font-bold text-white">
-              Z
-            </div>
-            <span className="font-medium text-[#1A1A1A]">Zebi</span>
-          </div>
-        </div>
-
-        {/* Mobile Overlay */}
-        {isMobileMenuOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-30 z-20"
-            onClick={closeMobileMenu}
-          />
-        )}
-
-        {/* Mobile Sidebar */}
-        <div
-          className={`fixed left-0 top-16 w-64 h-[calc(100vh-64px)] bg-[#f6f3f2] flex flex-col transition-transform duration-300 z-30 ${
-            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-        >
-          <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px] ${
-                  isActive(item.href)
-                    ? 'bg-[#FEF2F2] text-[#DD3A44]'
-                    : 'text-[#525252] hover:bg-[#F5F5F5]'
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="text-base w-5 flex items-center justify-center">
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
-              </Link>
-            ))}
-          </nav>
-
-          <div className="px-3 py-6 space-y-1">
-            <Link
-              href="/settings"
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px] ${
-                isActive('/settings')
-                  ? 'bg-[#FEF2F2] text-[#DD3A44]'
-                  : 'text-[#525252] hover:bg-[#F5F5F5]'
-              }`}
-              onClick={closeMobileMenu}
-            >
-              <FontAwesomeIcon icon={faGear} className="w-5 text-base" />
-              <span>Settings</span>
-            </Link>
-
-            <button
-              onClick={handleLogout}
-              disabled={isLoading}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition disabled:opacity-50 min-h-[44px]"
-            >
-              <FontAwesomeIcon icon={faRightFromBracket} className="w-5 text-base" />
-              <span>{isLoading ? 'Signing out...' : 'Sign out'}</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="h-16" />
-      </>
-    )
-  }
-
-  // Desktop
   return (
-    <div
-      className={`fixed left-0 top-0 h-screen bg-[#f6f3f2] flex flex-col transition-all duration-300 ${
-        isCollapsed ? 'w-20' : 'w-64'
-      }`}
-    >
-      {/* Logo */}
-      <div className={`px-6 py-6 ${isCollapsed ? 'px-4' : ''}`}>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 bg-[#DD3A44] rounded-[10px] flex items-center justify-center flex-shrink-0 text-sm font-bold text-white">
-            Z
-          </div>
-          {!isCollapsed && <span className="font-medium text-[#1A1A1A]">Zebi</span>}
-        </div>
-
-        {!isCollapsed && (
-          <div className="px-3 py-2 rounded-[10px] hover:bg-[#F5F5F5] transition cursor-pointer">
-            <p className="text-[12px] text-[#A3A3A3]">Workspace</p>
-            <p className="text-[13px] font-medium text-[#1A1A1A] truncate">
-              {workspaceName}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px] ${
-              isCollapsed ? 'justify-center' : ''
-            } ${
-              isActive(item.href)
-                ? 'nav-item-active'
-                : 'nav-item'
-            }`}
-            title={isCollapsed ? item.label : ''}
-          >
-            <span className="text-base w-5 flex items-center justify-center">
-              {item.icon}
-            </span>
-            {!isCollapsed && <span>{item.label}</span>}
-          </Link>
-        ))}
-      </nav>
-
-      {/* Settings & Logout */}
-      <div className="px-3 py-6 space-y-1">
-        <Link
-          href="/settings"
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px] ${
-            isCollapsed ? 'justify-center' : ''
-          } ${
-            isActive('/settings')
-              ? 'nav-item-active'
-              : 'nav-item'
-          }`}
-          title={isCollapsed ? 'Settings' : ''}
-        >
-          <FontAwesomeIcon icon={faGear} className="w-5 text-base" />
-          {!isCollapsed && <span>Settings</span>}
-        </Link>
-
-        <button
-          onClick={handleLogout}
-          disabled={isLoading}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition disabled:opacity-50 min-h-[44px] ${
-            isCollapsed ? 'justify-center' : ''
-          }`}
-          title={isCollapsed ? 'Sign out' : ''}
-        >
-          <FontAwesomeIcon icon={faRightFromBracket} className="w-5 text-base" />
-          {!isCollapsed && <span>{isLoading ? 'Signing out...' : 'Sign out'}</span>}
-        </button>
-      </div>
-
-      {/* Collapse Toggle */}
-      <div className="px-3 py-4">
-        <button
-          onClick={toggleCollapse}
-          className="w-full flex items-center justify-center px-3 py-2.5 rounded-[10px] text-[#525252] hover:bg-[#F5F5F5] transition min-h-[44px]"
-          title={isCollapsed ? 'Expand' : 'Collapse'}
-        >
-          {isCollapsed ? <FontAwesomeIcon icon={faChevronRight} /> : <FontAwesomeIcon icon={faChevronLeft} />}
-        </button>
-      </div>
-    </div>
+    <DesktopSidebar
+      workspaceName={workspaceName}
+      isCollapsed={isCollapsed}
+      onCollapsedChange={handleCollapse}
+    />
   )
 }
