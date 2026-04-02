@@ -57,7 +57,7 @@ function ExportDropdown({ onExport }: { onExport: (format: 'markdown' | 'html' |
       <button
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
-        className="inline-flex items-center gap-2 px-4 py-2  text-[#525252] rounded-[10px] hover:bg-[#F5F5F5] transition text-[13px] font-medium"
+        className="inline-flex items-center gap-2 px-4 py-2  text-[#525252] rounded hover:bg-[#F5F5F5] transition text-[13px] font-medium"
       >
         <FaFileDownload />
         Export
@@ -67,7 +67,7 @@ function ExportDropdown({ onExport }: { onExport: (format: 'markdown' | 'html' |
         <div
           onMouseEnter={() => setIsOpen(true)}
           onMouseLeave={() => setIsOpen(false)}
-          className="absolute right-0 mt-1 w-48 bg-white  rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.08)] overflow-hidden z-50"
+          className="absolute right-0 mt-1 w-48 bg-white  rounded shadow-[0_4px_16px_rgba(0,0,0,0.08)] overflow-hidden z-50"
         >
           <button
             onClick={() => {
@@ -114,10 +114,10 @@ function VersionList({ versions, document, selectedVersion, onView }: {
         <button
           key={version.id}
           onClick={() => onView(version)}
-          className={`w-full text-left p-3 rounded-[10px] border transition ${
+          className={`w-full text-left p-3 rounded border transition ${
             selectedVersion?.id === version.id
               ? 'border-[#DD3A44] bg-[#FEF2F2]'
-              : 'border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#f6f3f2]'
+              : 'border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#F3F3F3]'
           }`}
         >
           <div className="font-medium text-sm text-[#1c1b1b]">
@@ -371,7 +371,7 @@ export default function DocumentDetailPage() {
             <div className="flex items-center gap-2 md:gap-4 mb-3">
               <Link
                 href="/documents"
-                className="flex-shrink-0 p-2 text-[#737373] hover:text-[#DD3A44] transition rounded-[6px]"
+                className="flex-shrink-0 p-2 text-[#737373] hover:text-[#DD3A44] transition rounded-md"
               >
                 <FaArrowLeft />
               </Link>
@@ -380,7 +380,7 @@ export default function DocumentDetailPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 onBlur={saveDocument}
-                className="flex-1 min-w-0 text-[18px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#1A1A1A] border-none focus:outline-none focus:ring-2 focus:ring-[#DD3A44] rounded-[10px] px-2 py-1"
+                className="flex-1 min-w-0 text-[18px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#1A1A1A] border-none focus:outline-none focus:ring-2 focus:ring-[#DD3A44] rounded px-2 py-1"
                 placeholder="Untitled Document"
               />
             </div>
@@ -390,7 +390,7 @@ export default function DocumentDetailPage() {
               <select
                 value={documentType}
                 onChange={(e) => { setDocumentType(e.target.value); saveDocument(); }}
-                className="flex-shrink-0 px-3 py-2 rounded-[10px] text-[12px] md:text-[13px] font-medium text-[#525252] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] border border-[#E5E5E5] bg-white"
+                className="flex-shrink-0 px-3 py-2 rounded text-[12px] md:text-[13px] font-medium text-[#525252] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] border border-[#E5E5E5] bg-white"
               >
                 {DOCUMENT_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>{type.label}</option>
@@ -399,7 +399,7 @@ export default function DocumentDetailPage() {
 
               <button
                 onClick={() => { setShowVersionHistory(!showVersionHistory); if (!showVersionHistory) fetchVersions(); }}
-                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 text-[#525252] rounded-[10px] hover:bg-[#F5F5F5] transition text-[12px] md:text-[13px] font-medium whitespace-nowrap"
+                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 text-[#525252] rounded hover:bg-[#F5F5F5] transition text-[12px] md:text-[13px] font-medium whitespace-nowrap"
               >
                 <FaHistory />
                 <span className="hidden sm:inline">History</span>
@@ -409,7 +409,7 @@ export default function DocumentDetailPage() {
 
               <button
                 onClick={createVersion}
-                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 bg-[#DD3A44] text-white rounded-[10px] hover:bg-[#C7333D] transition text-[12px] md:text-[13px] font-medium whitespace-nowrap"
+                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 bg-[#DD3A44] text-white rounded hover:bg-[#C7333D] transition text-[12px] md:text-[13px] font-medium whitespace-nowrap"
               >
                 <FaSave />
                 <span>Save Version</span>
@@ -417,14 +417,14 @@ export default function DocumentDetailPage() {
 
               <button
                 onClick={deleteDocument}
-                className="flex-shrink-0 p-2 text-[#DC2626] hover:bg-[#FEF2F2] rounded-[6px] transition"
+                className="flex-shrink-0 p-2 text-[#DC2626] hover:bg-[#FEF2F2] rounded-md transition"
               >
                 <FaTrash />
               </button>
             </div>
 
             {selectedVersion && (
-              <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-[10px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <span className="text-sm text-yellow-800">
                   Viewing version {selectedVersion.version} from{' '}
                   {new Date(selectedVersion.createdAt).toLocaleString()}
@@ -453,7 +453,7 @@ export default function DocumentDetailPage() {
           <div className="flex gap-4 md:gap-6">
             {/* Editor */}
             <div className="flex-1 min-w-0">
-              <div className="bg-white rounded-[10px] overflow-hidden">
+              <div className="bg-white rounded overflow-hidden">
                 {content && (
                   <DocumentEditor
                     content={content}
@@ -480,7 +480,7 @@ export default function DocumentDetailPage() {
                 </div>
 
                 {/* Desktop: sidebar */}
-                <div className="hidden md:block w-72 lg:w-80 flex-shrink-0 bg-white rounded-[14px] p-4 self-start sticky top-28">
+                <div className="hidden md:block w-72 lg:w-80 flex-shrink-0 bg-white rounded p-4 self-start sticky top-28">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-[#1c1b1b]">Version History</h3>
                     <button onClick={() => setShowVersionHistory(false)} className="p-1 text-[#A3A3A3] hover:text-[#5a5757]"><FaTimes /></button>

@@ -42,7 +42,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
           <p className="text-[#A3A3A3] mb-4">No active objectives</p>
           <Link
             href="/objectives"
-            className="inline-block px-4 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition"
+            className="inline-block px-4 py-2 bg-accent-500 text-white rounded hover:bg-accent-600 transition"
           >
             Create Your First Objective
           </Link>
@@ -55,7 +55,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
     on_track: { bg: 'bg-[#e6f4f4]', text: 'text-[#006766]', bar: 'bg-[#f0fafa]0', icon: '✅' },
     at_risk: { bg: 'bg-yellow-100', text: 'text-yellow-700', bar: 'bg-yellow-500', icon: '⚠️' },
     blocked: { bg: 'bg-red-100', text: 'text-red-700', bar: 'bg-red-500', icon: '🚫' },
-    active: { bg: 'bg-[#f0eded]', text: 'text-[#5a5757]', bar: 'bg-accent-500', icon: '🎯' },
+    active: { bg: 'bg-[#F3F3F3]', text: 'text-[#5a5757]', bar: 'bg-accent-500', icon: '🎯' },
   }
 
   const formatValue = (value: number, unit?: string) => {

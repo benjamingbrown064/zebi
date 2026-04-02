@@ -260,7 +260,7 @@ export default function VoiceEntityModal({
       case 'space':
         return (
           <>
-            <div className="mb-6 p-4 bg-white rounded-[10px]">
+            <div className="mb-6 p-4 bg-white rounded">
               <h4 className="text-sm font-semibold text-[#A3A3A3] mb-2">{config.icon} COMPANY</h4>
               <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.space.name}</h5>
               <div className="space-y-1 text-sm text-[#5a5757]">
@@ -276,7 +276,7 @@ export default function VoiceEntityModal({
             </div>
 
             {proposal.objectives && proposal.objectives.length > 0 && (
-              <div className="mb-6 p-4 bg-white rounded-[10px]">
+              <div className="mb-6 p-4 bg-white rounded">
                 <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">
                   🎯 OBJECTIVES ({proposal.objectives.length})
                 </h4>
@@ -306,7 +306,7 @@ export default function VoiceEntityModal({
       case 'objective':
         return (
           <>
-            <div className="mb-6 p-4 bg-white rounded-[10px]">
+            <div className="mb-6 p-4 bg-white rounded">
               <h4 className="text-sm font-semibold text-[#A3A3A3] mb-2">{config.icon} OBJECTIVE</h4>
               <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.objective.title}</h5>
               <div className="space-y-1 text-sm text-[#5a5757]">
@@ -323,7 +323,7 @@ export default function VoiceEntityModal({
             </div>
 
             {proposal.projects && proposal.projects.length > 0 && (
-              <div className="mb-6 p-4 bg-white rounded-[10px]">
+              <div className="mb-6 p-4 bg-white rounded">
                 <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">
                   🗂️ PROJECTS ({proposal.projects.length})
                 </h4>
@@ -336,7 +336,7 @@ export default function VoiceEntityModal({
             )}
 
             {proposal.tasks && proposal.tasks.length > 0 && (
-              <div className="mb-6 p-4 bg-white rounded-[10px]">
+              <div className="mb-6 p-4 bg-white rounded">
                 <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">
                   ✅ TASKS ({proposal.tasks.length})
                 </h4>
@@ -353,7 +353,7 @@ export default function VoiceEntityModal({
       case 'project':
         return (
           <>
-            <div className="mb-6 p-4 bg-white rounded-[10px]">
+            <div className="mb-6 p-4 bg-white rounded">
               <h4 className="text-sm font-semibold text-[#A3A3A3] mb-2">{config.icon} PROJECT</h4>
               <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.project.name}</h5>
               <div className="space-y-1 text-sm text-[#5a5757]">
@@ -369,7 +369,7 @@ export default function VoiceEntityModal({
             </div>
 
             {proposal.tasks && proposal.tasks.length > 0 && (
-              <div className="mb-6 p-4 bg-white rounded-[10px]">
+              <div className="mb-6 p-4 bg-white rounded">
                 <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">
                   ✅ TASKS ({proposal.tasks.length})
                 </h4>
@@ -409,7 +409,7 @@ export default function VoiceEntityModal({
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Something went wrong</h3>
-          <div className="mb-6 max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded-[10px]">
+          <div className="mb-6 max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded">
             <p className="text-sm text-red-800">{error}</p>
           </div>
           <div className="flex gap-3 justify-center">
@@ -452,7 +452,7 @@ export default function VoiceEntityModal({
             <div className="mb-8 text-center">
               <p className="text-lg text-[#1A1A1A] mb-2">{config.openingQuestion}</p>
               <p className="text-sm text-[#5a5757] mb-4">Speak naturally for 30-90 seconds</p>
-              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded-[10px]">
+              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded">
                 <p className="text-xs text-blue-800">
                   💡 <strong>Tip:</strong> Be specific about names, dates, and key details.
                 </p>
@@ -550,10 +550,10 @@ export default function VoiceEntityModal({
       size="3xl"
       scrollBehavior="inside"
       classNames={{
-        base: 'bg-[#fcf9f8]',
+        base: 'bg-[#F9F9F9]',
         header: 'border-b border-gray-200',
         body: 'py-6',
-        closeButton: 'hover:bg-[#f0eded]'
+        closeButton: 'hover:bg-[#F3F3F3]'
       }}
     >
       <ModalContent>

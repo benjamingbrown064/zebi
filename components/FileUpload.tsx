@@ -154,10 +154,10 @@ export default function FileUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
-        className={`border-2 border-dashed rounded-[14px] p-6 text-center cursor-pointer transition ${
+        className={`border-2 border-dashed rounded p-6 text-center cursor-pointer transition ${
           isDragging
             ? 'border-accent-500 bg-accent-50'
-            : 'border-gray-300 hover:border-accent-400 hover:bg-[#f6f3f2]'
+            : 'border-gray-300 hover:border-accent-400 hover:bg-[#F3F3F3]'
         }`}
       >
         <input
@@ -187,7 +187,7 @@ export default function FileUpload({
           {attachments.map((attachment) => (
             <div
               key={attachment.id}
-              className="flex items-center justify-between p-3 bg-[#f6f3f2] rounded-[10px]"
+              className="flex items-center justify-between p-3 bg-[#F3F3F3] rounded"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <span className="text-xl">{getFileIcon(attachment.mimeType)}</span>

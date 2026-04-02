@@ -47,7 +47,7 @@ export default function CompletionToast({
 
   return (
     <div
-      className={`fixed bottom-6 right-6 bg-[#f0fafa] border border-green-200 rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 max-w-sm transform transition-all duration-300 ${
+      className={`fixed bottom-6 right-6 bg-[#f0fafa] border border-green-200 rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 max-w-sm transform transition-all duration-300 ${
         dismissing ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
@@ -88,7 +88,7 @@ export default function CompletionToast({
             onUndo()
             onClose()
           }}
-          className="text-xs font-medium text-[#5a5757] hover:text-[#5a5757] hover:bg-[#f0eded] px-2 py-1 rounded transition"
+          className="text-xs font-medium text-[#5a5757] hover:text-[#5a5757] hover:bg-[#F3F3F3] px-2 py-1 rounded transition"
         >
           Undo
         </button>

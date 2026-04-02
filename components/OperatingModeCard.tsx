@@ -62,7 +62,7 @@ export default function OperatingModeCard() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-[14px] p-5 mb-4 animate-pulse">
+      <div className="bg-white rounded p-5 mb-4 animate-pulse">
         <div className="h-4 bg-[#F5F5F5] rounded w-1/3 mb-2" />
         <div className="h-3 bg-[#F5F5F5] rounded w-2/3" />
       </div>
@@ -83,7 +83,7 @@ export default function OperatingModeCard() {
     : null
 
   return (
-    <div className="bg-white rounded-[14px] p-5 mb-4">
+    <div className="bg-white rounded p-5 mb-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div
@@ -148,7 +148,7 @@ export default function OperatingModeCard() {
                   key={m}
                   onClick={() => setMode(m)}
                   disabled={saving}
-                  className="p-3 rounded-[10px] text-left transition-all border-2"
+                  className="p-3 rounded text-left transition-all border-2"
                   style={{
                     backgroundColor: isActive ? mm.bgColour : '#FAFAFA',
                     borderColor: isActive ? mm.colour : '#F0F0F0',

@@ -86,7 +86,7 @@ function NavLink({
       href={item.href}
       onClick={onClick}
       title={collapsed ? item.label : undefined}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px] ${
+      className={`flex items-center gap-3 px-3 py-2.5 rounded text-[13px] font-medium transition min-h-[44px] ${
         collapsed ? 'justify-center' : ''
       } ${
         active
@@ -138,13 +138,13 @@ function DesktopSidebar({
 
   return (
     <div
-      className={`fixed left-0 top-0 h-screen bg-[#f6f3f2] flex flex-col transition-all duration-300 z-20 ${
+      className={`fixed left-0 top-0 h-screen bg-[#F3F3F3] flex flex-col transition-all duration-300 z-20 ${
         isCollapsed ? 'w-[60px]' : 'w-64'
       }`}
     >
       {/* Logo */}
       <div className={`flex items-center gap-3 px-4 py-5 ${isCollapsed ? 'justify-center' : ''}`}>
-        <div className="w-8 h-8 bg-[#DD3A44] rounded-[10px] flex items-center justify-center flex-shrink-0 text-sm font-bold text-white">
+        <div className="w-8 h-8 bg-[#DD3A44] rounded flex items-center justify-center flex-shrink-0 text-sm font-bold text-white">
           Z
         </div>
         {!isCollapsed && (
@@ -176,7 +176,7 @@ function DesktopSidebar({
           <>
             <button
               onClick={() => setShowMore(v => !v)}
-              className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] hover:text-[#737373] transition rounded-[8px] hover:bg-[#EBEBEB]"
+              className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] hover:text-[#737373] transition rounded hover:bg-[#EBEBEB]"
             >
               <span>More</span>
               <FontAwesomeIcon icon={showMore ? faChevronUp : faChevronDown} className="text-[10px]" />
@@ -200,7 +200,7 @@ function DesktopSidebar({
           onClick={handleLogout}
           disabled={isLoading}
           title={isCollapsed ? 'Sign out' : undefined}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-[#525252] hover:bg-[#EBEBEB] transition disabled:opacity-50 min-h-[44px] ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-[13px] font-medium text-[#525252] hover:bg-[#EBEBEB] transition disabled:opacity-50 min-h-[44px] ${
             isCollapsed ? 'justify-center' : ''
           }`}
         >
@@ -216,7 +216,7 @@ function DesktopSidebar({
         <button
           onClick={() => onCollapsedChange(!isCollapsed)}
           title={isCollapsed ? 'Expand' : 'Collapse'}
-          className="w-full flex items-center justify-center py-2 rounded-[8px] text-[#A3A3A3] hover:text-[#525252] hover:bg-[#EBEBEB] transition"
+          className="w-full flex items-center justify-center py-2 rounded text-[#A3A3A3] hover:text-[#525252] hover:bg-[#EBEBEB] transition"
         >
           <FontAwesomeIcon icon={isCollapsed ? faChevronRight : faChevronLeft} />
         </button>
@@ -254,15 +254,15 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="fixed top-0 left-0 right-0 h-14 bg-[#f6f3f2] border-b border-[#E5E5E5] flex items-center px-4 z-30">
+      <div className="fixed top-0 left-0 right-0 h-14 bg-[#F3F3F3] border-b border-[#E5E5E5] flex items-center px-4 z-30">
         <button
           onClick={() => setOpen(v => !v)}
-          className="p-2 text-[#525252] rounded-[8px] hover:bg-[#EBEBEB] transition"
+          className="p-2 text-[#525252] rounded hover:bg-[#EBEBEB] transition"
         >
           <FontAwesomeIcon icon={open ? faTimes : faBars} />
         </button>
         <div className="ml-3 flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#DD3A44] rounded-[8px] flex items-center justify-center text-xs font-bold text-white">Z</div>
+          <div className="w-7 h-7 bg-[#DD3A44] rounded flex items-center justify-center text-xs font-bold text-white">Z</div>
           <span className="font-semibold text-[13px] text-[#1A1A1A]">Zebi</span>
         </div>
       </div>
@@ -277,7 +277,7 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
 
       {/* Drawer */}
       <div
-        className={`fixed left-0 top-14 w-64 h-[calc(100vh-56px)] bg-[#f6f3f2] flex flex-col z-30 transition-transform duration-300 overflow-y-auto ${
+        className={`fixed left-0 top-14 w-64 h-[calc(100vh-56px)] bg-[#F3F3F3] flex flex-col z-30 transition-transform duration-300 overflow-y-auto ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -292,7 +292,7 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
 
           <button
             onClick={() => setShowMore(v => !v)}
-            className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] rounded-[8px] hover:bg-[#EBEBEB] transition"
+            className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] rounded hover:bg-[#EBEBEB] transition"
           >
             <span>More</span>
             <FontAwesomeIcon icon={showMore ? faChevronUp : faChevronDown} className="text-[10px]" />
@@ -312,7 +312,7 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
           <button
             onClick={handleLogout}
             disabled={isLoading}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-[#525252] hover:bg-[#EBEBEB] transition min-h-[44px]"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded text-[13px] font-medium text-[#525252] hover:bg-[#EBEBEB] transition min-h-[44px]"
           >
             <span className="text-base w-5 flex items-center justify-center flex-shrink-0">
               <FontAwesomeIcon icon={faRightFromBracket} />

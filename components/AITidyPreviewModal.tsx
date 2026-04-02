@@ -52,7 +52,7 @@ export default function AITidyPreviewModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white px-6 py-4 flex justify-between items-center">
           <div>
@@ -81,7 +81,7 @@ export default function AITidyPreviewModal({
               {/* Original */}
               <div>
                 <h3 className="text-sm font-semibold text-[#1c1b1b] mb-3">Original</h3>
-                <div className="p-4 bg-[#f6f3f2] rounded-[10px] min-h-[300px] whitespace-pre-wrap text-sm text-[#5a5757]">
+                <div className="p-4 bg-[#F3F3F3] rounded min-h-[300px] whitespace-pre-wrap text-sm text-[#5a5757]">
                   {original}
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default function AITidyPreviewModal({
                 <h3 className="text-sm font-semibold text-[#1c1b1b] mb-3">
                   Rewritten ({MODE_LABELS[mode]})
                 </h3>
-                <div className="p-4 bg-accent-50 rounded-[10px] border border-accent-200 min-h-[300px] whitespace-pre-wrap text-sm text-[#5a5757]">
+                <div className="p-4 bg-accent-50 rounded border border-accent-200 min-h-[300px] whitespace-pre-wrap text-sm text-[#5a5757]">
                   {rewritten}
                 </div>
               </div>
@@ -101,14 +101,14 @@ export default function AITidyPreviewModal({
 
         {/* Footer */}
         {!isLoading && (
-          <div className="sticky bottom-0 bg-[#f6f3f2] px-6 py-4 flex justify-end gap-3">
+          <div className="sticky bottom-0 bg-[#F3F3F3] px-6 py-4 flex justify-end gap-3">
             <button
               onClick={handleReject}
               disabled={selectedAction === 'accept'}
-              className={`px-4 py-2 rounded-[10px] font-medium transition flex items-center gap-2 ${
+              className={`px-4 py-2 rounded font-medium transition flex items-center gap-2 ${
                 selectedAction === 'reject'
                   ? 'bg-red-100 text-red-700 opacity-50'
-                  : 'bg-[#f0eded] text-[#1c1b1b] hover:bg-[#e8e4e4]'
+                  : 'bg-[#F3F3F3] text-[#1c1b1b] hover:bg-[#e8e4e4]'
               }`}
             >
               <FaReject className="text-sm" />
@@ -117,7 +117,7 @@ export default function AITidyPreviewModal({
             <button
               onClick={handleAccept}
               disabled={selectedAction === 'reject'}
-              className={`px-4 py-2 rounded-[10px] font-medium transition flex items-center gap-2 ${
+              className={`px-4 py-2 rounded font-medium transition flex items-center gap-2 ${
                 selectedAction === 'accept'
                   ? 'bg-[#e6f4f4] text-[#006766]'
                   : 'bg-accent-500 text-white hover:bg-accent-600'

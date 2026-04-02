@@ -95,11 +95,11 @@ export default function ObjectiveCard({
 
   return (
     <Link href={`/objectives/${id}`} className="block group">
-      <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-6 transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+      <div className="bg-white rounded border border-[#E5E5E5] p-6 transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
         {/* Header */}
         <div className="flex items-start gap-4 mb-5">
           <div 
-            className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
+            className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: statusStyle.bg }}
           >
             <FaFlag style={{ color: statusStyle.text }} className="text-sm" />
@@ -109,7 +109,7 @@ export default function ObjectiveCard({
             {/* Space */}
             {spaceName && (
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 rounded-[6px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 rounded-md bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
                   <FaBuilding className="text-[#737373] text-xs" />
                 </div>
                 <Link
@@ -130,7 +130,7 @@ export default function ObjectiveCard({
 
           {/* Status Badge */}
           <div 
-            className="px-3 py-1.5 rounded-[6px] border"
+            className="px-3 py-1.5 rounded-md border"
             style={{ 
               backgroundColor: statusStyle.bg,
               borderColor: statusStyle.border
@@ -210,7 +210,7 @@ export default function ObjectiveCard({
 
         {/* Blocker Alert */}
         {activeBlockers > 0 && (
-          <div className="mb-5 p-3 bg-[#FEF2F2] border border-[#FECACA] rounded-[10px]">
+          <div className="mb-5 p-3 bg-[#FEF2F2] border border-[#FECACA] rounded">
             <span className="text-[13px] font-medium text-[#DC2626]">
               {activeBlockers} active blocker{activeBlockers > 1 ? 's' : ''}
             </span>
@@ -245,7 +245,7 @@ export default function ObjectiveCard({
         <div className="flex gap-2 pt-5 border-t border-[#F5F5F5]">
           <Link
             href={`/objectives/${id}`}
-            className="flex-1 px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] rounded-[10px] text-[13px] font-medium text-white transition-colors text-center"
+            className="flex-1 px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] rounded text-[13px] font-medium text-white transition-colors text-center"
             onClick={(e) => e.stopPropagation()}
           >
             View Details

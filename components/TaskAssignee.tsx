@@ -93,7 +93,7 @@ export default function TaskAssignee({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-[10px] text-left transition ${
+        className={`w-full flex items-center gap-3 px-4 py-3 rounded text-left transition ${
           disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-300 cursor-pointer'
         }`}
       >
@@ -117,7 +117,7 @@ export default function TaskAssignee({
           </>
         ) : (
           <>
-            <div className="w-8 h-8 rounded-full bg-[#f0eded] text-[#C4C0C0] flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#F3F3F3] text-[#C4C0C0] flex items-center justify-center flex-shrink-0">
               <FaUser className="w-4 h-4" />
             </div>
             <span className="flex-1 text-[#A3A3A3]">Unassigned</span>
@@ -128,7 +128,7 @@ export default function TaskAssignee({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-50 max-h-64 overflow-hidden">
+        <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-50 max-h-64 overflow-hidden">
           {/* Search */}
           <div className="p-2 border-b border-gray-100">
             <input
@@ -137,7 +137,7 @@ export default function TaskAssignee({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search members..."
-              className="w-full px-3 py-2 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
@@ -147,9 +147,9 @@ export default function TaskAssignee({
             <button
               type="button"
               onClick={() => handleSelect(null)}
-              className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-[#f6f3f2] transition"
+              className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-[#F3F3F3] transition"
             >
-              <div className="w-7 h-7 rounded-full bg-[#f0eded] text-[#C4C0C0] flex items-center justify-center flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-[#F3F3F3] text-[#C4C0C0] flex items-center justify-center flex-shrink-0">
                 <FaTimes className="w-3 h-3" />
               </div>
               <span className="text-sm text-[#5a5757]">Unassigned</span>
@@ -165,7 +165,7 @@ export default function TaskAssignee({
                   key={member.id}
                   type="button"
                   onClick={() => handleSelect(member.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-[#f6f3f2] transition ${
+                  className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-[#F3F3F3] transition ${
                     member.id === assignedTo ? 'bg-accent-50' : ''
                   }`}
                 >

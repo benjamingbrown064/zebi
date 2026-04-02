@@ -77,7 +77,7 @@ export default function ShareModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] max-w-md w-full">
+      <div className="bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] max-w-md w-full">
         {/* Header */}
         <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -116,11 +116,11 @@ export default function ShareModal({
                     type="text"
                     value={shareUrl || ''}
                     readOnly
-                    className="flex-1 px-3 py-2 rounded-[10px] text-sm bg-[#f6f3f2] text-[#5a5757]"
+                    className="flex-1 px-3 py-2 rounded text-sm bg-[#F3F3F3] text-[#5a5757]"
                   />
                   <button
                     onClick={handleCopy}
-                    className={`px-4 py-2 rounded-[10px] font-medium transition flex items-center gap-2 ${
+                    className={`px-4 py-2 rounded font-medium transition flex items-center gap-2 ${
                       isCopied
                         ? 'bg-[#e6f4f4] text-[#006766]'
                         : 'bg-accent-500 text-white hover:bg-accent-600'
@@ -158,7 +158,7 @@ export default function ShareModal({
           ) : (
             // No share link exists - show create option
             <div className="text-center py-4">
-              <div className="w-16 h-16 bg-[#f0eded] rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-[#F3F3F3] rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaLink className="w-6 h-6 text-[#C4C0C0]" />
               </div>
               <p className="text-[#5a5757] mb-4">
@@ -167,7 +167,7 @@ export default function ShareModal({
               <button
                 onClick={handleCreateLink}
                 disabled={isCreating}
-                className="px-6 py-2 bg-accent-500 text-white rounded-[10px] font-medium hover:bg-accent-600 transition disabled:opacity-50"
+                className="px-6 py-2 bg-accent-500 text-white rounded font-medium hover:bg-accent-600 transition disabled:opacity-50"
               >
                 {isCreating ? 'Creating...' : 'Create Share Link'}
               </button>
@@ -179,7 +179,7 @@ export default function ShareModal({
         <div className="border-t border-gray-100 px-6 py-4">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 bg-[#f0eded] text-[#1c1b1b] rounded-[10px] hover:bg-[#e8e4e4] transition font-medium"
+            className="w-full px-4 py-2 bg-[#F3F3F3] text-[#1c1b1b] rounded hover:bg-[#e8e4e4] transition font-medium"
           >
             Close
           </button>

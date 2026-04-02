@@ -72,12 +72,12 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
       <MobileListItem
         title={goal.name}
         icon={
-          <div className="w-10 h-10 rounded-[6px] bg-[#FEF2F2] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-md bg-[#FEF2F2] flex items-center justify-center">
             <FaFlag className="text-[#DD3A44]" />
           </div>
         }
         badge={
-          <span className="px-2 py-1 rounded-[6px] text-[11px] font-semibold bg-[#e6f4f4] text-[#006766]">
+          <span className="px-2 py-1 rounded-md text-[11px] font-semibold bg-[#e6f4f4] text-[#006766]">
             {progress}%
           </span>
         }
@@ -97,13 +97,13 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
           <>
             <button
               onClick={handleEdit}
-              className="flex-1 px-3 py-2 bg-[#F5F5F5] text-[#525252] rounded-[6px] hover:bg-[#E5E5E5] transition text-[13px] font-medium min-h-[44px]"
+              className="flex-1 px-3 py-2 bg-[#F5F5F5] text-[#525252] rounded-md hover:bg-[#E5E5E5] transition text-[13px] font-medium min-h-[44px]"
             >
               <FaEdit className="inline mr-1" /> Edit
             </button>
             <button
               onClick={handleDelete}
-              className="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-[6px] hover:bg-red-100 transition text-[13px] font-medium min-h-[44px]"
+              className="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition text-[13px] font-medium min-h-[44px]"
             >
               <FaTrash className="inline mr-1" /> Delete
             </button>
@@ -117,7 +117,7 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
     <div
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
-      className="bg-white rounded-[14px] p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
+      className="bg-white rounded p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -129,7 +129,7 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
             {formatValue()}
           </p>
         </div>
-        <span className="ml-3 px-2.5 py-1 rounded-[6px] text-[12px] font-semibold bg-[#e6f4f4] text-[#006766]">
+        <span className="ml-3 px-2.5 py-1 rounded-md text-[12px] font-semibold bg-[#e6f4f4] text-[#006766]">
           {progress}%
         </span>
       </div>
@@ -158,14 +158,14 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
         <div className="flex gap-2">
           <button
             onClick={handleEdit}
-            className="p-2 text-[#525252] hover:bg-[#F5F5F5] rounded-[6px] transition"
+            className="p-2 text-[#525252] hover:bg-[#F5F5F5] rounded-md transition"
             title="Edit goal"
           >
             <FaEdit />
           </button>
           <button
             onClick={handleDelete}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-[6px] transition"
+            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition"
             title="Delete goal"
           >
             <FaTrash />

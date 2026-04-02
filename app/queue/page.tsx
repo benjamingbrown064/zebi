@@ -103,7 +103,7 @@ function SectionHeader({ title, count, icon }: { title: string; count: number; i
 function TaskRow({ task }: { task: QueueTask }) {
   return (
     <Link href={`/tasks/${task.id}`}
-      className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-[8px] transition-colors group">
+      className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-medium text-[#1A1A1A] truncate group-hover:text-[#DD3A44] transition-colors">{task.title}</p>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -120,7 +120,7 @@ function TaskRow({ task }: { task: QueueTask }) {
 
 function HandoffRow({ h }: { h: Handoff }) {
   return (
-    <div className="py-3 px-4 bg-violet-50 rounded-[8px] border border-violet-100">
+    <div className="py-3 px-4 bg-violet-50 rounded-md border border-violet-100">
       <div className="flex items-start justify-between gap-2 mb-1">
         <p className="text-[13px] font-medium text-[#1A1A1A]">{h.summary}</p>
         {h.decisionNeeded && <span className="text-[10px] font-bold text-[#DD3A44] shrink-0">decision needed</span>}
@@ -195,7 +195,7 @@ function QueueContent() {
     .sort((a, b) => a.priority - b.priority)
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar workspaceName="Zebi" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
 
       <main className={`transition-all duration-300 ${sidebarCollapsed ? 'md:ml-[60px]' : 'md:ml-[220px]'} p-6 md:p-8`}>
@@ -213,7 +213,7 @@ function QueueContent() {
             const isActive = agent === activeAgent
             return (
               <button key={agent} onClick={() => router.push(`/queue?agent=${agent}`)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-[10px] text-[13px] font-medium transition-all border ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded text-[13px] font-medium transition-all border ${
                   isActive
                     ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
                     : 'bg-white text-[#525252] border-[#E5E5E5] hover:border-[#C4C4C4]'
@@ -226,7 +226,7 @@ function QueueContent() {
         </div>
 
         {/* Agent description */}
-        <div className="bg-white rounded-[14px] px-5 py-4 mb-6 flex items-center justify-between gap-4">
+        <div className="bg-white rounded px-5 py-4 mb-6 flex items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
               <span className={`w-2.5 h-2.5 rounded-full ${cfg.dot}`} />
@@ -261,7 +261,7 @@ function QueueContent() {
 
             {/* Open handoffs — always first */}
             {openHandoffs.length > 0 && (
-              <div className="bg-white rounded-[14px] p-5">
+              <div className="bg-white rounded p-5">
                 <SectionHeader title="Open Handoffs" count={openHandoffs.length} icon={<FaBolt size={13} />} />
                 <div className="space-y-2">
                   {openHandoffs.map(h => <HandoffRow key={h.id} h={h} />)}
@@ -271,7 +271,7 @@ function QueueContent() {
 
             {/* Blocked */}
             {blockedTasks.length > 0 && (
-              <div className="bg-white rounded-[14px] p-5">
+              <div className="bg-white rounded p-5">
                 <SectionHeader title="Blocked" count={blockedTasks.length} icon={<FaExclamationTriangle size={13} />} />
                 <div className="divide-y divide-[#F3F3F3]">
                   {blockedTasks.map(t => <TaskRow key={t.id} task={t} />)}
@@ -281,7 +281,7 @@ function QueueContent() {
 
             {/* Waiting on decisions */}
             {decisionTasks.length > 0 && (
-              <div className="bg-white rounded-[14px] p-5">
+              <div className="bg-white rounded p-5">
                 <SectionHeader title="Decision Needed" count={decisionTasks.length} icon={<FaHourglass size={13} />} />
                 <div className="divide-y divide-[#F3F3F3]">
                   {decisionTasks.map(t => <TaskRow key={t.id} task={t} />)}
@@ -291,7 +291,7 @@ function QueueContent() {
 
             {/* Waiting on Ben */}
             {waitingOnBen.length > 0 && (
-              <div className="bg-white rounded-[14px] p-5">
+              <div className="bg-white rounded p-5">
                 <SectionHeader title="Waiting on Ben" count={waitingOnBen.length} icon={<FaHourglass size={13} />} />
                 <div className="divide-y divide-[#F3F3F3]">
                   {waitingOnBen.map(t => <TaskRow key={t.id} task={t} />)}
@@ -301,7 +301,7 @@ function QueueContent() {
 
             {/* Stale (not updated 48h+) */}
             {stale.length > 0 && (
-              <div className="bg-white rounded-[14px] p-5">
+              <div className="bg-white rounded p-5">
                 <SectionHeader title="Stale — No Update in 48h" count={stale.length} icon={<FaClock size={13} />} />
                 <div className="divide-y divide-[#F3F3F3]">
                   {stale.map(t => <TaskRow key={t.id} task={t} />)}
@@ -310,7 +310,7 @@ function QueueContent() {
             )}
 
             {/* Ready to work */}
-            <div className="bg-white rounded-[14px] p-5">
+            <div className="bg-white rounded p-5">
               <SectionHeader title="Ready to Work" count={ready.length} icon={<FaCheckCircle size={13} />} />
               {ready.length === 0 ? (
                 <p className="text-[13px] text-[#A3A3A3] py-2">No tasks in queue — all clear or nothing assigned yet.</p>
@@ -331,7 +331,7 @@ function QueueContent() {
 export default function QueuePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <p className="text-[#A3A3A3] text-[13px]">Loading queue…</p>
       </div>
     }>

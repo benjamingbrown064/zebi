@@ -50,7 +50,7 @@ export default function AITidyMenu({
   if (!isOpen) return null
 
   return (
-    <div className="absolute top-full mt-2 right-0 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-40 min-w-[280px]">
+    <div className="absolute top-full mt-2 right-0 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-40 min-w-[280px]">
       <div className="p-2">
         <h3 className="px-3 py-2 text-xs font-semibold text-[#A3A3A3] uppercase tracking-wider">
           Rewrite For
@@ -65,12 +65,12 @@ export default function AITidyMenu({
             disabled={isLoading}
             onMouseEnter={() => setHoveredMode(mode.id)}
             onMouseLeave={() => setHoveredMode(null)}
-            className={`w-full text-left px-3 py-3 rounded-[10px] transition ${
+            className={`w-full text-left px-3 py-3 rounded transition ${
               hoveredMode === mode.id
                 ? 'bg-accent-50 border-l-2 border-accent-500'
                 : 'border-l-2 border-transparent'
             } ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f6f3f2]'
+              isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#F3F3F3]'
             }`}
           >
             <div className="font-medium text-sm text-[#1c1b1b]">{mode.label}</div>

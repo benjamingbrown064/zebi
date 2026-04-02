@@ -153,12 +153,12 @@ export default function MentionInput({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
-          className="flex-1 px-3 py-2 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent disabled:opacity-50"
+          className="flex-1 px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent disabled:opacity-50"
         />
         <button
           onClick={handleSubmit}
           disabled={!value.trim() || disabled}
-          className="px-3 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="px-3 py-2 bg-accent-500 text-white rounded hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           <FaPaperPlane className="w-4 h-4" />
         </button>
@@ -168,13 +168,13 @@ export default function MentionInput({
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute left-0 right-12 bottom-full mb-1 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-hidden z-50"
+          className="absolute left-0 right-12 bottom-full mb-1 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-hidden z-50"
         >
           {suggestions.map((user, index) => (
             <button
               key={user.id}
               onClick={() => insertMention(user)}
-              className={`w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-[#f6f3f2] transition ${
+              className={`w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-[#F3F3F3] transition ${
                 index === selectedIndex ? 'bg-accent-50' : ''
               }`}
             >

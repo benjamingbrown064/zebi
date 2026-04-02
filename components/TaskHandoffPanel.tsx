@@ -139,7 +139,7 @@ export default function TaskHandoffPanel({ taskId, workspaceId, ownerAgent }: Pr
   const pendingCount = handoffs.filter(h => h.status === 'pending').length
 
   return (
-    <div className="border border-[#E5E5E5] rounded-[10px] overflow-hidden">
+    <div className="border border-[#E5E5E5] rounded overflow-hidden">
       {/* Toggle header */}
       <button
         type="button"
@@ -187,19 +187,19 @@ export default function TaskHandoffPanel({ taskId, workspaceId, ownerAgent }: Pr
                     <div className="flex gap-2 mt-2">
                       <button
                         onClick={() => handleStatusUpdate(h.id, 'accepted')}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-[6px] bg-emerald-50 text-emerald-700 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
                       >
                         <FaCheck size={9} /> Accept
                       </button>
                       <button
                         onClick={() => handleStatusUpdate(h.id, 'rejected')}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-[6px] bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
                       >
                         <FaTimes size={9} /> Reject
                       </button>
                       <button
                         onClick={() => handleStatusUpdate(h.id, 'done')}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-[6px] bg-[#F3F3F3] text-[#525252] text-[11px] font-medium hover:bg-[#E5E5E5] transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#F3F3F3] text-[#525252] text-[11px] font-medium hover:bg-[#E5E5E5] transition-colors"
                       >
                         Mark done
                       </button>

@@ -132,7 +132,7 @@ export default function DashboardClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar 
         workspaceName="Zebi"
         isCollapsed={sidebarCollapsed}
@@ -153,7 +153,7 @@ export default function DashboardClient({
               <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto">
                 <button
                   onClick={() => setShowCompletedModal(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-[6px] text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <FaCheck className="text-[#10B981]" />
                   <span className="hidden sm:inline">Recently Completed</span>
@@ -162,7 +162,7 @@ export default function DashboardClient({
                 
                 <button
                   onClick={() => setShowBotActivityModal(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-[6px] text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <FaRobot className="text-[#DD3A44]" />
                   <span className="hidden sm:inline">Bot Activity</span>
@@ -171,7 +171,7 @@ export default function DashboardClient({
                 
                 <button
                   onClick={() => router.push('/brain-dump')}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-[6px] bg-[#DD3A44] hover:bg-[#C7333D] text-white text-[12px] md:text-[13px] font-medium transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md bg-[#DD3A44] hover:bg-[#C7333D] text-white text-[12px] md:text-[13px] font-medium transition-colors flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <FaMicrophone />
                   <span className="hidden sm:inline">Brain Dump</span>
@@ -313,7 +313,7 @@ function TodaysPlanCard({
   const isEmpty = !keyTask && subTasks.length === 0 && hopeToComplete.length === 0 && additionalTasks.length === 0
 
   return (
-    <div className="bg-white rounded-[14px] p-8">
+    <div className="bg-white rounded p-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -324,7 +324,7 @@ function TodaysPlanCard({
         {!isEmpty && (
           <button
             onClick={onPlanDay}
-            className="px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors"
+            className="px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors"
           >
             Edit Plan
           </button>
@@ -335,11 +335,11 @@ function TodaysPlanCard({
       {aiSuggestionsCount > 0 && (
         <button
           onClick={onShowSuggestions}
-          className="w-full mb-6 p-4 bg-[#F5F5F5] hover:bg-[#E5E5E5]  rounded-[10px] transition-colors text-left"
+          className="w-full mb-6 p-4 bg-[#F5F5F5] hover:bg-[#E5E5E5]  rounded transition-colors text-left"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-[6px] bg-white flex items-center justify-center">
+              <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center">
                 <FaRobot className="text-[#DD3A44] text-sm" />
               </div>
               <div>
@@ -361,7 +361,7 @@ function TodaysPlanCard({
           <p className="text-[15px] text-[#525252] mb-6">Plan your day to get started</p>
           <button
             onClick={onPlanDay}
-            className="px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[15px] transition-colors"
+            className="px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[15px] transition-colors"
           >
             Select Tasks
           </button>
@@ -377,7 +377,7 @@ function TodaysPlanCard({
               </label>
               <div
                 onClick={() => onTaskClick(keyTask.id)}
-                className="p-4 bg-[#FEF2F2] border border-[#FECACA] rounded-[10px] cursor-pointer hover:bg-[#FEE2E2] transition-colors"
+                className="p-4 bg-[#FEF2F2] border border-[#FECACA] rounded cursor-pointer hover:bg-[#FEE2E2] transition-colors"
               >
                 <p className="text-[15px] font-medium text-[#1A1A1A]">{keyTask.title}</p>
               </div>
@@ -395,7 +395,7 @@ function TodaysPlanCard({
                   <div
                     key={task.id}
                     onClick={() => onTaskClick(task.id)}
-                    className="p-3.5 bg-[#FFFBEB] border border-[#FDE68A] rounded-[10px] cursor-pointer hover:bg-[#FEF3C7] transition-colors"
+                    className="p-3.5 bg-[#FFFBEB] border border-[#FDE68A] rounded cursor-pointer hover:bg-[#FEF3C7] transition-colors"
                   >
                     <p className="text-[14px] text-[#1A1A1A]">{task.title}</p>
                   </div>
@@ -415,7 +415,7 @@ function TodaysPlanCard({
                   <div
                     key={task.id}
                     onClick={() => onTaskClick(task.id)}
-                    className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-[10px] cursor-pointer hover:bg-[#DBEAFE] transition-colors"
+                    className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded cursor-pointer hover:bg-[#DBEAFE] transition-colors"
                   >
                     <p className="text-[13px] text-[#1A1A1A]">{task.title}</p>
                   </div>
@@ -436,7 +436,7 @@ function TodaysPlanCard({
                   <div
                     key={task.id}
                     onClick={() => onTaskClick(task.id)}
-                    className="p-2.5 bg-white  rounded-[6px] cursor-pointer hover:bg-[#F5F5F5] transition-colors"
+                    className="p-2.5 bg-white  rounded-md cursor-pointer hover:bg-[#F5F5F5] transition-colors"
                   >
                     <p className="text-[13px] text-[#525252]">{task.title}</p>
                   </div>
@@ -463,7 +463,7 @@ function ObjectivesCard({
   const displayObjectives = objectives.slice(0, 3)
 
   return (
-    <div className="bg-white rounded-[14px] p-6">
+    <div className="bg-white rounded p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-[18px] leading-[28px] font-medium text-[#1A1A1A]">Objectives</h3>
@@ -488,7 +488,7 @@ function ObjectivesCard({
             <div
               key={obj.id}
               onClick={() => onObjectiveClick(obj.id)}
-              className="p-4  rounded-[10px] cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
+              className="p-4  rounded cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
             >
               {/* Space */}
               {obj.spaceName && (
@@ -537,7 +537,7 @@ function ProjectsCard({
   const displayProjects = projects.slice(0, 3)
 
   return (
-    <div className="bg-white rounded-[14px] p-6">
+    <div className="bg-white rounded p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-[18px] leading-[28px] font-medium text-[#1A1A1A]">Projects</h3>
@@ -562,7 +562,7 @@ function ProjectsCard({
             <div
               key={project.id}
               onClick={() => onProjectClick(project.id)}
-              className="p-4  rounded-[10px] cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
+              className="p-4  rounded cursor-pointer hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-shadow"
             >
               {/* Title & Progress */}
               <div className="flex items-baseline justify-between mb-2">
@@ -597,7 +597,7 @@ function Modal({ children, onClose, title }: { children: React.ReactNode; onClos
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div 
-        className="bg-white rounded-[14px] shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden"
+        className="bg-white rounded shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -605,7 +605,7 @@ function Modal({ children, onClose, title }: { children: React.ReactNode; onClos
           <h3 className="text-[18px] font-medium text-[#1A1A1A]">{title}</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-[6px] hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-md hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
           >
             <FaTimes className="text-[#A3A3A3]" />
           </button>
@@ -633,7 +633,7 @@ function CompletedModalContent({ completed }: { completed: { id: string; title: 
   return (
     <div className="space-y-2">
       {completed.map(task => (
-        <div key={task.id} className="p-4 bg-[#F5F5F5] rounded-[10px]">
+        <div key={task.id} className="p-4 bg-[#F5F5F5] rounded">
           <div className="flex items-start gap-3">
             <FaCheck className="text-[#10B981] text-sm mt-1 flex-shrink-0" />
             <p className="text-[14px] text-[#1A1A1A]">{task.title}</p>
@@ -657,9 +657,9 @@ function BotActivityModalContent({ activity }: { activity: BotActivity[] }) {
   return (
     <div className="space-y-3">
       {activity.map(item => (
-        <div key={item.id} className="p-4 bg-[#ECFDF5] border border-[#A7F3D0] rounded-[10px]">
+        <div key={item.id} className="p-4 bg-[#ECFDF5] border border-[#A7F3D0] rounded">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-[6px] bg-white flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center flex-shrink-0">
               <FaRobot className="text-[#10B981] text-sm" />
             </div>
             <div className="flex-1 min-w-0">
@@ -726,7 +726,7 @@ function SuggestionsModalContent({ suggestions, workspaceId, onRefresh, mode, fo
       </p>
 
       {mode && focusMessage && (
-        <div className="rounded-[10px] p-3 mb-4 text-[12px]" style={{ 
+        <div className="rounded p-3 mb-4 text-[12px]" style={{ 
           backgroundColor: mode === 'pressure' ? '#FEF2F2' : mode === 'plateau' ? '#FFFBEB' : mode === 'drift' ? '#F5F3FF' : '#ECFDF5',
           border: `1px solid ${mode === 'pressure' ? '#FECACA' : mode === 'plateau' ? '#FDE68A' : mode === 'drift' ? '#DDD6FE' : '#A7F3D0'}`,
           color: mode === 'pressure' ? '#DC2626' : mode === 'plateau' ? '#D97706' : mode === 'drift' ? '#7C3AED' : '#059669',
@@ -742,7 +742,7 @@ function SuggestionsModalContent({ suggestions, workspaceId, onRefresh, mode, fo
         const isAdding = adding === taskId
         
         return (
-          <div key={taskId} className="p-4 bg-[#F5F5F5] rounded-[10px]">
+          <div key={taskId} className="p-4 bg-[#F5F5F5] rounded">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-[12px] font-medium text-[#DD3A44]">{index + 1}</span>
@@ -765,19 +765,19 @@ function SuggestionsModalContent({ suggestions, workspaceId, onRefresh, mode, fo
                   <div className="flex gap-2 mt-3">
                     <button 
                       onClick={() => handleAddToPlan(suggestion, 'main')}
-                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
+                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-md transition-colors"
                     >
                       Add to Primary
                     </button>
                     <button 
                       onClick={() => handleAddToPlan(suggestion, 'secondary')}
-                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
+                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-md transition-colors"
                     >
                       Add to Secondary
                     </button>
                     <button 
                       onClick={() => handleAddToPlan(suggestion, 'additional')}
-                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
+                      className="text-[12px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-md transition-colors"
                     >
                       Add to Quick Win
                     </button>

@@ -183,7 +183,7 @@ export function VoiceToTaskModal({
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Something went wrong</h3>
-          <div className="mb-6 max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded-[10px]">
+          <div className="mb-6 max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded">
             <p className="text-sm text-red-800">{error}</p>
           </div>
           <div className="flex gap-3 justify-center">
@@ -209,7 +209,7 @@ export function VoiceToTaskModal({
               <p className="text-sm text-[#5a5757] mb-4">
                 I'll turn it into a task list for you to review.
               </p>
-              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded-[10px]">
+              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded">
                 <p className="text-xs text-blue-800">
                   💡 <strong>Tip:</strong> Describe tasks clearly — mention priorities, deadlines, and who should do what.
                 </p>
@@ -300,7 +300,7 @@ export function VoiceToTaskModal({
               {candidates.map((candidate) => (
                 <div
                   key={candidate.id}
-                  className={`p-4 bg-white border rounded-[10px] transition-all ${
+                  className={`p-4 bg-white border rounded transition-all ${
                     candidate.selected
                       ? 'border-gray-200 shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
                       : 'border-gray-100 opacity-50'
@@ -329,7 +329,7 @@ export function VoiceToTaskModal({
                         type="text"
                         value={candidate.title}
                         onChange={(e) => handleUpdateCandidate(candidate.id, { title: e.target.value })}
-                        className="w-full text-[15px] font-medium text-[#1A1A1A] bg-transparent border-none outline-none focus:bg-[#f6f3f2] focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all"
+                        className="w-full text-[15px] font-medium text-[#1A1A1A] bg-transparent border-none outline-none focus:bg-[#F3F3F3] focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all"
                       />
                       {/* Editable description */}
                       {candidate.description && (
@@ -337,7 +337,7 @@ export function VoiceToTaskModal({
                           value={candidate.description}
                           onChange={(e) => handleUpdateCandidate(candidate.id, { description: e.target.value })}
                           rows={2}
-                          className="w-full mt-1 text-[13px] text-[#5a5757] bg-transparent border-none outline-none focus:bg-[#f6f3f2] focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all resize-none"
+                          className="w-full mt-1 text-[13px] text-[#5a5757] bg-transparent border-none outline-none focus:bg-[#F3F3F3] focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all resize-none"
                         />
                       )}
                       {/* Priority badge */}
@@ -345,8 +345,8 @@ export function VoiceToTaskModal({
                         <span className={`inline-block mt-2 text-[11px] font-medium px-2 py-0.5 rounded-full ${
                           candidate.priority <= 1 ? 'bg-red-100 text-red-700' :
                           candidate.priority === 2 ? 'bg-orange-100 text-orange-700' :
-                          candidate.priority === 3 ? 'bg-[#f0eded] text-[#5a5757]' :
-                          'bg-[#f6f3f2] text-[#A3A3A3]'
+                          candidate.priority === 3 ? 'bg-[#F3F3F3] text-[#5a5757]' :
+                          'bg-[#F3F3F3] text-[#A3A3A3]'
                         }`}>
                           P{candidate.priority}
                         </span>
@@ -407,12 +407,12 @@ export function VoiceToTaskModal({
       size="3xl"
       scrollBehavior="inside"
       classNames={{
-        base: 'bg-[#fcf9f8]',
+        base: 'bg-[#F9F9F9]',
         wrapper: 'z-[999]',
         backdrop: 'bg-black/30',
         header: 'border-b border-gray-200',
         body: 'py-6',
-        closeButton: 'hover:bg-[#f0eded]'
+        closeButton: 'hover:bg-[#F3F3F3]'
       }}
     >
       <ModalContent className=" shadow-[0_20px_40px_rgba(28,27,27,0.06)] !outline-none focus:outline-none">

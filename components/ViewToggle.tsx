@@ -18,7 +18,7 @@ export default function ViewToggle({
   archivedCount = 0,
 }: ViewToggleProps) {
   return (
-    <div className="flex items-center gap-2 bg-[#f0eded] rounded-[10px] p-1 w-fit">
+    <div className="flex items-center gap-2 bg-[#F3F3F3] rounded p-1 w-fit">
       <button
         onClick={() => onViewChange('active')}
         className={`px-4 py-2 rounded-md font-medium transition ${

@@ -57,7 +57,7 @@ export default function TasksTable({
   }
 
   const STATUS_BADGE_COLORS: Record<string, string> = {
-    inbox: 'bg-[#f0eded] text-[#5a5757]',
+    inbox: 'bg-[#F3F3F3] text-[#5a5757]',
     planned: 'bg-[#e6f4f4] text-[#006766]',
     doing: 'bg-amber-100 text-amber-700',
     blocked: 'bg-red-100 text-red-700',
@@ -168,10 +168,10 @@ export default function TasksTable({
   )
 
   return (
-    <div className="w-full overflow-x-auto rounded-[10px]">
+    <div className="w-full overflow-x-auto rounded">
       <table className="w-full">
         {/* Header */}
-        <thead className="bg-[#f6f3f2] sticky top-0 z-10">
+        <thead className="bg-[#F3F3F3] sticky top-0 z-10">
           <tr>
             <th className="px-4 py-3 text-left w-12">
               <input
@@ -226,7 +226,7 @@ export default function TasksTable({
             sortedTasks.map((task) => (
               <tr
                 key={task.id}
-                className="border-b border-gray-100 hover:bg-[#f6f3f2] transition"
+                className="border-b border-gray-100 hover:bg-[#F3F3F3] transition"
               >
                 <td className="px-4 py-3">
                   <input
@@ -245,7 +245,7 @@ export default function TasksTable({
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
-                  <span className={`text-xs px-2 py-1 rounded font-medium ${STATUS_BADGE_COLORS[getStatusType(task.statusId)] || 'bg-[#f0eded] text-[#5a5757]'}`}>
+                  <span className={`text-xs px-2 py-1 rounded font-medium ${STATUS_BADGE_COLORS[getStatusType(task.statusId)] || 'bg-[#F3F3F3] text-[#5a5757]'}`}>
                     {getStatusName(task.statusId)}
                   </span>
                 </td>
@@ -323,10 +323,10 @@ export default function TasksTable({
             {selectedTasks.size} task{selectedTasks.size !== 1 ? 's' : ''} selected
           </span>
           <div className="flex gap-2">
-            <button className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#f6f3f2]">
+            <button className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#F3F3F3]">
               Change Status
             </button>
-            <button className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#f6f3f2]">
+            <button className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#F3F3F3]">
               Change Priority
             </button>
           </div>

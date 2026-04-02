@@ -34,7 +34,7 @@ export default function ProjectCard({
     1: 'bg-red-100 text-red-700 border-red-200',
     2: 'bg-orange-100 text-orange-700 border-orange-200',
     3: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    4: 'bg-[#f0eded] text-[#5a5757] border-gray-200',
+    4: 'bg-[#F3F3F3] text-[#5a5757] border-gray-200',
   }
 
   const priorityLabels: Record<number, string> = {
@@ -49,7 +49,7 @@ export default function ProjectCard({
       <div className="card-base p-6 card-hover group">
         {/* Header */}
         <div className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 bg-accent-100 rounded-[10px] flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 bg-accent-100 rounded flex items-center justify-center flex-shrink-0">
             <FaProjectDiagram className="text-accent-600" />
           </div>
 
@@ -84,7 +84,7 @@ export default function ProjectCard({
                           ? 'bg-[#e6f4f4] text-[#006766]'
                           : objectiveStatus === 'blocked'
                           ? 'bg-red-100 text-red-700'
-                          : 'bg-[#f0eded] text-[#5a5757]'
+                          : 'bg-[#F3F3F3] text-[#5a5757]'
                       }`}
                     >
                       {objectiveStatus}

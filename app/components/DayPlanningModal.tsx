@@ -239,7 +239,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div
-        className="bg-white rounded-[14px] shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white rounded shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -252,7 +252,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-[6px] hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-md hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
           >
             <FaTimes className="text-[#A3A3A3]" />
           </button>
@@ -307,7 +307,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                   <p className="text-[13px] text-[#A3A3A3]">Loading tasks...</p>
                 </div>
               ) : loadError ? (
-                <div className="p-4 bg-[#FEF2F2] border border-[#FECACA] rounded-[10px]">
+                <div className="p-4 bg-[#FEF2F2] border border-[#FECACA] rounded">
                   <div className="flex items-start gap-3">
                     <FaExclamationTriangle className="text-[#DD3A44] mt-0.5 flex-shrink-0" />
                     <div>
@@ -315,7 +315,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                       <p className="text-[12px] text-[#737373] mb-3">{loadError}</p>
                       <button
                         onClick={loadData}
-                        className="text-[12px] px-3 py-1.5 bg-white  rounded-[6px] hover:bg-[#F5F5F5] transition-colors"
+                        className="text-[12px] px-3 py-1.5 bg-white  rounded-md hover:bg-[#F5F5F5] transition-colors"
                       >
                         Try again
                       </button>
@@ -351,7 +351,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            <div className="w-96 bg-[#fcf9f8] p-6 overflow-y-auto">
+            <div className="w-96 bg-[#F9F9F9] p-6 overflow-y-auto">
               <h4 className="text-[15px] font-medium text-[#1A1A1A] mb-4">Your Plan</h4>
 
               <DroppableZone id="primary-drop" label="Primary (1)">
@@ -399,7 +399,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                   {additionalTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="p-2 bg-white  rounded-[6px] flex items-start justify-between gap-2 mb-2"
+                      className="p-2 bg-white  rounded-md flex items-start justify-between gap-2 mb-2"
                     >
                       <p className="text-[12px] text-[#525252] flex-1">{task.title}</p>
                       <button
@@ -416,7 +416,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
 
             <DragOverlay>
               {activeTask ? (
-                <div className="p-3 bg-white border-2 border-[#DD3A44] rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] opacity-90">
+                <div className="p-3 bg-white border-2 border-[#DD3A44] rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] opacity-90">
                   <p className="text-[13px] text-[#1A1A1A]">{activeTask.title}</p>
                 </div>
               ) : null}
@@ -428,7 +428,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
         <div className="flex items-center justify-between px-6 py-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-[6px] text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
+            className="px-4 py-2 rounded-md text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
           >
             Cancel
           </button>
@@ -440,14 +440,14 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                 setQuickWins([])
                 setAdditionalTasks([])
               }}
-              className="px-4 py-2 rounded-[6px] text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
+              className="px-4 py-2 rounded-md text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
             >
               Clear Plan
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-5 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors disabled:opacity-50"
+              className="px-5 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Plan'}
             </button>
@@ -490,7 +490,7 @@ function DraggableTask({ task, onRemove, color }: { task: Task; onRemove: () => 
     <div
       ref={setNodeRef}
       style={style}
-      className={`p-3 ${colorClasses[color]} border rounded-[10px] flex items-start justify-between gap-2 cursor-move mb-2`}
+      className={`p-3 ${colorClasses[color]} border rounded flex items-start justify-between gap-2 cursor-move mb-2`}
     >
       <div className="flex items-start gap-2 flex-1" {...attributes} {...listeners}>
         <FaGripVertical className="text-[#A3A3A3] text-xs mt-1 flex-shrink-0" />
@@ -505,7 +505,7 @@ function DraggableTask({ task, onRemove, color }: { task: Task; onRemove: () => 
 
 function EmptySlot({ text }: { text: string }) {
   return (
-    <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded-[10px] text-center mb-2">
+    <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded text-center mb-2">
       <p className="text-[12px] text-[#A3A3A3]">{text}</p>
     </div>
   )
@@ -533,7 +533,7 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
         const inPlan = isTaskInPlan(taskId)
 
         return (
-          <div key={taskId} className="p-4 bg-[#F5F5F5] rounded-[10px]">
+          <div key={taskId} className="p-4 bg-[#F5F5F5] rounded">
             <div className="flex items-start gap-3 mb-2">
               <div className="w-6 h-6 rounded-full bg-[#DD3A44] text-white flex items-center justify-center flex-shrink-0 text-[12px] font-medium">
                 {index + 1}
@@ -558,19 +558,19 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => onAdd(taskId, 'main')}
-                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
+                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-md transition-colors"
                 >
                   → Primary
                 </button>
                 <button
                   onClick={() => onAdd(taskId, 'secondary')}
-                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
+                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-md transition-colors"
                 >
                   → Secondary
                 </button>
                 <button
                   onClick={() => onAdd(taskId, 'additional')}
-                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-[6px] transition-colors"
+                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5]  rounded-md transition-colors"
                 >
                   → Quick Win
                 </button>
@@ -613,7 +613,7 @@ function AllTasksTab({ tasks, onAdd, isTaskInPlan }: {
           placeholder="Search tasks..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full px-3 py-2 text-[13px]  rounded-[8px] bg-white focus:outline-none focus:border-[#DD3A44] transition-colors"
+          className="w-full px-3 py-2 text-[13px]  rounded-md bg-white focus:outline-none focus:border-[#DD3A44] transition-colors"
         />
       </div>
 
@@ -624,7 +624,7 @@ function AllTasksTab({ tasks, onAdd, isTaskInPlan }: {
           filtered.map((task) => {
             const inPlan = isTaskInPlan(task.id)
             return (
-              <div key={task.id} className="p-3 bg-white  rounded-[10px]">
+              <div key={task.id} className="p-3 bg-white  rounded">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-medium text-[#1A1A1A] mb-0.5">{task.title}</p>

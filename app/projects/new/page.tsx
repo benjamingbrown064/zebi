@@ -146,7 +146,7 @@ export default function NewProjectPage() {
           <div className="py-8 md:py-12">
             <div className="max-w-2xl mx-auto">
               {/* Form Card */}
-              <div className="bg-white rounded-[14px] border border-[#E5E5E5] p-6 md:p-8">
+              <div className="bg-white rounded border border-[#E5E5E5] p-6 md:p-8">
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Project Name */}
@@ -264,7 +264,7 @@ export default function NewProjectPage() {
 
                   {/* Error Message */}
                   {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-[10px] p-4">
+                    <div className="bg-red-50 border border-red-200 rounded p-4">
                       <p className="text-[13px] text-red-800">{error}</p>
                     </div>
                   )}

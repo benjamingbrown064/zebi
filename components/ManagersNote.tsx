@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useWorkspace } from '@/lib/use-workspace'
-import { MODE_META, OperatingMode } from '@/lib/operating-mode/detector'
 
 export default function ManagersNote() {
   const { workspaceId } = useWorkspace()
   const [note, setNote] = useState<string | null>(null)
-  const [mode, setMode] = useState<OperatingMode>('momentum')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -19,26 +17,20 @@ export default function ManagersNote() {
     try {
       const res = await fetch('/api/dashboard/managers-note')
       const data = await res.json()
-      const validModes: OperatingMode[] = ['pressure', 'plateau', 'momentum', 'drift']
-      const safeMode = validModes.includes(data.mode) ? data.mode as OperatingMode : 'momentum'
-      setMode(safeMode)
       setNote(data.note || 'Your workspace is ready. Plan your day and keep priorities clear.')
-    } catch (err) {
-      console.error('Failed to fetch manager\'s note:', err)
+    } catch {
       setNote('Your workspace is ready. Plan your day and keep priorities clear.')
     } finally {
       setLoading(false)
     }
   }
 
-  const meta = MODE_META[mode] ?? MODE_META['momentum']
-
   if (loading) {
     return (
-      <div className="bg-white rounded-[14px] p-6 mb-6 animate-pulse">
-        <div className="h-4 bg-[#F5F5F5] rounded w-1/4 mb-3" />
-        <div className="h-4 bg-[#F5F5F5] rounded w-full mb-2" />
-        <div className="h-4 bg-[#F5F5F5] rounded w-3/4" />
+      <div className="bg-white rounded p-5 animate-pulse" style={{ boxShadow: '0px 20px 40px rgba(0,0,0,0.04)' }}>
+        <div className="h-3 bg-[#F3F3F3] rounded w-1/5 mb-3" />
+        <div className="h-3 bg-[#F3F3F3] rounded w-full mb-2" />
+        <div className="h-3 bg-[#F3F3F3] rounded w-4/5" />
       </div>
     )
   }
@@ -46,22 +38,15 @@ export default function ManagersNote() {
   if (!note) return null
 
   return (
-    <div
-      className="rounded-[14px] p-6 mb-6"
-      style={{ backgroundColor: meta.bgColour, border: `1px solid ${meta.borderColour}` }}
-    >
-      <div className="flex items-start gap-3">
-        <div
-          className="w-8 h-8 rounded-[8px] flex items-center justify-center text-sm flex-shrink-0 mt-0.5 font-bold"
-          style={{ backgroundColor: meta.colour, color: '#fff' }}
-        >
+    <div className="bg-white rounded p-5" style={{ boxShadow: '0px 20px 40px rgba(0,0,0,0.04)' }}>
+      <div className="flex items-start gap-4">
+        {/* Inverted tile — Monolith editorial accent */}
+        <div className="w-8 h-8 rounded flex-shrink-0 mt-0.5 flex items-center justify-center text-[11px] font-bold text-white bg-[#1A1C1C]">
           Z
         </div>
         <div className="flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: meta.colour }}>
-            Manager's Note · {meta.label} Mode
-          </p>
-          <p className="text-[14px] text-[#1A1A1A] leading-[1.6]">{note}</p>
+          <p className="label-sm mb-2">Manager's Note</p>
+          <p className="text-[14px] text-[#1A1C1C] leading-relaxed">{note}</p>
         </div>
       </div>
     </div>

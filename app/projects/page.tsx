@@ -123,8 +123,8 @@ export default function ProjectsPage() {
       case 'completed': return 'bg-[#e6f4f4] text-green-800'
       case 'active': return 'bg-[#e6f4f4] text-blue-800'
       case 'planning': return 'bg-yellow-100 text-yellow-800'
-      case 'on_hold': return 'bg-[#f0eded] text-[#1c1b1b]'
-      default: return 'bg-[#f0eded] text-[#1c1b1b]'
+      case 'on_hold': return 'bg-[#F3F3F3] text-[#1c1b1b]'
+      default: return 'bg-[#F3F3F3] text-[#1c1b1b]'
     }
   }
 
@@ -139,7 +139,7 @@ export default function ProjectsPage() {
   }
 
   const getStatusBadge = (status: string) => (
-    <span className={`px-2 py-1 rounded-[6px] text-[11px] font-semibold ${getStatusColor(status)}`}>
+    <span className={`px-2 py-1 rounded-md text-[11px] font-semibold ${getStatusColor(status)}`}>
       {getStatusLabel(status)}
     </span>
   )
@@ -151,7 +151,7 @@ export default function ProjectsPage() {
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar 
         isCollapsed={sidebarCollapsed} 
         onCollapsedChange={setSidebarCollapsed}
@@ -165,7 +165,7 @@ export default function ProjectsPage() {
           primaryAction={
             <Dropdown>
               <DropdownTrigger>
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]">
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]">
                   <FaPlus className="text-sm" />
                   <span className="hidden sm:inline">New Project</span>
                   <span className="sm:hidden">New</span>
@@ -212,7 +212,7 @@ export default function ProjectsPage() {
                 key={filter.value}
                 onClick={() => setFilterStatus(filter.value)}
                 className={`
-                  px-4 py-2 rounded-[10px] text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
+                  px-4 py-2 rounded text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
                   ${
                     filterStatus === filter.value
                       ? 'bg-[#FEF2F2] text-[#DD3A44] border border-[#DD3A44]'
@@ -242,7 +242,7 @@ export default function ProjectsPage() {
                 {!searchQuery && filterStatus === 'all' && (
                   <Link
                     href="/projects/new"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium transition-colors min-h-[44px]"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium transition-colors min-h-[44px]"
                   >
                     <FaPlus size={14} />
                     Create Project
@@ -259,7 +259,7 @@ export default function ProjectsPage() {
                       title={project.title}
                       description={project.description || undefined}
                       icon={
-                        <div className="w-10 h-10 rounded-[6px] bg-[#FEF2F2] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-md bg-[#FEF2F2] flex items-center justify-center">
                           <FontAwesomeIcon icon={faFolderOpen} className="text-[#DD3A44]" />
                         </div>
                       }
@@ -281,13 +281,13 @@ export default function ProjectsPage() {
                     <Link
                       key={project.id}
                       href={`/projects/${project.id}`}
-                      className="bg-white rounded-[10px] p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow"
+                      className="bg-white rounded p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow"
                     >
                       {/* Header */}
                       <div className="mb-4">
                         {/* Project name with icon */}
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-6 h-6 rounded-[6px] bg-[#FEF2F2] flex items-center justify-center">
+                          <div className="w-6 h-6 rounded-md bg-[#FEF2F2] flex items-center justify-center">
                             <FontAwesomeIcon icon={faFolderOpen} className="text-[#DD3A44] text-sm" />
                           </div>
                           <h3 className="text-[15px] font-medium text-[#1A1A1A] truncate">
@@ -352,10 +352,10 @@ export default function ProjectsPage() {
           onClick={() => setIsSearchOpen(false)}
         >
           <div 
-            className="bg-white w-full max-w-2xl rounded-[14px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 md:p-6"
+            className="bg-white w-full max-w-2xl rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 md:p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3  rounded-[10px] px-4 py-3">
+            <div className="flex items-center gap-3  rounded px-4 py-3">
               <FaSearch className="text-[#A3A3A3]" />
               <input
                 type="text"

@@ -97,7 +97,7 @@ export default function CaptureBar({ onCaptured }: CaptureBarProps) {
       <form onSubmit={handleSubmit} className="relative">
         <div
           className={`
-            flex items-center gap-3 bg-white border rounded-[10px] px-4 py-2.5 transition-all duration-150
+            flex items-center gap-3 bg-white border rounded px-4 py-2.5 transition-all duration-150
             ${focused
               ? 'border-[#1A1A1A] shadow-[0_0_0_3px_rgba(26,26,26,0.08)]'
               : 'border-[#E5E5E5] shadow-sm hover:border-[#C6C6C6]'
@@ -132,7 +132,7 @@ export default function CaptureBar({ onCaptured }: CaptureBarProps) {
           ) : value ? (
             <button
               type="submit"
-              className="flex-shrink-0 text-[12px] font-medium text-white bg-[#1A1A1A] hover:bg-[#333] px-2.5 py-1 rounded-[6px] transition-colors"
+              className="flex-shrink-0 text-[12px] font-medium text-white bg-[#1A1A1A] hover:bg-[#333] px-2.5 py-1 rounded-md transition-colors"
             >
               Add
             </button>
@@ -145,7 +145,7 @@ export default function CaptureBar({ onCaptured }: CaptureBarProps) {
       {/* Toast notification */}
       {toast && (
         <div className="absolute top-full mt-2 left-0 right-0 flex justify-center pointer-events-none z-50">
-          <div className="bg-[#1A1A1A] text-white text-[13px] px-4 py-2 rounded-[8px] shadow-lg animate-fade-in">
+          <div className="bg-[#1A1A1A] text-white text-[13px] px-4 py-2 rounded-md shadow-lg animate-fade-in">
             {toast}
           </div>
         </div>

@@ -205,7 +205,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div 
-        className="bg-white rounded-[14px] shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white rounded shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -218,7 +218,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-[6px] hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-md hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
           >
             <FaTimes className="text-[#A3A3A3]" />
           </button>
@@ -309,7 +309,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                 Primary (1)
               </label>
               {primaryTask ? (
-                <div className="p-3 bg-[#FEF2F2] border border-[#FECACA] rounded-[10px] flex items-start justify-between gap-2">
+                <div className="p-3 bg-[#FEF2F2] border border-[#FECACA] rounded flex items-start justify-between gap-2">
                   <p className="text-[13px] text-[#1A1A1A] flex-1">{primaryTask.title}</p>
                   <button
                     onClick={() => handleRemoveFromPlan(primaryTask.id, 'main')}
@@ -319,7 +319,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                   </button>
                 </div>
               ) : (
-                <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded-[10px] text-center">
+                <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded text-center">
                   <p className="text-[12px] text-[#A3A3A3]">No primary task selected</p>
                 </div>
               )}
@@ -332,7 +332,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
               </label>
               <div className="space-y-2">
                 {secondaryTasks.map((task, index) => (
-                  <div key={task.id} className="p-3 bg-[#FFFBEB] border border-[#FDE68A] rounded-[10px] flex items-start justify-between gap-2">
+                  <div key={task.id} className="p-3 bg-[#FFFBEB] border border-[#FDE68A] rounded flex items-start justify-between gap-2">
                     <p className="text-[13px] text-[#1A1A1A] flex-1">{task.title}</p>
                     <button
                       onClick={() => handleRemoveFromPlan(task.id, 'secondary')}
@@ -343,7 +343,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                   </div>
                 ))}
                 {secondaryTasks.length < 2 && (
-                  <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded-[10px] text-center">
+                  <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded text-center">
                     <p className="text-[12px] text-[#A3A3A3]">Empty slot</p>
                   </div>
                 )}
@@ -357,7 +357,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
               </label>
               <div className="space-y-2">
                 {quickWins.map((task, index) => (
-                  <div key={task.id} className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-[10px] flex items-start justify-between gap-2">
+                  <div key={task.id} className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded flex items-start justify-between gap-2">
                     <p className="text-[13px] text-[#1A1A1A] flex-1">{task.title}</p>
                     <button
                       onClick={() => handleRemoveFromPlan(task.id, 'additional')}
@@ -368,7 +368,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                   </div>
                 ))}
                 {quickWins.length < 3 && (
-                  <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded-[10px] text-center">
+                  <div className="p-3 border-2 border-dashed border-[#E5E5E5] rounded text-center">
                     <p className="text-[12px] text-[#A3A3A3]">Empty slot</p>
                   </div>
                 )}
@@ -383,7 +383,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                 </label>
                 <div className="space-y-2">
                   {additionalTasks.map((task) => (
-                    <div key={task.id} className="p-2 bg-white border border-[#E5E5E5] rounded-[6px] flex items-start justify-between gap-2">
+                    <div key={task.id} className="p-2 bg-white border border-[#E5E5E5] rounded-md flex items-start justify-between gap-2">
                       <p className="text-[12px] text-[#525252] flex-1">{task.title}</p>
                       <button
                         onClick={() => handleRemoveFromPlan(task.id, 'other')}
@@ -403,7 +403,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
         <div className="flex items-center justify-between px-6 py-4 border-t border-[#E5E5E5]">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-[6px] border border-[#E5E5E5] text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
+            className="px-4 py-2 rounded-md border border-[#E5E5E5] text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
           >
             Cancel
           </button>
@@ -416,7 +416,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                 setQuickWins([])
                 setAdditionalTasks([])
               }}
-              className="px-4 py-2 rounded-[6px] border border-[#E5E5E5] text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
+              className="px-4 py-2 rounded-md border border-[#E5E5E5] text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
             >
               Clear Plan
             </button>
@@ -424,7 +424,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-5 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors disabled:opacity-50"
+              className="px-5 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Plan'}
             </button>
@@ -456,7 +456,7 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
         const inPlan = isTaskInPlan(taskId)
         
         return (
-          <div key={taskId} className="p-4 bg-[#F5F5F5] rounded-[10px]">
+          <div key={taskId} className="p-4 bg-[#F5F5F5] rounded">
             <div className="flex items-start gap-3 mb-2">
               <div className="w-6 h-6 rounded-full bg-[#DD3A44] text-white flex items-center justify-center flex-shrink-0 text-[12px] font-medium">
                 {index + 1}
@@ -479,19 +479,19 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => onAdd(taskId, 'main')}
-                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-[6px] transition-colors"
+                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-md transition-colors"
                 >
                   → Primary
                 </button>
                 <button
                   onClick={() => onAdd(taskId, 'secondary')}
-                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-[6px] transition-colors"
+                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-md transition-colors"
                 >
                   → Secondary
                 </button>
                 <button
                   onClick={() => onAdd(taskId, 'additional')}
-                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-[6px] transition-colors"
+                  className="text-[11px] px-3 py-1.5 bg-white hover:bg-[#E5E5E5] border border-[#E5E5E5] rounded-md transition-colors"
                 >
                   → Quick Win
                 </button>
@@ -524,7 +524,7 @@ function AllTasksTab({ tasks, onAdd, isTaskInPlan }: {
         const inPlan = isTaskInPlan(task.id)
         
         return (
-          <div key={task.id} className="p-3 bg-white border border-[#E5E5E5] rounded-[10px]">
+          <div key={task.id} className="p-3 bg-white border border-[#E5E5E5] rounded">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-medium text-[#1A1A1A] mb-1">{task.title}</p>

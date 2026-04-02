@@ -103,7 +103,7 @@ export default function MobileListItem({
     return (
       <Link
         href={href}
-        className="block bg-white  rounded-[10px] p-4 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition"
+        className="block bg-white  rounded p-4 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition"
       >
         {content}
       </Link>
@@ -114,7 +114,7 @@ export default function MobileListItem({
     return (
       <button
         onClick={onClick}
-        className="w-full text-left bg-white  rounded-[10px] p-4 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition"
+        className="w-full text-left bg-white  rounded p-4 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition"
       >
         {content}
       </button>
@@ -122,7 +122,7 @@ export default function MobileListItem({
   }
 
   return (
-    <div className="bg-white  rounded-[10px] p-4">
+    <div className="bg-white  rounded p-4">
       {content}
     </div>
   )

@@ -135,7 +135,7 @@ export default function QuickAddModal({
     1: 'bg-red-100 text-red-700',
     2: 'bg-orange-100 text-orange-700',
     3: 'bg-yellow-100 text-yellow-700',
-    4: 'bg-[#f0eded] text-[#5a5757]',
+    4: 'bg-[#F3F3F3] text-[#5a5757]',
   }
 
   const priorityLabels: Record<number, string> = {
@@ -151,7 +151,7 @@ export default function QuickAddModal({
 
   return (
     <div className={`fixed inset-0 bg-black z-50 flex items-end md:items-center justify-center md:p-4 ${isMobile ? 'bg-opacity-0' : 'bg-opacity-50'}`}>
-      <div className={`bg-white w-full md:max-w-md md:rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-y-auto flex flex-col ${
+      <div className={`bg-white w-full md:max-w-md md:rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-y-auto flex flex-col ${
         isMobile 
           ? 'h-screen rounded-t-2xl max-h-[95vh]' 
           : 'max-h-[90vh]'
@@ -162,7 +162,7 @@ export default function QuickAddModal({
             <>
               <button
                 onClick={onClose}
-                className="text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-[#5a5757] hover:bg-[#F3F3F3] rounded transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Go back"
               >
                 <FaTimes className="text-lg" />
@@ -214,7 +214,7 @@ export default function QuickAddModal({
             <select
               value={selectedPriority}
               onChange={(e) => setSelectedPriority(parseInt(e.target.value))}
-              className="w-full px-4 py-3 dark:border-gray-600 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
+              className="w-full px-4 py-3 dark:border-gray-600 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
             >
               <option value={1}>P1 - Urgent</option>
               <option value={2}>P2 - High</option>
@@ -233,7 +233,7 @@ export default function QuickAddModal({
                 type="date"
                 value={dueAt ? dueAt.toISOString().split('T')[0] : ''}
                 onChange={(e) => setDueAt(e.target.value ? new Date(e.target.value + 'T12:00:00') : null)}
-                className="flex-1 px-4 py-2 dark:border-gray-600 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
+                className="flex-1 px-4 py-2 dark:border-gray-600 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
               />
               <SmartDeadlineButton
                 taskDescription={parsed.title}
@@ -258,7 +258,7 @@ export default function QuickAddModal({
               value={selectedGoalId || ''}
               onChange={(e) => setSelectedGoalId(e.target.value || null)}
               disabled={loadingGoals || goals.length === 0}
-              className="w-full px-4 py-3 dark:border-gray-600 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
+              className="w-full px-4 py-3 dark:border-gray-600 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent text-[#1c1b1b] dark:text-gray-100 bg-white dark:bg-gray-800 min-h-[44px]"
             >
               <option value="">
                 {loadingGoals ? 'Loading goals...' : goals.length === 0 ? 'No goals yet' : 'Select a goal'}
@@ -278,7 +278,7 @@ export default function QuickAddModal({
 
           {/* Preview */}
           {parsed.title && (
-            <div className="bg-[#f6f3f2] dark:bg-gray-800 rounded-[14px] p-4 space-y-2">
+            <div className="bg-[#F3F3F3] dark:bg-gray-800 rounded p-4 space-y-2">
               <div>
                 <p className="text-xs text-[#5a5757] dark:text-[#C4C0C0] font-medium">Title</p>
                 <p className="text-sm text-[#1c1b1b] dark:text-gray-100">{parsed.title}</p>
@@ -331,14 +331,14 @@ export default function QuickAddModal({
         <div className={`flex flex-col-reverse md:flex-row gap-3 px-4 md:px-6 py-4 ${isMobile ? 'safe-area-inset-bottom' : ''}`}>
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 bg-[#f0eded] text-[#1c1b1b] rounded-[10px] hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
+            className="flex-1 px-4 py-3 bg-[#F3F3F3] text-[#1c1b1b] rounded hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
           >
             Cancel
           </button>
           <button
             onClick={handleAdd}
             disabled={!parsed.title}
-            className="flex-1 px-4 py-3 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] flex items-center justify-center"
+            className="flex-1 px-4 py-3 bg-accent-500 text-white rounded hover:bg-accent-600 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] flex items-center justify-center"
           >
             Add task
           </button>

@@ -59,7 +59,7 @@ export default function TasksTableToolbar({
           value={searchQuery}
           onChange={(e) => onSearchChange?.(e.target.value)}
           placeholder="Search tasks..."
-          className="w-full pl-10 pr-4 py-3 rounded-[10px] focus:outline-none focus:ring-1 focus:ring-accent-500"
+          className="w-full pl-10 pr-4 py-3 rounded focus:outline-none focus:ring-1 focus:ring-accent-500"
         />
       </div>
 
@@ -67,10 +67,10 @@ export default function TasksTableToolbar({
       <div className="flex items-center gap-2">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`px-4 py-2 rounded-[10px] border transition flex items-center gap-2 ${
+          className={`px-4 py-2 rounded border transition flex items-center gap-2 ${
             showFilters
               ? 'bg-accent-50 border-accent-200 text-accent-700'
-              : 'bg-white border-gray-200 text-[#5a5757] hover:bg-[#f6f3f2]'
+              : 'bg-white border-gray-200 text-[#5a5757] hover:bg-[#F3F3F3]'
           }`}
         >
           <FaFilter className="w-4 h-4" />
@@ -80,7 +80,7 @@ export default function TasksTableToolbar({
         {hasActiveFilters && (
           <button
             onClick={onClearFilters}
-            className="px-4 py-2 rounded-[10px] bg-white text-[#5a5757] hover:bg-[#f6f3f2] transition flex items-center gap-2"
+            className="px-4 py-2 rounded bg-white text-[#5a5757] hover:bg-[#F3F3F3] transition flex items-center gap-2"
           >
             <FaTimes className="w-4 h-4" />
             Clear filters
@@ -90,7 +90,7 @@ export default function TasksTableToolbar({
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="p-4 bg-[#f6f3f2] rounded-[10px] space-y-4">
+        <div className="p-4 bg-[#F3F3F3] rounded space-y-4">
           {/* Priority Filter */}
           <div>
             <label className="block text-sm font-medium text-[#1c1b1b] mb-2">

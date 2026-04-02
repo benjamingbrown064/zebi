@@ -48,12 +48,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-12">
           <div className="inline-block mb-6">
-            <div className="w-20 h-20 bg-[#DD3A44] rounded-[14px] flex items-center justify-center">
+            <div className="w-20 h-20 bg-[#DD3A44] rounded flex items-center justify-center">
               <span className="font-semibold text-white text-3xl">Z</span>
             </div>
           </div>
@@ -64,14 +64,14 @@ export default function LoginPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white  rounded-[14px] p-8">
+        <div className="bg-white  rounded p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-medium text-[#1A1A1A] mb-2">Welcome back</h2>
             <p className="text-[#525252] text-[15px]">Sign in to continue to your workspace</p>
           </div>
 
           {error && (
-            <div className="p-4 bg-[#FEF2F2] border-l-2 border-[#DD3A44] rounded-[6px] mb-6">
+            <div className="p-4 bg-[#FEF2F2] border-l-2 border-[#DD3A44] rounded-md mb-6">
               <p className="text-[13px] text-[#DD3A44] font-medium">{error}</p>
             </div>
           )}
@@ -88,7 +88,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
-                className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
               />
             </div>
 
@@ -103,14 +103,14 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 required
-                className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[15px] transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[15px] transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>

@@ -93,7 +93,7 @@ export default function BrainDumpClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       {/* Header */}
       <div className="bg-white">
         <div className="max-w-4xl mx-auto px-8 py-6">
@@ -104,7 +104,7 @@ export default function BrainDumpClient() {
 
       <div className="max-w-4xl mx-auto px-8 py-12">
         {/* Recorder */}
-        <div className="bg-white rounded-[14px] p-12 mb-8">
+        <div className="bg-white rounded p-12 mb-8">
           <div className="max-w-2xl mx-auto">
             {processing ? (
               <div className="text-center py-16">
@@ -127,7 +127,7 @@ export default function BrainDumpClient() {
                   onRecordingStop={() => setRecording(false)}
                 />
 
-                <div className="mt-8 p-4 bg-[#f6f3f2] rounded-[10px]">
+                <div className="mt-8 p-4 bg-[#F3F3F3] rounded">
                   <p className="text-xs text-[#5a5757] leading-relaxed">
                     <span className="font-medium">Tips:</span> Mention specific names, dates (like "Friday" or "next week"), 
                     and priorities. For example: "Add high priority task for Love Warranty claims review, due Friday" 
@@ -152,7 +152,7 @@ export default function BrainDumpClient() {
                 <button
                   key={session.id}
                   onClick={() => router.push(`/brain-dump/review/${session.id}`)}
-                  className="w-full bg-white rounded-[10px] p-5 hover:border-gray-300 transition-all text-left"
+                  className="w-full bg-white rounded p-5 hover:border-gray-300 transition-all text-left"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">

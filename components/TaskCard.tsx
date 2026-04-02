@@ -21,7 +21,7 @@ export default function TaskCard({
     1: 'bg-red-100 text-red-700',
     2: 'bg-orange-100 text-orange-700',
     3: 'bg-yellow-100 text-yellow-700',
-    4: 'bg-[#f0eded] text-[#5a5757]',
+    4: 'bg-[#F3F3F3] text-[#5a5757]',
   }
 
   const priorityLabels: Record<number, string> = {
@@ -78,7 +78,7 @@ export default function TaskCard({
             onClick={(e) => {
               e.stopPropagation()
             }}
-            className="p-1 hover:bg-[#f0eded] rounded text-[#C4C0C0] hover:text-[#5a5757] transition"
+            className="p-1 hover:bg-[#F3F3F3] rounded text-[#C4C0C0] hover:text-[#5a5757] transition"
             title="More options"
           >
             ⋯

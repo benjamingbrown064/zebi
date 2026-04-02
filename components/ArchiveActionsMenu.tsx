@@ -51,7 +51,7 @@ export default function ArchiveActionsMenu({
       <button
         onClick={handleArchive}
         disabled={isLoading}
-        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[#5a5757] hover:bg-[#F3F3F3] rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FaArchive className="text-[#A3A3A3]" />
         <span>{isLoading ? 'Archiving...' : 'Archive'}</span>
@@ -64,13 +64,13 @@ export default function ArchiveActionsMenu({
       <button
         onClick={handleRestore}
         disabled={isLoading}
-        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[#5a5757] hover:bg-[#F3F3F3] rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FaUndo className="text-[#A3A3A3]" />
         <span>{isLoading ? 'Restoring...' : 'Restore'}</span>
       </button>
       {archivedAt && (
-        <div className="px-4 py-2 text-xs text-[#A3A3A3] bg-[#f6f3f2] rounded-[10px]">
+        <div className="px-4 py-2 text-xs text-[#A3A3A3] bg-[#F3F3F3] rounded">
           Archived {new Date(archivedAt).toLocaleDateString()}
         </div>
       )}

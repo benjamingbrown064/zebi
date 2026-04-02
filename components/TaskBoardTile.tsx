@@ -86,9 +86,9 @@ export default function TaskBoardTile({
       case 3:
         return 'text-amber-500 bg-amber-50'
       case 4:
-        return 'text-[#C4C0C0] bg-[#f6f3f2]'
+        return 'text-[#C4C0C0] bg-[#F3F3F3]'
       default:
-        return 'text-[#C4C0C0] bg-[#f6f3f2]'
+        return 'text-[#C4C0C0] bg-[#F3F3F3]'
     }
   }
 
@@ -199,7 +199,7 @@ export default function TaskBoardTile({
 
           {/* Priority Picker - appears on hover */}
           {showPriorityPicker && isHovering && (
-            <div className="absolute top-full mt-1 left-0 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-10 py-1">
+            <div className="absolute top-full mt-1 left-0 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-10 py-1">
               {[1, 2, 3, 4].map((p) => (
                 <button
                   key={p}
@@ -209,8 +209,8 @@ export default function TaskBoardTile({
                     onPriorityChange?.(task.id, p)
                     setShowPriorityPicker(false)
                   }}
-                  className={`block w-full text-left px-3 py-2 text-xs font-medium hover:bg-[#f0eded] transition-colors ${
-                    task.priority === p ? 'bg-[#f6f3f2]' : ''
+                  className={`block w-full text-left px-3 py-2 text-xs font-medium hover:bg-[#F3F3F3] transition-colors ${
+                    task.priority === p ? 'bg-[#F3F3F3]' : ''
                   }`}
                 >
                   {getPriorityLabel(p)}
@@ -232,7 +232,7 @@ export default function TaskBoardTile({
               </span>
             ))}
             {remainingTags > 0 && (
-              <span className="px-2 py-1 bg-[#f0eded] text-[#5a5757] rounded font-medium">
+              <span className="px-2 py-1 bg-[#F3F3F3] text-[#5a5757] rounded font-medium">
                 +{remainingTags}
               </span>
             )}
@@ -277,7 +277,7 @@ export default function TaskBoardTile({
 
       {/* HOVER ACTIONS - Subtle, no layout shift */}
       {isHovering && (
-        <div className="absolute inset-0 pointer-events-none rounded-[10px] bg-gradient-to-t from-black/0 to-transparent" />
+        <div className="absolute inset-0 pointer-events-none rounded bg-gradient-to-t from-black/0 to-transparent" />
       )}
 
       {isHovering && (

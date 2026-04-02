@@ -301,7 +301,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Something went wrong</h3>
-          <div className="mb-6 max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded-[10px]">
+          <div className="mb-6 max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded">
             <p className="text-sm text-red-800">{error}</p>
           </div>
           <div className="flex gap-3 justify-center">
@@ -333,7 +333,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
             <div className="mb-8 text-center">
               <p className="text-lg text-[#1A1A1A] mb-2">{openingQuestion}</p>
               <p className="text-sm text-[#5a5757] mb-4">Question 1 of 2 (required)</p>
-              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded-[10px]">
+              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded">
                 <p className="text-xs text-blue-800">
                   💡 <strong>Tip:</strong> Describe your goal clearly. We'll ask about your progress next.
                 </p>
@@ -361,7 +361,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
               onRecordingStop={() => {}}
             />
             {transcript && (
-              <div className="mt-6 p-4 bg-[#f6f3f2] rounded-[10px]">
+              <div className="mt-6 p-4 bg-[#F3F3F3] rounded">
                 <p className="text-xs text-[#A3A3A3] mb-2">Transcript:</p>
                 <p className="text-sm text-[#5a5757]">{transcript}</p>
               </div>
@@ -391,7 +391,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
             <div className="mb-8 text-center">
               <p className="text-lg text-[#1A1A1A] mb-2">{contextQuestion}</p>
               <p className="text-sm text-[#5a5757] mb-4">Question 2 of 2 (required)</p>
-              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded-[10px]">
+              <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded">
                 <p className="text-xs text-blue-800">
                   💡 <strong>Tip:</strong> Mention what you've already done, any blockers you're facing, and ideas you're considering.
                 </p>
@@ -404,7 +404,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
               onRecordingStop={() => {}}
             />
             {transcript && (
-              <div className="mt-6 p-4 bg-[#f6f3f2] rounded-[10px] max-h-40 overflow-y-auto">
+              <div className="mt-6 p-4 bg-[#F3F3F3] rounded max-h-40 overflow-y-auto">
                 <p className="text-xs text-[#A3A3A3] mb-2">Your goal:</p>
                 <p className="text-sm text-[#5a5757] whitespace-pre-wrap">{transcript}</p>
               </div>
@@ -430,7 +430,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
               onRecordingStop={() => {}}
             />
             {transcript && (
-              <div className="mt-6 p-4 bg-[#f6f3f2] rounded-[10px] max-h-40 overflow-y-auto">
+              <div className="mt-6 p-4 bg-[#F3F3F3] rounded max-h-40 overflow-y-auto">
                 <p className="text-xs text-[#A3A3A3] mb-2">Conversation so far:</p>
                 <p className="text-sm text-[#5a5757] whitespace-pre-wrap">{transcript}</p>
               </div>
@@ -500,7 +500,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
                 {/* Goal Card */}
                 {proposal && (
                   <>
-                    <div className="mb-6 p-4 bg-white rounded-[10px]">
+                    <div className="mb-6 p-4 bg-white rounded">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="text-sm font-semibold text-[#A3A3A3]">🎯 GOAL TO CREATE</h4>
                       </div>
@@ -520,7 +520,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
 
                 {/* Objectives */}
                 {proposal.objectives.length > 0 && (
-                  <div className="mb-6 p-4 bg-white rounded-[10px]">
+                  <div className="mb-6 p-4 bg-white rounded">
                     <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">📋 OBJECTIVES ({proposal.objectives.length})</h4>
                     <div className="space-y-2">
                       {proposal.objectives.map((obj, index) => (
@@ -545,7 +545,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
 
                 {/* Projects */}
                 {proposal.projects.length > 0 && (
-                  <div className="mb-6 p-4 bg-white rounded-[10px]">
+                  <div className="mb-6 p-4 bg-white rounded">
                     <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">🗂️ PROJECTS ({proposal.projects.length})</h4>
                     <ul className="space-y-1">
                       {proposal.projects.map((proj, index) => (
@@ -557,7 +557,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
 
                 {/* Tasks */}
                 {proposal.tasks.length > 0 && (
-                  <div className="mb-6 p-4 bg-white rounded-[10px]">
+                  <div className="mb-6 p-4 bg-white rounded">
                     <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">✅ FIRST TASKS ({proposal.tasks.length})</h4>
                     <ul className="space-y-1">
                       {proposal.tasks.map((task, index) => (
@@ -569,7 +569,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
 
                 {/* Blockers */}
                 {proposal.blockers.length > 0 && (
-                  <div className="mb-6 p-4 bg-white rounded-[10px]">
+                  <div className="mb-6 p-4 bg-white rounded">
                     <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">⚠️ BLOCKERS & RISKS</h4>
                     <ul className="space-y-1">
                       {proposal.blockers.map((blocker, index) => (
@@ -581,7 +581,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
 
                 {/* Uncertainties */}
                 {proposal.uncertainties.length > 0 && (
-                  <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-[10px]">
+                  <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
                     <h4 className="text-sm font-semibold text-yellow-800 mb-3">❓ NEEDS CLARIFICATION</h4>
                     <ul className="space-y-1">
                       {proposal.uncertainties.map((uncertainty, index) => (
@@ -700,12 +700,12 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
       size="3xl"
       scrollBehavior="inside"
       classNames={{
-        base: 'bg-[#fcf9f8]',
+        base: 'bg-[#F9F9F9]',
         wrapper: 'z-[999]',
         backdrop: 'bg-black/30',
         header: 'border-b border-gray-200',
         body: 'py-6',
-        closeButton: 'hover:bg-[#f0eded]'
+        closeButton: 'hover:bg-[#F3F3F3]'
       }}
     >
       <ModalContent className=" shadow-[0_20px_40px_rgba(28,27,27,0.06)] !outline-none focus:outline-none">

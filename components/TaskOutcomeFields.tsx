@@ -47,7 +47,7 @@ export default function TaskOutcomeFields({
             onBlur={() => onUpdate({ expectedOutcome: expectedVal || null })}
             placeholder="What should this task produce?"
             rows={2}
-            className="w-full text-[13px] text-[#1A1A1A] bg-[#FAFAFA] border border-[#F0F0F0] rounded-[8px] px-3 py-2 resize-none focus:outline-none focus:border-[#DD3A44] transition-colors"
+            className="w-full text-[13px] text-[#1A1A1A] bg-[#FAFAFA] border border-[#F0F0F0] rounded-md px-3 py-2 resize-none focus:outline-none focus:border-[#DD3A44] transition-colors"
           />
         </div>
       )}
@@ -64,7 +64,7 @@ export default function TaskOutcomeFields({
             onBlur={() => onUpdate({ completionNote: resultVal || null })}
             placeholder="What actually happened?"
             rows={2}
-            className="w-full text-[13px] text-[#1A1A1A] bg-[#FAFAFA] border border-[#F0F0F0] rounded-[8px] px-3 py-2 resize-none focus:outline-none focus:border-[#10B981] transition-colors"
+            className="w-full text-[13px] text-[#1A1A1A] bg-[#FAFAFA] border border-[#F0F0F0] rounded-md px-3 py-2 resize-none focus:outline-none focus:border-[#10B981] transition-colors"
           />
         </div>
       )}
@@ -81,7 +81,7 @@ export default function TaskOutcomeFields({
             onChange={e => setOutputVal(e.target.value)}
             onBlur={() => onUpdate({ outputUrl: outputVal || null })}
             placeholder="https://..."
-            className="w-full text-[13px] text-[#1A1A1A] bg-[#FAFAFA] border border-[#F0F0F0] rounded-[8px] px-3 py-2 focus:outline-none focus:border-[#6366F1] transition-colors"
+            className="w-full text-[13px] text-[#1A1A1A] bg-[#FAFAFA] border border-[#F0F0F0] rounded-md px-3 py-2 focus:outline-none focus:border-[#6366F1] transition-colors"
           />
         </div>
       )}

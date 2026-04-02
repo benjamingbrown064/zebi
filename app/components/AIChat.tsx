@@ -150,7 +150,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
           {messages.length > 0 && (
             <button
               onClick={clearConversation}
-              className="p-2 text-[#A3A3A3] hover:text-[#DD3A44] hover:bg-[#FEF2F2] rounded-[8px] transition"
+              className="p-2 text-[#A3A3A3] hover:text-[#DD3A44] hover:bg-[#FEF2F2] rounded-md transition"
               title="Clear conversation"
             >
               <FaTrash size={13} />
@@ -159,7 +159,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
           {onClose && (
             <button
               onClick={onClose}
-              className="p-2 text-[#A3A3A3] hover:text-[#1A1A1A] hover:bg-[#F5F5F5] rounded-[8px] transition"
+              className="p-2 text-[#A3A3A3] hover:text-[#1A1A1A] hover:bg-[#F5F5F5] rounded-md transition"
             >
               <FaTimes size={16} />
             </button>
@@ -183,7 +183,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                 <button
                   key={p}
                   onClick={() => sendMessage(p)}
-                  className="w-full text-left px-4 py-3 bg-[#F5F5F5] hover:bg-[#F0F0F0] rounded-[10px] text-[13px] text-[#525252] transition flex items-center justify-between group"
+                  className="w-full text-left px-4 py-3 bg-[#F5F5F5] hover:bg-[#F0F0F0] rounded text-[13px] text-[#525252] transition flex items-center justify-between group"
                 >
                   <span>{p}</span>
                   <FaArrowRight className="text-[#D4D4D4] group-hover:text-[#A3A3A3] transition text-[11px]" />
@@ -197,7 +197,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
           <div key={message.id} className="space-y-2">
             {/* Message bubble */}
             <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[85%] rounded-[14px] px-4 py-3 text-[14px] leading-relaxed ${
+              <div className={`max-w-[85%] rounded px-4 py-3 text-[14px] leading-relaxed ${
                 message.role === 'user'
                   ? 'bg-[#DD3A44] text-white rounded-br-[4px]'
                   : 'bg-[#F5F5F5] text-[#1A1A1A] rounded-bl-[4px]'
@@ -208,7 +208,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
 
             {/* Creation card (Pass 1) */}
             {message.role === 'assistant' && message.metadata?.creation?.success && (
-              <div className="bg-[#fcf9f8] border border-[#E5E5E5] rounded-[14px] p-4">
+              <div className="bg-[#F9F9F9] border border-[#E5E5E5] rounded p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[11px] font-semibold text-[#DD3A44] uppercase tracking-wide">
                     {message.metadata.creation.objectType}
@@ -229,14 +229,14 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                       else if (type === 'document') window.location.href = '/documents'
                       else if (type === 'inbox') window.location.href = '/inbox'
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[11px] font-medium text-[#525252] transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-md text-[11px] font-medium text-[#525252] transition"
                   >
                     <FaArrowRight size={9} /> View
                   </button>
                   {message.metadata.creation.suggestedNextStep && (
                     <button
                       onClick={() => sendMessage(message.metadata?.creation?.suggestedNextStep?.replace(/^Want me to /, '').replace(/\?$/, '') || '')}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#DD3A44] text-white hover:bg-[#C73040] rounded-[8px] text-[11px] font-medium transition"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#DD3A44] text-white hover:bg-[#C73040] rounded-md text-[11px] font-medium transition"
                     >
                       {message.metadata.creation.suggestedNextStep}
                     </button>
@@ -256,7 +256,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                       else if (obj.type === 'note') window.location.href = '/notes'
                       else if (obj.type === 'document') window.location.href = '/documents'
                     }}
-                    className="w-full text-left flex items-center justify-between px-3 py-2.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] rounded-[10px] group transition"
+                    className="w-full text-left flex items-center justify-between px-3 py-2.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] rounded group transition"
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="text-[11px] font-medium text-[#A3A3A3] uppercase tracking-wide w-10 flex-shrink-0">
@@ -274,7 +274,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
 
             {/* Plan card */}
             {message.role === 'assistant' && message.metadata?.plan && (
-              <div className="bg-[#fcf9f8] border border-[#E5E5E5] rounded-[14px] p-4 mx-0">
+              <div className="bg-[#F9F9F9] border border-[#E5E5E5] rounded p-4 mx-0">
                 {message.metadata.plan.needsConfirmation ? (
                   <>
                     <p className="text-[13px] font-medium text-[#1A1A1A] mb-3">
@@ -285,7 +285,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                         <button
                           key={name}
                           onClick={() => sendMessage(`This is for ${name}`)}
-                          className="px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[12px] font-medium text-[#525252] transition"
+                          className="px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-md text-[12px] font-medium text-[#525252] transition"
                         >
                           {name}
                         </button>
@@ -327,14 +327,14 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
                     <div className="flex gap-2">
                       <button
                         onClick={() => window.location.href = '/spaces'}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[11px] font-medium text-[#525252] transition"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-md text-[11px] font-medium text-[#525252] transition"
                       >
                         <FaStickyNote size={10} /> View Note
                       </button>
                       {message.metadata.plan.tasksCreated.length > 0 && (
                         <button
                           onClick={() => window.location.href = '/tasks'}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-[8px] text-[11px] font-medium text-[#525252] transition"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E5E5] hover:border-[#DD3A44] hover:text-[#DD3A44] rounded-md text-[11px] font-medium text-[#525252] transition"
                         >
                           <FaTasks size={10} /> View Tasks
                         </button>
@@ -349,7 +349,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-[#F5F5F5] rounded-[14px] rounded-bl-[4px] px-4 py-3 flex items-center gap-2">
+            <div className="bg-[#F5F5F5] rounded rounded-bl-[4px] px-4 py-3 flex items-center gap-2">
               <FaSpinner className="animate-spin text-[#A3A3A3] text-[12px]" />
               <span className="text-[13px] text-[#A3A3A3]">Thinking…</span>
             </div>
@@ -361,7 +361,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
 
       {/* Input */}
       <div className="px-4 pb-4 pt-3 border-t border-[#F0F0F0] flex-shrink-0">
-        <div className="flex items-end gap-2 bg-[#F5F5F5] rounded-[12px] px-4 py-3">
+        <div className="flex items-end gap-2 bg-[#F5F5F5] rounded px-4 py-3">
           <textarea
             ref={inputRef}
             rows={1}
@@ -381,7 +381,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="flex-shrink-0 w-8 h-8 bg-[#DD3A44] disabled:bg-[#E5E5E5] text-white disabled:text-[#A3A3A3] rounded-[8px] flex items-center justify-center transition"
+            className="flex-shrink-0 w-8 h-8 bg-[#DD3A44] disabled:bg-[#E5E5E5] text-white disabled:text-[#A3A3A3] rounded-md flex items-center justify-center transition"
           >
             <FaPaperPlane size={13} />
           </button>

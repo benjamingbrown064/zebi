@@ -201,7 +201,7 @@ export default function ObjectivesClient({
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -216,7 +216,7 @@ export default function ObjectivesClient({
           primaryAction={
             <Dropdown>
               <DropdownTrigger>
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]">
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]">
                   <FaPlus className="text-sm" />
                   <span className="hidden sm:inline">New Objective</span>
                   <span className="sm:hidden">New</span>
@@ -248,31 +248,31 @@ export default function ObjectivesClient({
           <div className="py-6 md:py-12">
             {/* Summary Stats - Responsive Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 mb-6 md:mb-12">
-              <div className="bg-white rounded-[10px] md:rounded-[14px] p-4 md:p-5">
+              <div className="bg-white rounded md:rounded p-4 md:p-5">
                 <p className="text-[11px] md:text-[13px] leading-[20px] text-[#A3A3A3] mb-1">Total</p>
                 <p className="text-[20px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#1A1A1A]">
                   {objectives.length}
                 </p>
               </div>
-              <div className="bg-[#ECFDF5] rounded-[10px] md:rounded-[14px] border border-[#A7F3D0] p-4 md:p-5">
+              <div className="bg-[#ECFDF5] rounded md:rounded border border-[#A7F3D0] p-4 md:p-5">
                 <p className="text-[11px] md:text-[13px] leading-[20px] text-[#059669] mb-1">On Track</p>
                 <p className="text-[20px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#047857]">
                   {groupedObjectives.on_track.length}
                 </p>
               </div>
-              <div className="bg-[#FFFBEB] rounded-[10px] md:rounded-[14px] border border-[#FDE68A] p-4 md:p-5">
+              <div className="bg-[#FFFBEB] rounded md:rounded border border-[#FDE68A] p-4 md:p-5">
                 <p className="text-[11px] md:text-[13px] leading-[20px] text-[#D97706] mb-1">At Risk</p>
                 <p className="text-[20px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#B45309]">
                   {groupedObjectives.at_risk.length}
                 </p>
               </div>
-              <div className="bg-[#FEF2F2] rounded-[10px] md:rounded-[14px] border border-[#FECACA] p-4 md:p-5">
+              <div className="bg-[#FEF2F2] rounded md:rounded border border-[#FECACA] p-4 md:p-5">
                 <p className="text-[11px] md:text-[13px] leading-[20px] text-[#DC2626] mb-1">Blocked</p>
                 <p className="text-[20px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#B91C1C]">
                   {groupedObjectives.blocked.length}
                 </p>
               </div>
-              <div className="bg-[#EFF6FF] rounded-[10px] md:rounded-[14px] border border-[#BFDBFE] p-4 md:p-5 col-span-2 sm:col-span-1">
+              <div className="bg-[#EFF6FF] rounded md:rounded border border-[#BFDBFE] p-4 md:p-5 col-span-2 sm:col-span-1">
                 <p className="text-[11px] md:text-[13px] leading-[20px] text-[#2563EB] mb-1">Completed</p>
                 <p className="text-[20px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#1D4ED8]">
                   {groupedObjectives.completed.length}
@@ -297,7 +297,7 @@ export default function ObjectivesClient({
                       key={filter.value}
                       onClick={() => setStatusFilter(filter.value)}
                       className={`
-                        px-4 py-2 rounded-[10px] text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
+                        px-4 py-2 rounded text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
                         ${
                           statusFilter === filter.value
                             ? 'bg-[#FEF2F2] text-[#DD3A44] border border-[#DD3A44]'
@@ -315,7 +315,7 @@ export default function ObjectivesClient({
                   <select
                     value={spaceFilter}
                     onChange={(e) => setSpaceFilter(e.target.value)}
-                    className="px-4 py-2 bg-white  rounded-[10px] text-[13px] text-[#525252] focus:outline-none focus:border-[#DD3A44] focus:ring-2 focus:ring-[#DD3A44] focus:ring-offset-2 min-h-[44px] w-full sm:w-auto"
+                    className="px-4 py-2 bg-white  rounded text-[13px] text-[#525252] focus:outline-none focus:border-[#DD3A44] focus:ring-2 focus:ring-[#DD3A44] focus:ring-offset-2 min-h-[44px] w-full sm:w-auto"
                   >
                     <option value="all">All Spaces</option>
                     {spaces.map((space) => (
@@ -334,7 +334,7 @@ export default function ObjectivesClient({
                 <p className="text-[15px] text-[#A3A3A3] mb-6">No objectives found</p>
                 <button
                   onClick={() => setIsFormOpen(true)}
-                  className="px-6 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium transition-colors min-h-[44px]"
+                  className="px-6 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium transition-colors min-h-[44px]"
                 >
                   Create First Objective
                 </button>

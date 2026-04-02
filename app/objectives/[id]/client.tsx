@@ -56,7 +56,7 @@ export default function ObjectiveDetailClient({
     at_risk: { bg: 'bg-yellow-100', text: 'text-yellow-700', bar: 'bg-yellow-500', icon: '⚠️', label: 'AT RISK' },
     blocked: { bg: 'bg-red-100', text: 'text-red-700', bar: 'bg-red-500', icon: '🚫', label: 'BLOCKED' },
     completed: { bg: 'bg-[#e6f4f4]', text: 'text-[#006766]', bar: 'bg-[#f0fafa]0', icon: '🎉', label: 'COMPLETED' },
-    active: { bg: 'bg-[#f0eded]', text: 'text-[#5a5757]', bar: 'bg-accent-500', icon: '🎯', label: 'ACTIVE' },
+    active: { bg: 'bg-[#F3F3F3]', text: 'text-[#5a5757]', bar: 'bg-accent-500', icon: '🎯', label: 'ACTIVE' },
   }
 
   const statusStyle = statusConfig[objective.status] || statusConfig.active
@@ -109,7 +109,7 @@ export default function ObjectiveDetailClient({
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8] flex">
+    <div className="min-h-screen bg-[#F9F9F9] flex">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -159,11 +159,11 @@ export default function ObjectiveDetailClient({
           </Link>
 
             {/* Intro Card */}
-            <div className="bg-white rounded-[14px] p-4 md:p-8 mb-6 md:mb-8">
+            <div className="bg-white rounded p-4 md:p-8 mb-6 md:mb-8">
               {/* Space */}
               {objective.space && (
                 <div className="flex items-center gap-2 mb-3 md:mb-4">
-                  <div className="w-6 h-6 rounded-[6px] bg-[#F5F5F5] flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-md bg-[#F5F5F5] flex items-center justify-center">
                     <FaBuilding className="text-[#737373] text-xs" />
                   </div>
                   <Link
@@ -204,7 +204,7 @@ export default function ObjectiveDetailClient({
             {/* Status & Timeline */}
             <div className="flex items-center gap-4 mb-6">
               <div 
-                className="px-3 py-1.5 rounded-[6px] border"
+                className="px-3 py-1.5 rounded-md border"
                 style={{ 
                   backgroundColor: statusStyle.bg,
                   borderColor: statusStyle.border
@@ -343,7 +343,7 @@ export default function ObjectiveDetailClient({
                       </span>
                     )}
                   </h3>
-                  <div className={`p-4 rounded-[10px] ${statusStyle.bg}`}>
+                  <div className={`p-4 rounded ${statusStyle.bg}`}>
                     <p className={`text-lg font-semibold ${statusStyle.text} mb-3`}>
                       {statusStyle.icon} {statusStyle.label}
                     </p>
@@ -363,7 +363,7 @@ export default function ObjectiveDetailClient({
                       // TODO: Implement progress update modal
                       alert('Progress update functionality coming soon')
                     }}
-                    className="px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[15px] transition-colors"
+                    className="px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[15px] transition-colors"
                   >
                     Update Progress
                   </button>
@@ -372,7 +372,7 @@ export default function ObjectiveDetailClient({
                       // TODO: Implement objective edit
                       router.push(`/objectives/${objective.id}/edit`)
                     }}
-                    className="px-5 py-2.5 bg-white  text-[#525252] rounded-[10px] font-medium text-[15px] hover:bg-[#F5F5F5] transition-colors"
+                    className="px-5 py-2.5 bg-white  text-[#525252] rounded font-medium text-[15px] hover:bg-[#F5F5F5] transition-colors"
                   >
                     Adjust Objective
                   </button>
@@ -414,7 +414,7 @@ export default function ObjectiveDetailClient({
                   ) : (
                     <div className="space-y-2">
                       {objective.progressEntries.map((entry: any) => (
-                        <div key={entry.id} className="flex items-center justify-between p-3 bg-[#f6f3f2] rounded-[10px]">
+                        <div key={entry.id} className="flex items-center justify-between p-3 bg-[#F3F3F3] rounded">
                           <div>
                             <p className="font-semibold text-[#1c1b1b]">{formatValue(entry.value)}</p>
                             <p className="text-xs text-[#5a5757]">
@@ -440,7 +440,7 @@ export default function ObjectiveDetailClient({
                     Active Blockers ({activeBlockers.length})
                   </h3>
                   {activeBlockers.length === 0 ? (
-                    <div className="p-4 bg-[#f0fafa] border border-green-200 rounded-[10px] text-[#006766]">
+                    <div className="p-4 bg-[#f0fafa] border border-green-200 rounded text-[#006766]">
                       <FaCheckCircle className="inline mr-2" />
                       No active blockers
                     </div>
@@ -495,7 +495,7 @@ export default function ObjectiveDetailClient({
                   ) : (
                     <div className="space-y-3">
                       {memories.map((memory: any) => (
-                        <div key={memory.id} className="p-4 bg-[#f6f3f2] rounded-[10px]">
+                        <div key={memory.id} className="p-4 bg-[#F3F3F3] rounded">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-[#1c1b1b]">{memory.title}</h4>
                             <span className="px-2 py-1 bg-accent-100 text-accent-700 rounded text-xs font-medium">
@@ -520,7 +520,7 @@ export default function ObjectiveDetailClient({
                   ) : (
                     <div className="space-y-3">
                       {insights.map((insight: any) => (
-                        <div key={insight.id} className="p-4 bg-[#f0fafa] border border-transparent rounded-[10px]">
+                        <div key={insight.id} className="p-4 bg-[#f0fafa] border border-transparent rounded">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-[#1c1b1b]">{insight.title}</h4>
                             <span className={`px-2 py-1 rounded text-xs font-medium ${
@@ -552,7 +552,7 @@ export default function ObjectiveDetailClient({
                 ) : (
                   <div className="space-y-2">
                     {activityLogs.map((log: any) => (
-                      <div key={log.id} className="flex items-start gap-3 p-3 bg-[#f6f3f2] rounded-[10px]">
+                      <div key={log.id} className="flex items-start gap-3 p-3 bg-[#F3F3F3] rounded">
                         <div className="flex-1">
                           <p className="text-sm text-[#1c1b1b]">
                             <strong>{log.entityType}</strong> • {log.action}

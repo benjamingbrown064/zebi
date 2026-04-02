@@ -118,7 +118,7 @@ function PriorityBadge({ priority }: { priority: number }) {
 
 function TaskRow({ task, showAgent = true }: { task: TaskSummary; showAgent?: boolean }) {
   return (
-    <Link href={`/tasks/${task.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-[8px] transition-colors group">
+    <Link href={`/tasks/${task.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-medium text-[#1A1A1A] truncate group-hover:text-[#DD3A44] transition-colors">{task.title}</p>
         <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -146,7 +146,7 @@ function SectionCard({
   emptyText?: string
 }) {
   return (
-    <div className="bg-white rounded-[14px] p-6">
+    <div className="bg-white rounded p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-[#737373]">{icon}</span>
@@ -195,7 +195,7 @@ export default function FounderPage() {
   const health = data?.workflowHealth
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="Zebi"
         isCollapsed={sidebarCollapsed}
@@ -217,7 +217,7 @@ export default function FounderPage() {
           <button
             onClick={load}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] font-medium text-[#525252] hover:bg-white hover:shadow-sm transition-all border border-[#E5E5E5] bg-white disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium text-[#525252] hover:bg-white hover:shadow-sm transition-all border border-[#E5E5E5] bg-white disabled:opacity-50"
           >
             <FaSync className={loading ? 'animate-spin' : ''} size={12} />
             Refresh
@@ -225,7 +225,7 @@ export default function FounderPage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-[10px] text-red-700 text-[13px]">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded text-red-700 text-[13px]">
             {error}
           </div>
         )}
@@ -241,7 +241,7 @@ export default function FounderPage() {
 
             {/* ── Workflow Health Bar ────────────────────────────────── */}
             {health && (
-              <div className="bg-white rounded-[14px] p-5">
+              <div className="bg-white rounded p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-[14px] font-semibold text-[#1A1A1A]">Workflow Health</h2>
                   <span className={`text-[20px] font-bold ${health.ownerCoveragePercent >= 80 ? 'text-emerald-600' : health.ownerCoveragePercent >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
@@ -258,7 +258,7 @@ export default function FounderPage() {
                     { label: 'Done, no output', value: health.doneWithNoOutput, color: health.doneWithNoOutput > 5 ? 'text-orange-600' : 'text-[#737373]' },
                     { label: 'Open handoffs', value: health.pendingHandoffCount, color: health.pendingHandoffCount > 0 ? 'text-violet-600' : 'text-[#737373]' },
                   ].map(m => (
-                    <div key={m.label} className="bg-[#F9F9F9] rounded-[10px] p-3 text-center">
+                    <div key={m.label} className="bg-[#F9F9F9] rounded p-3 text-center">
                       <p className={`text-[22px] font-bold ${m.color}`}>{m.value}</p>
                       <p className="text-[10px] text-[#A3A3A3] mt-1 leading-tight">{m.label}</p>
                     </div>
@@ -328,7 +328,7 @@ export default function FounderPage() {
                 ) : (
                   <div className="divide-y divide-[#F3F3F3]">
                     {data.decisionInbox.map(t => (
-                      <Link key={t.id} href={`/tasks/${t.id}`} className="block py-3 px-4 hover:bg-[#F9F9F9] rounded-[8px] transition-colors group">
+                      <Link key={t.id} href={`/tasks/${t.id}`} className="block py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors">{t.title}</p>
                           <AgentBadge agent={t.ownerAgent} />
@@ -355,7 +355,7 @@ export default function FounderPage() {
                 ) : (
                   <div className="divide-y divide-[#F3F3F3]">
                     {data.waitingOnBen.map(t => (
-                      <Link key={t.id} href={`/tasks/${t.id}`} className="block py-3 px-4 hover:bg-[#F9F9F9] rounded-[8px] transition-colors group">
+                      <Link key={t.id} href={`/tasks/${t.id}`} className="block py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors">{t.title}</p>
                           <AgentBadge agent={t.ownerAgent} />
@@ -384,7 +384,7 @@ export default function FounderPage() {
               ) : (
                 <div className="divide-y divide-[#F3F3F3]">
                   {data.blockedTasks.map(t => (
-                    <Link key={t.id} href={`/tasks/${t.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-[8px] transition-colors group">
+                    <Link key={t.id} href={`/tasks/${t.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors truncate">{t.title}</p>
                         {t.blockedReason && (
@@ -418,7 +418,7 @@ export default function FounderPage() {
               ) : (
                 <div className="divide-y divide-[#F3F3F3]">
                   {data.recentCompletions.map(t => (
-                    <Link key={t.id} href={`/tasks/${t.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-[8px] transition-colors group">
+                    <Link key={t.id} href={`/tasks/${t.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
                       <FaCheckCircle className="text-emerald-500 mt-0.5 shrink-0" size={13} />
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors truncate">{t.title}</p>
@@ -455,7 +455,7 @@ export default function FounderPage() {
                       </div>
                       <div className="pl-4 space-y-1">
                         {handoffs.map(h => (
-                          <div key={h.id} className="flex items-start justify-between gap-2 py-2 px-3 bg-[#F9F9F9] rounded-[8px]">
+                          <div key={h.id} className="flex items-start justify-between gap-2 py-2 px-3 bg-[#F9F9F9] rounded-md">
                             <div className="min-w-0">
                               <p className="text-[12px] font-medium text-[#1A1A1A] truncate">{h.summary}</p>
                               <p className="text-[11px] text-[#A3A3A3]">from <span className="capitalize">{h.fromAgent}</span> · {new Date(h.createdAt).toLocaleDateString()}</p>

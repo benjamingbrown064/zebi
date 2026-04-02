@@ -54,7 +54,7 @@ export default function OverflowMenu({
       {buttonVariant === 'icon' ? (
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2.5 text-[#525252] hover:bg-[#F5F5F5] rounded-[10px] transition min-h-[44px] min-w-[44px] flex items-center justify-center"
+          className="p-2.5 text-[#525252] hover:bg-[#F5F5F5] rounded transition min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="More actions"
         >
           <FontAwesomeIcon icon={faEllipsisVertical} className="text-lg" />
@@ -62,7 +62,7 @@ export default function OverflowMenu({
       ) : (
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5] rounded-[10px] text-[13px] font-medium transition min-h-[44px]"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5] rounded text-[13px] font-medium transition min-h-[44px]"
         >
           <span>{buttonLabel}</span>
           <FontAwesomeIcon icon={faEllipsisVertical} className="text-base" />
@@ -71,7 +71,7 @@ export default function OverflowMenu({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white  rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-hidden z-50">
+        <div className="absolute right-0 mt-2 w-56 bg-white  rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] overflow-hidden z-50">
           {actions.map((action, index) => (
             <button
               key={index}

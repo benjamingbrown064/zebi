@@ -48,8 +48,8 @@ export default function BlockerCard({ blocker, onResolve }: BlockerCardProps) {
 
   return (
     <div
-      className={`p-4 border-2 rounded-[10px] ${
-        isResolved ? 'bg-[#f6f3f2] border-gray-300 opacity-60' : `${config.bg} ${config.border}`
+      className={`p-4 border-2 rounded ${
+        isResolved ? 'bg-[#F3F3F3] border-gray-300 opacity-60' : `${config.bg} ${config.border}`
       }`}
     >
       {/* Header */}
@@ -80,7 +80,7 @@ export default function BlockerCard({ blocker, onResolve }: BlockerCardProps) {
 
       {/* AI Suggestion */}
       {blocker.aiSuggestion && !isResolved && (
-        <div className="mb-3 p-3 bg-white border border-accent-200 rounded-[10px]">
+        <div className="mb-3 p-3 bg-white border border-accent-200 rounded">
           <p className="text-xs font-medium text-accent-700 mb-1">💡 AI Suggestion:</p>
           <p className="text-sm text-[#5a5757]">{blocker.aiSuggestion.suggestion || JSON.stringify(blocker.aiSuggestion)}</p>
         </div>
@@ -94,7 +94,7 @@ export default function BlockerCard({ blocker, onResolve }: BlockerCardProps) {
         {!isResolved && onResolve && (
           <button
             onClick={() => onResolve(blocker.id)}
-            className="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-medium text-[#5a5757] hover:bg-[#f6f3f2] transition"
+            className="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-medium text-[#5a5757] hover:bg-[#F3F3F3] transition"
           >
             Mark Resolved
           </button>

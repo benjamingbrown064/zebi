@@ -81,7 +81,7 @@ export default function DashboardRecommendations() {
       <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300" radius="lg">
         <CardBody className="p-8">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-[14px] flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
+            <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
               <FaLightbulb className="text-warning text-xl" />
             </div>
             <div className="flex flex-col">
@@ -102,7 +102,7 @@ export default function DashboardRecommendations() {
       <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300" radius="lg">
         <CardBody className="p-8">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-[14px] flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
+            <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
               <FaLightbulb className="text-warning text-xl" />
             </div>
             <div className="flex flex-col">
@@ -127,7 +127,7 @@ export default function DashboardRecommendations() {
     <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300" radius="lg">
       <CardBody className="p-8">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded-[14px] flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
+          <div className="w-14 h-14 bg-gradient-to-br from-warning-100 to-warning-200 rounded flex items-center justify-center shadow-[0_4px_12px_rgba(28,27,27,0.08)]">
             <FaLightbulb className="text-warning text-xl" />
           </div>
           <div className="flex flex-col">
@@ -188,7 +188,7 @@ export default function DashboardRecommendations() {
                   </Button>
                 </div>
 
-                <details className="text-sm text-gravel bg-white/70 rounded-[14px] p-4 shadow-[0_1px_3px_rgba(28,27,27,0.06)]">
+                <details className="text-sm text-gravel bg-white/70 rounded p-4 shadow-[0_1px_3px_rgba(28,27,27,0.06)]">
                   <summary className="cursor-pointer hover:text-deep-lake font-semibold">
                     💡 Why this matters
                   </summary>

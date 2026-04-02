@@ -51,8 +51,8 @@ const STATUS_COLORS = {
   unprocessed: 'bg-red-50 text-red-700 border-red-200',
   processed: 'bg-[#f0fafa] text-[#006766] border-transparent',
   converted: 'bg-[#f0fafa] text-[#006766] border-green-200',
-  completed: 'bg-[#f6f3f2] text-[#5a5757] border-gray-200',
-  archived: 'bg-[#f6f3f2] text-[#A3A3A3] border-gray-200',
+  completed: 'bg-[#F3F3F3] text-[#5a5757] border-gray-200',
+  archived: 'bg-[#F3F3F3] text-[#A3A3A3] border-gray-200',
 }
 
 export default function InboxItemCard({
@@ -86,12 +86,12 @@ export default function InboxItemCard({
   const isLongText = displayText.length > 200
 
   return (
-    <div className="bg-white rounded-[14px] hover:border-gray-200 hover:shadow-[0_1px_3px_rgba(28,27,27,0.06)] transition">
+    <div className="bg-white rounded hover:border-gray-200 hover:shadow-[0_1px_3px_rgba(28,27,27,0.06)] transition">
       {/* Main Content */}
       <div className="p-4">
         <div className="flex items-start gap-3">
           {/* Source Icon */}
-          <div className="flex-shrink-0 w-10 h-10 bg-[#f6f3f2] rounded-[10px] flex items-center justify-center">
+          <div className="flex-shrink-0 w-10 h-10 bg-[#F3F3F3] rounded flex items-center justify-center">
             <FontAwesomeIcon icon={sourceIcon} className="text-[#5a5757]" />
           </div>
 
@@ -135,7 +135,7 @@ export default function InboxItemCard({
               </span>
 
               {item.project && (
-                <span className="px-2 py-0.5 bg-[#f0eded] rounded-md">
+                <span className="px-2 py-0.5 bg-[#F3F3F3] rounded-md">
                   {item.project.name}
                 </span>
               )}
@@ -150,7 +150,7 @@ export default function InboxItemCard({
 
             {/* AI Summary */}
             {item.aiSummary && isExpanded && (
-              <div className="mt-3 p-3 bg-purple-50 rounded-[10px] border border-purple-100">
+              <div className="mt-3 p-3 bg-purple-50 rounded border border-purple-100">
                 <div className="text-xs font-semibold text-purple-900 mb-1">AI Summary</div>
                 <div className="text-sm text-purple-800">{item.aiSummary}</div>
               </div>
@@ -161,7 +161,7 @@ export default function InboxItemCard({
           <div className="relative flex-shrink-0">
             <button
               onClick={() => setShowActions(!showActions)}
-              className="p-2 hover:bg-[#f0eded] rounded-[10px] transition"
+              className="p-2 hover:bg-[#F3F3F3] rounded transition"
             >
               <FontAwesomeIcon icon={faEllipsisV} className="text-[#5a5757]" />
             </button>
@@ -174,7 +174,7 @@ export default function InboxItemCard({
                   onClick={() => setShowActions(false)}
                 />
                 {/* Menu */}
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] py-1 z-20">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] py-1 z-20">
                   {item.status === 'unprocessed' && (
                     <>
                       <button
@@ -182,7 +182,7 @@ export default function InboxItemCard({
                           onConvert(item)
                           setShowActions(false)
                         }}
-                        className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#f6f3f2] flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#F3F3F3] flex items-center gap-2"
                       >
                         <FontAwesomeIcon icon={faArrowRight} className="text-[#006766]" />
                         Convert to Task
@@ -192,7 +192,7 @@ export default function InboxItemCard({
                           onUpdateStatus(item.id, 'completed')
                           setShowActions(false)
                         }}
-                        className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#f6f3f2] flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#F3F3F3] flex items-center gap-2"
                       >
                         <FontAwesomeIcon icon={faCircleCheck} className="text-[#006766]" />
                         Mark Complete
@@ -206,7 +206,7 @@ export default function InboxItemCard({
                         onConvert(item)
                         setShowActions(false)
                       }}
-                      className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#f6f3f2] flex items-center gap-2"
+                      className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#F3F3F3] flex items-center gap-2"
                     >
                       <FontAwesomeIcon icon={faArrowRight} className="text-[#006766]" />
                       Convert to Task

@@ -15,7 +15,7 @@ import { updateTask, deleteTask, createTask } from '@/app/actions/tasks'
 import { getGoals, calculateGoalProgress } from '@/app/actions/goals'
 
 const STATUS_COLORS: Record<string, string> = {
-  inbox: 'bg-[#f6f3f2]',
+  inbox: 'bg-[#F3F3F3]',
   planned: 'bg-[#f0fafa]',
   doing: 'bg-amber-50',
   review: 'bg-cyan-50',
@@ -25,7 +25,7 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 const STATUS_PILL_COLORS: Record<string, string> = {
-  inbox: 'bg-[#f0eded] text-[#5a5757]',
+  inbox: 'bg-[#F3F3F3] text-[#5a5757]',
   planned: 'bg-[#e6f4f4] text-[#006766]',
   doing: 'bg-amber-100 text-amber-700',
   review: 'bg-cyan-100 text-cyan-700',
@@ -445,7 +445,7 @@ export default function BoardClient({
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -494,7 +494,7 @@ export default function BoardClient({
               .map(status => (
               <div
                 key={status.id}
-                className={`${STATUS_COLORS[status.type] || 'bg-[#f6f3f2]'} rounded-[10px] w-72 md:w-80 max-h-[calc(100vh-200px)] flex flex-col overflow-hidden`}
+                className={`${STATUS_COLORS[status.type] || 'bg-[#F3F3F3]'} rounded w-72 md:w-80 max-h-[calc(100vh-200px)] flex flex-col overflow-hidden`}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(status.id)}
               >

@@ -174,14 +174,14 @@ export default function InboxPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#525252] border border-[#E5E5E5] rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#525252] border border-[#E5E5E5] rounded font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaFilter />
                 {!isMobile && <span>Filter</span>}
               </button>
               <button
                 onClick={() => setIsQuickAddOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaPlus />
                 {!isMobile && <span>Quick Add</span>}
@@ -244,7 +244,7 @@ export default function InboxPage() {
                     <button
                       key={status}
                       onClick={() => setStatusFilter(status)}
-                      className={`px-3 py-1.5 text-[13px] rounded-[8px] transition font-medium ${
+                      className={`px-3 py-1.5 text-[13px] rounded-md transition font-medium ${
                         statusFilter === status
                           ? 'bg-[#DD3A44] text-white'
                           : 'bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]'
@@ -270,7 +270,7 @@ export default function InboxPage() {
                 {statusFilter === 'all' && (
                   <button
                     onClick={() => setIsQuickAddOpen(true)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
                   >
                     <FaPlus />
                     Quick Add

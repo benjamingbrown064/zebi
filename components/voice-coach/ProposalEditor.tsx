@@ -168,7 +168,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
   return (
     <div className="space-y-6">
       {/* Goal Section */}
-      <div className="p-4 bg-white rounded-[10px]">
+      <div className="p-4 bg-white rounded">
         <h4 className="text-sm font-semibold text-[#A3A3A3] mb-3">🎯 GOAL</h4>
         
         <div className="space-y-3">
@@ -227,7 +227,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
       </div>
 
       {/* Objectives Section */}
-      <div className="p-4 bg-white rounded-[10px]">
+      <div className="p-4 bg-white rounded">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-sm font-semibold text-[#A3A3A3]">📋 OBJECTIVES ({editedProposal.objectives.length})</h4>
           <Button
@@ -243,7 +243,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
 
         <div className="space-y-3">
           {editedProposal.objectives.map((obj, index) => (
-            <div key={index} className="p-3 bg-[#f6f3f2] rounded-[8px] space-y-2">
+            <div key={index} className="p-3 bg-[#F3F3F3] rounded-md space-y-2">
               <div className="flex items-start gap-2">
                 <Input
                   value={obj.title}
@@ -297,7 +297,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
       </div>
 
       {/* Projects Section */}
-      <div className="p-4 bg-white rounded-[10px]">
+      <div className="p-4 bg-white rounded">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-sm font-semibold text-[#A3A3A3]">🗂️ PROJECTS ({editedProposal.projects.length})</h4>
           <Button
@@ -338,7 +338,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
       </div>
 
       {/* Tasks Section */}
-      <div className="p-4 bg-white rounded-[10px]">
+      <div className="p-4 bg-white rounded">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-sm font-semibold text-[#A3A3A3]">✅ TASKS ({editedProposal.tasks.length})</h4>
           <Button
@@ -381,7 +381,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
 
       {/* Blockers Section */}
       {editedProposal.blockers.length > 0 && (
-        <div className="p-4 bg-white rounded-[10px]">
+        <div className="p-4 bg-white rounded">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-semibold text-[#A3A3A3]">⚠️ BLOCKERS & RISKS ({editedProposal.blockers.length})</h4>
             <Button

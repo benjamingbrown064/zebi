@@ -117,13 +117,13 @@ export default function ProjectDetailPage() {
     1: 'bg-red-100 text-red-700',
     2: 'bg-orange-100 text-orange-700',
     3: 'bg-yellow-100 text-yellow-700',
-    4: 'bg-[#f0eded] text-[#5a5757]',
+    4: 'bg-[#F3F3F3] text-[#5a5757]',
   }
 
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -164,7 +164,7 @@ export default function ProjectDetailPage() {
             <div className="flex flex-col md:flex-row items-start gap-4 md:justify-between">
               <div className="flex items-start gap-3 md:gap-4 flex-1">
                 {/* Icon */}
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-[#FEF2F2] rounded-[10px] flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-[#FEF2F2] rounded flex items-center justify-center flex-shrink-0">
                   <FaProjectDiagram className="text-[#DD3A44] text-xl md:text-2xl" />
                 </div>
 
@@ -180,7 +180,7 @@ export default function ProjectDetailPage() {
                     {project.company && (
                       <Link
                         href={`/spaces/${project.company.id}`}
-                        className="flex items-center gap-1 px-3 py-1 bg-[#f0eded] text-[#5a5757] rounded-[10px] hover:bg-[#e8e4e4] transition text-sm"
+                        className="flex items-center gap-1 px-3 py-1 bg-[#F3F3F3] text-[#5a5757] rounded hover:bg-[#e8e4e4] transition text-sm"
                       >
                         <FaBuilding />
                         {project.company.name}
@@ -189,7 +189,7 @@ export default function ProjectDetailPage() {
 
                     {/* Objective Badge */}
                     {project.objective && (
-                      <div className="flex items-center gap-2 px-3 py-1 bg-accent-100 text-accent-700 rounded-[10px] text-sm">
+                      <div className="flex items-center gap-2 px-3 py-1 bg-accent-100 text-accent-700 rounded text-sm">
                         <FaBullseye />
                         <span>🎯 {project.objective.title}</span>
                         <span
@@ -198,7 +198,7 @@ export default function ProjectDetailPage() {
                               ? 'bg-[#e6f4f4] text-[#006766]'
                               : project.objective.status === 'blocked'
                               ? 'bg-red-100 text-red-700'
-                              : 'bg-[#f0eded] text-[#5a5757]'
+                              : 'bg-[#F3F3F3] text-[#5a5757]'
                           }`}
                         >
                           {project.objective.status}
@@ -212,7 +212,7 @@ export default function ProjectDetailPage() {
                     {/* Priority Badge */}
                     {project.priority && (
                       <span
-                        className={`px-3 py-1 rounded-[10px] text-sm font-medium ${
+                        className={`px-3 py-1 rounded text-sm font-medium ${
                           priorityColors[project.priority]
                         }`}
                       >
@@ -236,21 +236,21 @@ export default function ProjectDetailPage() {
                   onClick={() => {
                     /* TODO: Implement edit */
                   }}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 bg-[#F5F5F5] text-[#525252] rounded-[10px] hover:bg-[#E5E5E5] transition flex items-center justify-center gap-2 min-h-[44px] text-sm md:text-base"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 bg-[#F5F5F5] text-[#525252] rounded hover:bg-[#E5E5E5] transition flex items-center justify-center gap-2 min-h-[44px] text-sm md:text-base"
                 >
                   <FaEdit />
                   <span className="hidden sm:inline">Edit</span>
                 </button>
                 <button
                   onClick={() => setIsVoiceToTaskOpen(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 bg-[#006766] text-white rounded-[10px] hover:bg-[#005555] transition flex items-center justify-center gap-2 min-h-[44px] text-sm md:text-base"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 bg-[#006766] text-white rounded hover:bg-[#005555] transition flex items-center justify-center gap-2 min-h-[44px] text-sm md:text-base"
                 >
                   <FaMicrophone />
                   <span className="hidden sm:inline">Dictate Tasks</span>
                 </button>
                 <button
                   onClick={() => setIsQuickAddOpen(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 bg-[#DD3A44] text-white rounded-[10px] hover:bg-[#C7333D] transition flex items-center justify-center gap-2 min-h-[44px] text-sm md:text-base"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 bg-[#DD3A44] text-white rounded hover:bg-[#C7333D] transition flex items-center justify-center gap-2 min-h-[44px] text-sm md:text-base"
                 >
                   <FaPlus />
                   <span className="hidden sm:inline">Add Task</span>
@@ -286,12 +286,12 @@ export default function ProjectDetailPage() {
             <h2 className="text-lg font-semibold text-[#1c1b1b] mb-4">Tasks</h2>
 
             {project.tasks.length === 0 ? (
-              <div className="bg-white rounded-[14px] p-8 text-center">
+              <div className="bg-white rounded p-8 text-center">
                 <FaTasks className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
                 <p className="text-[#737373] mb-4">No tasks yet in this project.</p>
                 <button 
                   onClick={() => setIsQuickAddOpen(true)}
-                  className="px-4 py-2 bg-[#DD3A44] text-white rounded-[10px] hover:bg-[#C7333D] transition inline-flex items-center gap-2"
+                  className="px-4 py-2 bg-[#DD3A44] text-white rounded hover:bg-[#C7333D] transition inline-flex items-center gap-2"
                 >
                   <FaPlus /> Add First Task
                 </button>
@@ -309,7 +309,7 @@ export default function ProjectDetailPage() {
                       href={`/tasks/${task.id}`}
                       className="block group"
                     >
-                      <div className="bg-white  hover:border-[#DD3A44] rounded-[10px] p-4 transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center gap-3">
+                      <div className="bg-white  hover:border-[#DD3A44] rounded p-4 transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center gap-3">
                         {/* Checkbox */}
                         <input
                           type="checkbox"

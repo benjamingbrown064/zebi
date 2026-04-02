@@ -146,7 +146,7 @@ export default function DocumentsPage() {
   const getTypeBadge = (type: string) => {
     const typeLabel = DOCUMENT_TYPES.find(t => t.value === type)?.label || type;
     return (
-      <span className="px-2 py-1 rounded-[6px] text-[11px] font-semibold bg-[#e6f4f4] text-[#006766]">
+      <span className="px-2 py-1 rounded-md text-[11px] font-semibold bg-[#e6f4f4] text-[#006766]">
         {typeLabel}
       </span>
     );
@@ -164,7 +164,7 @@ export default function DocumentsPage() {
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64';
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -178,7 +178,7 @@ export default function DocumentsPage() {
           primaryAction={
             <button
               onClick={() => router.push('/documents/new')}
-              className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
+              className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
             >
               <FaPlus className="text-sm" />
               <span className="hidden sm:inline">New Document</span>
@@ -200,7 +200,7 @@ export default function DocumentsPage() {
                 key={type.value}
                 onClick={() => setTypeFilter(type.value)}
                 className={`
-                  px-4 py-2 rounded-[10px] text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
+                  px-4 py-2 rounded text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
                   ${
                     typeFilter === type.value
                       ? 'bg-[#FEF2F2] text-[#DD3A44] border border-[#DD3A44]'
@@ -230,7 +230,7 @@ export default function DocumentsPage() {
                 {!search && !typeFilter && (
                   <button
                     onClick={() => router.push('/documents/new')}
-                    className="px-6 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium transition-colors min-h-[44px]"
+                    className="px-6 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium transition-colors min-h-[44px]"
                   >
                     Create First Document
                   </button>
@@ -245,7 +245,7 @@ export default function DocumentsPage() {
                       key={doc.id}
                       title={doc.title}
                       icon={
-                        <div className="w-10 h-10 rounded-[6px] bg-[#FEF2F2] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-md bg-[#FEF2F2] flex items-center justify-center">
                           {getDocumentIcon(doc.documentType)}
                         </div>
                       }
@@ -267,12 +267,12 @@ export default function DocumentsPage() {
                     <div
                       key={doc.id}
                       onClick={() => router.push(`/documents/${doc.id}`)}
-                      className="bg-white rounded-[10px] p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
+                      className="bg-white rounded p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
                     >
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-10 h-10 rounded-[6px] bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">
+                          <div className="w-10 h-10 rounded-md bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">
                             {getDocumentIcon(doc.documentType)}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -334,10 +334,10 @@ export default function DocumentsPage() {
           onClick={() => setIsSearchOpen(false)}
         >
           <div
-            className="bg-white w-full max-w-2xl rounded-[14px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 md:p-6"
+            className="bg-white w-full max-w-2xl rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] p-4 md:p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3  rounded-[10px] px-4 py-3">
+            <div className="flex items-center gap-3  rounded px-4 py-3">
               <FaSearch className="text-[#A3A3A3]" />
               <input
                 type="text"

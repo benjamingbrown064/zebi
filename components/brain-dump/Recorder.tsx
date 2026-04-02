@@ -154,7 +154,7 @@ export default function Recorder({
   return (
     <div className="text-center">
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-[10px]">
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded">
           <p className="text-sm text-red-800">{error}</p>
         </div>
       )}

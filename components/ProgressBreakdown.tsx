@@ -32,7 +32,7 @@ export default function ProgressBreakdown({
 
   if (totalTasks === 0) {
     return (
-      <div className="bg-white rounded-[14px] p-6">
+      <div className="bg-white rounded p-6">
         <div className="text-center py-8">
           <div className="w-16 h-16 rounded-full bg-[#F5F5F5] flex items-center justify-center mx-auto mb-4">
             <FaInfoCircle className="text-[#A3A3A3] text-2xl" />
@@ -50,10 +50,10 @@ export default function ProgressBreakdown({
   }
 
   return (
-    <div className="bg-white rounded-[14px] p-6">
+    <div className="bg-white rounded p-6">
       {/* Scope Change Notification */}
       {scopeChangeNote && (
-        <div className="mb-4 p-3 bg-[#f0fafa] border border-transparent rounded-[10px] flex items-start gap-3">
+        <div className="mb-4 p-3 bg-[#f0fafa] border border-transparent rounded flex items-start gap-3">
           <FaInfoCircle className="text-[#006766] flex-shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
             <p className="text-sm text-blue-900 font-medium">Progress updated</p>
@@ -75,7 +75,7 @@ export default function ProgressBreakdown({
             {completedTasks} of {totalTasks} tasks completed
           </p>
         </div>
-        <span className="px-3 py-1.5 rounded-[6px] text-[13px] font-semibold bg-[#e6f4f4] text-[#006766]">
+        <span className="px-3 py-1.5 rounded-md text-[13px] font-semibold bg-[#e6f4f4] text-[#006766]">
           {progressPercent}%
         </span>
       </div>
@@ -91,7 +91,7 @@ export default function ProgressBreakdown({
       </div>
 
       {/* Explanation */}
-      <div className="mb-4 p-3 bg-[#F5F5F5] rounded-[10px]">
+      <div className="mb-4 p-3 bg-[#F5F5F5] rounded">
         <p className="text-xs text-[#525252]">
           <FaInfoCircle className="inline mr-1" />
           Progress is based on completed tasks linked directly to this objective and tasks inside linked projects.
@@ -138,7 +138,7 @@ export default function ProgressBreakdown({
                 </div>
               </div>
 
-              <div className="mt-3 p-2 bg-[#fcf9f8] rounded-[6px]">
+              <div className="mt-3 p-2 bg-[#F9F9F9] rounded-md">
                 <p className="text-xs text-[#525252]">
                   Tasks are counted once, even if linked both directly and through a project.
                 </p>

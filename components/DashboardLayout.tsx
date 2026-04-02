@@ -15,7 +15,7 @@ export default function DashboardLayout({
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-    <div className="min-h-screen bg-[#f6f3f2]">
+    <div className="min-h-screen bg-[#F3F3F3]">
       <Sidebar
         workspaceName={workspaceName}
         isCollapsed={isCollapsed}

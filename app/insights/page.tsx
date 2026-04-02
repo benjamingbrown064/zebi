@@ -188,7 +188,7 @@ export default function InsightsPage() {
       case 3:
         return 'border-transparent bg-[#f0fafa]'
       case 4:
-        return 'border-gray-300 bg-[#f6f3f2]'
+        return 'border-gray-300 bg-[#F3F3F3]'
       default:
         return 'border-gray-300 bg-white'
     }
@@ -218,7 +218,7 @@ export default function InsightsPage() {
       case 'implemented':
         return <span className="px-2 py-1 text-xs rounded-full bg-[#e6f4f4] text-[#006766]">Implemented</span>
       case 'dismissed':
-        return <span className="px-2 py-1 text-xs rounded-full bg-[#f0eded] text-[#5a5757]">Dismissed</span>
+        return <span className="px-2 py-1 text-xs rounded-full bg-[#F3F3F3] text-[#5a5757]">Dismissed</span>
       default:
         return null
     }
@@ -260,7 +260,7 @@ export default function InsightsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search insights..."
-                  className="pl-10 pr-4 py-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-accent-500"
+                  className="pl-10 pr-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-accent-500"
                 />
                 <FaSearch className="absolute left-3 top-3 text-[#C4C0C0]" size={16} />
               </div>
@@ -268,7 +268,7 @@ export default function InsightsPage() {
               {/* Filters Button */}
               <button
                 onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#e0dbdb] hover:bg-[#d4cecd] text-[#1c1b1b]  rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#e0dbdb] hover:bg-[#d4cecd] text-[#1c1b1b]  rounded font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaFilter size={16} />
                 Filters
@@ -277,7 +277,7 @@ export default function InsightsPage() {
               {/* Add Insight Button */}
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[13px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaPlus /> Add Insight
               </button>
@@ -286,7 +286,7 @@ export default function InsightsPage() {
 
           {/* Filters Panel */}
           {isFiltersOpen && (
-            <div className="px-8 pb-6 bg-[#f6f3f2] space-y-4">
+            <div className="px-8 pb-6 bg-[#F3F3F3] space-y-4">
               <div className="grid grid-cols-3 gap-6">
                 {/* Type Filter */}
                 <div>
@@ -376,7 +376,7 @@ export default function InsightsPage() {
                     setSelectedStatuses(['new'])
                     setSelectedPriorities([])
                   }}
-                  className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#f6f3f2] transition"
+                  className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#F3F3F3] transition"
                 >
                   Clear all filters
                 </button>
@@ -404,7 +404,7 @@ export default function InsightsPage() {
                       setSelectedInsight(insight)
                       setIsDetailModalOpen(true)
                     }}
-                    className={`p-5 rounded-[10px] border-2 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer ${getPriorityColor(insight.priority)}`}
+                    className={`p-5 rounded border-2 hover:shadow-[0_4px_12px_rgba(28,27,27,0.08)] transition cursor-pointer ${getPriorityColor(insight.priority)}`}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -445,7 +445,7 @@ export default function InsightsPage() {
                             e.stopPropagation()
                             handleReview(insight.id)
                           }}
-                          className="flex-1 px-3 py-1.5 text-xs bg-white text-[#5a5757] border border-gray-300 rounded hover:bg-[#f6f3f2] transition"
+                          className="flex-1 px-3 py-1.5 text-xs bg-white text-[#5a5757] border border-gray-300 rounded hover:bg-[#F3F3F3] transition"
                         >
                           Review
                         </button>
@@ -527,7 +527,7 @@ function InsightDetailModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-[10px] shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {getInsightIcon(insight.insightType)}
@@ -545,7 +545,7 @@ function InsightDetailModal({
           {/* Header Info */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <span className="px-3 py-1 text-sm rounded-full bg-[#f0eded] text-[#5a5757] capitalize">
+              <span className="px-3 py-1 text-sm rounded-full bg-[#F3F3F3] text-[#5a5757] capitalize">
                 {insight.insightType}
               </span>
               <span className="px-3 py-1 text-sm rounded-full bg-[#e6f4f4] text-[#006766]">
@@ -561,7 +561,7 @@ function InsightDetailModal({
           </div>
 
           {/* Summary */}
-          <div className="bg-[#f6f3f2] p-4 rounded-[10px]">
+          <div className="bg-[#F3F3F3] p-4 rounded">
             <h4 className="text-sm font-semibold text-[#5a5757] mb-2">Summary</h4>
             <p className="text-[#1c1b1b]">{insight.summary}</p>
           </div>
@@ -569,7 +569,7 @@ function InsightDetailModal({
           {/* Detailed Analysis */}
           <div>
             <h4 className="text-sm font-semibold text-[#5a5757] mb-3">Detailed Analysis</h4>
-            <div className="bg-white p-4 rounded-[10px]">
+            <div className="bg-white p-4 rounded">
               {typeof insight.detailedAnalysis === 'string' ? (
                 <p className="text-[#1c1b1b] whitespace-pre-wrap">{insight.detailedAnalysis}</p>
               ) : (
@@ -584,7 +584,7 @@ function InsightDetailModal({
           {insight.suggestedActions && (
             <div>
               <h4 className="text-sm font-semibold text-[#5a5757] mb-3">Suggested Actions</h4>
-              <div className="bg-accent-50 border border-accent-200 p-4 rounded-[10px]">
+              <div className="bg-accent-50 border border-accent-200 p-4 rounded">
                 {typeof insight.suggestedActions === 'string' ? (
                   <p className="text-[#1c1b1b]">{insight.suggestedActions}</p>
                 ) : Array.isArray(insight.suggestedActions) ? (
@@ -626,14 +626,14 @@ function InsightDetailModal({
         </div>
 
         {/* Actions */}
-        <div className="sticky bottom-0 bg-[#f6f3f2] px-6 py-4 flex items-center justify-between">
+        <div className="sticky bottom-0 bg-[#F3F3F3] px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => {
               if (confirm('Are you sure you want to delete this insight?')) {
                 onDelete(insight.id)
               }
             }}
-            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-[10px] transition"
+            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded transition"
           >
             Delete
           </button>
@@ -642,19 +642,19 @@ function InsightDetailModal({
               <>
                 <button
                   onClick={() => onDismiss(insight.id)}
-                  className="px-4 py-2 text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition"
+                  className="px-4 py-2 text-[#5a5757] hover:bg-[#F3F3F3] rounded transition"
                 >
                   Dismiss
                 </button>
                 <button
                   onClick={() => onReview(insight.id)}
-                  className="px-4 py-2 bg-[#e8e4e4] text-[#1c1b1b] rounded-[10px] hover:bg-gray-300 transition"
+                  className="px-4 py-2 bg-[#e8e4e4] text-[#1c1b1b] rounded hover:bg-gray-300 transition"
                 >
                   Mark Reviewed
                 </button>
                 <button
                   onClick={() => onImplement(insight.id)}
-                  className="px-4 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition"
+                  className="px-4 py-2 bg-accent-500 text-white rounded hover:bg-accent-600 transition"
                 >
                   <FaCheckCircle className="inline mr-2" />
                   Implement
@@ -664,7 +664,7 @@ function InsightDetailModal({
             {insight.status === 'reviewed' && (
               <button
                 onClick={() => onImplement(insight.id)}
-                className="px-4 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition"
+                className="px-4 py-2 bg-accent-500 text-white rounded hover:bg-accent-600 transition"
               >
                 <FaCheckCircle className="inline mr-2" />
                 Mark Implemented
@@ -711,7 +711,7 @@ function CreateInsightModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-[10px] shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#1c1b1b]">Create New Insight</h2>
           <button
@@ -730,7 +730,7 @@ function CreateInsightModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Brief title for this insight"
-              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
@@ -741,7 +741,7 @@ function CreateInsightModal({
               onChange={(e) => setSummary(e.target.value)}
               placeholder="2-3 sentence summary"
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
@@ -754,7 +754,7 @@ function CreateInsightModal({
               onChange={(e) => setDetailedAnalysis(e.target.value)}
               placeholder="Full analysis and reasoning..."
               rows={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
@@ -767,7 +767,7 @@ function CreateInsightModal({
               onChange={(e) => setSuggestedActions(e.target.value)}
               placeholder="What should be done? One action per line."
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
 
@@ -777,7 +777,7 @@ function CreateInsightModal({
               <select
                 value={insightType}
                 onChange={(e) => setInsightType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 {['opportunity', 'risk', 'strategy', 'optimization'].map((type) => (
                   <option key={type} value={type} className="capitalize">
@@ -792,7 +792,7 @@ function CreateInsightModal({
               <select
                 value={priority}
                 onChange={(e) => setPriority(parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-[10px] focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 <option value={1}>P1 - Critical</option>
                 <option value={2}>P2 - High</option>
@@ -803,16 +803,16 @@ function CreateInsightModal({
           </div>
         </div>
 
-        <div className="bg-[#f6f3f2] px-6 py-4 flex items-center justify-end gap-2">
+        <div className="bg-[#F3F3F3] px-6 py-4 flex items-center justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition"
+            className="px-4 py-2 text-[#5a5757] hover:bg-[#F3F3F3] rounded transition"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition"
+            className="px-4 py-2 bg-accent-500 text-white rounded hover:bg-accent-600 transition"
           >
             Create Insight
           </button>

@@ -33,7 +33,7 @@ function sel(label: string, value: string | null, options: string[], onChange: (
       <select
         value={value ?? ''}
         onChange={e => onChange(e.target.value || null)}
-        className="w-full px-3 py-2 text-[13px] rounded-[8px] border border-[#E5E5E5] bg-white text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#DD3A44] min-h-[38px]"
+        className="w-full px-3 py-2 text-[13px] rounded-md border border-[#E5E5E5] bg-white text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#DD3A44] min-h-[38px]"
       >
         <option value="">{placeholder}</option>
         {options.map(o => (
@@ -53,7 +53,7 @@ function textarea(label: string, value: string | null, onChange: (v: string | nu
         onChange={e => onChange(e.target.value || null)}
         placeholder={placeholder}
         rows={2}
-        className="w-full px-3 py-2 text-[13px] rounded-[8px] border border-[#E5E5E5] bg-white text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#DD3A44] resize-none placeholder-[#C4C4C4]"
+        className="w-full px-3 py-2 text-[13px] rounded-md border border-[#E5E5E5] bg-white text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#DD3A44] resize-none placeholder-[#C4C4C4]"
       />
     </div>
   )
@@ -70,7 +70,7 @@ export default function TaskAgentFields({ values, onChange }: Props) {
   const set = (patch: Partial<AgentFieldValues>) => onChange({ ...values, ...patch })
 
   return (
-    <div className="border border-[#E5E5E5] rounded-[10px] overflow-hidden">
+    <div className="border border-[#E5E5E5] rounded overflow-hidden">
       {/* Toggle header */}
       <button
         type="button"
@@ -113,7 +113,7 @@ export default function TaskAgentFields({ values, onChange }: Props) {
               value={values.nextAction ?? ''}
               onChange={e => set({ nextAction: e.target.value || null })}
               placeholder="Immediate next step…"
-              className="w-full px-3 py-2 text-[13px] rounded-[8px] border border-[#E5E5E5] bg-white text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#DD3A44] min-h-[38px] placeholder-[#C4C4C4]"
+              className="w-full px-3 py-2 text-[13px] rounded-md border border-[#E5E5E5] bg-white text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#DD3A44] min-h-[38px] placeholder-[#C4C4C4]"
             />
           </div>
 

@@ -23,7 +23,7 @@ export default function ProgressChart({
   if (progressEntries.length === 0) {
     return (
       <div
-        className="flex items-center justify-center bg-[#f6f3f2] rounded-[10px]"
+        className="flex items-center justify-center bg-[#F3F3F3] rounded"
         style={{ height }}
       >
         <p className="text-[#A3A3A3]">No progress data yet</p>
@@ -80,7 +80,7 @@ export default function ProgressChart({
   }
 
   return (
-    <div className="bg-white rounded-[14px] p-4">
+    <div className="bg-white rounded p-4">
       {/* Legend */}
       <div className="flex items-center gap-4 mb-4">
         <div className="flex items-center gap-2">

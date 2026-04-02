@@ -262,7 +262,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fcf9f8] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <Spinner size="lg" color="default" />
       </div>
     );
@@ -270,9 +270,9 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-[#fcf9f8] p-8">
+      <div className="min-h-screen bg-[#F9F9F9] p-8">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white rounded-[14px] p-8 border border-red-200">
+          <div className="bg-white rounded p-8 border border-red-200">
             <p className="text-[#DD3A44] text-base">{error || 'No data available'}</p>
           </div>
         </div>
@@ -283,14 +283,14 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
   const approvedCount = data.actions.filter(a => a.status === 'approved').length;
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       {/* Header */}
       <div className="bg-white">
         <div className="max-w-4xl mx-auto px-8 py-6">
           <div className="flex items-center gap-6">
             <button
               onClick={() => router.push('/brain-dump')}
-              className="flex items-center justify-center w-10 h-10 rounded-[10px] hover:bg-[#f0eded] transition-colors"
+              className="flex items-center justify-center w-10 h-10 rounded hover:bg-[#F3F3F3] transition-colors"
             >
               <FaChevronLeft className="text-[#5a5757]" />
             </button>
@@ -303,7 +303,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                 onPress={handleExecute}
                 isDisabled={executing}
                 isLoading={executing}
-                className="bg-[#DD3A44] text-white font-medium px-6 py-2 h-11 rounded-[10px] hover:bg-[#C62F3A] transition-colors"
+                className="bg-[#DD3A44] text-white font-medium px-6 py-2 h-11 rounded hover:bg-[#C62F3A] transition-colors"
               >
                 {executing ? 'Applying...' : `Apply ${approvedCount} ${approvedCount === 1 ? 'Change' : 'Changes'}`}
               </Button>
@@ -315,7 +315,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
       <div className="max-w-4xl mx-auto px-8 py-8">
         {/* Execution Result */}
         {executionResult && (
-          <div className={`mb-8 rounded-[14px] p-6 ${executionResult.success ? 'bg-[#f0fafa] border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+          <div className={`mb-8 rounded p-6 ${executionResult.success ? 'bg-[#f0fafa] border border-green-200' : 'bg-red-50 border border-red-200'}`}>
             <div className="flex items-start gap-4">
               <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${executionResult.success ? 'bg-[#f0fafa]0' : 'bg-red-500'}`}>
                 {executionResult.success ? (
@@ -353,14 +353,14 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
         )}
 
         {/* Transcript */}
-        <div className="mb-8 bg-white rounded-[14px] p-8">
+        <div className="mb-8 bg-white rounded p-8">
           <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Your Update</h2>
           <p className="text-base text-[#5a5757] leading-relaxed">{data.session.transcript}</p>
         </div>
 
         {/* No Actions */}
         {data.actions.length === 0 && (
-          <div className="bg-[#f0fafa] rounded-[14px] p-8 border border-transparent">
+          <div className="bg-[#f0fafa] rounded p-8 border border-transparent">
             <p className="text-blue-900 text-base">
               No actionable items found in your update. Try speaking more specifically about tasks, projects, or objectives.
             </p>
@@ -389,9 +389,9 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                 return (
                   <div
                     key={action.id}
-                    className={`bg-white rounded-[14px] p-6 border transition-all ${
+                    className={`bg-white rounded p-6 border transition-all ${
                       isApproved ? 'border-green-500 bg-[#f0fafa]' :
-                      isRejected ? 'border-gray-300 bg-[#f6f3f2] opacity-60' :
+                      isRejected ? 'border-gray-300 bg-[#F3F3F3] opacity-60' :
                       'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -402,7 +402,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                           <Chip
                             size="sm"
                             variant="flat"
-                            className="bg-[#f0eded] text-[#5a5757] text-xs font-medium"
+                            className="bg-[#F3F3F3] text-[#5a5757] text-xs font-medium"
                           >
                             {action.actionType.replace(/_/g, ' ')}
                           </Chip>
@@ -416,7 +416,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
 
                         {/* Editable Fields */}
                         {isEditing ? (
-                          <div className="space-y-5 p-5 bg-[#f6f3f2] rounded-[10px]">
+                          <div className="space-y-5 p-5 bg-[#F3F3F3] rounded">
                             <Input
                               label="Title"
                               labelPlacement="outside"
@@ -489,7 +489,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                               <Button
                                 size="sm"
                                 onPress={() => setEditingAction(null)}
-                                className="bg-[#DD3A44] text-white hover:bg-[#C62F3A] rounded-[6px] font-medium"
+                                className="bg-[#DD3A44] text-white hover:bg-[#C62F3A] rounded-md font-medium"
                               >
                                 Done Editing
                               </Button>
@@ -516,21 +516,21 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                           <>
                             <button
                               onClick={() => setEditingAction(isEditing ? null : action.id)}
-                              className="flex items-center justify-center w-9 h-9 rounded-[6px] hover:bg-[#f0eded] transition-colors"
+                              className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-[#F3F3F3] transition-colors"
                               title="Edit"
                             >
                               <FaEdit className="text-[#5a5757] text-sm" />
                             </button>
                             <button
                               onClick={() => handleReject(action.id)}
-                              className="flex items-center justify-center w-9 h-9 rounded-[6px] hover:bg-red-50 transition-colors"
+                              className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-red-50 transition-colors"
                               title="Reject"
                             >
                               <FaTimes className="text-red-600 text-sm" />
                             </button>
                             <button
                               onClick={() => handleApprove(action.id)}
-                              className="flex items-center justify-center w-9 h-9 rounded-[6px] bg-[#DD3A44] hover:bg-[#C62F3A] transition-colors"
+                              className="flex items-center justify-center w-9 h-9 rounded-md bg-[#DD3A44] hover:bg-[#C62F3A] transition-colors"
                               title="Approve"
                             >
                               <FaCheck className="text-white text-sm" />
@@ -538,13 +538,13 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                           </>
                         )}
                         {isApproved && (
-                          <div className="flex items-center gap-2 px-3 py-2 bg-[#f0fafa]0 rounded-[6px]">
+                          <div className="flex items-center gap-2 px-3 py-2 bg-[#f0fafa]0 rounded-md">
                             <FaCheck className="text-white text-sm" />
                             <span className="text-white text-sm font-medium">Approved</span>
                           </div>
                         )}
                         {isRejected && (
-                          <div className="flex items-center gap-2 px-3 py-2 bg-gray-400 rounded-[6px]">
+                          <div className="flex items-center gap-2 px-3 py-2 bg-gray-400 rounded-md">
                             <FaTimes className="text-white text-sm" />
                             <span className="text-white text-sm font-medium">Rejected</span>
                           </div>

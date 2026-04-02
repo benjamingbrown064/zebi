@@ -30,11 +30,11 @@ const PRIORITIES = [
   { num: 1, label: 'P1 - Urgent', color: 'bg-red-100 text-red-700' },
   { num: 2, label: 'P2 - High', color: 'bg-orange-100 text-orange-700' },
   { num: 3, label: 'P3 - Medium', color: 'bg-yellow-100 text-yellow-700' },
-  { num: 4, label: 'P4 - Low', color: 'bg-[#f0eded] text-[#5a5757]' },
+  { num: 4, label: 'P4 - Low', color: 'bg-[#F3F3F3] text-[#5a5757]' },
 ]
 
 const STATUS_COLORS: Record<string, string> = {
-  inbox: 'bg-[#f0eded] text-[#5a5757]',
+  inbox: 'bg-[#F3F3F3] text-[#5a5757]',
   planned: 'bg-[#e6f4f4] text-[#006766]',
   doing: 'bg-amber-100 text-amber-700',
   blocked: 'bg-red-100 text-red-700',
@@ -259,7 +259,7 @@ export default function TaskDetailModal({
       <div className={`bg-white w-full shadow-[0_20px_40px_rgba(28,27,27,0.06)] flex flex-col ${
         isMobile 
           ? 'h-full rounded-none' 
-          : 'max-w-2xl max-h-[90vh] rounded-[14px]'
+          : 'max-w-2xl max-h-[90vh] rounded'
       }`}>
         {/* Header - Mobile: sticky with explicit back button, Desktop: modal close */}
         <div className={`sticky top-0 bg-white px-4 md:px-6 py-4 flex justify-between items-center min-h-[56px] md:min-h-auto`}>
@@ -267,7 +267,7 @@ export default function TaskDetailModal({
             <>
               <button
                 onClick={onClose}
-                className="text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-[#5a5757] hover:bg-[#F3F3F3] rounded transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Go back"
               >
                 <FaTimes className="text-lg" />
@@ -304,7 +304,7 @@ export default function TaskDetailModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] placeholder-gray-500 min-h-[44px]"
+              className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] placeholder-gray-500 min-h-[44px]"
             />
           </div>
 
@@ -318,7 +318,7 @@ export default function TaskDetailModal({
               <select
                 value={priority}
                 onChange={(e) => setPriority(parseInt(e.target.value))}
-                className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] min-h-[44px]"
+                className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] min-h-[44px]"
               >
                 {PRIORITIES.map((p) => (
                   <option key={p.num} value={p.num}>
@@ -337,7 +337,7 @@ export default function TaskDetailModal({
                 <select
                   value={statusId}
                   onChange={(e) => setStatusId(e.target.value)}
-                  className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] min-h-[44px]"
+                  className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] min-h-[44px]"
                 >
                   <option value="">Select a status</option>
                   {statuses.map((s) => (
@@ -347,7 +347,7 @@ export default function TaskDetailModal({
                   ))}
                 </select>
               ) : (
-                <div className="px-4 py-3 bg-[#f0eded] text-[#5a5757] rounded-[10px] min-h-[44px] flex items-center">
+                <div className="px-4 py-3 bg-[#F3F3F3] text-[#5a5757] rounded min-h-[44px] flex items-center">
                   Loading statuses...
                 </div>
               )}
@@ -361,7 +361,7 @@ export default function TaskDetailModal({
               <select
                 value={assigneeId || ''}
                 onChange={(e) => setAssigneeId(e.target.value || null)}
-                className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] min-h-[44px]"
+                className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] min-h-[44px]"
               >
                 <option value="">Unassigned</option>
                 <option value="doug">Doug</option>
@@ -380,7 +380,7 @@ export default function TaskDetailModal({
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-4 py-3 rounded-[10px] focus:focus-ring text-[#1c1b1b] min-h-[44px]"
+              className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] min-h-[44px]"
             />
           </div>
 
@@ -489,11 +489,11 @@ export default function TaskDetailModal({
         </div>
 
         {/* Footer */}
-        <div className={`sticky bottom-0 bg-[#f6f3f2] px-4 md:px-6 py-4 flex flex-col-reverse md:flex-row md:justify-between md:items-center gap-3 md:gap-0 ${isMobile ? 'safe-area-inset-bottom' : ''}`}>
+        <div className={`sticky bottom-0 bg-[#F3F3F3] px-4 md:px-6 py-4 flex flex-col-reverse md:flex-row md:justify-between md:items-center gap-3 md:gap-0 ${isMobile ? 'safe-area-inset-bottom' : ''}`}>
           <div className={`flex gap-2 ${isMobile ? 'w-full md:w-auto' : ''}`}>
             <button
               onClick={handleDelete}
-              className="p-3 text-[#A3A3A3] hover:text-red-600 transition rounded-[10px] min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-3 text-[#A3A3A3] hover:text-red-600 transition rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Delete task"
             >
               <FaTrash />
@@ -501,7 +501,7 @@ export default function TaskDetailModal({
             {task && workspaceId && userId && (
               <button
                 onClick={() => setIsShareModalOpen(true)}
-                className="p-3 text-[#A3A3A3] hover:text-accent-600 transition rounded-[10px] min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-3 text-[#A3A3A3] hover:text-accent-600 transition rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Share task"
               >
                 <FaShareAlt />
@@ -511,13 +511,13 @@ export default function TaskDetailModal({
           <div className={`flex gap-3 w-full md:w-auto ${isMobile ? 'flex-col-reverse' : ''}`}>
             <button
               onClick={onClose}
-              className="px-4 py-3 bg-[#f0eded] text-[#1c1b1b] rounded-[10px] hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
+              className="px-4 py-3 bg-[#F3F3F3] text-[#1c1b1b] rounded hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-3 bg-accent-500 text-white rounded-[10px] hover:bg-accent-600 transition font-medium min-h-[44px] flex items-center justify-center"
+              className="px-4 py-3 bg-accent-500 text-white rounded hover:bg-accent-600 transition font-medium min-h-[44px] flex items-center justify-center"
             >
               Save Task
             </button>

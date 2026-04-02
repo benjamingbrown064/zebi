@@ -63,7 +63,7 @@ export default function SmartDeadlineButton({
       <button
         onClick={handleSuggest}
         disabled={disabled || loading}
-        className={`flex items-center gap-2 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-[10px] hover:bg-[#f6f3f2] dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition ${className}`}
+        className={`flex items-center gap-2 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-[#F3F3F3] dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition ${className}`}
       >
         {loading ? (
           <FaSpinner className="animate-spin" size={14} />
@@ -74,7 +74,7 @@ export default function SmartDeadlineButton({
       </button>
 
       {showSuggestion && suggestion && (
-        <div className="absolute z-10 mt-2 p-4 bg-white dark:bg-gray-800 dark:border-gray-700 rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] w-80 left-0">
+        <div className="absolute z-10 mt-2 p-4 bg-white dark:bg-gray-800 dark:border-gray-700 rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] w-80 left-0">
           <div className="flex items-start gap-2 mb-3">
             <FaCalendarAlt className="text-accent-500 mt-1" size={16} />
             <div>
@@ -95,7 +95,7 @@ export default function SmartDeadlineButton({
             </button>
             <button
               onClick={() => setShowSuggestion(false)}
-              className="flex-1 px-3 py-1 border border-gray-300 dark:border-gray-600 text-sm rounded hover:bg-[#f6f3f2] dark:hover:bg-gray-700 transition text-[#5a5757] dark:text-gray-300"
+              className="flex-1 px-3 py-1 border border-gray-300 dark:border-gray-600 text-sm rounded hover:bg-[#F3F3F3] dark:hover:bg-gray-700 transition text-[#5a5757] dark:text-gray-300"
             >
               Dismiss
             </button>

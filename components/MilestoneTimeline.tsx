@@ -79,7 +79,7 @@ export default function MilestoneTimeline({
             </div>
 
             {/* Content */}
-            <div className={`flex-1 p-4 border-2 rounded-[10px] ${getStatusColor(milestone)}`}>
+            <div className={`flex-1 p-4 border-2 rounded ${getStatusColor(milestone)}`}>
               <div className="flex items-start justify-between gap-4 mb-2">
                 <div className="flex-1">
                   <h4 className="font-semibold text-[#1c1b1b]">{milestone.title}</h4>

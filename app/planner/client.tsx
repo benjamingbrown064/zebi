@@ -183,7 +183,7 @@ export default function WeeklyPlannerClient({
     : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#fcf9f8]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="Zebi"
         isCollapsed={sidebarCollapsed}

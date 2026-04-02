@@ -65,7 +65,7 @@ export default function BoardFilters({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-[10px] text-sm font-medium text-[#5a5757] hover:bg-[#f6f3f2] transition"
+        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-[#5a5757] hover:bg-[#F3F3F3] transition"
       >
         <FaFilter size={14} />
         Filters
@@ -77,7 +77,7 @@ export default function BoardFilters({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-[10px] shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-40 p-4">
+        <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-40 p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-[#1c1b1b]">Filters</h3>
@@ -181,7 +181,7 @@ export default function BoardFilters({
           {activeFilterCount > 0 && (
             <button
               onClick={handleClearFilters}
-              className="w-full px-3 py-2 bg-[#f0eded] text-[#5a5757] rounded hover:bg-[#e8e4e4] transition text-sm font-medium mt-2"
+              className="w-full px-3 py-2 bg-[#F3F3F3] text-[#5a5757] rounded hover:bg-[#e8e4e4] transition text-sm font-medium mt-2"
             >
               Clear All Filters
             </button>

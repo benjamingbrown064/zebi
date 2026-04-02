@@ -13,7 +13,7 @@ export default function GoalsLoading() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-[14px] border border-[#E5E5E5] p-6 animate-pulse"
+              className="bg-white rounded border border-[#E5E5E5] p-6 animate-pulse"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">

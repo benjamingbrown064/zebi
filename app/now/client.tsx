@@ -154,7 +154,7 @@ function TaskRow({
 
   return (
     <div
-      className="group flex items-start gap-3 py-2.5 px-3 rounded-[8px] hover:bg-[#F9F9F9] cursor-pointer transition-colors"
+      className="group flex items-start gap-3 py-2.5 px-3 rounded-md hover:bg-[#F9F9F9] cursor-pointer transition-colors"
       onClick={() => router.push(`/tasks?highlight=${task.id}`)}
     >
       {/* Complete button */}
@@ -207,14 +207,14 @@ function AgentCard({ agent }: { agent: AgentStatus }) {
 
   return (
     <div
-      className="bg-white border border-[#E5E5E5] rounded-[12px] p-4 cursor-pointer hover:border-[#C6C6C6] hover:shadow-sm transition-all"
+      className="bg-white border border-[#E5E5E5] rounded p-4 cursor-pointer hover:border-[#C6C6C6] hover:shadow-sm transition-all"
       onClick={() => router.push(`/queue?agent=${agent.agent}`)}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div
-            className="w-7 h-7 rounded-[6px] flex items-center justify-center text-[11px] font-bold text-white"
+            className="w-7 h-7 rounded-md flex items-center justify-center text-[11px] font-bold text-white"
             style={{ backgroundColor: col }}
           >
             {AGENT_LABELS[agent.agent]?.[0] || agent.agent[0].toUpperCase()}
@@ -403,10 +403,10 @@ export default function NowClient() {
             /* ── Skeleton ─────────────────────────────────────────────── */
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map(i => (
-                <div key={i} className="bg-white rounded-[14px] p-5 space-y-3 animate-pulse">
+                <div key={i} className="bg-white rounded p-5 space-y-3 animate-pulse">
                   <div className="h-3 bg-[#F3F3F3] rounded w-1/3" />
                   {[1, 2, 3].map(j => (
-                    <div key={j} className="h-10 bg-[#F9F9F9] rounded-[8px]" />
+                    <div key={j} className="h-10 bg-[#F9F9F9] rounded-md" />
                   ))}
                 </div>
               ))}
@@ -415,7 +415,7 @@ export default function NowClient() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
               {/* ── Col 1: My Queue ────────────────────────────────────── */}
-              <div className="bg-white rounded-[14px] p-5">
+              <div className="bg-white rounded p-5">
                 <SectionHeader title="My Queue" count={data.myQueue.length} />
 
                 {data.myQueue.length === 0 ? (
@@ -473,7 +473,7 @@ export default function NowClient() {
                 {/* Quick link to founder view */}
                 <button
                   onClick={() => router.push('/founder')}
-                  className="mt-3 w-full text-[12px] text-[#737373] hover:text-[#1A1A1A] py-2 flex items-center justify-center gap-1.5 border border-[#E5E5E5] rounded-[8px] bg-white hover:bg-[#F9F9F9] transition-colors"
+                  className="mt-3 w-full text-[12px] text-[#737373] hover:text-[#1A1A1A] py-2 flex items-center justify-center gap-1.5 border border-[#E5E5E5] rounded-md bg-white hover:bg-[#F9F9F9] transition-colors"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -483,7 +483,7 @@ export default function NowClient() {
               </div>
 
               {/* ── Col 3: Needs Attention ──────────────────────────────── */}
-              <div className="bg-white rounded-[14px] p-5">
+              <div className="bg-white rounded p-5">
                 <SectionHeader
                   title="Needs Attention"
                   count={totalAlerts || undefined}
@@ -522,7 +522,7 @@ export default function NowClient() {
                           {data.needsAttention.stale.map(item => (
                             <div
                               key={item.id}
-                              className="flex items-start gap-2 px-3 py-2.5 rounded-[8px] hover:bg-[#F9F9F9] cursor-pointer"
+                              className="flex items-start gap-2 px-3 py-2.5 rounded-md hover:bg-[#F9F9F9] cursor-pointer"
                               onClick={() => router.push(`/tasks?highlight=${item.id}`)}
                             >
                               <div className="flex-1 min-w-0">

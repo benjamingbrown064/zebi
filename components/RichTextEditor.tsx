@@ -58,7 +58,7 @@ export default function RichTextEditor({
     <div className="w-full">
       {/* Toolbar - appears on focus */}
       {isFocused && (
-        <div className="mb-2 flex flex-wrap gap-1 p-2 bg-[#f6f3f2] rounded-t-lg border border-b-0 border-gray-200">
+        <div className="mb-2 flex flex-wrap gap-1 p-2 bg-[#F3F3F3] rounded-t-lg border border-b-0 border-gray-200">
           <button
             type="button"
             onClick={() => applyFormat('bold')}
@@ -119,10 +119,10 @@ export default function RichTextEditor({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onKeyDown={handleKeyDown}
-        className={`w-full px-4 py-3 border rounded-[10px] focus:outline-none text-[#1c1b1b] placeholder-gray-500 resize-none overflow-auto transition ${
+        className={`w-full px-4 py-3 border rounded focus:outline-none text-[#1c1b1b] placeholder-gray-500 resize-none overflow-auto transition ${
           isFocused
             ? 'border-accent-500 ring-1 ring-accent-500/20 bg-white'
-            : 'border-gray-200 bg-[#f6f3f2]'
+            : 'border-gray-200 bg-[#F3F3F3]'
         }`}
         style={{
           minHeight: '120px',

@@ -110,13 +110,13 @@ function SectionHeader({ title, action }: { title: string; action?: React.ReactN
 
 function EmptyState({ icon, title, cta, onCta }: { icon: string; title: string; cta?: string; onCta?: () => void }) {
   return (
-    <div className="text-center py-10 bg-white rounded-[12px] border border-dashed border-[#E5E5E5]">
+    <div className="text-center py-10 bg-white rounded border border-dashed border-[#E5E5E5]">
       <div className="text-3xl mb-2">{icon}</div>
       <p className="text-[13px] text-[#A3A3A3]">{title}</p>
       {cta && onCta && (
         <button
           onClick={onCta}
-          className="mt-3 text-[12px] font-medium text-[#1A1A1A] border border-[#C6C6C6] px-3 py-1.5 rounded-[6px] hover:bg-[#F9F9F9] transition"
+          className="mt-3 text-[12px] font-medium text-[#1A1A1A] border border-[#C6C6C6] px-3 py-1.5 rounded-md hover:bg-[#F9F9F9] transition"
         >
           {cta}
         </button>
@@ -148,7 +148,7 @@ function InlineForm({
     Object.fromEntries(fields.map(f => [f.key, '']))
   )
   return (
-    <div className="bg-[#F9F9F9] border border-[#E5E5E5] rounded-[10px] p-4 mb-4">
+    <div className="bg-[#F9F9F9] border border-[#E5E5E5] rounded p-4 mb-4">
       <p className="text-[13px] font-medium text-[#1A1A1A] mb-3">{title}</p>
       <div className="space-y-2">
         {fields.map(f => (
@@ -157,7 +157,7 @@ function InlineForm({
               key={f.key}
               value={data[f.key]}
               onChange={e => setData(d => ({ ...d, [f.key]: e.target.value }))}
-              className="w-full text-[13px] border border-[#E5E5E5] rounded-[6px] px-3 py-2 bg-white outline-none"
+              className="w-full text-[13px] border border-[#E5E5E5] rounded-md px-3 py-2 bg-white outline-none"
             >
               {f.options.map(o => <option key={o} value={o}>{o}</option>)}
             </select>
@@ -168,7 +168,7 @@ function InlineForm({
               placeholder={f.label}
               value={data[f.key]}
               onChange={e => setData(d => ({ ...d, [f.key]: e.target.value }))}
-              className="w-full text-[13px] border border-[#E5E5E5] rounded-[6px] px-3 py-2 bg-white outline-none focus:border-[#1A1A1A]"
+              className="w-full text-[13px] border border-[#E5E5E5] rounded-md px-3 py-2 bg-white outline-none focus:border-[#1A1A1A]"
             />
           )
         ))}
@@ -177,13 +177,13 @@ function InlineForm({
         <button
           onClick={() => onSubmit(data)}
           disabled={saving}
-          className="text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-[6px] hover:bg-[#333] transition disabled:opacity-50"
+          className="text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-md hover:bg-[#333] transition disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Save'}
         </button>
         <button
           onClick={onCancel}
-          className="text-[12px] text-[#737373] px-3 py-1.5 rounded-[6px] hover:bg-[#F3F3F3] transition"
+          className="text-[12px] text-[#737373] px-3 py-1.5 rounded-md hover:bg-[#F3F3F3] transition"
         >
           Cancel
         </button>
@@ -267,7 +267,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
       <div className="lg:col-span-2 space-y-5">
 
         {/* Objectives */}
-        <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+        <div className="bg-white rounded p-5 border border-[#E5E5E5]">
           <SectionHeader
             title="Active Objectives"
             action={
@@ -302,7 +302,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
         </div>
 
         {/* Projects */}
-        <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+        <div className="bg-white rounded p-5 border border-[#E5E5E5]">
           <SectionHeader title="Projects" />
           {topProjects.length === 0 ? (
             <p className="text-[13px] text-[#C6C6C6] italic">No active projects</p>
@@ -327,7 +327,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
         {/* Strategy */}
         {strategyFields.length > 0 && (
-          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
             <SectionHeader title="Strategy" />
             <div className="space-y-5">
               {strategyFields.map(f => (
@@ -342,7 +342,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
         {/* Market */}
         {marketFields.length > 0 && (
-          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
             <SectionHeader title="Market & Competition" />
             <div className="space-y-5">
               {marketFields.map(f => (
@@ -357,7 +357,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
         {/* Product */}
         {productFields.length > 0 && (
-          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
             <SectionHeader title="Product" />
             <div className="space-y-5">
               {productFields.map(f => (
@@ -372,7 +372,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
         {/* AI */}
         {aiFields.length > 0 && (
-          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
             <SectionHeader title="AI Intelligence" />
             <div className="space-y-5">
               {aiFields.map(f => (
@@ -387,11 +387,11 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
         {/* Empty profile prompt */}
         {!hasProfile && (
-          <div className="bg-white rounded-[12px] p-6 border border-dashed border-[#E5E5E5] text-center">
+          <div className="bg-white rounded p-6 border border-dashed border-[#E5E5E5] text-center">
             <p className="text-[13px] text-[#A3A3A3] mb-3">No business profile yet — add mission, market, and product details</p>
             <button
               onClick={onEditClick}
-              className="text-[12px] font-medium text-[#1A1A1A] border border-[#C6C6C6] px-3 py-1.5 rounded-[6px] hover:bg-[#F9F9F9] transition"
+              className="text-[12px] font-medium text-[#1A1A1A] border border-[#C6C6C6] px-3 py-1.5 rounded-md hover:bg-[#F9F9F9] transition"
             >
               Fill in profile
             </button>
@@ -402,7 +402,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
       {/* Right: meta + stats + memory */}
       <div className="space-y-5">
         {/* Business details */}
-        <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+        <div className="bg-white rounded p-5 border border-[#E5E5E5]">
           <SectionHeader
             title="Details"
             action={
@@ -432,7 +432,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
         </div>
 
         {/* Stats */}
-        <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+        <div className="bg-white rounded p-5 border border-[#E5E5E5]">
           <SectionHeader title="Stats" />
           <div className="grid grid-cols-2 gap-2">
             {[
@@ -443,7 +443,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
               { label: 'Notes',      n: space._count.notes },
               { label: 'Insights',   n: space._count.insights },
             ].map(s => (
-              <div key={s.label} className="text-center py-2 bg-[#F9F9F9] rounded-[8px]">
+              <div key={s.label} className="text-center py-2 bg-[#F9F9F9] rounded-md">
                 <div className="text-[18px] font-bold text-[#1A1A1A]">{s.n}</div>
                 <div className="text-[10px] text-[#A3A3A3] uppercase tracking-wide">{s.label}</div>
               </div>
@@ -453,7 +453,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
         {/* Recent memory */}
         {recentMemory.length > 0 && (
-          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
             <SectionHeader title="Recent Memory" />
             <div className="space-y-3">
               {recentMemory.map((m: any) => (
@@ -542,7 +542,7 @@ function WorkTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
         ))}
         <button
           onClick={() => setShowAdd(true)}
-          className="ml-auto text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-[6px] hover:bg-[#333] transition flex items-center gap-1.5"
+          className="ml-auto text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-md hover:bg-[#333] transition flex items-center gap-1.5"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
           Add Task
@@ -572,7 +572,7 @@ function WorkTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
             return (
               <div
                 key={task.id}
-                className="group flex items-start gap-3 py-3 px-3 bg-white rounded-[10px] hover:border-[#E5E5E5] border border-transparent hover:shadow-sm transition cursor-pointer"
+                className="group flex items-start gap-3 py-3 px-3 bg-white rounded hover:border-[#E5E5E5] border border-transparent hover:shadow-sm transition cursor-pointer"
                 onClick={() => router.push(`/tasks?highlight=${task.id}`)}
               >
                 <button
@@ -645,7 +645,7 @@ function ObjectivesTab({ space, wsId, onRefresh }: { space: Space; wsId: string 
       <div className="flex justify-end mb-5">
         <button
           onClick={() => setShowAdd(true)}
-          className="text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-[6px] hover:bg-[#333] transition flex items-center gap-1.5"
+          className="text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-md hover:bg-[#333] transition flex items-center gap-1.5"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
           Add Objective
@@ -679,7 +679,7 @@ function ObjectivesTab({ space, wsId, onRefresh }: { space: Space; wsId: string 
             const statusColour = obj.status === 'blocked' ? 'text-red-600 bg-red-50' :
               obj.status === 'at_risk' ? 'text-amber-600 bg-amber-50' : 'text-green-700 bg-green-50'
             return (
-              <div key={obj.id} className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+              <div key={obj.id} className="bg-white rounded p-5 border border-[#E5E5E5]">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-semibold text-[#1A1A1A]">{obj.title}</p>
@@ -733,7 +733,7 @@ function ProjectsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | 
   return (
     <div>
       <div className="flex justify-end mb-5">
-        <button onClick={() => setShowAdd(true)} className="text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-[6px] hover:bg-[#333] transition flex items-center gap-1.5">
+        <button onClick={() => setShowAdd(true)} className="text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-md hover:bg-[#333] transition flex items-center gap-1.5">
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
           Add Project
         </button>
@@ -758,7 +758,7 @@ function ProjectsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | 
             const done = p.tasks?.filter((t: any) => t.completedAt).length || 0
             const pct = total > 0 ? Math.round((done / total) * 100) : 0
             return (
-              <Link key={p.id} href={`/projects/${p.id}`} className="block bg-white rounded-[12px] p-5 border border-[#E5E5E5] hover:border-[#C6C6C6] hover:shadow-sm transition">
+              <Link key={p.id} href={`/projects/${p.id}`} className="block bg-white rounded p-5 border border-[#E5E5E5] hover:border-[#C6C6C6] hover:shadow-sm transition">
                 <h3 className="text-[14px] font-semibold text-[#1A1A1A] mb-1">{p.name}</h3>
                 {p.description && <p className="text-[12px] text-[#737373] mb-3 line-clamp-2">{p.description}</p>}
                 <div className="flex items-center justify-between text-[11px] text-[#A3A3A3] mb-1.5">
@@ -813,12 +813,12 @@ function AgentsTab({ space }: { space: Space }) {
         const col = AGENT_COLOURS[agent] || '#737373'
 
         return (
-          <div key={agent} className="bg-white rounded-[12px] border border-[#E5E5E5] overflow-hidden">
+          <div key={agent} className="bg-white rounded border border-[#E5E5E5] overflow-hidden">
             {/* Agent header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#F3F3F3]">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-8 h-8 rounded-[8px] flex items-center justify-center text-[12px] font-bold text-white"
+                  className="w-8 h-8 rounded-md flex items-center justify-center text-[12px] font-bold text-white"
                   style={{ backgroundColor: col }}
                 >
                   {(AGENT_LABELS[agent] || agent)[0].toUpperCase()}
@@ -830,7 +830,7 @@ function AgentsTab({ space }: { space: Space }) {
               </div>
               <button
                 onClick={() => router.push(`/queue?agent=${agent}`)}
-                className="text-[11px] text-[#737373] hover:text-[#1A1A1A] border border-[#E5E5E5] px-3 py-1.5 rounded-[6px] transition"
+                className="text-[11px] text-[#737373] hover:text-[#1A1A1A] border border-[#E5E5E5] px-3 py-1.5 rounded-md transition"
               >
                 Full queue →
               </button>
@@ -916,7 +916,7 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Documents</h3>
-          <button onClick={() => setShowAddDoc(true)} className="text-[12px] font-medium text-[#1A1A1A] border border-[#E5E5E5] px-2.5 py-1 rounded-[6px] hover:bg-[#F9F9F9] transition flex items-center gap-1">
+          <button onClick={() => setShowAddDoc(true)} className="text-[12px] font-medium text-[#1A1A1A] border border-[#E5E5E5] px-2.5 py-1 rounded-md hover:bg-[#F9F9F9] transition flex items-center gap-1">
             <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
             Add
           </button>
@@ -938,7 +938,7 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
         ) : (
           <div className="space-y-2">
             {space.documents.map((doc: any) => (
-              <div key={doc.id} className="flex items-center gap-3 bg-white rounded-[10px] p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
+              <div key={doc.id} className="flex items-center gap-3 bg-white rounded p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
                 <svg className="w-4 h-4 text-[#C6C6C6] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -956,7 +956,7 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Notes</h3>
-          <button onClick={() => setShowAddNote(true)} className="text-[12px] font-medium text-[#1A1A1A] border border-[#E5E5E5] px-2.5 py-1 rounded-[6px] hover:bg-[#F9F9F9] transition flex items-center gap-1">
+          <button onClick={() => setShowAddNote(true)} className="text-[12px] font-medium text-[#1A1A1A] border border-[#E5E5E5] px-2.5 py-1 rounded-md hover:bg-[#F9F9F9] transition flex items-center gap-1">
             <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
             Add
           </button>
@@ -979,7 +979,7 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
         ) : (
           <div className="space-y-2">
             {space.notes.map((note: any) => (
-              <div key={note.id} className="bg-white rounded-[10px] p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
+              <div key={note.id} className="bg-white rounded p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{note.title}</p>
                   <span className="flex-shrink-0 text-[10px] text-[#A3A3A3] capitalize bg-[#F3F3F3] px-1.5 py-0.5 rounded">{note.noteType}</span>
@@ -1008,7 +1008,7 @@ function IntelligenceTab({ space }: { space: Space }) {
         ) : (
           <div className="space-y-3">
             {space.insights.map((ins: any) => (
-              <div key={ins.id} className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+              <div key={ins.id} className="bg-white rounded p-5 border border-[#E5E5E5]">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <p className="text-[14px] font-semibold text-[#1A1A1A]">{ins.title}</p>
                   <div className="flex items-center gap-2 flex-shrink-0">
@@ -1043,7 +1043,7 @@ function IntelligenceTab({ space }: { space: Space }) {
         ) : (
           <div className="space-y-3">
             {space.memories.map((mem: any) => (
-              <div key={mem.id} className="bg-white rounded-[12px] p-4 border border-[#E5E5E5]">
+              <div key={mem.id} className="bg-white rounded p-4 border border-[#E5E5E5]">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <p className="text-[13px] font-medium text-[#1A1A1A]">{mem.title}</p>
                   <span className="flex-shrink-0 text-[10px] text-[#737373] bg-[#F3F3F3] px-1.5 py-0.5 rounded capitalize">{mem.memoryType}</span>
@@ -1153,7 +1153,7 @@ export default function SpaceDetailPage() {
           {/* ── Space header ──────────────────────────────────────────────── */}
           <div className="flex items-start gap-4 mb-6">
             {/* Logo / avatar */}
-            <div className="flex-shrink-0 w-14 h-14 rounded-[12px] bg-white border border-[#E5E5E5] flex items-center justify-center overflow-hidden">
+            <div className="flex-shrink-0 w-14 h-14 rounded bg-white border border-[#E5E5E5] flex items-center justify-center overflow-hidden">
               {space.logoUrl ? (
                 <img src={space.logoUrl} alt={space.name} className="w-full h-full object-cover" />
               ) : (
@@ -1204,7 +1204,7 @@ export default function SpaceDetailPage() {
                 { label: 'Objectives', n: space._count.objectives },
                 { label: 'Projects', n: space._count.projects },
               ].map(s => (
-                <div key={s.label} className="text-center bg-white border border-[#E5E5E5] rounded-[8px] px-3 py-1.5">
+                <div key={s.label} className="text-center bg-white border border-[#E5E5E5] rounded-md px-3 py-1.5">
                   <div className="text-[14px] font-bold text-[#1A1A1A]">{s.n}</div>
                   <div className="text-[10px] text-[#A3A3A3]">{s.label}</div>
                 </div>
@@ -1213,12 +1213,12 @@ export default function SpaceDetailPage() {
           </div>
 
           {/* ── Tabs ─────────────────────────────────────────────────────── */}
-          <div className="flex gap-1 overflow-x-auto mb-6 bg-white rounded-[10px] border border-[#E5E5E5] p-1">
+          <div className="flex gap-1 overflow-x-auto mb-6 bg-white rounded border border-[#E5E5E5] p-1">
             {TABS.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-[8px] text-[13px] font-medium whitespace-nowrap transition flex-shrink-0 ${
+                className={`px-4 py-2 rounded-md text-[13px] font-medium whitespace-nowrap transition flex-shrink-0 ${
                   activeTab === tab.id
                     ? 'bg-[#1A1A1A] text-white'
                     : 'text-[#474747] hover:bg-[#F3F3F3]'

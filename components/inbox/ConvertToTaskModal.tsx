@@ -145,7 +145,7 @@ export default function ConvertToTaskModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-[14px] shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
@@ -160,7 +160,7 @@ export default function ConvertToTaskModal({
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-[#f0eded] rounded-[10px] transition"
+              className="p-2 hover:bg-[#F3F3F3] rounded transition"
             >
               <FontAwesomeIcon icon={faTimes} className="text-[#5a5757]" />
             </button>
@@ -176,7 +176,7 @@ export default function ConvertToTaskModal({
           ) : (
             <div className="space-y-4">
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-[10px] text-sm text-red-800">
+                <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">
                   {error}
                 </div>
               )}
@@ -191,7 +191,7 @@ export default function ConvertToTaskModal({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter task title..."
-                  className="w-full px-4 py-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
                 />
               </div>
 
@@ -205,7 +205,7 @@ export default function ConvertToTaskModal({
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Add details..."
                   rows={4}
-                  className="w-full px-4 py-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b] resize-none"
+                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b] resize-none"
                 />
               </div>
 
@@ -217,7 +217,7 @@ export default function ConvertToTaskModal({
                 <select
                   value={statusId}
                   onChange={(e) => setStatusId(e.target.value)}
-                  className="w-full px-4 py-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
                 >
                   <option value="">Select status...</option>
                   {statuses.map((status) => (
@@ -236,7 +236,7 @@ export default function ConvertToTaskModal({
                 <select
                   value={projectId}
                   onChange={(e) => setProjectId(e.target.value)}
-                  className="w-full px-4 py-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
                 >
                   <option value="">No project</option>
                   {projects.map((project) => (
@@ -256,7 +256,7 @@ export default function ConvertToTaskModal({
                   <select
                     value={priority}
                     onChange={(e) => setPriority(parseInt(e.target.value))}
-                    className="w-full px-4 py-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                    className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
                   >
                     <option value={1}>1 - Critical</option>
                     <option value={2}>2 - High</option>
@@ -274,13 +274,13 @@ export default function ConvertToTaskModal({
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-4 py-2 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                    className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
                   />
                 </div>
               </div>
 
               {/* Original Capture Info */}
-              <div className="p-4 bg-[#f6f3f2] rounded-[10px]">
+              <div className="p-4 bg-[#F3F3F3] rounded">
                 <div className="text-xs font-semibold text-[#1c1b1b] mb-2">Original Capture</div>
                 <div className="text-sm text-[#5a5757]">{inboxItem.rawText}</div>
                 <div className="text-xs text-[#A3A3A3] mt-2">
@@ -296,16 +296,16 @@ export default function ConvertToTaskModal({
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-6 py-2 text-[#5a5757] hover:bg-[#f0eded] rounded-[10px] transition font-medium disabled:opacity-50"
+            className="px-6 py-2 text-[#5a5757] hover:bg-[#F3F3F3] rounded transition font-medium disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleConvert}
             disabled={loading || loadingData || !title.trim() || !statusId}
-            className={`px-6 py-2 rounded-[10px] font-medium transition flex items-center gap-2 ${
+            className={`px-6 py-2 rounded font-medium transition flex items-center gap-2 ${
               loading || loadingData || !title.trim() || !statusId
-                ? 'bg-[#f0eded] text-[#C4C0C0] cursor-not-allowed'
+                ? 'bg-[#F3F3F3] text-[#C4C0C0] cursor-not-allowed'
                 : 'bg-[#DD3A44] text-white hover:opacity-90'
             }`}
           >

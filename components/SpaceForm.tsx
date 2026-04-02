@@ -79,7 +79,7 @@ export default function SpaceForm({
             onChange={(e) => updateField('name', e.target.value)}
             placeholder="e.g., Love Warranty"
             required
-            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+            className="w-full px-4 py-2 rounded focus:focus-ring"
           />
         </div>
 
@@ -93,7 +93,7 @@ export default function SpaceForm({
               value={formData.industry}
               onChange={(e) => updateField('industry', e.target.value)}
               placeholder="e.g., SaaS, E-commerce"
-              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+              className="w-full px-4 py-2 rounded focus:focus-ring"
             />
           </div>
 
@@ -104,7 +104,7 @@ export default function SpaceForm({
             <select
               value={formData.stage}
               onChange={(e) => updateField('stage', e.target.value)}
-              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+              className="w-full px-4 py-2 rounded focus:focus-ring"
             >
               {STAGES.map((stage) => (
                 <option key={stage} value={stage}>
@@ -123,7 +123,7 @@ export default function SpaceForm({
             <select
               value={formData.businessModel}
               onChange={(e) => updateField('businessModel', e.target.value)}
-              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+              className="w-full px-4 py-2 rounded focus:focus-ring"
             >
               <option value="">Select...</option>
               {BUSINESS_MODELS.map((model) => (
@@ -143,7 +143,7 @@ export default function SpaceForm({
               value={formData.revenue}
               onChange={(e) => updateField('revenue', e.target.value)}
               placeholder="0"
-              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+              className="w-full px-4 py-2 rounded focus:focus-ring"
             />
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function SpaceForm({
               value={formData.logoUrl}
               onChange={(e) => updateField('logoUrl', e.target.value)}
               placeholder="https://..."
-              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+              className="w-full px-4 py-2 rounded focus:focus-ring"
             />
           </div>
 
@@ -171,7 +171,7 @@ export default function SpaceForm({
               value={formData.websiteUrl}
               onChange={(e) => updateField('websiteUrl', e.target.value)}
               placeholder="https://..."
-              className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+              className="w-full px-4 py-2 rounded focus:focus-ring"
             />
           </div>
         </div>
@@ -190,7 +190,7 @@ export default function SpaceForm({
             value={formData.missionStatement}
             onChange={(e) => updateField('missionStatement', e.target.value)}
             placeholder="What's the space's mission?"
-            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+            className="w-full px-4 py-2 rounded focus:focus-ring"
           />
         </div>
 
@@ -203,7 +203,7 @@ export default function SpaceForm({
             onChange={(e) => updateField('executiveSummary', e.target.value)}
             placeholder="Brief overview of the space..."
             rows={3}
-            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+            className="w-full px-4 py-2 rounded focus:focus-ring"
           />
         </div>
 
@@ -216,7 +216,7 @@ export default function SpaceForm({
             onChange={(e) => updateField('vision', e.target.value)}
             placeholder="Long-term vision..."
             rows={2}
-            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+            className="w-full px-4 py-2 rounded focus:focus-ring"
           />
         </div>
       </div>
@@ -234,7 +234,7 @@ export default function SpaceForm({
             onChange={(e) => updateField('targetCustomers', e.target.value)}
             placeholder="Who are the ideal customers?"
             rows={2}
-            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+            className="w-full px-4 py-2 rounded focus:focus-ring"
           />
         </div>
 
@@ -247,7 +247,7 @@ export default function SpaceForm({
             value={formData.marketSize}
             onChange={(e) => updateField('marketSize', e.target.value)}
             placeholder="e.g., £500M TAM"
-            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+            className="w-full px-4 py-2 rounded focus:focus-ring"
           />
         </div>
       </div>
@@ -265,7 +265,7 @@ export default function SpaceForm({
             onChange={(e) => updateField('coreProduct', e.target.value)}
             placeholder="What does the product do?"
             rows={2}
-            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+            className="w-full px-4 py-2 rounded focus:focus-ring"
           />
         </div>
 
@@ -278,7 +278,7 @@ export default function SpaceForm({
             onChange={(e) => updateField('positioning', e.target.value)}
             placeholder="How do you position vs competitors?"
             rows={2}
-            className="w-full px-4 py-2 rounded-[10px] focus:focus-ring"
+            className="w-full px-4 py-2 rounded focus:focus-ring"
           />
         </div>
       </div>
@@ -289,14 +289,14 @@ export default function SpaceForm({
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="flex-1 px-4 py-2 bg-[#f0eded] text-[#1c1b1b] rounded-[10px] hover:bg-[#e8e4e4] transition font-medium disabled:opacity-50"
+          className="flex-1 px-4 py-2 bg-[#F3F3F3] text-[#1c1b1b] rounded hover:bg-[#e8e4e4] transition font-medium disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading || !formData.name}
-          className="flex-1 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] transition font-medium disabled:opacity-50"
+          className="flex-1 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded transition font-medium disabled:opacity-50"
         >
           {isLoading ? 'Saving...' : submitLabel}
         </button>

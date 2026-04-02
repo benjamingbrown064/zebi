@@ -156,10 +156,10 @@ export default function FilterBuilder({
               key={status.id}
               type="button"
               onClick={() => toggleStatus(status.id)}
-              className={`px-3 py-2 rounded-[10px] text-sm font-medium transition ${
+              className={`px-3 py-2 rounded text-sm font-medium transition ${
                 selectedStatuses.includes(status.id)
                   ? 'bg-accent-500 text-white'
-                  : 'bg-[#f0eded] text-[#5a5757] hover:bg-[#e8e4e4]'
+                  : 'bg-[#F3F3F3] text-[#5a5757] hover:bg-[#e8e4e4]'
               }`}
             >
               {status.name}
@@ -182,10 +182,10 @@ export default function FilterBuilder({
               key={opt.value}
               type="button"
               onClick={() => togglePriority(opt.value)}
-              className={`px-3 py-2 rounded-[10px] text-sm font-medium transition ${
+              className={`px-3 py-2 rounded text-sm font-medium transition ${
                 selectedPriorities.includes(opt.value)
                   ? 'bg-accent-500 text-white'
-                  : 'bg-[#f0eded] text-[#5a5757] hover:bg-[#e8e4e4]'
+                  : 'bg-[#F3F3F3] text-[#5a5757] hover:bg-[#e8e4e4]'
               }`}
             >
               {opt.label}
@@ -211,12 +211,12 @@ export default function FilterBuilder({
               }
             }}
             placeholder="Type a tag and press Enter"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
           />
           <button
             type="button"
             onClick={addTag}
-            className="px-4 py-2 bg-[#f0eded] text-[#5a5757] rounded-[10px] text-sm font-medium hover:bg-[#e8e4e4] transition"
+            className="px-4 py-2 bg-[#F3F3F3] text-[#5a5757] rounded text-sm font-medium hover:bg-[#e8e4e4] transition"
           >
             Add
           </button>
@@ -254,7 +254,7 @@ export default function FilterBuilder({
               type="date"
               value={dateFrom}
               onChange={(e) => handleDateFromChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
             />
           </div>
           <div className="flex-1">
@@ -263,7 +263,7 @@ export default function FilterBuilder({
               type="date"
               value={dateTo}
               onChange={(e) => handleDateToChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-accent-500"
             />
           </div>
         </div>

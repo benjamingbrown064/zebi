@@ -94,7 +94,7 @@ export default function GoalSpaceLinker({
         <h3 className="font-semibold text-[#1A1A1A]">Link Spaces</h3>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="text-[13px] px-3 py-1.5 bg-[#DD3A44] text-white rounded-[10px] hover:opacity-90 transition inline-flex items-center gap-2"
+          className="text-[13px] px-3 py-1.5 bg-[#DD3A44] text-white rounded hover:opacity-90 transition inline-flex items-center gap-2"
         >
           <FaLink className="text-xs" />
           {linkedSpaces.length > 0 ? 'Manage' : 'Add'} Spaces
@@ -103,7 +103,7 @@ export default function GoalSpaceLinker({
 
       {/* Display linked spaces */}
       {linkedSpaces.length > 0 && (
-        <div className="bg-[#f6f3f2] rounded-[14px] p-4 mb-4">
+        <div className="bg-[#F3F3F3] rounded p-4 mb-4">
           <p className="text-[12px] text-[#525252] mb-3">
             {linkedSpaces.length} compan{linkedSpaces.length === 1 ? 'y' : 'ies'} linked
           </p>
@@ -111,7 +111,7 @@ export default function GoalSpaceLinker({
             {linkedSpaces.map(space => (
               <div
                 key={space.id}
-                className="flex items-center justify-between bg-white p-3 rounded-[10px] "
+                className="flex items-center justify-between bg-white p-3 rounded "
               >
                 <span className="text-[14px] font-medium text-[#1A1A1A]">{space.name}</span>
                 <span className="text-[13px] text-[#DD3A44] font-semibold">
@@ -132,7 +132,7 @@ export default function GoalSpaceLinker({
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-[14px] shadow-xl w-full max-w-md mx-4 p-6">
+          <div className="bg-white rounded shadow-xl w-full max-w-md mx-4 p-6">
             <h4 className="font-semibold text-[#1A1A1A] mb-4">Link Spaces to Goal</h4>
 
             {isLoading ? (
@@ -148,7 +148,7 @@ export default function GoalSpaceLinker({
                     allSpaces.map(space => (
                       <label
                         key={space.id}
-                        className="flex items-center gap-3 p-3 rounded-[10px]  cursor-pointer hover:bg-[#f6f3f2] transition"
+                        className="flex items-center gap-3 p-3 rounded  cursor-pointer hover:bg-[#F3F3F3] transition"
                       >
                         <input
                           type="checkbox"
@@ -169,7 +169,7 @@ export default function GoalSpaceLinker({
 
                 {/* Preview total */}
                 {selectedSpaces.length > 0 && (
-                  <div className="bg-[#f6f3f2] p-4 rounded-[10px] mb-6">
+                  <div className="bg-[#F3F3F3] p-4 rounded mb-6">
                     <p className="text-[12px] text-[#525252] mb-2">Total Revenue Preview:</p>
                     <p className="text-xl font-bold text-[#DD3A44]">
                       £{totalRevenue.toLocaleString()}
@@ -181,14 +181,14 @@ export default function GoalSpaceLinker({
                 <div className="flex gap-3">
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="flex-1 px-4 py-2  rounded-[10px] text-[13px] font-medium text-[#525252] hover:bg-[#f6f3f2] transition"
+                    className="flex-1 px-4 py-2  rounded text-[13px] font-medium text-[#525252] hover:bg-[#F3F3F3] transition"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex-1 px-4 py-2 bg-[#DD3A44] text-white rounded-[10px] text-[13px] font-medium hover:opacity-90 transition disabled:opacity-50"
+                    className="flex-1 px-4 py-2 bg-[#DD3A44] text-white rounded text-[13px] font-medium hover:opacity-90 transition disabled:opacity-50"
                   >
                     {isSaving ? (
                       <FaSpinner className="animate-spin inline mr-2" />

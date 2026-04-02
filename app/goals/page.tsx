@@ -23,7 +23,7 @@ export default async function GoalsPage() {
       <Suspense fallback={
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-[14px] p-6 animate-pulse">
+            <div key={i} className="bg-white rounded p-6 animate-pulse">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="h-5 w-3/4 bg-[#e8e4e4] rounded mb-2" />

@@ -15,38 +15,45 @@ const config: Config = {
         sans: ['Inter', 'system-ui', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        // ── Zebi Design System tokens (Editorial Command v1.0) ─────────────
-        // Primary action red (keep existing Zebi red — not changed per spec)
-        primary:  { DEFAULT: '#DD3A44', dark: '#C7333D' },
+        // ── Zebi Design System tokens (Monolith Editorial) ─────────────────
 
-        // Surface layers (warm white canvas system)
-        surface:              '#fcf9f8', // base canvas
-        'surface-low':        '#f6f3f2', // sidebar / section backgrounds
-        'surface-container':  '#f0eded', // section containers
-        'surface-high':       '#e8e4e4', // active state background
-        'surface-highest':    '#e0dbdb', // secondary button bg
-        'surface-card':       '#ffffff', // inner cards "pop" layer
+        // Surface layers — cool neutral monochrome
+        surface:              '#F9F9F9',   // base canvas
+        'surface-low':        '#F3F3F3',   // sidebar, section backgrounds
+        'surface-card':       '#FFFFFF',   // elevated card layer
+        'surface-invert':     '#1A1C1C',   // inverted hero tiles
 
         // Typography
-        'on-surface':         '#1c1b1b', // primary text / headlines
-        'on-surface-variant': '#5a5757', // secondary / metadata text
-        'outline-variant':    '#c8c4c4', // ghost borders (use sparingly at low opacity)
+        'on-surface':         '#1A1C1C',   // primary text
+        'on-surface-variant': '#474747',   // secondary / metadata
+        'on-surface-muted':   '#A3A3A3',   // ghost / placeholder
 
-        // Semantic
-        'zebi-success':  '#006766', // tertiary (no SaaS blue)
-        'zebi-red':      '#DD3A44', // alias for primary
+        // Borders
+        outline:              '#C6C6C6',
 
-        // Legacy aliases (keep for backward compat)
-        'candy-apple': '#e82535',
-        'crimson':     '#c92870',
-        'cool-blue':   '#074f67',
-        'deep-lake':   '#143548',
-        'gravel':      '#5e5656',
-        'wet-cement':  '#77848e',
-        'cloudy':      '#f0f0f3',
-        'bg-cream':    '#fcf9f8', // updated to warm surface
-        'bg-paper':    '#FFFFFF',
-        'text-asphalt':'#1c1b1b', // updated to charcoal
+        // Primary action — pure black
+        primary: { DEFAULT: '#000000', hover: '#1A1C1C' },
+
+        // Brand — logo + critical badges only
+        brand:   { DEFAULT: '#DD3A44', dark: '#C7333D' },
+
+        // Semantic (minimal — monochrome preferred)
+        success: '#15803D',
+        warning: '#92400E',
+        danger:  '#B91C1C',
+
+        // Legacy compat
+        'surface-container':  '#F3F3F3',
+        'surface-high':       '#E5E5E5',
+        'surface-highest':    '#D4D4D4',
+        'on-surface-variant-old': '#474747',
+        'outline-variant':    '#C6C6C6',
+        'zebi-success':       '#15803D',
+        'zebi-red':           '#DD3A44',
+        'bg-cream':           '#F9F9F9',
+        'bg-paper':           '#FFFFFF',
+        'text-asphalt':       '#1A1C1C',
+        'candy-apple':        '#DD3A44',
       },
       spacing: {
         gutter: '32px',
@@ -55,11 +62,12 @@ const config: Config = {
         '22': '5.5rem',
       },
       borderRadius: {
-        card:   '14px',  // cards
-        input:  '10px',  // inputs / buttons
-        pill:   '9999px',
-        sm:     '6px',
-        md:     '8px',   // spec roundness-md
+        DEFAULT: '4px',  // Monolith: restrained, no "playful" rounding
+        card:    '4px',  // cards — sharp
+        input:   '4px',  // inputs / buttons
+        pill:    '9999px',
+        sm:      '4px',
+        md:      '6px',
       },
       fontSize: {
         // Editorial type scale
@@ -72,11 +80,11 @@ const config: Config = {
         'label-md':    ['0.75rem', { lineHeight: '1.4',  letterSpacing: '0.05em',  fontWeight: '500' }],
       },
       boxShadow: {
-        // Ambient only — never opaque black
-        'card':       '0 1px 3px rgba(28,27,27,0.06)',
-        'card-hover': '0 4px 12px rgba(28,27,27,0.08)',
-        'float':      '0 20px 40px rgba(28,27,27,0.06)',
-        'subtle':     '0 1px 2px rgba(28,27,27,0.04)',
+        // Monolith: ambient only — the shadow should be felt, not seen
+        'card':       '0px 20px 40px rgba(0,0,0,0.04)',
+        'card-hover': '0px 20px 40px rgba(0,0,0,0.07)',
+        'float':      '0px 20px 40px rgba(0,0,0,0.04)',
+        'subtle':     '0px 4px 12px rgba(0,0,0,0.03)',
       },
       backgroundImage: {
         // Primary CTA gradient — "soul" for the red button

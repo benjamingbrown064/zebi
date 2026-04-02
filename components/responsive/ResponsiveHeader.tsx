@@ -77,7 +77,7 @@ export default function ResponsiveHeader({
                   key={index}
                   onClick={action.onClick}
                   className={`
-                    hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-[10px] text-[13px] font-medium transition min-h-[44px]
+                    hidden lg:flex items-center gap-2 px-4 py-2.5 rounded text-[13px] font-medium transition min-h-[44px]
                     ${
                       action.variant === 'danger'
                         ? 'bg-red-50 text-red-600 hover:bg-red-100'

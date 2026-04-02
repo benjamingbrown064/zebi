@@ -36,12 +36,12 @@ export default function SpaceCard({
         {/* Header */}
         <div className="flex items-start gap-4 mb-4">
           {/* Logo or Icon */}
-          <div className="w-12 h-12 bg-[#F5F5F5] rounded-[10px] flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-[#F5F5F5] rounded flex items-center justify-center flex-shrink-0">
             {logoUrl ? (
               <img
                 src={logoUrl}
                 alt={name}
-                className="w-full h-full object-cover rounded-[10px]"
+                className="w-full h-full object-cover rounded"
               />
             ) : (
               <FaBuilding className="text-[#737373] text-xl" />

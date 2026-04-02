@@ -376,11 +376,11 @@ export default function StartClient() {
   // ─── Screen A: Entry ────────────────────────────────────────────────────────
   if (screen === 'entry') {
     return (
-      <div className="min-h-screen bg-[#fcf9f8] flex flex-col items-center justify-center px-4 py-16">
+      <div className="min-h-screen bg-[#F9F9F9] flex flex-col items-center justify-center px-4 py-16">
         <div className="w-full max-w-xl">
           {/* Logo */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-[#DD3A44] rounded-[12px] mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-[#DD3A44] rounded mb-4">
               <span className="font-semibold text-white text-xl">Z</span>
             </div>
             <h1 className="text-[28px] font-semibold text-[#1A1A1A] leading-snug">
@@ -407,7 +407,7 @@ export default function StartClient() {
               <button
                 onClick={handleSubmit}
                 disabled={!prompt.trim()}
-                className="px-5 py-2 bg-[#DD3A44] hover:bg-[#C7333D] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-[8px] text-[14px] font-medium transition"
+                className="px-5 py-2 bg-[#DD3A44] hover:bg-[#C7333D] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-md text-[14px] font-medium transition"
               >
                 Build it →
               </button>
@@ -415,7 +415,7 @@ export default function StartClient() {
           </div>
 
           {error && (
-            <div className="mt-4 p-3 bg-[#FEF2F2] border border-[#FECACA] rounded-[10px]">
+            <div className="mt-4 p-3 bg-[#FEF2F2] border border-[#FECACA] rounded">
               <p className="text-[13px] text-[#DD3A44]">{error}</p>
             </div>
           )}
@@ -435,7 +435,7 @@ export default function StartClient() {
                     setPrompt(example)
                     setTimeout(() => textareaRef.current?.focus(), 50)
                   }}
-                  className="text-left px-4 py-2.5 rounded-[10px] border border-[#E5E5E5] bg-white hover:border-[#DD3A44]/40 hover:bg-[#FFF5F5] text-[13px] text-[#525252] transition"
+                  className="text-left px-4 py-2.5 rounded border border-[#E5E5E5] bg-white hover:border-[#DD3A44]/40 hover:bg-[#FFF5F5] text-[13px] text-[#525252] transition"
                 >
                   {example}
                 </button>
@@ -457,9 +457,9 @@ export default function StartClient() {
   // ─── Screen B: Generating ───────────────────────────────────────────────────
   if (screen === 'generating') {
     return (
-      <div className="min-h-screen bg-[#fcf9f8] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F9F9F9] flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-[#DD3A44] rounded-[12px] mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-[#DD3A44] rounded mb-8">
             <span className="font-semibold text-white text-xl">Z</span>
           </div>
 
@@ -471,7 +471,7 @@ export default function StartClient() {
               return (
                 <div
                   key={step.id}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-[10px] transition-all duration-300 ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded transition-all duration-300 ${
                     active
                       ? 'bg-white border border-[#E5E5E5] shadow-sm'
                       : done
@@ -520,7 +520,7 @@ export default function StartClient() {
       failedTaskIndexes.length > 0
 
     return (
-      <div className="min-h-screen bg-[#fcf9f8] px-4 py-12">
+      <div className="min-h-screen bg-[#F9F9F9] px-4 py-12">
         <div className="w-full max-w-xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
@@ -637,7 +637,7 @@ export default function StartClient() {
 
           {/* Partial failure banner */}
           {hasAnyFailure && (
-            <div className="mb-6 p-4 bg-[#FFF7ED] border border-[#FED7AA] rounded-[12px] flex items-start gap-3">
+            <div className="mb-6 p-4 bg-[#FFF7ED] border border-[#FED7AA] rounded flex items-start gap-3">
               <span className="text-lg shrink-0">⚠️</span>
               <div>
                 <p className="text-[13px] text-[#92400E] font-medium">Some items couldn't be created</p>
@@ -659,13 +659,13 @@ export default function StartClient() {
           <div className="flex flex-col gap-3">
             <button
               onClick={() => setScreen('invite')}
-              className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-[10px] font-medium text-[15px] transition"
+              className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[15px] transition"
             >
               Invite a teammate →
             </button>
             <Link
               href="/dashboard"
-              className="w-full px-5 py-3 border border-[#E5E5E5] bg-white hover:bg-[#F9F9F9] text-[#1A1A1A] rounded-[10px] font-medium text-[15px] transition text-center"
+              className="w-full px-5 py-3 border border-[#E5E5E5] bg-white hover:bg-[#F9F9F9] text-[#1A1A1A] rounded font-medium text-[15px] transition text-center"
             >
               Go to dashboard
             </Link>
@@ -692,7 +692,7 @@ export default function StartClient() {
   // ─── Screen D: Invite ───────────────────────────────────────────────────────
   if (screen === 'invite') {
     return (
-      <div className="min-h-screen bg-[#fcf9f8] flex flex-col items-center justify-center px-4 py-16">
+      <div className="min-h-screen bg-[#F9F9F9] flex flex-col items-center justify-center px-4 py-16">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-14 h-14 bg-[#F5F5F5] rounded-full mb-4 text-2xl">
@@ -734,12 +734,12 @@ export default function StartClient() {
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="colleague@example.com"
                 required
-                className="w-full px-4 py-3 border border-[#D4D4D4] rounded-[10px] text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
               />
               <button
                 type="submit"
                 disabled={inviteStatus === 'sending' || !inviteEmail.trim()}
-                className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-[10px] font-medium text-[15px] transition"
+                className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded font-medium text-[15px] transition"
               >
                 {inviteStatus === 'sending' ? 'Sending…' : 'Send invite'}
               </button>
@@ -749,7 +749,7 @@ export default function StartClient() {
           <div className="mt-8 pt-6 border-t border-[#E5E5E5]">
             <Link
               href="/dashboard"
-              className="block w-full text-center px-5 py-3 border border-[#E5E5E5] bg-white hover:bg-[#F9F9F9] text-[#1A1A1A] rounded-[10px] font-medium text-[15px] transition"
+              className="block w-full text-center px-5 py-3 border border-[#E5E5E5] bg-white hover:bg-[#F9F9F9] text-[#1A1A1A] rounded font-medium text-[15px] transition"
             >
               Go to dashboard
             </Link>

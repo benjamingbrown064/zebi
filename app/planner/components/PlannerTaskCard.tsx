@@ -69,7 +69,7 @@ export default function PlannerTaskCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative bg-white border border-[#E5E5E5] rounded-[10px] p-3 hover:shadow-sm transition-all cursor-grab active:cursor-grabbing border-l-4 ${getPriorityColor(
+      className={`group relative bg-white border border-[#E5E5E5] rounded p-3 hover:shadow-sm transition-all cursor-grab active:cursor-grabbing border-l-4 ${getPriorityColor(
         task.priority
       )} ${isSortableDragging || isDragging ? 'opacity-50' : ''}`}
     >
@@ -93,12 +93,12 @@ export default function PlannerTaskCard({
           {/* Metadata */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-[#A3A3A3]">
             {task.project && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5F5F5] rounded-[6px]">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5F5F5] rounded-md">
                 {task.project.name}
               </span>
             )}
             {task.space && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5F5F5] rounded-[6px]">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5F5F5] rounded-md">
                 {task.space.name}
               </span>
             )}
