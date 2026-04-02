@@ -43,7 +43,7 @@ const EVENT_ICONS: Record<string, React.ReactNode> = {
   task_blocked:       <FaExclamationTriangle size={11} className="text-orange-500" />,
   handoff_created:    <FaBolt size={11} className="text-violet-500" />,
   handoff_accepted:   <FaCheckCircle size={11} className="text-emerald-500" />,
-  decision_requested: <FaBalanceScale size={11} className="text-[#DD3A44]" />,
+  decision_requested: <FaBalanceScale size={11} className="text-[#1A1C1C]" />,
   insight_created:    <FaLightbulb size={11} className="text-yellow-500" />,
   memory_created:     <FaBrain size={11} className="text-sky-500" />,
   status_changed:     <FaArrowRight size={11} className="text-[#737373]" />,
@@ -139,12 +139,12 @@ export default function ActivityPage() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setShowFilters(f => !f)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md text-[13px] font-medium border transition-all ${showFilters ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]' : 'bg-white text-[#525252] border-[#E5E5E5]'}`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-[13px] font-medium border transition-all ${showFilters ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]' : 'bg-white text-[#474747] border-[#E5E5E5]'}`}
             >
               <FaFilter size={11} /> Filters
             </button>
             <button onClick={load} disabled={loading}
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-[13px] font-medium text-[#525252] hover:bg-white border border-[#E5E5E5] bg-white disabled:opacity-50 transition-all">
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-[13px] font-medium text-[#474747] hover:bg-white border border-[#E5E5E5] bg-white disabled:opacity-50 transition-all">
               <FaSync size={11} className={loading ? 'animate-spin' : ''} /> Refresh
             </button>
           </div>
@@ -156,7 +156,7 @@ export default function ActivityPage() {
             <div>
               <label className="block text-[11px] font-semibold text-[#737373] uppercase tracking-wide mb-1.5">Agent</label>
               <select value={agentFilter} onChange={e => setAgentFilter(e.target.value)}
-                className="px-3 py-2 text-[13px] rounded-md border border-[#E5E5E5] bg-white focus:outline-none focus:ring-1 focus:ring-[#DD3A44] min-w-[140px]">
+                className="px-3 py-2 text-[13px] rounded-md border border-[#E5E5E5] bg-white focus:outline-none focus:ring-1 focus:ring-[#1A1C1C] min-w-[140px]">
                 <option value="">All agents</option>
                 {AGENTS.map(a => <option key={a} value={a} className="capitalize">{a}</option>)}
               </select>
@@ -164,7 +164,7 @@ export default function ActivityPage() {
             <div>
               <label className="block text-[11px] font-semibold text-[#737373] uppercase tracking-wide mb-1.5">Event type</label>
               <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-                className="px-3 py-2 text-[13px] rounded-md border border-[#E5E5E5] bg-white focus:outline-none focus:ring-1 focus:ring-[#DD3A44] min-w-[180px]">
+                className="px-3 py-2 text-[13px] rounded-md border border-[#E5E5E5] bg-white focus:outline-none focus:ring-1 focus:ring-[#1A1C1C] min-w-[180px]">
                 <option value="">All events</option>
                 {EVENT_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
               </select>
@@ -172,7 +172,7 @@ export default function ActivityPage() {
             {(agentFilter || typeFilter) && (
               <div className="flex items-end">
                 <button onClick={() => { setAgentFilter(''); setTypeFilter('') }}
-                  className="px-3 py-2 text-[12px] text-[#DD3A44] hover:text-[#C7333D] font-medium">
+                  className="px-3 py-2 text-[12px] text-[#1A1C1C] hover:text-[#474747] font-medium">
                   Clear filters
                 </button>
               </div>
@@ -194,7 +194,7 @@ export default function ActivityPage() {
           )}
 
           {!loading && filtered.map(entry => (
-            <div key={entry.id} className="flex items-start gap-3 px-5 py-3.5 hover:bg-[#FAFAFA] transition-colors">
+            <div key={entry.id} className="flex items-start gap-3 px-5 py-3.5 hover:bg-[#F9F9F9] transition-colors">
               {/* Icon */}
               <div className="w-6 h-6 rounded-full bg-[#F3F3F3] flex items-center justify-center shrink-0 mt-0.5">
                 {EVENT_ICONS[entry.eventType] ?? <FaArrowRight size={10} className="text-[#A3A3A3]" />}
@@ -204,7 +204,7 @@ export default function ActivityPage() {
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] text-[#1A1A1A]">
                   {entry.task ? (
-                    <Link href={`/tasks/${entry.task.id}`} className="hover:text-[#DD3A44] transition-colors">
+                    <Link href={`/tasks/${entry.task.id}`} className="hover:text-[#474747] transition-colors">
                       {eventLabel(entry)}
                     </Link>
                   ) : eventLabel(entry)}

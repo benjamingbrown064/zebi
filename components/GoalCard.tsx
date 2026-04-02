@@ -44,11 +44,11 @@ export default function GoalCard({
       onClick={onClick}
       className="card-base p-4 card-hover cursor-pointer space-y-3"
     >
-      <p className="font-semibold text-[#1c1b1b]">{name}</p>
+      <p className="font-semibold text-[#1A1C1C]">{name}</p>
 
       {/* Progress Bar */}
       <div className="space-y-1">
-        <div className="flex justify-between text-xs text-[#5a5757]">
+        <div className="flex justify-between text-xs text-[#474747]">
           <span>Progress</span>
           <span>
             {current}

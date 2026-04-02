@@ -30,11 +30,11 @@ const PRIORITIES = [
   { num: 1, label: 'P1 - Urgent', color: 'bg-red-100 text-red-700' },
   { num: 2, label: 'P2 - High', color: 'bg-orange-100 text-orange-700' },
   { num: 3, label: 'P3 - Medium', color: 'bg-yellow-100 text-yellow-700' },
-  { num: 4, label: 'P4 - Low', color: 'bg-[#F3F3F3] text-[#5a5757]' },
+  { num: 4, label: 'P4 - Low', color: 'bg-[#F3F3F3] text-[#474747]' },
 ]
 
 const STATUS_COLORS: Record<string, string> = {
-  inbox: 'bg-[#F3F3F3] text-[#5a5757]',
+  inbox: 'bg-[#F3F3F3] text-[#474747]',
   planned: 'bg-[#e6f4f4] text-[#006766]',
   doing: 'bg-amber-100 text-amber-700',
   blocked: 'bg-red-100 text-red-700',
@@ -267,24 +267,24 @@ export default function TaskDetailModal({
             <>
               <button
                 onClick={onClose}
-                className="text-[#5a5757] hover:bg-[#F3F3F3] rounded transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-[#474747] hover:bg-[#F3F3F3] rounded transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Go back"
               >
                 <FaTimes className="text-lg" />
               </button>
-              <h2 className="text-lg font-semibold text-[#1c1b1b] flex-1 text-center">
+              <h2 className="text-lg font-semibold text-[#1A1C1C] flex-1 text-center">
                 {task ? 'Edit Task' : 'New Task'}
               </h2>
               <div className="w-[44px]" />
             </>
           ) : (
             <>
-              <h2 className="text-xl font-semibold text-[#1c1b1b]">
+              <h2 className="text-xl font-semibold text-[#1A1C1C]">
                 {task ? 'Edit Task' : 'New Task'}
               </h2>
               <button
                 onClick={onClose}
-                className="text-[#C4C0C0] hover:text-[#5a5757] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="text-[#C4C0C0] hover:text-[#474747] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <FaTimes className="text-lg" />
               </button>
@@ -296,7 +296,7 @@ export default function TaskDetailModal({
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+            <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
               Task Title
             </label>
             <input
@@ -304,7 +304,7 @@ export default function TaskDetailModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] placeholder-gray-500 min-h-[44px]"
+              className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] placeholder-gray-500 min-h-[44px]"
             />
           </div>
 
@@ -312,13 +312,13 @@ export default function TaskDetailModal({
           <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
             {/* Priority */}
             <div>
-              <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
+              <label className="block text-sm font-medium text-[#1A1C1C] mb-3">
                 Priority
               </label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(parseInt(e.target.value))}
-                className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] min-h-[44px]"
+                className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] min-h-[44px]"
               >
                 {PRIORITIES.map((p) => (
                   <option key={p.num} value={p.num}>
@@ -330,14 +330,14 @@ export default function TaskDetailModal({
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
+              <label className="block text-sm font-medium text-[#1A1C1C] mb-3">
                 Status
               </label>
               {statuses.length > 0 ? (
                 <select
                   value={statusId}
                   onChange={(e) => setStatusId(e.target.value)}
-                  className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] min-h-[44px]"
+                  className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] min-h-[44px]"
                 >
                   <option value="">Select a status</option>
                   {statuses.map((s) => (
@@ -347,7 +347,7 @@ export default function TaskDetailModal({
                   ))}
                 </select>
               ) : (
-                <div className="px-4 py-3 bg-[#F3F3F3] text-[#5a5757] rounded min-h-[44px] flex items-center">
+                <div className="px-4 py-3 bg-[#F3F3F3] text-[#474747] rounded min-h-[44px] flex items-center">
                   Loading statuses...
                 </div>
               )}
@@ -355,13 +355,13 @@ export default function TaskDetailModal({
 
             {/* Assignee */}
             <div>
-              <label className="block text-sm font-medium text-[#1c1b1b] mb-3">
+              <label className="block text-sm font-medium text-[#1A1C1C] mb-3">
                 Assign to
               </label>
               <select
                 value={assigneeId || ''}
                 onChange={(e) => setAssigneeId(e.target.value || null)}
-                className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] min-h-[44px]"
+                className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] min-h-[44px]"
               >
                 <option value="">Unassigned</option>
                 <option value="doug">Doug</option>
@@ -373,20 +373,20 @@ export default function TaskDetailModal({
 
           {/* Due Date */}
           <div>
-            <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+            <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
               Due Date
             </label>
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-4 py-3 rounded focus:focus-ring text-[#1c1b1b] min-h-[44px]"
+              className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] min-h-[44px]"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+            <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
               Description
             </label>
             <div className="relative">
@@ -464,7 +464,7 @@ export default function TaskDetailModal({
           {/* Attachments */}
           {task && workspaceId && (
             <div>
-              <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+              <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
                 Attachments
               </label>
               <FileUpload
@@ -511,7 +511,7 @@ export default function TaskDetailModal({
           <div className={`flex gap-3 w-full md:w-auto ${isMobile ? 'flex-col-reverse' : ''}`}>
             <button
               onClick={onClose}
-              className="px-4 py-3 bg-[#F3F3F3] text-[#1c1b1b] rounded hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
+              className="px-4 py-3 bg-[#F3F3F3] text-[#1A1C1C] rounded hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
             >
               Cancel
             </button>

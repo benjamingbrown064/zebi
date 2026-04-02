@@ -56,12 +56,12 @@ export default function AITidyPreviewModal({
         {/* Header */}
         <div className="sticky top-0 bg-white px-6 py-4 flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-semibold text-[#1c1b1b]">AI Tidy Preview</h2>
+            <h2 className="text-xl font-semibold text-[#1A1C1C]">AI Tidy Preview</h2>
             <p className="text-sm text-[#A3A3A3] mt-1">{MODE_LABELS[mode]}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-[#C4C0C0] hover:text-[#5a5757] transition"
+            className="text-[#C4C0C0] hover:text-[#474747] transition"
           >
             <FaTimes className="text-lg" />
           </button>
@@ -74,24 +74,24 @@ export default function AITidyPreviewModal({
               <div className="animate-spin">
                 <div className="w-8 h-8 border-4 border-accent-200 border-t-accent-500 rounded-full" />
               </div>
-              <span className="ml-3 text-[#5a5757]">Tidying your description...</span>
+              <span className="ml-3 text-[#474747]">Tidying your description...</span>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-6">
               {/* Original */}
               <div>
-                <h3 className="text-sm font-semibold text-[#1c1b1b] mb-3">Original</h3>
-                <div className="p-4 bg-[#F3F3F3] rounded min-h-[300px] whitespace-pre-wrap text-sm text-[#5a5757]">
+                <h3 className="text-sm font-semibold text-[#1A1C1C] mb-3">Original</h3>
+                <div className="p-4 bg-[#F3F3F3] rounded min-h-[300px] whitespace-pre-wrap text-sm text-[#474747]">
                   {original}
                 </div>
               </div>
 
               {/* Rewritten */}
               <div>
-                <h3 className="text-sm font-semibold text-[#1c1b1b] mb-3">
+                <h3 className="text-sm font-semibold text-[#1A1C1C] mb-3">
                   Rewritten ({MODE_LABELS[mode]})
                 </h3>
-                <div className="p-4 bg-accent-50 rounded border border-accent-200 min-h-[300px] whitespace-pre-wrap text-sm text-[#5a5757]">
+                <div className="p-4 bg-accent-50 rounded border border-accent-200 min-h-[300px] whitespace-pre-wrap text-sm text-[#474747]">
                   {rewritten}
                 </div>
               </div>
@@ -108,7 +108,7 @@ export default function AITidyPreviewModal({
               className={`px-4 py-2 rounded font-medium transition flex items-center gap-2 ${
                 selectedAction === 'reject'
                   ? 'bg-red-100 text-red-700 opacity-50'
-                  : 'bg-[#F3F3F3] text-[#1c1b1b] hover:bg-[#e8e4e4]'
+                  : 'bg-[#F3F3F3] text-[#1A1C1C] hover:bg-[#e8e4e4]'
               }`}
             >
               <FaReject className="text-sm" />

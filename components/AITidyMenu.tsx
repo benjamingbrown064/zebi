@@ -73,7 +73,7 @@ export default function AITidyMenu({
               isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#F3F3F3]'
             }`}
           >
-            <div className="font-medium text-sm text-[#1c1b1b]">{mode.label}</div>
+            <div className="font-medium text-sm text-[#1A1C1C]">{mode.label}</div>
             <div className="text-xs text-[#A3A3A3] mt-0.5">{mode.description}</div>
           </button>
         ))}

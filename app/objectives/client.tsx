@@ -216,7 +216,7 @@ export default function ObjectivesClient({
           primaryAction={
             <Dropdown>
               <DropdownTrigger>
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]">
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]">
                   <FaPlus className="text-sm" />
                   <span className="hidden sm:inline">New Objective</span>
                   <span className="sm:hidden">New</span>
@@ -234,7 +234,7 @@ export default function ObjectivesClient({
                   key="voice"
                   startContent={<FaMicrophone className="text-lg" />}
                   onPress={() => setIsVoiceModalOpen(true)}
-                  className="text-[#006766]"
+                  className="text-[#1A1C1C]"
                 >
                   Create via Voice
                 </DropdownItem>
@@ -254,7 +254,7 @@ export default function ObjectivesClient({
                   {objectives.length}
                 </p>
               </div>
-              <div className="bg-[#ECFDF5] rounded md:rounded border border-[#A7F3D0] p-4 md:p-5">
+              <div className="bg-[#F3F3F3] rounded md:rounded border border-[#C6C6C6] p-4 md:p-5">
                 <p className="text-[11px] md:text-[13px] leading-[20px] text-[#059669] mb-1">On Track</p>
                 <p className="text-[20px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#047857]">
                   {groupedObjectives.on_track.length}
@@ -300,8 +300,8 @@ export default function ObjectivesClient({
                         px-4 py-2 rounded text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
                         ${
                           statusFilter === filter.value
-                            ? 'bg-[#FEF2F2] text-[#DD3A44] border border-[#DD3A44]'
-                            : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
+                            ? 'bg-[#F3F3F3] text-[#1A1C1C] border border-[#1A1C1C]'
+                            : 'bg-white text-[#474747] hover:bg-[#F3F3F3]'
                         }
                       `}
                     >
@@ -315,7 +315,7 @@ export default function ObjectivesClient({
                   <select
                     value={spaceFilter}
                     onChange={(e) => setSpaceFilter(e.target.value)}
-                    className="px-4 py-2 bg-white  rounded text-[13px] text-[#525252] focus:outline-none focus:border-[#DD3A44] focus:ring-2 focus:ring-[#DD3A44] focus:ring-offset-2 min-h-[44px] w-full sm:w-auto"
+                    className="px-4 py-2 bg-white  rounded text-[13px] text-[#474747] focus:outline-none focus:border-[#DD3A44] focus:ring-2 focus:ring-[#DD3A44] focus:ring-offset-2 min-h-[44px] w-full sm:w-auto"
                   >
                     <option value="all">All Spaces</option>
                     {spaces.map((space) => (
@@ -334,7 +334,7 @@ export default function ObjectivesClient({
                 <p className="text-[15px] text-[#A3A3A3] mb-6">No objectives found</p>
                 <button
                   onClick={() => setIsFormOpen(true)}
-                  className="px-6 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium transition-colors min-h-[44px]"
+                  className="px-6 py-3 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium transition-colors min-h-[44px]"
                 >
                   Create First Objective
                 </button>

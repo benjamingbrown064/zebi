@@ -127,7 +127,7 @@ export default function TasksPage() {
       1: 'bg-red-100 text-red-700 border-red-200',
       2: 'bg-orange-100 text-orange-700 border-orange-200',
       3: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-      4: 'bg-[#e6f4f4] text-[#006766] border-transparent',
+      4: 'bg-[#F3F3F3] text-[#474747] border-transparent',
     }
     const labels = { 1: 'P1', 2: 'P2', 3: 'P3', 4: 'P4' }
     return (
@@ -159,7 +159,7 @@ export default function TasksPage() {
     const statusColor = statusColors[status.type] || '#A3A3A3'
     
     return (
-      <span className="flex items-center gap-1.5 text-[12px] text-[#525252]">
+      <span className="flex items-center gap-1.5 text-[12px] text-[#474747]">
         <FaCircle className="text-[8px]" style={{ color: statusColor }} />
         {status.name}
       </span>
@@ -183,7 +183,7 @@ export default function TasksPage() {
           primaryAction={
             <button
               onClick={() => setIsQuickAddOpen(true)}
-              className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
+              className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
             >
               <FaPlus className="text-sm" />
               <span className="hidden sm:inline">Add Task</span>
@@ -205,7 +205,7 @@ export default function TasksPage() {
         >
           {/* Filters Panel - Mobile friendly */}
           {isFiltersOpen && (
-            <div className="mt-4 p-4 bg-[#F5F5F5] rounded space-y-4">
+            <div className="mt-4 p-4 bg-[#F3F3F3] rounded space-y-4">
               {/* Priority Filter */}
               <div>
                 <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
@@ -229,8 +229,8 @@ export default function TasksPage() {
                       }}
                       className={`px-3 py-2 rounded-md text-[13px] font-medium transition min-h-[44px] ${
                         selectedPriorities.includes(p.num)
-                          ? 'bg-[#DD3A44] text-white'
-                          : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
+                          ? 'bg-[#000000] text-white'
+                          : 'bg-white text-[#474747] hover:bg-[#F3F3F3]'
                       }`}
                     >
                       {p.label}
@@ -257,8 +257,8 @@ export default function TasksPage() {
                       }}
                       className={`px-3 py-2 rounded-md text-[13px] font-medium transition min-h-[44px] ${
                         selectedStatuses.includes(status.id)
-                          ? 'bg-[#DD3A44] text-white'
-                          : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
+                          ? 'bg-[#000000] text-white'
+                          : 'bg-white text-[#474747] hover:bg-[#F3F3F3]'
                       }`}
                     >
                       {status.name}
@@ -275,7 +275,7 @@ export default function TasksPage() {
                     setSelectedPriorities([])
                     setSelectedStatuses([])
                   }}
-                  className="w-full px-4 py-2 text-[13px] bg-white text-[#525252]  rounded hover:bg-[#F5F5F5] transition-colors font-medium min-h-[44px]"
+                  className="w-full px-4 py-2 text-[13px] bg-white text-[#474747]  rounded hover:bg-[#F3F3F3] transition-colors font-medium min-h-[44px]"
                 >
                   Clear all filters
                 </button>
@@ -291,7 +291,7 @@ export default function TasksPage() {
                 <p className="text-[15px] text-[#A3A3A3] mb-6">No tasks found</p>
                 <button
                   onClick={() => setIsQuickAddOpen(true)}
-                  className="px-6 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium transition-colors min-h-[44px]"
+                  className="px-6 py-3 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium transition-colors min-h-[44px]"
                 >
                   Create First Task
                 </button>
@@ -306,7 +306,7 @@ export default function TasksPage() {
                       title={task.title}
                       description={task.description || undefined}
                       icon={
-                        <div className="w-10 h-10 rounded-md bg-[#F5F5F5] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-md bg-[#F3F3F3] flex items-center justify-center">
                           {task.completedAt ? (
                             <FaCheckCircle className="text-[#10B981]" />
                           ) : (
@@ -381,7 +381,7 @@ export default function TasksPage() {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="text-[#A3A3A3] hover:text-[#525252] min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="text-[#A3A3A3] hover:text-[#474747] min-h-[44px] min-w-[44px] flex items-center justify-center"
                 >
                   ✕
                 </button>

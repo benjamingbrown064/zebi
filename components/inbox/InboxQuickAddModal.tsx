@@ -108,14 +108,14 @@ export default function InboxQuickAddModal({
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-[#1c1b1b]">Quick Add</h2>
-              <p className="text-sm text-[#5a5757] mt-1">Capture anything, organize later</p>
+              <h2 className="text-xl font-bold text-[#1A1C1C]">Quick Add</h2>
+              <p className="text-sm text-[#474747] mt-1">Capture anything, organize later</p>
             </div>
             <button
               onClick={onClose}
               className="p-2 hover:bg-[#F3F3F3] rounded transition"
             >
-              <FontAwesomeIcon icon={faTimes} className="text-[#5a5757]" />
+              <FontAwesomeIcon icon={faTimes} className="text-[#474747]" />
             </button>
           </div>
 
@@ -125,8 +125,8 @@ export default function InboxQuickAddModal({
               onClick={() => setMode('text')}
               className={`flex-1 px-4 py-2 rounded text-sm font-medium transition ${
                 mode === 'text'
-                  ? 'bg-[#DD3A44] text-white'
-                  : 'bg-[#F3F3F3] text-[#5a5757] hover:bg-[#e8e4e4]'
+                  ? 'bg-[#000000] text-white'
+                  : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#e8e4e4]'
               }`}
             >
               <FontAwesomeIcon icon={faKeyboard} className="mr-2" />
@@ -136,8 +136,8 @@ export default function InboxQuickAddModal({
               onClick={() => setMode('voice')}
               className={`flex-1 px-4 py-2 rounded text-sm font-medium transition ${
                 mode === 'voice'
-                  ? 'bg-[#DD3A44] text-white'
-                  : 'bg-[#F3F3F3] text-[#5a5757] hover:bg-[#e8e4e4]'
+                  ? 'bg-[#000000] text-white'
+                  : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#e8e4e4]'
               }`}
             >
               <FontAwesomeIcon icon={faMicrophone} className="mr-2" />
@@ -156,7 +156,7 @@ export default function InboxQuickAddModal({
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type anything... notes, tasks, ideas, reminders"
-                className="w-full h-48 p-4 rounded resize-none focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b] placeholder-gray-400"
+                className="w-full h-48 p-4 rounded resize-none focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1A1C1C] placeholder-gray-400"
               />
               <div className="text-xs text-[#A3A3A3] mt-2">
                 Tip: Press Cmd/Ctrl + Enter to save quickly
@@ -166,21 +166,21 @@ export default function InboxQuickAddModal({
             <div className="flex flex-col items-center justify-center py-12">
               {!isRecording ? (
                 <>
-                  <div className="w-24 h-24 bg-[#DD3A44]/10 rounded-full flex items-center justify-center mb-4">
+                  <div className="w-24 h-24 bg-[#000000]/10 rounded-full flex items-center justify-center mb-4">
                     <FontAwesomeIcon 
                       icon={faMicrophone} 
-                      className="text-4xl text-[#DD3A44]" 
+                      className="text-4xl text-[#1A1C1C]" 
                     />
                   </div>
-                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-2">
+                  <h3 className="text-lg font-semibold text-[#1A1C1C] mb-2">
                     Ready to capture voice
                   </h3>
-                  <p className="text-[#5a5757] text-center mb-6 max-w-sm">
+                  <p className="text-[#474747] text-center mb-6 max-w-sm">
                     Tap the button below and speak your thoughts. We'll transcribe and save it for you.
                   </p>
                   <button
                     onClick={startRecording}
-                    className="px-8 py-4 bg-[#DD3A44] text-white rounded hover:opacity-90 transition font-medium"
+                    className="px-8 py-4 bg-[#000000] text-white rounded hover:opacity-90 transition font-medium"
                   >
                     Start Recording
                   </button>
@@ -193,10 +193,10 @@ export default function InboxQuickAddModal({
                       className="text-4xl text-red-600" 
                     />
                   </div>
-                  <h3 className="text-lg font-semibold text-[#1c1b1b] mb-2">
+                  <h3 className="text-lg font-semibold text-[#1A1C1C] mb-2">
                     Recording...
                   </h3>
-                  <p className="text-[#5a5757] text-center mb-6">
+                  <p className="text-[#474747] text-center mb-6">
                     Speak clearly and tap stop when finished
                   </p>
                   <button
@@ -215,7 +215,7 @@ export default function InboxQuickAddModal({
         <div className="p-6 border-t border-gray-100 flex justify-between items-center">
           <button
             onClick={onClose}
-            className="px-6 py-2 text-[#5a5757] hover:bg-[#F3F3F3] rounded transition font-medium"
+            className="px-6 py-2 text-[#474747] hover:bg-[#F3F3F3] rounded transition font-medium"
           >
             Cancel
           </button>
@@ -225,7 +225,7 @@ export default function InboxQuickAddModal({
               disabled={!input.trim()}
               className={`px-6 py-2 rounded font-medium transition ${
                 input.trim()
-                  ? 'bg-[#DD3A44] text-white hover:opacity-90'
+                  ? 'bg-[#000000] text-white hover:opacity-90'
                   : 'bg-[#F3F3F3] text-[#C4C0C0] cursor-not-allowed'
               }`}
             >

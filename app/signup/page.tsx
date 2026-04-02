@@ -117,26 +117,26 @@ export default function SignupPage() {
         {/* Logo */}
         <div className="text-center mb-12">
           <div className="inline-block mb-6">
-            <div className="w-20 h-20 bg-[#DD3A44] rounded flex items-center justify-center">
+            <div className="w-20 h-20 bg-[#000000] rounded flex items-center justify-center">
               <span className="font-semibold text-white text-3xl">Z</span>
             </div>
           </div>
           <h1 className="text-4xl font-semibold text-[#1A1A1A] mb-2">
             Zebi
           </h1>
-          <p className="text-[#525252] text-[15px]">AI Business Operating System</p>
+          <p className="text-[#474747] text-[15px]">AI Business Operating System</p>
         </div>
 
         {/* Form Card */}
         <div className="bg-white  rounded p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-medium text-[#1A1A1A] mb-2">Get started</h2>
-            <p className="text-[#525252] text-[15px]">Create your account and workspace</p>
+            <p className="text-[#474747] text-[15px]">Create your account and workspace</p>
           </div>
 
           {error && (
-            <div className="p-4 bg-[#FEF2F2] border-l-2 border-[#DD3A44] rounded-md mb-6">
-              <p className="text-[13px] text-[#DD3A44] font-medium">{error}</p>
+            <div className="p-4 bg-[#F3F3F3] border-l-2 border-[#1A1C1C] rounded-md mb-6">
+              <p className="text-[13px] text-[#1A1C1C] font-medium">{error}</p>
             </div>
           )}
 
@@ -152,7 +152,7 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
-                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#1A1C1C] transition"
               />
             </div>
 
@@ -167,7 +167,7 @@ export default function SignupPage() {
                 onChange={(e) => setWorkspaceName(e.target.value)}
                 disabled={loading}
                 required
-                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#1A1C1C] transition"
               />
             </div>
 
@@ -182,7 +182,7 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 required
-                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#1A1C1C] transition"
               />
             </div>
 
@@ -197,25 +197,25 @@ export default function SignupPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loading}
                 required
-                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#1A1C1C] transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[15px] transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              className="w-full px-5 py-3 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[15px] transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
 
           <div className="mt-6 pt-6 text-center">
-            <p className="text-[13px] text-[#525252]">
+            <p className="text-[13px] text-[#474747]">
               Already have an account?{' '}
               <Link 
                 href="/login" 
-                className="text-[#DD3A44] hover:text-[#C7333D] font-medium transition"
+                className="text-[#1A1C1C] hover:text-[#474747] font-medium transition"
               >
                 Sign in
               </Link>
@@ -225,9 +225,9 @@ export default function SignupPage() {
 
         <p className="text-center text-[12px] text-[#A3A3A3] mt-8 px-4">
           By creating an account, you agree to our{' '}
-          <a href="#" className="hover:text-[#525252] transition">Terms</a>
+          <a href="#" className="hover:text-[#474747] transition">Terms</a>
           {' '}and{' '}
-          <a href="#" className="hover:text-[#525252] transition">Privacy Policy</a>
+          <a href="#" className="hover:text-[#474747] transition">Privacy Policy</a>
         </p>
       </div>
     </div>

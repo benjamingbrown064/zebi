@@ -182,7 +182,7 @@ export default function MentionInput({
                 {getInitials(user)}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium text-[#1c1b1b] truncate">
+                <div className="text-sm font-medium text-[#1A1C1C] truncate">
                   {getUserDisplayName(user)}
                 </div>
                 {user.email && (

@@ -23,8 +23,8 @@ export default function ViewToggle({
         onClick={() => onViewChange('active')}
         className={`px-4 py-2 rounded-md font-medium transition ${
           activeView === 'active'
-            ? 'bg-white text-[#1c1b1b] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
-            : 'text-[#5a5757] hover:text-[#1c1b1b]'
+            ? 'bg-white text-[#1A1C1C] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
+            : 'text-[#474747] hover:text-[#1A1C1C]'
         }`}
       >
         Active
@@ -34,13 +34,13 @@ export default function ViewToggle({
         onClick={() => onViewChange('completed')}
         className={`px-4 py-2 rounded-md font-medium transition ${
           activeView === 'completed'
-            ? 'bg-white text-[#1c1b1b] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
-            : 'text-[#5a5757] hover:text-[#1c1b1b]'
+            ? 'bg-white text-[#1A1C1C] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
+            : 'text-[#474747] hover:text-[#1A1C1C]'
         }`}
       >
         Completed
         {completedCount > 0 && (
-          <span className="ml-2 text-xs bg-gray-300 text-[#5a5757] rounded-full px-2 py-0.5">
+          <span className="ml-2 text-xs bg-gray-300 text-[#474747] rounded-full px-2 py-0.5">
             {completedCount}
           </span>
         )}
@@ -50,13 +50,13 @@ export default function ViewToggle({
         onClick={() => onViewChange('archived')}
         className={`px-4 py-2 rounded-md font-medium transition ${
           activeView === 'archived'
-            ? 'bg-white text-[#1c1b1b] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
-            : 'text-[#5a5757] hover:text-[#1c1b1b]'
+            ? 'bg-white text-[#1A1C1C] shadow-[0_1px_3px_rgba(28,27,27,0.06)]'
+            : 'text-[#474747] hover:text-[#1A1C1C]'
         }`}
       >
         Archived
         {archivedCount > 0 && (
-          <span className="ml-2 text-xs bg-gray-300 text-[#5a5757] rounded-full px-2 py-0.5">
+          <span className="ml-2 text-xs bg-gray-300 text-[#474747] rounded-full px-2 py-0.5">
             {archivedCount}
           </span>
         )}

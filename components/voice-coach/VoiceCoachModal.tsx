@@ -332,7 +332,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
           <div className="py-8">
             <div className="mb-8 text-center">
               <p className="text-lg text-[#1A1A1A] mb-2">{openingQuestion}</p>
-              <p className="text-sm text-[#5a5757] mb-4">Question 1 of 2 (required)</p>
+              <p className="text-sm text-[#474747] mb-4">Question 1 of 2 (required)</p>
               <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded">
                 <p className="text-xs text-blue-800">
                   💡 <strong>Tip:</strong> Describe your goal clearly. We'll ask about your progress next.
@@ -353,7 +353,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
           <div className="py-8">
             <div className="mb-8 text-center">
               <p className="text-lg text-[#1A1A1A] mb-2">{openingQuestion}</p>
-              <p className="text-sm text-[#5a5757]">Speak naturally...</p>
+              <p className="text-sm text-[#474747]">Speak naturally...</p>
             </div>
             <Recorder
               onRecordingComplete={handleRecordingComplete}
@@ -363,7 +363,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
             {transcript && (
               <div className="mt-6 p-4 bg-[#F3F3F3] rounded">
                 <p className="text-xs text-[#A3A3A3] mb-2">Transcript:</p>
-                <p className="text-sm text-[#5a5757]">{transcript}</p>
+                <p className="text-sm text-[#474747]">{transcript}</p>
               </div>
             )}
           </div>
@@ -376,11 +376,11 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
               <Spinner size="lg" color="default" />
             </div>
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Converting speech to text...</h3>
-            <p className="text-sm text-[#5a5757]">Using OpenAI Whisper</p>
+            <p className="text-sm text-[#474747]">Using OpenAI Whisper</p>
             <div className="mt-4 flex items-center justify-center gap-2">
-              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+              <div className="w-2 h-2 bg-[#000000] rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-[#000000] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 bg-[#000000] rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
             </div>
           </div>
         );
@@ -390,7 +390,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
           <div className="py-8">
             <div className="mb-8 text-center">
               <p className="text-lg text-[#1A1A1A] mb-2">{contextQuestion}</p>
-              <p className="text-sm text-[#5a5757] mb-4">Question 2 of 2 (required)</p>
+              <p className="text-sm text-[#474747] mb-4">Question 2 of 2 (required)</p>
               <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded">
                 <p className="text-xs text-blue-800">
                   💡 <strong>Tip:</strong> Mention what you've already done, any blockers you're facing, and ideas you're considering.
@@ -406,7 +406,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
             {transcript && (
               <div className="mt-6 p-4 bg-[#F3F3F3] rounded max-h-40 overflow-y-auto">
                 <p className="text-xs text-[#A3A3A3] mb-2">Your goal:</p>
-                <p className="text-sm text-[#5a5757] whitespace-pre-wrap">{transcript}</p>
+                <p className="text-sm text-[#474747] whitespace-pre-wrap">{transcript}</p>
               </div>
             )}
           </div>
@@ -419,7 +419,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
               <p className="text-lg text-[#1A1A1A] mb-2">
                 {followUpQuestions[currentQuestionIndex]}
               </p>
-              <p className="text-sm text-[#5a5757]">
+              <p className="text-sm text-[#474747]">
                 Question {currentQuestionIndex + 1} of {followUpQuestions.length}
               </p>
             </div>
@@ -432,7 +432,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
             {transcript && (
               <div className="mt-6 p-4 bg-[#F3F3F3] rounded max-h-40 overflow-y-auto">
                 <p className="text-xs text-[#A3A3A3] mb-2">Conversation so far:</p>
-                <p className="text-sm text-[#5a5757] whitespace-pre-wrap">{transcript}</p>
+                <p className="text-sm text-[#474747] whitespace-pre-wrap">{transcript}</p>
               </div>
             )}
           </div>
@@ -445,7 +445,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
               <Spinner size="lg" color="default" />
             </div>
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Structuring your plan...</h3>
-            <p className="text-sm text-[#5a5757] mb-4">AI is analyzing your goal</p>
+            <p className="text-sm text-[#474747] mb-4">AI is analyzing your goal</p>
             <div className="max-w-md mx-auto space-y-2 text-xs text-[#A3A3A3]">
               <div className="flex items-center justify-center gap-2">
                 <div className="w-1.5 h-1.5 bg-[#f0fafa]0 rounded-full"></div>
@@ -505,14 +505,14 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
                         <h4 className="text-sm font-semibold text-[#A3A3A3]">🎯 GOAL TO CREATE</h4>
                       </div>
                       <h5 className="text-lg font-semibold text-[#1A1A1A] mb-2">{proposal.goal.name}</h5>
-                      <p className="text-sm text-[#5a5757] mb-2">{proposal.goal.description}</p>
+                      <p className="text-sm text-[#474747] mb-2">{proposal.goal.description}</p>
                       {proposal.goal.successCriteria && (
-                        <p className="text-sm text-[#5a5757] mb-1">
+                        <p className="text-sm text-[#474747] mb-1">
                           <span className="font-medium">Success:</span> {proposal.goal.successCriteria}
                         </p>
                       )}
                       {proposal.goal.targetDate && (
-                        <p className="text-sm text-[#5a5757]">
+                        <p className="text-sm text-[#474747]">
                           <span className="font-medium">Target:</span> {new Date(proposal.goal.targetDate).toLocaleDateString()}
                         </p>
                       )}
@@ -525,7 +525,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
                     <div className="space-y-2">
                       {proposal.objectives.map((obj, index) => (
                         <div key={index} className="flex items-start gap-2">
-                          <span className="text-sm text-[#5a5757]">{index + 1}.</span>
+                          <span className="text-sm text-[#474747]">{index + 1}.</span>
                           <div className="flex-1">
                             <p className="text-sm text-[#1A1A1A]">
                               {obj.priority === 'high' && '⚠️ '}
@@ -631,7 +631,7 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
               <Spinner size="lg" color="default" />
             </div>
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Creating your plan...</h3>
-            <p className="text-sm text-[#5a5757] mb-4">Adding to your workspace</p>
+            <p className="text-sm text-[#474747] mb-4">Adding to your workspace</p>
             <div className="max-w-md mx-auto space-y-2 text-xs text-[#A3A3A3]">
               <div className="flex items-center justify-center gap-2">
                 <div className="w-1.5 h-1.5 bg-[#f0fafa]0 rounded-full animate-pulse"></div>
@@ -665,26 +665,26 @@ export default function VoiceCoachModal({ isOpen, onClose, onSuccess }: VoiceCoa
             
             {createdCounts && (
               <div className="mb-4 max-w-sm mx-auto space-y-2">
-                <div className="flex items-center justify-center gap-2 text-sm text-[#5a5757]">
-                  <span className="w-2 h-2 bg-[#DD3A44] rounded-full"></span>
+                <div className="flex items-center justify-center gap-2 text-sm text-[#474747]">
+                  <span className="w-2 h-2 bg-[#000000] rounded-full"></span>
                   <span><strong>{createdCounts.goals}</strong> goal</span>
                 </div>
-                <div className="flex items-center justify-center gap-2 text-sm text-[#5a5757]">
+                <div className="flex items-center justify-center gap-2 text-sm text-[#474747]">
                   <span className="w-2 h-2 bg-[#f0fafa]0 rounded-full"></span>
                   <span><strong>{createdCounts.objectives}</strong> {createdCounts.objectives === 1 ? 'objective' : 'objectives'}</span>
                 </div>
-                <div className="flex items-center justify-center gap-2 text-sm text-[#5a5757]">
+                <div className="flex items-center justify-center gap-2 text-sm text-[#474747]">
                   <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
                   <span><strong>{createdCounts.projects}</strong> {createdCounts.projects === 1 ? 'project' : 'projects'}</span>
                 </div>
-                <div className="flex items-center justify-center gap-2 text-sm text-[#5a5757]">
+                <div className="flex items-center justify-center gap-2 text-sm text-[#474747]">
                   <span className="w-2 h-2 bg-[#f0fafa]0 rounded-full"></span>
                   <span><strong>{createdCounts.tasks}</strong> {createdCounts.tasks === 1 ? 'task' : 'tasks'}</span>
                 </div>
               </div>
             )}
             
-            <p className="text-sm text-[#5a5757] animate-pulse">Opening your goal...</p>
+            <p className="text-sm text-[#474747] animate-pulse">Opening your goal...</p>
           </div>
         );
 

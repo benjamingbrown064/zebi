@@ -158,7 +158,7 @@ export default function InboxPage() {
   const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       {/* Single Sidebar render */}
       <Sidebar
         workspaceName="Zebi"
@@ -174,14 +174,14 @@ export default function InboxPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#525252] border border-[#E5E5E5] rounded font-medium text-[13px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#F3F3F3] hover:bg-[#E5E5E5] text-[#474747] border border-[#E5E5E5] rounded font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaFilter />
                 {!isMobile && <span>Filter</span>}
               </button>
               <button
                 onClick={() => setIsQuickAddOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaPlus />
                 {!isMobile && <span>Quick Add</span>}
@@ -215,19 +215,19 @@ export default function InboxPage() {
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
                 <div className="bg-white rounded-xl p-4">
                   <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Total</div>
-                  <div className="text-2xl font-bold text-[#1c1b1b]">{stats.total}</div>
+                  <div className="text-2xl font-bold text-[#1A1C1C]">{stats.total}</div>
                 </div>
                 <div className="bg-white rounded-xl p-4">
                   <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Unprocessed</div>
-                  <div className="text-2xl font-bold text-[#DD3A44]">{stats.unprocessed}</div>
+                  <div className="text-2xl font-bold text-[#1A1C1C]">{stats.unprocessed}</div>
                 </div>
                 <div className="bg-white rounded-xl p-4">
                   <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Processed</div>
-                  <div className="text-2xl font-bold text-[#1c1b1b]">{stats.processed}</div>
+                  <div className="text-2xl font-bold text-[#1A1C1C]">{stats.processed}</div>
                 </div>
                 <div className="bg-white rounded-xl p-4">
                   <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Converted</div>
-                  <div className="text-2xl font-bold text-[#006766]">{stats.converted}</div>
+                  <div className="text-2xl font-bold text-[#1A1C1C]">{stats.converted}</div>
                 </div>
                 <div className="bg-white rounded-xl p-4">
                   <div className="text-[11px] font-medium uppercase tracking-wide text-[#A3A3A3] mb-1">Completed</div>
@@ -246,8 +246,8 @@ export default function InboxPage() {
                       onClick={() => setStatusFilter(status)}
                       className={`px-3 py-1.5 text-[13px] rounded-md transition font-medium ${
                         statusFilter === status
-                          ? 'bg-[#DD3A44] text-white'
-                          : 'bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]'
+                          ? 'bg-[#000000] text-white'
+                          : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]'
                       }`}
                     >
                       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -261,7 +261,7 @@ export default function InboxPage() {
             {items.length === 0 ? (
               <div className="bg-white rounded-xl p-12 text-center">
                 <FaInbox className="text-5xl text-[#E5E5E5] mx-auto mb-4" />
-                <h3 className="text-[17px] font-semibold text-[#1c1b1b] mb-2">
+                <h3 className="text-[17px] font-semibold text-[#1A1C1C] mb-2">
                   {statusFilter === 'all' ? 'Your inbox is empty' : `No ${statusFilter} items`}
                 </h3>
                 <p className="text-[13px] text-[#A3A3A3] mb-6">
@@ -270,7 +270,7 @@ export default function InboxPage() {
                 {statusFilter === 'all' && (
                   <button
                     onClick={() => setIsQuickAddOpen(true)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
                   >
                     <FaPlus />
                     Quick Add
@@ -316,7 +316,7 @@ export default function InboxPage() {
             {isMobile && (
               <button
                 onClick={() => setIsQuickAddOpen(true)}
-                className="fixed bottom-6 right-6 w-14 h-14 bg-[#DD3A44] text-white rounded-full shadow-lg hover:bg-[#C7333D] transition flex items-center justify-center z-40"
+                className="fixed bottom-6 right-6 w-14 h-14 bg-[#000000] text-white rounded-full shadow-lg hover:bg-[#1A1C1C] transition flex items-center justify-center z-40"
               >
                 <FaPlus className="text-xl" />
               </button>

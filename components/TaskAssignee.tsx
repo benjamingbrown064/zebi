@@ -84,7 +84,7 @@ export default function TaskAssignee({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+      <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
         Assigned To
       </label>
 
@@ -102,7 +102,7 @@ export default function TaskAssignee({
             <div className="w-8 h-8 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-medium flex-shrink-0">
               {getInitials(assignee)}
             </div>
-            <span className="flex-1 text-[#1c1b1b]">{getDisplayName(assignee)}</span>
+            <span className="flex-1 text-[#1A1C1C]">{getDisplayName(assignee)}</span>
             <button
               type="button"
               onClick={(e) => {
@@ -152,7 +152,7 @@ export default function TaskAssignee({
               <div className="w-7 h-7 rounded-full bg-[#F3F3F3] text-[#C4C0C0] flex items-center justify-center flex-shrink-0">
                 <FaTimes className="w-3 h-3" />
               </div>
-              <span className="text-sm text-[#5a5757]">Unassigned</span>
+              <span className="text-sm text-[#474747]">Unassigned</span>
             </button>
 
             {filteredMembers.length === 0 ? (
@@ -173,7 +173,7 @@ export default function TaskAssignee({
                     {getInitials(member)}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-[#1c1b1b] truncate">
+                    <div className="text-sm font-medium text-[#1A1C1C] truncate">
                       {getDisplayName(member)}
                     </div>
                     {member.email && (

@@ -54,7 +54,7 @@ export default function OverflowMenu({
       {buttonVariant === 'icon' ? (
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2.5 text-[#525252] hover:bg-[#F5F5F5] rounded transition min-h-[44px] min-w-[44px] flex items-center justify-center"
+          className="p-2.5 text-[#525252] hover:bg-[#F3F3F3] rounded transition min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="More actions"
         >
           <FontAwesomeIcon icon={faEllipsisVertical} className="text-lg" />
@@ -82,7 +82,7 @@ export default function OverflowMenu({
                 ${
                   action.variant === 'danger'
                     ? 'text-red-600 hover:bg-red-50'
-                    : 'text-[#525252] hover:bg-[#F5F5F5]'
+                    : 'text-[#525252] hover:bg-[#F3F3F3]'
                 }
                 ${action.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 ${index !== actions.length - 1 ? 'border-b border-[#E5E5E5]' : ''}

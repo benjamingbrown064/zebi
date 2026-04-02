@@ -115,7 +115,7 @@ export default function NewProjectPage() {
   const mainPaddingClass = isMobile ? 'pt-[64px]' : sidebarCollapsed ? 'ml-16' : 'ml-64';
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
@@ -152,7 +152,7 @@ export default function NewProjectPage() {
                   {/* Project Name */}
                   <div>
                     <label className="block text-[13px] font-medium text-[#1A1A1A] mb-2">
-                      Project Name <span className="text-[#DD3A44]">*</span>
+                      Project Name <span className="text-[#1A1C1C]">*</span>
                     </label>
                     <Input
                       value={name}
@@ -275,14 +275,14 @@ export default function NewProjectPage() {
                       type="button"
                       variant="flat"
                       onPress={() => router.back()}
-                      className="flex-1 sm:flex-none h-12 text-[15px] font-medium bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]"
+                      className="flex-1 sm:flex-none h-12 text-[15px] font-medium bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       isLoading={loading}
-                      className="flex-1 sm:flex-none h-12 text-[15px] font-medium bg-[#DD3A44] text-white hover:bg-[#C7333D]"
+                      className="flex-1 sm:flex-none h-12 text-[15px] font-medium bg-[#000000] text-white hover:bg-[#1A1C1C]"
                     >
                       Create Project
                     </Button>

@@ -82,13 +82,13 @@ export default function MilestoneTimeline({
             <div className={`flex-1 p-4 border-2 rounded ${getStatusColor(milestone)}`}>
               <div className="flex items-start justify-between gap-4 mb-2">
                 <div className="flex-1">
-                  <h4 className="font-semibold text-[#1c1b1b]">{milestone.title}</h4>
-                  <p className="text-sm text-[#5a5757] mt-1">
+                  <h4 className="font-semibold text-[#1A1C1C]">{milestone.title}</h4>
+                  <p className="text-sm text-[#474747] mt-1">
                     Target: <strong>{formatValue(milestone.targetValue)}</strong>
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-[#5a5757]">
+                  <p className="text-sm text-[#474747]">
                     {formatDate(milestone.targetDate)}
                   </p>
                   {!isCompleted && (
@@ -107,7 +107,7 @@ export default function MilestoneTimeline({
               {/* Progress toward this milestone */}
               {!isCompleted && currentValue < milestone.targetValue && (
                 <div className="mt-2">
-                  <div className="flex items-center justify-between text-xs text-[#5a5757] mb-1">
+                  <div className="flex items-center justify-between text-xs text-[#474747] mb-1">
                     <span>Progress</span>
                     <span>
                       {formatValue(milestone.targetValue - currentValue)} to go

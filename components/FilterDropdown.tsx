@@ -58,7 +58,7 @@ export default function FilterDropdown({
         className={`flex items-center gap-2 px-3 py-3 rounded border transition min-h-[44px] ${
           activeFilter
             ? 'bg-accent-50 border-accent-200 text-accent-700'
-            : 'bg-white border-gray-200 text-[#5a5757] hover:bg-[#F3F3F3]'
+            : 'bg-white border-gray-200 text-[#474747] hover:bg-[#F3F3F3]'
         }`}
       >
         <FaFilter className="w-3.5 h-3.5" />
@@ -86,7 +86,7 @@ export default function FilterDropdown({
           <button
             onClick={() => handleSelect(null)}
             className={`w-full px-4 py-3 text-left text-sm hover:bg-[#F3F3F3] transition flex items-center gap-3 min-h-[44px] ${
-              !activeFilterId ? 'bg-accent-50 text-accent-700' : 'text-[#5a5757]'
+              !activeFilterId ? 'bg-accent-50 text-accent-700' : 'text-[#474747]'
             }`}
           >
             <span className="flex-1">All tasks</span>
@@ -106,7 +106,7 @@ export default function FilterDropdown({
               key={filter.id}
               onClick={() => handleSelect(filter.id)}
               className={`w-full px-4 py-3 text-left text-sm hover:bg-[#F3F3F3] transition flex items-center gap-3 min-h-[44px] ${
-                activeFilterId === filter.id ? 'bg-accent-50 text-accent-700' : 'text-[#5a5757]'
+                activeFilterId === filter.id ? 'bg-accent-50 text-accent-700' : 'text-[#474747]'
               }`}
             >
               <span className="flex-1 truncate">{filter.name}</span>
@@ -129,7 +129,7 @@ export default function FilterDropdown({
           {/* Manage Filters Link */}
           <button
             onClick={handleManage}
-            className="w-full px-4 py-3 text-left text-sm text-[#5a5757] hover:bg-[#F3F3F3] transition flex items-center gap-3 min-h-[44px]"
+            className="w-full px-4 py-3 text-left text-sm text-[#474747] hover:bg-[#F3F3F3] transition flex items-center gap-3 min-h-[44px]"
           >
             <FaCog className="w-3.5 h-3.5" />
             <span>Manage filters</span>

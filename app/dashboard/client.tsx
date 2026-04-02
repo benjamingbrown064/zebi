@@ -153,7 +153,7 @@ export default function DashboardClient({
               <div className="flex items-center gap-2 md:gap-3 w-full md:w-auto">
                 <button
                   onClick={() => setShowCompletedModal(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md text-[12px] md:text-[13px] font-medium text-[#474747] hover:bg-[#F3F3F3] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <FaCheck className="text-[#10B981]" />
                   <span className="hidden sm:inline">Recently Completed</span>
@@ -162,7 +162,7 @@ export default function DashboardClient({
                 
                 <button
                   onClick={() => setShowBotActivityModal(true)}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md text-[12px] md:text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md text-[12px] md:text-[13px] font-medium text-[#474747] hover:bg-[#F3F3F3] transition-colors flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <FaRobot className="text-[#DD3A44]" />
                   <span className="hidden sm:inline">Bot Activity</span>
@@ -171,7 +171,7 @@ export default function DashboardClient({
                 
                 <button
                   onClick={() => router.push('/brain-dump')}
-                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md bg-[#DD3A44] hover:bg-[#C7333D] text-white text-[12px] md:text-[13px] font-medium transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+                  className="flex-1 md:flex-none px-3 md:px-4 py-2 rounded-md bg-[#000000] hover:bg-[#1A1C1C] text-white text-[12px] md:text-[13px] font-medium transition-colors flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <FaMicrophone />
                   <span className="hidden sm:inline">Brain Dump</span>
@@ -324,7 +324,7 @@ function TodaysPlanCard({
         {!isEmpty && (
           <button
             onClick={onPlanDay}
-            className="px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors"
+            className="px-4 py-2 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] transition-colors"
           >
             Edit Plan
           </button>
@@ -335,7 +335,7 @@ function TodaysPlanCard({
       {aiSuggestionsCount > 0 && (
         <button
           onClick={onShowSuggestions}
-          className="w-full mb-6 p-4 bg-[#F5F5F5] hover:bg-[#E5E5E5]  rounded transition-colors text-left"
+          className="w-full mb-6 p-4 bg-[#F3F3F3] hover:bg-[#E5E5E5]  rounded transition-colors text-left"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -355,13 +355,13 @@ function TodaysPlanCard({
       {isEmpty ? (
         /* Empty State */
         <div className="text-center py-12">
-          <div className="w-16 h-16 rounded-full bg-[#F5F5F5] flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-full bg-[#F3F3F3] flex items-center justify-center mx-auto mb-4">
             <FaCalendarDay className="text-[#A3A3A3] text-2xl" />
           </div>
-          <p className="text-[15px] text-[#525252] mb-6">Plan your day to get started</p>
+          <p className="text-[15px] text-[#474747] mb-6">Plan your day to get started</p>
           <button
             onClick={onPlanDay}
-            className="px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[15px] transition-colors"
+            className="px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[15px] transition-colors"
           >
             Select Tasks
           </button>
@@ -427,7 +427,7 @@ function TodaysPlanCard({
           {/* Additional Tasks (collapsible, lower emphasis) */}
           {additionalTasks.length > 0 && (
             <details className="group">
-              <summary className="cursor-pointer text-[11px] font-medium text-[#A3A3A3] uppercase tracking-wide mb-2 flex items-center gap-2 hover:text-[#525252] transition-colors">
+              <summary className="cursor-pointer text-[11px] font-medium text-[#A3A3A3] uppercase tracking-wide mb-2 flex items-center gap-2 hover:text-[#474747] transition-colors">
                 <span className="transform group-open:rotate-90 transition-transform">▶</span>
                 Additional ({additionalTasks.length})
               </summary>
@@ -436,9 +436,9 @@ function TodaysPlanCard({
                   <div
                     key={task.id}
                     onClick={() => onTaskClick(task.id)}
-                    className="p-2.5 bg-white  rounded-md cursor-pointer hover:bg-[#F5F5F5] transition-colors"
+                    className="p-2.5 bg-white  rounded-md cursor-pointer hover:bg-[#F3F3F3] transition-colors"
                   >
-                    <p className="text-[13px] text-[#525252]">{task.title}</p>
+                    <p className="text-[13px] text-[#474747]">{task.title}</p>
                   </div>
                 ))}
               </div>
@@ -493,7 +493,7 @@ function ObjectivesCard({
               {/* Space */}
               {obj.spaceName && (
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-5 h-5 rounded-[4px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
+                  <div className="w-5 h-5 rounded-[4px] bg-[#F3F3F3] flex items-center justify-center flex-shrink-0">
                     <FaBuilding className="text-[#737373] text-[10px]" />
                   </div>
                   <span className="text-[12px] font-medium text-[#737373]">{obj.spaceName}</span>
@@ -505,7 +505,7 @@ function ObjectivesCard({
 
               {/* Progress */}
               <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-[13px] text-[#525252]">
+                <span className="text-[13px] text-[#474747]">
                   {obj.currentValue} / {obj.targetValue} {obj.unit}
                 </span>
               </div>
@@ -569,11 +569,11 @@ function ProjectsCard({
                 <h4 className="text-[15px] font-medium text-[#1A1A1A] truncate flex-1">
                   {project.name}
                 </h4>
-                <span className="text-[13px] text-[#525252] ml-3">{project.progressPercent}%</span>
+                <span className="text-[13px] text-[#474747] ml-3">{project.progressPercent}%</span>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-[#F5F5F5] rounded-full h-1.5 mb-2">
+              <div className="w-full bg-[#F3F3F3] rounded-full h-1.5 mb-2">
                 <div
                   className="bg-[#10B981] h-1.5 rounded-full transition-all"
                   style={{ width: `${project.progressPercent}%` }}
@@ -605,7 +605,7 @@ function Modal({ children, onClose, title }: { children: React.ReactNode; onClos
           <h3 className="text-[18px] font-medium text-[#1A1A1A]">{title}</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-md hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-md hover:bg-[#F3F3F3] flex items-center justify-center transition-colors"
           >
             <FaTimes className="text-[#A3A3A3]" />
           </button>
@@ -633,7 +633,7 @@ function CompletedModalContent({ completed }: { completed: { id: string; title: 
   return (
     <div className="space-y-2">
       {completed.map(task => (
-        <div key={task.id} className="p-4 bg-[#F5F5F5] rounded">
+        <div key={task.id} className="p-4 bg-[#F3F3F3] rounded">
           <div className="flex items-start gap-3">
             <FaCheck className="text-[#10B981] text-sm mt-1 flex-shrink-0" />
             <p className="text-[14px] text-[#1A1A1A]">{task.title}</p>
@@ -657,14 +657,14 @@ function BotActivityModalContent({ activity }: { activity: BotActivity[] }) {
   return (
     <div className="space-y-3">
       {activity.map(item => (
-        <div key={item.id} className="p-4 bg-[#ECFDF5] border border-[#A7F3D0] rounded">
+        <div key={item.id} className="p-4 bg-[#F3F3F3] border border-[#C6C6C6] rounded">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center flex-shrink-0">
               <FaRobot className="text-[#10B981] text-sm" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-medium text-[#1A1A1A] mb-1">Created task</p>
-              <p className="text-[13px] text-[#525252]">{item.title}</p>
+              <p className="text-[13px] text-[#474747]">{item.title}</p>
               {item.aiAgent && (
                 <p className="text-[12px] text-[#059669] mt-2">by {item.aiAgent}</p>
               )}
@@ -721,7 +721,7 @@ function SuggestionsModalContent({ suggestions, workspaceId, onRefresh, mode, fo
 
   return (
     <div className="space-y-4">
-      <p className="text-[14px] text-[#525252] mb-6">
+      <p className="text-[14px] text-[#474747] mb-6">
         Based on your workspace, here's what to focus on today:
       </p>
 
@@ -742,7 +742,7 @@ function SuggestionsModalContent({ suggestions, workspaceId, onRefresh, mode, fo
         const isAdding = adding === taskId
         
         return (
-          <div key={taskId} className="p-4 bg-[#F5F5F5] rounded">
+          <div key={taskId} className="p-4 bg-[#F3F3F3] rounded">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-[12px] font-medium text-[#DD3A44]">{index + 1}</span>

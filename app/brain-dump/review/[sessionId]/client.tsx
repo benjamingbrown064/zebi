@@ -292,18 +292,18 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
               onClick={() => router.push('/brain-dump')}
               className="flex items-center justify-center w-10 h-10 rounded hover:bg-[#F3F3F3] transition-colors"
             >
-              <FaChevronLeft className="text-[#5a5757]" />
+              <FaChevronLeft className="text-[#474747]" />
             </button>
             <div className="flex-1">
               <h1 className="text-2xl font-semibold text-[#1A1A1A] mb-1">Review Changes</h1>
-              <p className="text-sm text-[#5a5757]">{data.session.summary}</p>
+              <p className="text-sm text-[#474747]">{data.session.summary}</p>
             </div>
             {approvedCount > 0 && (
               <Button
                 onPress={handleExecute}
                 isDisabled={executing}
                 isLoading={executing}
-                className="bg-[#DD3A44] text-white font-medium px-6 py-2 h-11 rounded hover:bg-[#C62F3A] transition-colors"
+                className="bg-[#000000] text-white font-medium px-6 py-2 h-11 rounded hover:bg-[#C62F3A] transition-colors"
               >
                 {executing ? 'Applying...' : `Apply ${approvedCount} ${approvedCount === 1 ? 'Change' : 'Changes'}`}
               </Button>
@@ -315,9 +315,9 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
       <div className="max-w-4xl mx-auto px-8 py-8">
         {/* Execution Result */}
         {executionResult && (
-          <div className={`mb-8 rounded p-6 ${executionResult.success ? 'bg-[#f0fafa] border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+          <div className={`mb-8 rounded p-6 ${executionResult.success ? 'bg-[#F3F3F3] border border-green-200' : 'bg-red-50 border border-red-200'}`}>
             <div className="flex items-start gap-4">
-              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${executionResult.success ? 'bg-[#f0fafa]0' : 'bg-red-500'}`}>
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${executionResult.success ? 'bg-[#F3F3F3]0' : 'bg-red-500'}`}>
                 {executionResult.success ? (
                   <FaCheck className="text-white text-sm" />
                 ) : (
@@ -328,11 +328,11 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                 <h3 className={`font-semibold mb-2 ${executionResult.success ? 'text-green-900' : 'text-red-900'}`}>
                   {executionResult.success ? 'Successfully Applied' : 'Execution Failed'}
                 </h3>
-                <p className={`text-sm mb-3 ${executionResult.success ? 'text-green-800' : 'text-red-800'}`}>
+                <p className={`text-sm mb-3 ${executionResult.success ? 'text-[#1A1C1C]' : 'text-red-800'}`}>
                   {executionResult.message || executionResult.error}
                 </p>
                 {executionResult.summary && (
-                  <div className="space-y-1 text-sm text-[#5a5757]">
+                  <div className="space-y-1 text-sm text-[#474747]">
                     {executionResult.summary.createdEntities.tasks.length > 0 && (
                       <p>✓ Created {executionResult.summary.createdEntities.tasks.length} task(s)</p>
                     )}
@@ -343,7 +343,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                       <p>✓ Created {executionResult.summary.createdEntities.objectives.length} objective(s)</p>
                     )}
                     {executionResult.success && (
-                      <p className="text-[#5a5757] mt-3">Redirecting in 2 seconds...</p>
+                      <p className="text-[#474747] mt-3">Redirecting in 2 seconds...</p>
                     )}
                   </div>
                 )}
@@ -355,12 +355,12 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
         {/* Transcript */}
         <div className="mb-8 bg-white rounded p-8">
           <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Your Update</h2>
-          <p className="text-base text-[#5a5757] leading-relaxed">{data.session.transcript}</p>
+          <p className="text-base text-[#474747] leading-relaxed">{data.session.transcript}</p>
         </div>
 
         {/* No Actions */}
         {data.actions.length === 0 && (
-          <div className="bg-[#f0fafa] rounded p-8 border border-transparent">
+          <div className="bg-[#F3F3F3] rounded p-8 border border-transparent">
             <p className="text-blue-900 text-base">
               No actionable items found in your update. Try speaking more specifically about tasks, projects, or objectives.
             </p>
@@ -390,7 +390,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                   <div
                     key={action.id}
                     className={`bg-white rounded p-6 border transition-all ${
-                      isApproved ? 'border-green-500 bg-[#f0fafa]' :
+                      isApproved ? 'border-green-500 bg-[#F3F3F3]' :
                       isRejected ? 'border-gray-300 bg-[#F3F3F3] opacity-60' :
                       'border-gray-200 hover:border-gray-300'
                     }`}
@@ -402,7 +402,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                           <Chip
                             size="sm"
                             variant="flat"
-                            className="bg-[#F3F3F3] text-[#5a5757] text-xs font-medium"
+                            className="bg-[#F3F3F3] text-[#474747] text-xs font-medium"
                           >
                             {action.actionType.replace(/_/g, ' ')}
                           </Chip>
@@ -412,7 +412,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                         </div>
 
                         {/* Reasoning */}
-                        <p className="text-base text-[#1c1b1b] mb-4 leading-relaxed">{action.reasoning}</p>
+                        <p className="text-base text-[#1A1C1C] mb-4 leading-relaxed">{action.reasoning}</p>
 
                         {/* Editable Fields */}
                         {isEditing ? (
@@ -424,7 +424,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                               value={displayPayload.title || ''}
                               onChange={(e) => handleEdit(action.id, 'title', e.target.value)}
                               classNames={{
-                                label: 'text-sm font-medium text-[#5a5757] mb-1',
+                                label: 'text-sm font-medium text-[#474747] mb-1',
                                 input: 'text-sm',
                                 inputWrapper: 'bg-white border-gray-200'
                               }}
@@ -437,7 +437,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                               value={displayPayload.description || ''}
                               onChange={(e) => handleEdit(action.id, 'description', e.target.value)}
                               classNames={{
-                                label: 'text-sm font-medium text-[#5a5757] mb-1',
+                                label: 'text-sm font-medium text-[#474747] mb-1',
                                 input: 'text-sm',
                                 inputWrapper: 'bg-white border-gray-200'
                               }}
@@ -452,7 +452,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                                   value={displayPayload.dueAt ? formatDateForInput(displayPayload.dueAt) : ''}
                                   onChange={(e) => handleEdit(action.id, 'dueAt', e.target.value)}
                                   classNames={{
-                                    label: 'text-sm font-medium text-[#5a5757] mb-1',
+                                    label: 'text-sm font-medium text-[#474747] mb-1',
                                     input: 'text-sm',
                                     inputWrapper: 'bg-white border-gray-200'
                                   }}
@@ -475,7 +475,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                                 handleEdit(action.id, 'priority', priority);
                               }}
                               classNames={{
-                                label: 'text-sm font-medium text-[#5a5757] mb-1',
+                                label: 'text-sm font-medium text-[#474747] mb-1',
                                 trigger: 'bg-white border-gray-200',
                                 value: 'text-sm'
                               }}
@@ -489,14 +489,14 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                               <Button
                                 size="sm"
                                 onPress={() => setEditingAction(null)}
-                                className="bg-[#DD3A44] text-white hover:bg-[#C62F3A] rounded-md font-medium"
+                                className="bg-[#000000] text-white hover:bg-[#C62F3A] rounded-md font-medium"
                               >
                                 Done Editing
                               </Button>
                             </div>
                           </div>
                         ) : (
-                          <div className="space-y-2 text-sm text-[#5a5757]">
+                          <div className="space-y-2 text-sm text-[#474747]">
                             {displayPayload.title && (
                               <p><span className="font-medium">Title:</span> {displayPayload.title}</p>
                             )}
@@ -519,7 +519,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                               className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-[#F3F3F3] transition-colors"
                               title="Edit"
                             >
-                              <FaEdit className="text-[#5a5757] text-sm" />
+                              <FaEdit className="text-[#474747] text-sm" />
                             </button>
                             <button
                               onClick={() => handleReject(action.id)}
@@ -530,7 +530,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                             </button>
                             <button
                               onClick={() => handleApprove(action.id)}
-                              className="flex items-center justify-center w-9 h-9 rounded-md bg-[#DD3A44] hover:bg-[#C62F3A] transition-colors"
+                              className="flex items-center justify-center w-9 h-9 rounded-md bg-[#000000] hover:bg-[#C62F3A] transition-colors"
                               title="Approve"
                             >
                               <FaCheck className="text-white text-sm" />
@@ -538,7 +538,7 @@ export default function ReviewClient({ sessionId }: { sessionId: string }) {
                           </>
                         )}
                         {isApproved && (
-                          <div className="flex items-center gap-2 px-3 py-2 bg-[#f0fafa]0 rounded-md">
+                          <div className="flex items-center gap-2 px-3 py-2 bg-[#F3F3F3]0 rounded-md">
                             <FaCheck className="text-white text-sm" />
                             <span className="text-white text-sm font-medium">Approved</span>
                           </div>

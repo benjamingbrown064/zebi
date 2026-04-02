@@ -35,7 +35,7 @@ export default async function GoalsListServer({ workspaceId }: GoalsListServerPr
   if (goals.length === 0) {
     return (
       <div className="text-center py-12 md:py-20">
-        <div className="w-16 h-16 rounded-full bg-[#F5F5F5] flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 rounded-full bg-[#F3F3F3] flex items-center justify-center mx-auto mb-4">
           <svg className="w-8 h-8 text-[#A3A3A3]" fill="currentColor" viewBox="0 0 20 20">
             <path d="M3 6l3-3 4 4 7-7v4l-7 7-4-4-3 3z"/>
           </svg>

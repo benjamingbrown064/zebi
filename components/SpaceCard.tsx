@@ -50,7 +50,7 @@ export default function SpaceCard({
 
           {/* Space Info */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-[#1c1b1b] truncate group-hover:text-accent-600 transition">
+            <h3 className="font-semibold text-[#1A1C1C] truncate group-hover:text-accent-600 transition">
               {name}
             </h3>
             <div className="flex items-center gap-2 mt-1 text-xs text-[#A3A3A3]">
@@ -63,7 +63,7 @@ export default function SpaceCard({
           {/* Revenue Badge */}
           {revenue !== null && revenue !== undefined && revenue > 0 && (
             <div className="text-right">
-              <div className="text-sm font-semibold text-[#1c1b1b]">
+              <div className="text-sm font-semibold text-[#1A1C1C]">
                 £{(revenue / 1000).toFixed(1)}k
               </div>
               <div className="text-xs text-[#A3A3A3]">MRR</div>
@@ -73,28 +73,28 @@ export default function SpaceCard({
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 text-sm text-[#5a5757]">
+          <div className="flex items-center gap-2 text-sm text-[#474747]">
             <FaFolderOpen className="text-[#C4C0C0]" />
             <span>
               {projectCount} {projectCount === 1 ? 'project' : 'projects'}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-[#5a5757]">
+          <div className="flex items-center gap-2 text-sm text-[#474747]">
             <FaTasks className="text-[#C4C0C0]" />
             <span>
               {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-[#5a5757]">
+          <div className="flex items-center gap-2 text-sm text-[#474747]">
             <FaFileAlt className="text-[#C4C0C0]" />
             <span>
               {documentCount} {documentCount === 1 ? 'doc' : 'docs'}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-[#5a5757]">
+          <div className="flex items-center gap-2 text-sm text-[#474747]">
             <FaLightbulb className="text-[#C4C0C0]" />
             <span>
               {insightCount} {insightCount === 1 ? 'insight' : 'insights'}

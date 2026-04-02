@@ -93,12 +93,12 @@ export default function PlannerTaskCard({
           {/* Metadata */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-[#A3A3A3]">
             {task.project && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5F5F5] rounded-md">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F3F3F3] rounded-md">
                 {task.project.name}
               </span>
             )}
             {task.space && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F5F5F5] rounded-md">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F3F3F3] rounded-md">
                 {task.space.name}
               </span>
             )}

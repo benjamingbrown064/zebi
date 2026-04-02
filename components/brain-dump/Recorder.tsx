@@ -162,7 +162,7 @@ export default function Recorder({
       <div className="flex flex-col items-center gap-8">
         {/* Timer */}
         <div className={`text-6xl font-light tracking-wide transition-colors ${
-          isRecording ? (isPaused ? 'text-yellow-600' : 'text-[#DD3A44]') : 'text-[#C4C0C0]'
+          isRecording ? (isPaused ? 'text-yellow-600' : 'text-[#1A1C1C]') : 'text-[#C4C0C0]'
         }`}>
           {formatTime(recordingTime)}
         </div>
@@ -172,7 +172,7 @@ export default function Recorder({
           {!isRecording ? (
             <button
               onClick={startRecording}
-              className="flex items-center justify-center w-20 h-20 bg-[#DD3A44] hover:bg-[#C62F3A] rounded-full transition-all transform hover:scale-105 active:scale-95"
+              className="flex items-center justify-center w-20 h-20 bg-[#000000] hover:bg-[#C62F3A] rounded-full transition-all transform hover:scale-105 active:scale-95"
             >
               <FaMicrophone className="text-white text-2xl" />
             </button>
@@ -183,15 +183,15 @@ export default function Recorder({
                 className="flex items-center justify-center w-16 h-16 bg-[#e8e4e4] hover:bg-gray-300 rounded-full transition-colors"
               >
                 {isPaused ? (
-                  <FaPlay className="text-[#5a5757] text-xl ml-1" />
+                  <FaPlay className="text-[#474747] text-xl ml-1" />
                 ) : (
-                  <FaPause className="text-[#5a5757] text-xl" />
+                  <FaPause className="text-[#474747] text-xl" />
                 )}
               </button>
               
               <button
                 onClick={stopRecording}
-                className="flex items-center justify-center w-20 h-20 bg-[#DD3A44] hover:bg-[#C62F3A] rounded-full transition-all transform hover:scale-105 active:scale-95"
+                className="flex items-center justify-center w-20 h-20 bg-[#000000] hover:bg-[#C62F3A] rounded-full transition-all transform hover:scale-105 active:scale-95"
               >
                 <FaStop className="text-white text-2xl" />
               </button>
@@ -200,7 +200,7 @@ export default function Recorder({
         </div>
 
         {/* Status Text */}
-        <div className="text-sm text-[#5a5757]">
+        <div className="text-sm text-[#474747]">
           {!isRecording && 'Click to start recording'}
           {isRecording && !isPaused && 'Recording... Click pause or stop when done'}
           {isRecording && isPaused && 'Paused. Click to resume or stop'}

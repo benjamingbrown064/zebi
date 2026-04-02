@@ -20,7 +20,7 @@ export default function AIChatButton({ workspaceId, userId }: AIChatButtonProps)
         <button
           onClick={() => setIsOpen(true)}
           aria-label="Open Zebi Chat"
-          className="fixed bottom-6 right-6 w-14 h-14 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded-full shadow-[0_4px_20px_rgba(221,58,68,0.4)] flex items-center justify-center z-40 transition-all hover:scale-105 active:scale-95"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded-full shadow-[0_4px_20px_rgba(221,58,68,0.4)] flex items-center justify-center z-40 transition-all hover:scale-105 active:scale-95"
         >
           <FaCommentDots size={22} />
         </button>

@@ -276,14 +276,14 @@ export default function NewDocumentPage() {
                       type="button"
                       variant="flat"
                       onPress={() => router.back()}
-                      className="flex-1 sm:flex-none h-12 text-[15px] font-medium bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]"
+                      className="flex-1 sm:flex-none h-12 text-[15px] font-medium bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       isLoading={loading}
-                      className="flex-1 sm:flex-none h-12 text-[15px] font-medium bg-[#DD3A44] text-white hover:bg-[#C7333D]"
+                      className="flex-1 sm:flex-none h-12 text-[15px] font-medium bg-[#000000] text-white hover:bg-[#1A1C1C]"
                     >
                       Create Document
                     </Button>

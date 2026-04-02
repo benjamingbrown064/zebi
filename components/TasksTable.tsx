@@ -30,7 +30,7 @@ const PRIORITY_COLORS: Record<number, string> = {
   1: 'text-red-600',
   2: 'text-orange-600',
   3: 'text-yellow-600',
-  4: 'text-[#5a5757]',
+  4: 'text-[#474747]',
 }
 
 export default function TasksTable({
@@ -57,7 +57,7 @@ export default function TasksTable({
   }
 
   const STATUS_BADGE_COLORS: Record<string, string> = {
-    inbox: 'bg-[#F3F3F3] text-[#5a5757]',
+    inbox: 'bg-[#F3F3F3] text-[#474747]',
     planned: 'bg-[#e6f4f4] text-[#006766]',
     doing: 'bg-amber-100 text-amber-700',
     blocked: 'bg-red-100 text-red-700',
@@ -181,34 +181,34 @@ export default function TasksTable({
                 className="rounded border-gray-300"
               />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm">
               <SortHeader label="Title" sortKey="title" />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm whitespace-nowrap">
               <SortHeader label="Status" sortKey="statusId" />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm whitespace-nowrap">
               <SortHeader label="Priority" sortKey="priority" />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm whitespace-nowrap">
               Space
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm whitespace-nowrap">
               Project
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm whitespace-nowrap">
               Objective
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm whitespace-nowrap">
               Goal
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm whitespace-nowrap">
               <SortHeader label="Due Date" sortKey="dueAt" />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-[#1c1b1b] text-sm whitespace-nowrap">
+            <th className="px-4 py-3 text-left font-semibold text-[#1A1C1C] text-sm whitespace-nowrap">
               Updated
             </th>
-            <th className="px-4 py-3 text-right font-semibold text-[#1c1b1b] text-sm">
+            <th className="px-4 py-3 text-right font-semibold text-[#1A1C1C] text-sm">
               Actions
             </th>
           </tr>
@@ -237,15 +237,15 @@ export default function TasksTable({
                   />
                 </td>
                 <td
-                  className="px-4 py-3 text-sm font-medium text-[#1c1b1b] cursor-pointer hover:text-accent-600"
+                  className="px-4 py-3 text-sm font-medium text-[#1A1C1C] cursor-pointer hover:text-accent-600"
                   onClick={() => onTaskClick?.(task)}
                 >
                   <div className="truncate max-w-xs" title={task.title}>
                     {task.title}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
-                  <span className={`text-xs px-2 py-1 rounded font-medium ${STATUS_BADGE_COLORS[getStatusType(task.statusId)] || 'bg-[#F3F3F3] text-[#5a5757]'}`}>
+                <td className="px-4 py-3 text-sm text-[#474747] whitespace-nowrap">
+                  <span className={`text-xs px-2 py-1 rounded font-medium ${STATUS_BADGE_COLORS[getStatusType(task.statusId)] || 'bg-[#F3F3F3] text-[#474747]'}`}>
                     {getStatusName(task.statusId)}
                   </span>
                 </td>
@@ -254,7 +254,7 @@ export default function TasksTable({
                 >
                   {PRIORITY_LABELS[task.priority]}
                 </td>
-                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#474747] whitespace-nowrap">
                   {task.space ? (
                     <span className="truncate max-w-[150px] block" title={task.space.name}>
                       {task.space.name}
@@ -263,7 +263,7 @@ export default function TasksTable({
                     <span className="text-[#C4C0C0]">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#474747] whitespace-nowrap">
                   {task.project ? (
                     <span className="truncate max-w-[150px] block" title={task.project.name}>
                       {task.project.name}
@@ -272,7 +272,7 @@ export default function TasksTable({
                     <span className="text-[#C4C0C0]">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#474747] whitespace-nowrap">
                   {task.objective ? (
                     <span className="truncate max-w-[150px] block" title={task.objective.title}>
                       {task.objective.title}
@@ -281,7 +281,7 @@ export default function TasksTable({
                     <span className="text-[#C4C0C0]">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#474747] whitespace-nowrap">
                   {task.goal ? (
                     <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded font-medium text-xs">
                       {task.goal.name}
@@ -290,7 +290,7 @@ export default function TasksTable({
                     <span className="text-[#C4C0C0]">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-[#5a5757] whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-[#474747] whitespace-nowrap">
                   {formatDueDate(task.dueAt?.toString())}
                 </td>
                 <td className="px-4 py-3 text-sm text-[#A3A3A3] whitespace-nowrap">
@@ -323,10 +323,10 @@ export default function TasksTable({
             {selectedTasks.size} task{selectedTasks.size !== 1 ? 's' : ''} selected
           </span>
           <div className="flex gap-2">
-            <button className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#F3F3F3]">
+            <button className="px-3 py-1 text-sm bg-white text-[#474747] rounded hover:bg-[#F3F3F3]">
               Change Status
             </button>
-            <button className="px-3 py-1 text-sm bg-white text-[#5a5757] rounded hover:bg-[#F3F3F3]">
+            <button className="px-3 py-1 text-sm bg-white text-[#474747] rounded hover:bg-[#F3F3F3]">
               Change Priority
             </button>
           </div>

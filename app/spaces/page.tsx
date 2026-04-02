@@ -126,7 +126,7 @@ export default function SpacesPage() {
                   key="voice"
                   startContent={<FaMicrophone className="text-lg" />}
                   onPress={() => setIsVoiceModalOpen(true)}
-                  className="text-[#006766]"
+                  className="text-[#1A1C1C]"
                 >
                   Create via Voice
                 </DropdownItem>
@@ -142,7 +142,7 @@ export default function SpacesPage() {
             ) : spaces.length === 0 ? (
               <div className="text-center py-12 bg-white rounded">
                 <FaBuilding className="mx-auto text-4xl text-[#E5E5E5] mb-4" />
-                <p className="text-[#525252] mb-4 px-4">No spaces yet. Create one to get started.</p>
+                <p className="text-[#474747] mb-4 px-4">No spaces yet. Create one to get started.</p>
                 <button
                   onClick={() => setIsAdding(true)}
                   className="px-4 py-2.5 bg-[#000000] text-white rounded hover:bg-[#1A1C1C] transition inline-flex items-center gap-2 min-h-[44px]"

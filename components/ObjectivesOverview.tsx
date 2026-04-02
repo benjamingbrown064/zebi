@@ -30,7 +30,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
     return (
       <div className="card-base p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-[#1c1b1b]">🎯 Active Objectives</h2>
+          <h2 className="text-lg font-semibold text-[#1A1C1C]">🎯 Active Objectives</h2>
           <Link
             href="/objectives"
             className="text-sm text-accent-600 hover:text-accent-700 font-medium"
@@ -55,7 +55,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
     on_track: { bg: 'bg-[#e6f4f4]', text: 'text-[#006766]', bar: 'bg-[#f0fafa]0', icon: '✅' },
     at_risk: { bg: 'bg-yellow-100', text: 'text-yellow-700', bar: 'bg-yellow-500', icon: '⚠️' },
     blocked: { bg: 'bg-red-100', text: 'text-red-700', bar: 'bg-red-500', icon: '🚫' },
-    active: { bg: 'bg-[#F3F3F3]', text: 'text-[#5a5757]', bar: 'bg-accent-500', icon: '🎯' },
+    active: { bg: 'bg-[#F3F3F3]', text: 'text-[#474747]', bar: 'bg-accent-500', icon: '🎯' },
   }
 
   const formatValue = (value: number, unit?: string) => {
@@ -71,7 +71,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
   return (
     <div className="card-base p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-[#1c1b1b] flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-[#1A1C1C] flex items-center gap-2">
           <FaFlag className="text-accent-500" />
           Active Objectives ({objectives.length})
         </h2>
@@ -97,7 +97,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
                   )}
                   <Link
                     href={`/objectives/${objective.id}`}
-                    className="font-semibold text-[#1c1b1b] hover:text-accent-600 transition"
+                    className="font-semibold text-[#1A1C1C] hover:text-accent-600 transition"
                   >
                     {objective.title}
                   </Link>
@@ -112,7 +112,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
 
               {/* Progress Bar */}
               <div>
-                <div className="flex items-center justify-between text-xs text-[#5a5757] mb-1">
+                <div className="flex items-center justify-between text-xs text-[#474747] mb-1">
                   <span>
                     {formatValue(objective.currentValue, objective.unit)} → {formatValue(objective.targetValue, objective.unit)}
                   </span>
@@ -128,7 +128,7 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
 
               {/* Next Milestone */}
               {objective.nextMilestone && (
-                <div className="text-xs text-[#5a5757]">
+                <div className="text-xs text-[#474747]">
                   Next: <strong>{objective.nextMilestone.title}</strong> in{' '}
                   <strong className={objective.nextMilestone.daysUntil < 7 ? 'text-orange-600' : ''}>
                     {objective.nextMilestone.daysUntil} days
@@ -152,8 +152,8 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
                   <div className="flex items-start gap-2 text-xs">
                     <FaRobot className="text-accent-500 mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="text-[#5a5757]">Doug:</span>
-                      <p className="text-[#1c1b1b] line-clamp-1">{objective.aiWork}</p>
+                      <span className="text-[#474747]">Doug:</span>
+                      <p className="text-[#1A1C1C] line-clamp-1">{objective.aiWork}</p>
                     </div>
                   </div>
                 )}
@@ -161,8 +161,8 @@ export default function ObjectivesOverview({ objectives }: ObjectivesOverviewPro
                   <div className="flex items-start gap-2 text-xs">
                     <FaUser className="text-[#006766] mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="text-[#5a5757]">You:</span>
-                      <p className="text-[#1c1b1b] font-medium line-clamp-1">{objective.humanWork}</p>
+                      <span className="text-[#474747]">You:</span>
+                      <p className="text-[#1A1C1C] font-medium line-clamp-1">{objective.humanWork}</p>
                     </div>
                   </div>
                 )}

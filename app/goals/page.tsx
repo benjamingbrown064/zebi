@@ -26,17 +26,17 @@ export default async function GoalsPage() {
             <div key={i} className="bg-white rounded p-6 animate-pulse">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <div className="h-5 w-3/4 bg-[#e8e4e4] rounded mb-2" />
-                  <div className="h-4 w-1/2 bg-[#e8e4e4] rounded" />
+                  <div className="h-5 w-3/4 bg-[#E5E5E5] rounded mb-2" />
+                  <div className="h-4 w-1/2 bg-[#E5E5E5] rounded" />
                 </div>
-                <div className="h-6 w-12 bg-[#e8e4e4] rounded" />
+                <div className="h-6 w-12 bg-[#E5E5E5] rounded" />
               </div>
-              <div className="h-2 w-full bg-[#e8e4e4] rounded mb-4" />
+              <div className="h-2 w-full bg-[#E5E5E5] rounded mb-4" />
               <div className="flex items-center justify-between pt-4">
-                <div className="h-3 w-24 bg-[#e8e4e4] rounded" />
+                <div className="h-3 w-24 bg-[#E5E5E5] rounded" />
                 <div className="flex gap-2">
-                  <div className="h-8 w-8 bg-[#e8e4e4] rounded" />
-                  <div className="h-8 w-8 bg-[#e8e4e4] rounded" />
+                  <div className="h-8 w-8 bg-[#E5E5E5] rounded" />
+                  <div className="h-8 w-8 bg-[#E5E5E5] rounded" />
                 </div>
               </div>
             </div>

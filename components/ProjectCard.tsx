@@ -34,7 +34,7 @@ export default function ProjectCard({
     1: 'bg-red-100 text-red-700 border-red-200',
     2: 'bg-orange-100 text-orange-700 border-orange-200',
     3: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    4: 'bg-[#F3F3F3] text-[#5a5757] border-gray-200',
+    4: 'bg-[#F3F3F3] text-[#474747] border-gray-200',
   }
 
   const priorityLabels: Record<number, string> = {
@@ -54,7 +54,7 @@ export default function ProjectCard({
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-[#1c1b1b] truncate group-hover:text-accent-600 transition">
+            <h3 className="font-semibold text-[#1A1C1C] truncate group-hover:text-accent-600 transition">
               {name}
             </h3>
 
@@ -84,7 +84,7 @@ export default function ProjectCard({
                           ? 'bg-[#e6f4f4] text-[#006766]'
                           : objectiveStatus === 'blocked'
                           ? 'bg-red-100 text-red-700'
-                          : 'bg-[#F3F3F3] text-[#5a5757]'
+                          : 'bg-[#F3F3F3] text-[#474747]'
                       }`}
                     >
                       {objectiveStatus}
@@ -107,13 +107,13 @@ export default function ProjectCard({
 
         {/* Description */}
         {description && (
-          <p className="text-sm text-[#5a5757] mb-4 line-clamp-2">{description}</p>
+          <p className="text-sm text-[#474747] mb-4 line-clamp-2">{description}</p>
         )}
 
         {/* Progress Bar */}
         {taskCount > 0 && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-[#5a5757]">
+            <div className="flex items-center justify-between text-xs text-[#474747]">
               <span className="flex items-center gap-1">
                 <FaTasks className="text-[#C4C0C0]" />
                 {completedTaskCount} / {taskCount} tasks

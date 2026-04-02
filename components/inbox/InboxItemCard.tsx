@@ -51,7 +51,7 @@ const STATUS_COLORS = {
   unprocessed: 'bg-red-50 text-red-700 border-red-200',
   processed: 'bg-[#f0fafa] text-[#006766] border-transparent',
   converted: 'bg-[#f0fafa] text-[#006766] border-green-200',
-  completed: 'bg-[#F3F3F3] text-[#5a5757] border-gray-200',
+  completed: 'bg-[#F3F3F3] text-[#474747] border-gray-200',
   archived: 'bg-[#F3F3F3] text-[#A3A3A3] border-gray-200',
 }
 
@@ -92,19 +92,19 @@ export default function InboxItemCard({
         <div className="flex items-start gap-3">
           {/* Source Icon */}
           <div className="flex-shrink-0 w-10 h-10 bg-[#F3F3F3] rounded flex items-center justify-center">
-            <FontAwesomeIcon icon={sourceIcon} className="text-[#5a5757]" />
+            <FontAwesomeIcon icon={sourceIcon} className="text-[#474747]" />
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
             {/* Text */}
-            <div className="text-[#1c1b1b] mb-2">
+            <div className="text-[#1A1C1C] mb-2">
               {isLongText && !isExpanded ? (
                 <>
                   {displayText.substring(0, 200)}...{' '}
                   <button
                     onClick={() => setIsExpanded(true)}
-                    className="text-[#DD3A44] hover:underline text-sm font-medium"
+                    className="text-[#1A1C1C] hover:underline text-sm font-medium"
                   >
                     Read more
                   </button>
@@ -117,7 +117,7 @@ export default function InboxItemCard({
                       {' '}
                       <button
                         onClick={() => setIsExpanded(false)}
-                        className="text-[#DD3A44] hover:underline text-sm font-medium"
+                        className="text-[#1A1C1C] hover:underline text-sm font-medium"
                       >
                         Show less
                       </button>
@@ -163,7 +163,7 @@ export default function InboxItemCard({
               onClick={() => setShowActions(!showActions)}
               className="p-2 hover:bg-[#F3F3F3] rounded transition"
             >
-              <FontAwesomeIcon icon={faEllipsisV} className="text-[#5a5757]" />
+              <FontAwesomeIcon icon={faEllipsisV} className="text-[#474747]" />
             </button>
 
             {showActions && (
@@ -182,7 +182,7 @@ export default function InboxItemCard({
                           onConvert(item)
                           setShowActions(false)
                         }}
-                        className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#F3F3F3] flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-sm text-[#474747] hover:bg-[#F3F3F3] flex items-center gap-2"
                       >
                         <FontAwesomeIcon icon={faArrowRight} className="text-[#006766]" />
                         Convert to Task
@@ -192,7 +192,7 @@ export default function InboxItemCard({
                           onUpdateStatus(item.id, 'completed')
                           setShowActions(false)
                         }}
-                        className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#F3F3F3] flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-sm text-[#474747] hover:bg-[#F3F3F3] flex items-center gap-2"
                       >
                         <FontAwesomeIcon icon={faCircleCheck} className="text-[#006766]" />
                         Mark Complete
@@ -206,7 +206,7 @@ export default function InboxItemCard({
                         onConvert(item)
                         setShowActions(false)
                       }}
-                      className="w-full px-4 py-2 text-left text-sm text-[#5a5757] hover:bg-[#F3F3F3] flex items-center gap-2"
+                      className="w-full px-4 py-2 text-left text-sm text-[#474747] hover:bg-[#F3F3F3] flex items-center gap-2"
                     >
                       <FontAwesomeIcon icon={faArrowRight} className="text-[#006766]" />
                       Convert to Task

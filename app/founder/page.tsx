@@ -84,7 +84,7 @@ const AGENT_COLORS: Record<string, string> = {
   theo:   'bg-sky-100 text-sky-700',
   doug:   'bg-emerald-100 text-emerald-700',
   casper: 'bg-orange-100 text-orange-700',
-  ben:    'bg-[#DD3A44]/10 text-[#DD3A44]',
+  ben:    'bg-[#000000]/10 text-[#1A1C1C]',
 }
 
 const AGENT_DOT: Record<string, string> = {
@@ -120,7 +120,7 @@ function TaskRow({ task, showAgent = true }: { task: TaskSummary; showAgent?: bo
   return (
     <Link href={`/tasks/${task.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-medium text-[#1A1A1A] truncate group-hover:text-[#DD3A44] transition-colors">{task.title}</p>
+        <p className="text-[13px] font-medium text-[#1A1A1A] truncate group-hover:text-[#1A1C1C] transition-colors">{task.title}</p>
         <div className="flex items-center gap-2 mt-1 flex-wrap">
           {task.company && <span className="text-[11px] text-[#A3A3A3]">{task.company.name}</span>}
           {task.project && <span className="text-[11px] text-[#A3A3A3]">· {task.project.name}</span>}
@@ -217,7 +217,7 @@ export default function FounderPage() {
           <button
             onClick={load}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium text-[#525252] hover:bg-white hover:shadow-sm transition-all border border-[#E5E5E5] bg-white disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium text-[#474747] hover:bg-white hover:shadow-sm transition-all border border-[#E5E5E5] bg-white disabled:opacity-50"
           >
             <FaSync className={loading ? 'animate-spin' : ''} size={12} />
             Refresh
@@ -251,10 +251,10 @@ export default function FounderPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
                   {[
                     { label: 'Active tasks', value: health.totalActiveTasks, color: 'text-[#1A1A1A]' },
-                    { label: 'No owner', value: health.tasksWithNoOwner, color: health.tasksWithNoOwner > 0 ? 'text-orange-600' : 'text-emerald-600' },
+                    { label: 'No owner', value: health.tasksWithNoOwner, color: health.tasksWithNoOwner > 0 ? 'text-orange-600' : 'text-[#15803D]' },
                     { label: 'Stalled (48h)', value: health.stalledTasks, color: health.stalledTasks > 3 ? 'text-orange-600' : 'text-[#737373]' },
-                    { label: 'Open decisions', value: health.openDecisions, color: health.openDecisions > 0 ? 'text-[#DD3A44]' : 'text-emerald-600' },
-                    { label: 'Waiting on Ben', value: health.waitingOnBenCount, color: health.waitingOnBenCount > 0 ? 'text-[#DD3A44]' : 'text-emerald-600' },
+                    { label: 'Open decisions', value: health.openDecisions, color: health.openDecisions > 0 ? 'text-[#1A1C1C]' : 'text-[#15803D]' },
+                    { label: 'Waiting on Ben', value: health.waitingOnBenCount, color: health.waitingOnBenCount > 0 ? 'text-[#1A1C1C]' : 'text-[#15803D]' },
                     { label: 'Done, no output', value: health.doneWithNoOutput, color: health.doneWithNoOutput > 5 ? 'text-orange-600' : 'text-[#737373]' },
                     { label: 'Open handoffs', value: health.pendingHandoffCount, color: health.pendingHandoffCount > 0 ? 'text-violet-600' : 'text-[#737373]' },
                   ].map(m => (
@@ -301,9 +301,9 @@ export default function FounderPage() {
                         />
                       </div>
                       <div className="flex items-center gap-3 shrink-0 text-[12px]">
-                        <span className="text-[#525252] font-medium w-6 text-right">{a.totalActive}</span>
+                        <span className="text-[#474747] font-medium w-6 text-right">{a.totalActive}</span>
                         {a.blocked > 0 && <span className="text-orange-600 font-medium">{a.blocked} blocked</span>}
-                        {a.waitingOnBen > 0 && <span className="text-[#DD3A44] font-medium">{a.waitingOnBen} → Ben</span>}
+                        {a.waitingOnBen > 0 && <span className="text-[#1A1C1C] font-medium">{a.waitingOnBen} → Ben</span>}
                         {a.blocked === 0 && a.waitingOnBen === 0 && <span className="text-emerald-600 text-[11px]">clear</span>}
                       </div>
                     </div>
@@ -321,7 +321,7 @@ export default function FounderPage() {
                 title="Decision Inbox"
                 icon={<FaBalanceScale size={13} />}
                 count={data.decisionInbox.length}
-                countColor={data.decisionInbox.length > 0 ? 'text-[#DD3A44] font-bold' : 'text-emerald-600'}
+                countColor={data.decisionInbox.length > 0 ? 'text-[#1A1C1C] font-bold' : 'text-[#15803D]'}
               >
                 {data.decisionInbox.length === 0 ? (
                   <p className="text-[13px] text-emerald-600 py-2 flex items-center gap-1.5"><FaCheckCircle size={12} /> Nothing needs your decision</p>
@@ -330,7 +330,7 @@ export default function FounderPage() {
                     {data.decisionInbox.map(t => (
                       <Link key={t.id} href={`/tasks/${t.id}`} className="block py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
                         <div className="flex items-start justify-between gap-2">
-                          <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors">{t.title}</p>
+                          <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#1A1C1C] transition-colors">{t.title}</p>
                           <AgentBadge agent={t.ownerAgent} />
                         </div>
                         {t.decisionSummary && (
@@ -348,7 +348,7 @@ export default function FounderPage() {
                 title="Waiting on Ben"
                 icon={<FaHourglass size={13} />}
                 count={data.waitingOnBen.length}
-                countColor={data.waitingOnBen.length > 0 ? 'text-[#DD3A44]' : 'text-emerald-600'}
+                countColor={data.waitingOnBen.length > 0 ? 'text-[#1A1C1C]' : 'text-[#15803D]'}
               >
                 {data.waitingOnBen.length === 0 ? (
                   <p className="text-[13px] text-emerald-600 py-2 flex items-center gap-1.5"><FaCheckCircle size={12} /> Nothing waiting on you</p>
@@ -357,7 +357,7 @@ export default function FounderPage() {
                     {data.waitingOnBen.map(t => (
                       <Link key={t.id} href={`/tasks/${t.id}`} className="block py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
                         <div className="flex items-start justify-between gap-2">
-                          <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors">{t.title}</p>
+                          <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#1A1C1C] transition-colors">{t.title}</p>
                           <AgentBadge agent={t.ownerAgent} />
                         </div>
                         {t.nextAction && (
@@ -377,7 +377,7 @@ export default function FounderPage() {
               title="Blocked Tasks"
               icon={<FaExclamationTriangle size={13} />}
               count={data.blockedTasks.length}
-              countColor={data.blockedTasks.length > 0 ? 'text-orange-600' : 'text-emerald-600'}
+              countColor={data.blockedTasks.length > 0 ? 'text-orange-600' : 'text-[#15803D]'}
             >
               {data.blockedTasks.length === 0 ? (
                 <p className="text-[13px] text-emerald-600 py-2 flex items-center gap-1.5"><FaCheckCircle size={12} /> No blocked tasks</p>
@@ -386,7 +386,7 @@ export default function FounderPage() {
                   {data.blockedTasks.map(t => (
                     <Link key={t.id} href={`/tasks/${t.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors truncate">{t.title}</p>
+                        <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#1A1C1C] transition-colors truncate">{t.title}</p>
                         {t.blockedReason && (
                           <p className="text-[12px] text-orange-600 mt-0.5 line-clamp-1">⚠ {t.blockedReason}</p>
                         )}
@@ -421,7 +421,7 @@ export default function FounderPage() {
                     <Link key={t.id} href={`/tasks/${t.id}`} className="flex items-start gap-3 py-3 px-4 hover:bg-[#F9F9F9] rounded-md transition-colors group">
                       <FaCheckCircle className="text-emerald-500 mt-0.5 shrink-0" size={13} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors truncate">{t.title}</p>
+                        <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#1A1C1C] transition-colors truncate">{t.title}</p>
                         {t.completionNote && (
                           <p className="text-[12px] text-[#737373] mt-0.5 line-clamp-1">{t.completionNote}</p>
                         )}
@@ -450,7 +450,7 @@ export default function FounderPage() {
                     <div key={agent}>
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`w-2 h-2 rounded-full ${AGENT_DOT[agent] ?? 'bg-gray-400'}`} />
-                        <span className="text-[12px] font-semibold text-[#525252] capitalize">→ {agent}</span>
+                        <span className="text-[12px] font-semibold text-[#474747] capitalize">→ {agent}</span>
                         <span className="text-[11px] text-[#A3A3A3]">({handoffs.length})</span>
                       </div>
                       <div className="pl-4 space-y-1">
@@ -461,7 +461,7 @@ export default function FounderPage() {
                               <p className="text-[11px] text-[#A3A3A3]">from <span className="capitalize">{h.fromAgent}</span> · {new Date(h.createdAt).toLocaleDateString()}</p>
                             </div>
                             {h.decisionNeeded && (
-                              <span className="text-[10px] font-semibold text-[#DD3A44] shrink-0">decision needed</span>
+                              <span className="text-[10px] font-semibold text-[#1A1C1C] shrink-0">decision needed</span>
                             )}
                           </div>
                         ))}

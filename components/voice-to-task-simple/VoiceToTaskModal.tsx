@@ -206,7 +206,7 @@ export function VoiceToTaskModal({
               <p className="text-lg text-[#1A1A1A] mb-2">
                 Talk through everything that needs to be done.
               </p>
-              <p className="text-sm text-[#5a5757] mb-4">
+              <p className="text-sm text-[#474747] mb-4">
                 I'll turn it into a task list for you to review.
               </p>
               <div className="max-w-md mx-auto p-3 bg-[#f0fafa] border border-transparent rounded">
@@ -219,14 +219,14 @@ export function VoiceToTaskModal({
             {!isRecording ? (
               <button
                 onClick={startRecording}
-                className="w-24 h-24 rounded-full bg-[#DD3A44] hover:bg-[#C7333D] text-white flex items-center justify-center transition-all shadow-[0_20px_40px_rgba(28,27,27,0.06)] hover:shadow-xl hover:scale-105"
+                className="w-24 h-24 rounded-full bg-[#000000] hover:bg-[#1A1C1C] text-white flex items-center justify-center transition-all shadow-[0_20px_40px_rgba(28,27,27,0.06)] hover:shadow-xl hover:scale-105"
               >
                 <FontAwesomeIcon icon={faMicrophone} className="text-3xl" />
               </button>
             ) : (
               <div className="flex flex-col items-center gap-6">
                 <div className="flex items-center gap-3">
-                  <FontAwesomeIcon icon={faCircle} className="text-[#DD3A44] animate-pulse" />
+                  <FontAwesomeIcon icon={faCircle} className="text-[#1A1C1C] animate-pulse" />
                   <span className="text-[15px] font-medium text-[#1A1A1A]">Recording</span>
                 </div>
                 <div className="text-5xl font-light tabular-nums text-[#1A1A1A]">
@@ -237,7 +237,7 @@ export function VoiceToTaskModal({
                   {[...Array(12)].map((_, i) => (
                     <div
                       key={i}
-                      className="w-1 bg-[#DD3A44] rounded-full animate-pulse"
+                      className="w-1 bg-[#000000] rounded-full animate-pulse"
                       style={{
                         height: `${Math.random() * 24 + 8}px`,
                         animationDelay: `${i * 0.1}s`,
@@ -265,11 +265,11 @@ export function VoiceToTaskModal({
               <Spinner size="lg" color="default" />
             </div>
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Processing your recording...</h3>
-            <p className="text-sm text-[#5a5757] mb-4">Converting speech to tasks</p>
+            <p className="text-sm text-[#474747] mb-4">Converting speech to tasks</p>
             <div className="mt-4 flex items-center justify-center gap-2">
-              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-              <div className="w-2 h-2 bg-[#DD3A44] rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+              <div className="w-2 h-2 bg-[#000000] rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-[#000000] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 bg-[#000000] rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
             </div>
             <div className="max-w-md mx-auto mt-6 space-y-2 text-xs text-[#A3A3A3]">
               <div className="flex items-center justify-center gap-2">
@@ -292,7 +292,7 @@ export function VoiceToTaskModal({
         return (
           <div className="py-6">
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Here's what I understood</h3>
-            <p className="text-sm text-[#5a5757] mb-6">
+            <p className="text-sm text-[#474747] mb-6">
               {candidates.length} task{candidates.length !== 1 ? 's' : ''} found — edit or remove any before creating.
             </p>
 
@@ -312,7 +312,7 @@ export function VoiceToTaskModal({
                       onClick={() => handleUpdateCandidate(candidate.id, { selected: !candidate.selected })}
                       className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                         candidate.selected
-                          ? 'bg-[#DD3A44] border-[#DD3A44] text-white'
+                          ? 'bg-[#000000] border-[#DD3A44] text-white'
                           : 'border-gray-300 bg-white'
                       }`}
                     >
@@ -337,7 +337,7 @@ export function VoiceToTaskModal({
                           value={candidate.description}
                           onChange={(e) => handleUpdateCandidate(candidate.id, { description: e.target.value })}
                           rows={2}
-                          className="w-full mt-1 text-[13px] text-[#5a5757] bg-transparent border-none outline-none focus:bg-[#F3F3F3] focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all resize-none"
+                          className="w-full mt-1 text-[13px] text-[#474747] bg-transparent border-none outline-none focus:bg-[#F3F3F3] focus:px-2 focus:py-1 focus:-mx-2 focus:-my-1 rounded-md transition-all resize-none"
                         />
                       )}
                       {/* Priority badge */}
@@ -345,7 +345,7 @@ export function VoiceToTaskModal({
                         <span className={`inline-block mt-2 text-[11px] font-medium px-2 py-0.5 rounded-full ${
                           candidate.priority <= 1 ? 'bg-red-100 text-red-700' :
                           candidate.priority === 2 ? 'bg-orange-100 text-orange-700' :
-                          candidate.priority === 3 ? 'bg-[#F3F3F3] text-[#5a5757]' :
+                          candidate.priority === 3 ? 'bg-[#F3F3F3] text-[#474747]' :
                           'bg-[#F3F3F3] text-[#A3A3A3]'
                         }`}>
                           P{candidate.priority}
@@ -385,7 +385,7 @@ export function VoiceToTaskModal({
               🎉 {result?.created || 0} Task{(result?.created || 0) !== 1 ? 's' : ''} Created
             </h3>
             {result?.context?.name && (
-              <p className="text-[15px] text-[#5a5757] mb-2">
+              <p className="text-[15px] text-[#474747] mb-2">
                 in <span className="font-medium text-[#1A1A1A]">{result.context.name}</span>
               </p>
             )}

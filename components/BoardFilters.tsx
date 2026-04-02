@@ -65,7 +65,7 @@ export default function BoardFilters({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-[#5a5757] hover:bg-[#F3F3F3] transition"
+        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-[#474747] hover:bg-[#F3F3F3] transition"
       >
         <FaFilter size={14} />
         Filters
@@ -80,10 +80,10 @@ export default function BoardFilters({
         <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-40 p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-[#1c1b1b]">Filters</h3>
+            <h3 className="font-semibold text-[#1A1C1C]">Filters</h3>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-[#C4C0C0] hover:text-[#5a5757] p-1"
+              className="text-[#C4C0C0] hover:text-[#474747] p-1"
             >
               <FaTimes size={16} />
             </button>
@@ -92,7 +92,7 @@ export default function BoardFilters({
           {/* Goals */}
           {availableGoals.length > 0 && (
             <div className="mb-4 pb-4">
-              <p className="text-xs font-semibold text-[#5a5757] uppercase mb-2">Goals</p>
+              <p className="text-xs font-semibold text-[#474747] uppercase mb-2">Goals</p>
               <div className="space-y-2">
                 {availableGoals.map(goal => (
                   <label key={goal.id} className="flex items-center gap-2 cursor-pointer">
@@ -102,7 +102,7 @@ export default function BoardFilters({
                       onChange={() => handleToggleGoal(goal.id)}
                       className="w-4 h-4 rounded"
                     />
-                    <span className="text-sm text-[#5a5757]">{goal.name}</span>
+                    <span className="text-sm text-[#474747]">{goal.name}</span>
                   </label>
                 ))}
               </div>
@@ -111,7 +111,7 @@ export default function BoardFilters({
 
           {/* Priority */}
           <div className="mb-4 pb-4">
-            <p className="text-xs font-semibold text-[#5a5757] uppercase mb-2">Priority</p>
+            <p className="text-xs font-semibold text-[#474747] uppercase mb-2">Priority</p>
             <div className="space-y-2">
               {[
                 { num: 1, label: 'P1 - Urgent' },
@@ -126,7 +126,7 @@ export default function BoardFilters({
                     onChange={() => handleTogglePriority(p.num)}
                     className="w-4 h-4 rounded"
                   />
-                  <span className="text-sm text-[#5a5757]">{p.label}</span>
+                  <span className="text-sm text-[#474747]">{p.label}</span>
                 </label>
               ))}
             </div>
@@ -135,7 +135,7 @@ export default function BoardFilters({
           {/* Assignees */}
           {availableAssignees.length > 0 && (
             <div className="mb-4 pb-4">
-              <p className="text-xs font-semibold text-[#5a5757] uppercase mb-2">Assigned to</p>
+              <p className="text-xs font-semibold text-[#474747] uppercase mb-2">Assigned to</p>
               <div className="space-y-2">
                 {availableAssignees.map(assignee => (
                   <label key={assignee.id} className="flex items-center gap-2 cursor-pointer">
@@ -145,7 +145,7 @@ export default function BoardFilters({
                       onChange={() => handleToggleAssignee(assignee.id)}
                       className="w-4 h-4 rounded"
                     />
-                    <span className="text-sm text-[#5a5757]">{assignee.name}</span>
+                    <span className="text-sm text-[#474747]">{assignee.name}</span>
                   </label>
                 ))}
               </div>
@@ -154,7 +154,7 @@ export default function BoardFilters({
 
           {/* Date */}
           <div className="mb-4">
-            <p className="text-xs font-semibold text-[#5a5757] uppercase mb-2">Date</p>
+            <p className="text-xs font-semibold text-[#474747] uppercase mb-2">Date</p>
             <div className="space-y-2">
               {[
                 { value: 'overdue', label: 'Overdue' },
@@ -171,7 +171,7 @@ export default function BoardFilters({
                     onChange={() => onFiltersChange({ ...filters, dates: d.value as any })}
                     className="w-4 h-4 rounded"
                   />
-                  <span className="text-sm text-[#5a5757]">{d.label}</span>
+                  <span className="text-sm text-[#474747]">{d.label}</span>
                 </label>
               ))}
             </div>
@@ -181,7 +181,7 @@ export default function BoardFilters({
           {activeFilterCount > 0 && (
             <button
               onClick={handleClearFilters}
-              className="w-full px-3 py-2 bg-[#F3F3F3] text-[#5a5757] rounded hover:bg-[#e8e4e4] transition text-sm font-medium mt-2"
+              className="w-full px-3 py-2 bg-[#F3F3F3] text-[#474747] rounded hover:bg-[#e8e4e4] transition text-sm font-medium mt-2"
             >
               Clear All Filters
             </button>

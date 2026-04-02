@@ -314,7 +314,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
                 return (
                   <Link key={p.id} href={`/projects/${p.id}`} className="flex items-center gap-3 group">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition truncate">{p.name}</p>
+                      <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#474747] transition truncate">{p.name}</p>
                       <p className="text-[11px] text-[#A3A3A3]">{done}/{total} tasks done</p>
                     </div>
                     <svg className="w-3.5 h-3.5 text-[#C6C6C6] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
@@ -853,7 +853,7 @@ function AgentsTab({ space }: { space: Space }) {
                 >
                   <div className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${t.blockedReason ? 'bg-red-500' : t.waitingOn === 'ben' ? 'bg-amber-400' : 'bg-green-400'}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] text-[#1A1A1A] group-hover:text-[#DD3A44] truncate transition">{t.title}</p>
+                    <p className="text-[13px] text-[#1A1A1A] group-hover:text-[#474747] truncate transition">{t.title}</p>
                     {t.blockedReason && <p className="text-[11px] text-red-600 truncate">Blocked: {t.blockedReason}</p>}
                     {t.waitingOn === 'ben' && !t.blockedReason && <p className="text-[11px] text-amber-600">Waiting on you</p>}
                   </div>

@@ -59,10 +59,10 @@ export default function BlockerCard({ blocker, onResolve }: BlockerCardProps) {
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className={`px-2 py-0.5 rounded text-xs font-medium ${isResolved ? 'bg-[#e8e4e4] text-[#5a5757]' : `${config.bg} ${config.text}`}`}>
+            <span className={`px-2 py-0.5 rounded text-xs font-medium ${isResolved ? 'bg-[#e8e4e4] text-[#474747]' : `${config.bg} ${config.text}`}`}>
               {blocker.severity.toUpperCase()}
             </span>
-            <span className="px-2 py-0.5 bg-white border border-gray-300 rounded text-xs font-medium text-[#5a5757]">
+            <span className="px-2 py-0.5 bg-white border border-gray-300 rounded text-xs font-medium text-[#474747]">
               {typeLabels[blocker.blockerType]}
             </span>
             {isResolved && (
@@ -71,30 +71,30 @@ export default function BlockerCard({ blocker, onResolve }: BlockerCardProps) {
               </span>
             )}
           </div>
-          <h4 className="font-semibold text-[#1c1b1b]">{blocker.title}</h4>
+          <h4 className="font-semibold text-[#1A1C1C]">{blocker.title}</h4>
         </div>
       </div>
 
       {/* Description */}
-      <p className="text-sm text-[#5a5757] mb-3">{blocker.description}</p>
+      <p className="text-sm text-[#474747] mb-3">{blocker.description}</p>
 
       {/* AI Suggestion */}
       {blocker.aiSuggestion && !isResolved && (
         <div className="mb-3 p-3 bg-white border border-accent-200 rounded">
           <p className="text-xs font-medium text-accent-700 mb-1">💡 AI Suggestion:</p>
-          <p className="text-sm text-[#5a5757]">{blocker.aiSuggestion.suggestion || JSON.stringify(blocker.aiSuggestion)}</p>
+          <p className="text-sm text-[#474747]">{blocker.aiSuggestion.suggestion || JSON.stringify(blocker.aiSuggestion)}</p>
         </div>
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-xs text-[#5a5757]">
+      <div className="flex items-center justify-between text-xs text-[#474747]">
         <span>
           {isResolved ? 'Resolved' : 'Detected'}: {formatDate(isResolved ? blocker.resolvedAt! : blocker.detectedAt)}
         </span>
         {!isResolved && onResolve && (
           <button
             onClick={() => onResolve(blocker.id)}
-            className="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-medium text-[#5a5757] hover:bg-[#F3F3F3] transition"
+            className="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-medium text-[#474747] hover:bg-[#F3F3F3] transition"
           >
             Mark Resolved
           </button>

@@ -145,7 +145,7 @@ export default function BacklogSection({
     <div
       ref={setNodeRef}
       className={`flex flex-col h-full bg-white border rounded overflow-hidden transition-all ${
-        isOver ? 'border-[#DD3A44] shadow-[0_4px_12px_rgba(28,27,27,0.08)]' : 'border-[#E5E5E5]'
+        isOver ? 'border-[#1A1C1C] shadow-[0_4px_12px_rgba(28,27,27,0.08)]' : 'border-[#E5E5E5]'
       }`}
     >
       {/* Header */}
@@ -158,7 +158,7 @@ export default function BacklogSection({
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="text-xs text-[#DD3A44] hover:text-[#C2323B] font-medium"
+              className="text-xs text-[#1A1C1C] hover:text-[#474747] font-medium"
             >
               Clear filters
             </button>
@@ -179,12 +179,12 @@ export default function BacklogSection({
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 text-sm  rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
+            className="w-full pl-9 pr-8 py-2 text-sm  rounded focus:outline-none focus:ring-2 focus:ring-[#1A1C1C]/10 focus:border-[#1A1C1C]"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A3A3A3] hover:text-[#525252]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A3A3A3] hover:text-[#474747]"
             >
               <FaTimes className="w-3 h-3" />
             </button>
@@ -203,7 +203,7 @@ export default function BacklogSection({
             <select
               value={selectedProject}
               onChange={(e) => setSelectedProject(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm  rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
+              className="w-full px-3 py-1.5 text-sm  rounded focus:outline-none focus:ring-2 focus:ring-[#1A1C1C]/10 focus:border-[#1A1C1C]"
             >
               <option value="all">All Projects</option>
               {projects.map((project) => (
@@ -225,8 +225,8 @@ export default function BacklogSection({
               onClick={() => setPriorityFilter('all')}
               className={`flex-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                 priorityFilter === 'all'
-                  ? 'bg-[#DD3A44] text-white'
-                  : 'bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]'
+                  ? 'bg-[#000000] text-white'
+                  : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]'
               }`}
             >
               All
@@ -236,7 +236,7 @@ export default function BacklogSection({
               className={`flex-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                 priorityFilter === 1
                   ? 'bg-[#EF4444] text-white'
-                  : 'bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]'
+                  : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]'
               }`}
             >
               High
@@ -246,7 +246,7 @@ export default function BacklogSection({
               className={`flex-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                 priorityFilter === 2
                   ? 'bg-[#F59E0B] text-white'
-                  : 'bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]'
+                  : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]'
               }`}
             >
               Med
@@ -256,7 +256,7 @@ export default function BacklogSection({
               className={`flex-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                 priorityFilter === 3
                   ? 'bg-[#A3A3A3] text-white'
-                  : 'bg-[#F5F5F5] text-[#525252] hover:bg-[#E5E5E5]'
+                  : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]'
               }`}
             >
               Low
@@ -273,7 +273,7 @@ export default function BacklogSection({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm  rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
+              className="w-full px-3 py-1.5 text-sm  rounded focus:outline-none focus:ring-2 focus:ring-[#1A1C1C]/10 focus:border-[#1A1C1C]"
             >
               <option value="all">All Statuses</option>
               {statuses.map((status) => (
@@ -293,7 +293,7 @@ export default function BacklogSection({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="w-full px-3 py-1.5 text-sm  rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44]/20 focus:border-[#DD3A44]"
+            className="w-full px-3 py-1.5 text-sm  rounded focus:outline-none focus:ring-2 focus:ring-[#1A1C1C]/10 focus:border-[#1A1C1C]"
           >
             <option value="priority">Priority (High first)</option>
             <option value="effort">Effort (Largest first)</option>

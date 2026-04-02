@@ -252,7 +252,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-md hover:bg-[#F5F5F5] flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-md hover:bg-[#F3F3F3] flex items-center justify-center transition-colors"
           >
             <FaTimes className="text-[#A3A3A3]" />
           </button>
@@ -284,7 +284,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                       {labels[tab].icon}
                       {labels[tab].label}
                       {tab === 'all' && !loading && allTasks.length > 0 && (
-                        <span className="ml-1 px-1.5 py-0.5 bg-[#F5F5F5] rounded-[4px] text-[11px] text-[#737373]">
+                        <span className="ml-1 px-1.5 py-0.5 bg-[#F3F3F3] rounded-[4px] text-[11px] text-[#737373]">
                           {allTasks.length}
                         </span>
                       )}
@@ -315,7 +315,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                       <p className="text-[12px] text-[#737373] mb-3">{loadError}</p>
                       <button
                         onClick={loadData}
-                        className="text-[12px] px-3 py-1.5 bg-white  rounded-md hover:bg-[#F5F5F5] transition-colors"
+                        className="text-[12px] px-3 py-1.5 bg-white  rounded-md hover:bg-[#F3F3F3] transition-colors"
                       >
                         Try again
                       </button>
@@ -401,7 +401,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                       key={task.id}
                       className="p-2 bg-white  rounded-md flex items-start justify-between gap-2 mb-2"
                     >
-                      <p className="text-[12px] text-[#525252] flex-1">{task.title}</p>
+                      <p className="text-[12px] text-[#474747] flex-1">{task.title}</p>
                       <button
                         onClick={() => handleRemoveFromPlan(task.id, 'other')}
                         className="text-[#A3A3A3] hover:text-[#737373] transition-colors"
@@ -428,7 +428,7 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
         <div className="flex items-center justify-between px-6 py-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-md text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
+            className="px-4 py-2 rounded-md text-[13px] font-medium text-[#474747] hover:bg-[#F3F3F3] transition-colors"
           >
             Cancel
           </button>
@@ -440,14 +440,14 @@ export default function DayPlanningModal({ onClose, onSave, workspaceId }: DayPl
                 setQuickWins([])
                 setAdditionalTasks([])
               }}
-              className="px-4 py-2 rounded-md text-[13px] font-medium text-[#525252] hover:bg-[#F5F5F5] transition-colors"
+              className="px-4 py-2 rounded-md text-[13px] font-medium text-[#474747] hover:bg-[#F3F3F3] transition-colors"
             >
               Clear Plan
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-5 py-2 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors disabled:opacity-50"
+              className="px-5 py-2 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] transition-colors disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Plan'}
             </button>
@@ -520,7 +520,7 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
     return (
       <div className="text-center py-12">
         <FaRobot className="text-[#A3A3A3] text-2xl mx-auto mb-3" />
-        <p className="text-[13px] font-medium text-[#525252] mb-1">No AI suggestions yet</p>
+        <p className="text-[13px] font-medium text-[#474747] mb-1">No AI suggestions yet</p>
         <p className="text-[12px] text-[#A3A3A3]">Try the All Tasks tab to pick manually</p>
       </div>
     )
@@ -533,9 +533,9 @@ function SuggestionsTab({ suggestions, onAdd, isTaskInPlan }: {
         const inPlan = isTaskInPlan(taskId)
 
         return (
-          <div key={taskId} className="p-4 bg-[#F5F5F5] rounded">
+          <div key={taskId} className="p-4 bg-[#F3F3F3] rounded">
             <div className="flex items-start gap-3 mb-2">
-              <div className="w-6 h-6 rounded-full bg-[#DD3A44] text-white flex items-center justify-center flex-shrink-0 text-[12px] font-medium">
+              <div className="w-6 h-6 rounded-full bg-[#000000] text-white flex items-center justify-center flex-shrink-0 text-[12px] font-medium">
                 {index + 1}
               </div>
               <div className="flex-1 min-w-0">
@@ -598,7 +598,7 @@ function AllTasksTab({ tasks, onAdd, isTaskInPlan }: {
     return (
       <div className="text-center py-12">
         <FaList className="text-[#A3A3A3] text-2xl mx-auto mb-3" />
-        <p className="text-[13px] font-medium text-[#525252] mb-1">No tasks found</p>
+        <p className="text-[13px] font-medium text-[#474747] mb-1">No tasks found</p>
         <p className="text-[12px] text-[#A3A3A3]">All tasks may be completed or archived</p>
       </div>
     )

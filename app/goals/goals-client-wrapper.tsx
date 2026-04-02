@@ -137,7 +137,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
           <div className="flex items-center gap-2 md:gap-3">
             <button
               onClick={() => setIsVoiceCoachOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#e0dbdb] hover:bg-[#d4cecd] text-[#1c1b1b]  rounded font-medium text-[13px] transition-colors min-h-[44px]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#E5E5E5] hover:bg-[#D4D4D4] text-[#1A1C1C]  rounded font-medium text-[13px] transition-colors min-h-[44px]"
             >
               <FaMicrophone className="text-sm" />
               <span className="hidden sm:inline">Voice Coach</span>
@@ -145,7 +145,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
             </button>
             <button
               onClick={() => setIsAdding(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
             >
               <FaPlus className="text-sm" />
               <span className="hidden sm:inline">Add Goal</span>
@@ -181,7 +181,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                   type="text"
                   value={newGoal.name}
                   onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
-                  className="w-full px-4 py-2.5  rounded focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
+                  className="w-full px-4 py-2.5  rounded focus:ring-2 focus:ring-[#1A1C1C] focus:border-transparent text-[15px] min-h-[44px]"
                   placeholder="e.g., Reach £100k revenue"
                 />
               </div>
@@ -195,7 +195,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                     type="number"
                     value={newGoal.targetValue}
                     onChange={(e) => setNewGoal({ ...newGoal, targetValue: Number(e.target.value) })}
-                    className="w-full px-4 py-2.5  rounded focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
+                    className="w-full px-4 py-2.5  rounded focus:ring-2 focus:ring-[#1A1C1C] focus:border-transparent text-[15px] min-h-[44px]"
                   />
                 </div>
 
@@ -207,7 +207,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                     type="text"
                     value={newGoal.unit}
                     onChange={(e) => setNewGoal({ ...newGoal, unit: e.target.value })}
-                    className="w-full px-4 py-2.5  rounded focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
+                    className="w-full px-4 py-2.5  rounded focus:ring-2 focus:ring-[#1A1C1C] focus:border-transparent text-[15px] min-h-[44px]"
                     placeholder="%"
                   />
                 </div>
@@ -221,7 +221,7 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                   type="date"
                   value={newGoal.endDate}
                   onChange={(e) => setNewGoal({ ...newGoal, endDate: e.target.value })}
-                  className="w-full px-4 py-2.5  rounded focus:ring-2 focus:ring-[#DD3A44] focus:border-transparent text-[15px] min-h-[44px]"
+                  className="w-full px-4 py-2.5  rounded focus:ring-2 focus:ring-[#1A1C1C] focus:border-transparent text-[15px] min-h-[44px]"
                 />
               </div>
             </div>
@@ -239,14 +239,14 @@ export default function GoalsClientWrapper({ workspaceId, children }: GoalsClien
                     metricType: 'numeric',
                   })
                 }}
-                className="flex-1 px-4 py-2.5 bg-[#F5F5F5] text-[#525252] rounded hover:bg-[#E5E5E5] transition font-medium min-h-[44px]"
+                className="flex-1 px-4 py-2.5 bg-[#F3F3F3] text-[#474747] rounded hover:bg-[#E5E5E5] transition font-medium min-h-[44px]"
                 disabled={isSaving}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveGoal}
-                className="flex-1 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded transition font-medium disabled:opacity-50 min-h-[44px]"
+                className="flex-1 px-4 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded transition font-medium disabled:opacity-50 min-h-[44px]"
                 disabled={isSaving}
               >
                 {isSaving ? 'Saving...' : editingGoal ? 'Update' : 'Create'}

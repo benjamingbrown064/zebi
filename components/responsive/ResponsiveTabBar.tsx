@@ -82,8 +82,8 @@ export default function ResponsiveTabBar({
                 transition whitespace-nowrap min-h-[44px]
                 ${
                   isActive
-                    ? 'bg-[#FEF2F2] text-[#DD3A44]'
-                    : 'text-[#525252] hover:bg-[#F5F5F5]'
+                    ? 'bg-[#F3F3F3] text-[#1A1C1C]'
+                    : 'text-[#525252] hover:bg-[#F3F3F3]'
                 }
               `}
             >
@@ -97,7 +97,7 @@ export default function ResponsiveTabBar({
                     px-2 py-0.5 rounded-full text-[11px] font-semibold
                     ${
                       isActive
-                        ? 'bg-[#DD3A44] text-white'
+                        ? 'bg-[#000000] text-white'
                         : 'bg-[#E5E5E5] text-[#525252]'
                     }
                   `}

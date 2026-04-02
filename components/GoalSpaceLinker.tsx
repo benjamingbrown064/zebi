@@ -94,7 +94,7 @@ export default function GoalSpaceLinker({
         <h3 className="font-semibold text-[#1A1A1A]">Link Spaces</h3>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="text-[13px] px-3 py-1.5 bg-[#DD3A44] text-white rounded hover:opacity-90 transition inline-flex items-center gap-2"
+          className="text-[13px] px-3 py-1.5 bg-[#000000] text-white rounded hover:opacity-90 transition inline-flex items-center gap-2"
         >
           <FaLink className="text-xs" />
           {linkedSpaces.length > 0 ? 'Manage' : 'Add'} Spaces
@@ -114,7 +114,7 @@ export default function GoalSpaceLinker({
                 className="flex items-center justify-between bg-white p-3 rounded "
               >
                 <span className="text-[14px] font-medium text-[#1A1A1A]">{space.name}</span>
-                <span className="text-[13px] text-[#DD3A44] font-semibold">
+                <span className="text-[13px] text-[#1A1C1C] font-semibold">
                   £{(space.revenue || 0).toLocaleString()}
                 </span>
               </div>
@@ -122,7 +122,7 @@ export default function GoalSpaceLinker({
           </div>
           <div className="mt-4 pt-4">
             <p className="text-[13px] text-[#525252]">Total Revenue:</p>
-            <p className="text-2xl font-bold text-[#DD3A44]">
+            <p className="text-2xl font-bold text-[#1A1C1C]">
               £{totalRevenue.toLocaleString()}
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function GoalSpaceLinker({
 
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <FaSpinner className="animate-spin text-[#DD3A44] text-2xl" />
+                <FaSpinner className="animate-spin text-[#1A1C1C] text-2xl" />
               </div>
             ) : (
               <>
@@ -171,7 +171,7 @@ export default function GoalSpaceLinker({
                 {selectedSpaces.length > 0 && (
                   <div className="bg-[#F3F3F3] p-4 rounded mb-6">
                     <p className="text-[12px] text-[#525252] mb-2">Total Revenue Preview:</p>
-                    <p className="text-xl font-bold text-[#DD3A44]">
+                    <p className="text-xl font-bold text-[#1A1C1C]">
                       £{totalRevenue.toLocaleString()}
                     </p>
                   </div>
@@ -188,7 +188,7 @@ export default function GoalSpaceLinker({
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex-1 px-4 py-2 bg-[#DD3A44] text-white rounded text-[13px] font-medium hover:opacity-90 transition disabled:opacity-50"
+                    className="flex-1 px-4 py-2 bg-[#000000] text-white rounded text-[13px] font-medium hover:opacity-90 transition disabled:opacity-50"
                   >
                     {isSaving ? (
                       <FaSpinner className="animate-spin inline mr-2" />

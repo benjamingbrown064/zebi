@@ -82,11 +82,11 @@ export default function ShareModal({
         <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <FaLink className="text-accent-500" />
-            <h2 className="text-lg font-semibold text-[#1c1b1b]">Share Task</h2>
+            <h2 className="text-lg font-semibold text-[#1A1C1C]">Share Task</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-[#C4C0C0] hover:text-[#5a5757] transition"
+            className="text-[#C4C0C0] hover:text-[#474747] transition"
           >
             <FaTimes className="text-lg" />
           </button>
@@ -97,7 +97,7 @@ export default function ShareModal({
           {/* Task Info */}
           <div className="mb-6">
             <p className="text-sm text-[#A3A3A3] mb-1">Sharing</p>
-            <p className="text-[#1c1b1b] font-medium truncate">{taskTitle}</p>
+            <p className="text-[#1A1C1C] font-medium truncate">{taskTitle}</p>
           </div>
 
           {isLoading ? (
@@ -108,7 +108,7 @@ export default function ShareModal({
             // Show existing share link
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#5a5757] mb-2">
+                <label className="block text-sm font-medium text-[#474747] mb-2">
                   Share Link
                 </label>
                 <div className="flex gap-2">
@@ -116,7 +116,7 @@ export default function ShareModal({
                     type="text"
                     value={shareUrl || ''}
                     readOnly
-                    className="flex-1 px-3 py-2 rounded text-sm bg-[#F3F3F3] text-[#5a5757]"
+                    className="flex-1 px-3 py-2 rounded text-sm bg-[#F3F3F3] text-[#474747]"
                   />
                   <button
                     onClick={handleCopy}
@@ -161,7 +161,7 @@ export default function ShareModal({
               <div className="w-16 h-16 bg-[#F3F3F3] rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaLink className="w-6 h-6 text-[#C4C0C0]" />
               </div>
-              <p className="text-[#5a5757] mb-4">
+              <p className="text-[#474747] mb-4">
                 Create a public link to share this task with anyone.
               </p>
               <button
@@ -179,7 +179,7 @@ export default function ShareModal({
         <div className="border-t border-gray-100 px-6 py-4">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 bg-[#F3F3F3] text-[#1c1b1b] rounded hover:bg-[#e8e4e4] transition font-medium"
+            className="w-full px-4 py-2 bg-[#F3F3F3] text-[#1A1C1C] rounded hover:bg-[#e8e4e4] transition font-medium"
           >
             Close
           </button>

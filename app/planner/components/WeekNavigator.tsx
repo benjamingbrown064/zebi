@@ -47,7 +47,7 @@ export default function WeekNavigator({
     <div className="flex items-center justify-between">
       <button
         onClick={onPrevious}
-        className="flex items-center gap-2 px-4 py-2 text-[#525252] hover:bg-[#F5F5F5] rounded transition-colors"
+        className="flex items-center gap-2 px-4 py-2 text-[#474747] hover:bg-[#F3F3F3] rounded transition-colors"
         aria-label={isMobile ? 'Previous day' : 'Previous 3 days'}
       >
         <FaChevronLeft className="w-4 h-4" />
@@ -63,7 +63,7 @@ export default function WeekNavigator({
 
         <button
           onClick={onToday}
-          className="px-4 py-2 text-sm font-medium text-white bg-[#DD3A44] hover:bg-[#C2323B] rounded transition-colors"
+          className="px-4 py-2 text-sm font-medium text-white bg-[#000000] hover:bg-[#C2323B] rounded transition-colors"
         >
           Today
         </button>
@@ -71,7 +71,7 @@ export default function WeekNavigator({
 
       <button
         onClick={onNext}
-        className="flex items-center gap-2 px-4 py-2 text-[#525252] hover:bg-[#F5F5F5] rounded transition-colors"
+        className="flex items-center gap-2 px-4 py-2 text-[#474747] hover:bg-[#F3F3F3] rounded transition-colors"
         aria-label={isMobile ? 'Next day' : 'Next 3 days'}
       >
         <span className="text-sm font-medium hidden sm:inline">

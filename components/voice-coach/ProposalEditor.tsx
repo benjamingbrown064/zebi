@@ -173,7 +173,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
         
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-[#5a5757] mb-1">Name</label>
+            <label className="block text-xs font-medium text-[#474747] mb-1">Name</label>
             <Input
               value={editedProposal.goal.name}
               onChange={(e) => updateGoal('name', e.target.value)}
@@ -186,7 +186,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#5a5757] mb-1">Description</label>
+            <label className="block text-xs font-medium text-[#474747] mb-1">Description</label>
             <Textarea
               value={editedProposal.goal.description}
               onChange={(e) => updateGoal('description', e.target.value)}
@@ -199,7 +199,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#5a5757] mb-1">Success Criteria</label>
+            <label className="block text-xs font-medium text-[#474747] mb-1">Success Criteria</label>
             <Textarea
               value={editedProposal.goal.successCriteria}
               onChange={(e) => updateGoal('successCriteria', e.target.value)}
@@ -212,7 +212,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#5a5757] mb-1">Target Date</label>
+            <label className="block text-xs font-medium text-[#474747] mb-1">Target Date</label>
             <Input
               type="date"
               value={editedProposal.goal.targetDate || ''}
@@ -355,7 +355,7 @@ export default function ProposalEditor({ proposal, onSave, onCancel }: ProposalE
         <div className="space-y-2">
           {editedProposal.tasks.map((task, index) => (
             <div key={index} className="flex items-center gap-2">
-              <span className="text-sm text-[#5a5757] min-w-[24px]">{index + 1}.</span>
+              <span className="text-sm text-[#474747] min-w-[24px]">{index + 1}.</span>
               <Input
                 value={task.title}
                 onChange={(e) => updateTask(index, 'title', e.target.value)}

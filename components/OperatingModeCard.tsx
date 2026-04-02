@@ -111,7 +111,7 @@ export default function OperatingModeCard() {
 
         <button
           onClick={() => setShowOverride(!showOverride)}
-          className="text-[12px] text-[#A3A3A3] hover:text-[#525252] transition-colors px-2 py-1 rounded hover:bg-[#F5F5F5]"
+          className="text-[12px] text-[#A3A3A3] hover:text-[#525252] transition-colors px-2 py-1 rounded hover:bg-[#F3F3F3]"
         >
           Change
         </button>

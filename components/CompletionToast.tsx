@@ -54,10 +54,10 @@ export default function CompletionToast({
       <div className="flex items-start gap-3">
         <FaCheckCircle className="text-[#006766] flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-[#1c1b1b]">
+          <p className="text-sm font-medium text-[#1A1C1C]">
             Task completed · Will archive {getRetentionText()}
           </p>
-          <p className="text-xs text-[#5a5757] mt-1 truncate">{taskTitle}</p>
+          <p className="text-xs text-[#474747] mt-1 truncate">{taskTitle}</p>
         </div>
         <button
           onClick={() => {
@@ -67,7 +67,7 @@ export default function CompletionToast({
               setDismissing(false)
             }, 300)
           }}
-          className="text-[#C4C0C0] hover:text-[#5a5757] flex-shrink-0"
+          className="text-[#C4C0C0] hover:text-[#474747] flex-shrink-0"
         >
           <FaTimes />
         </button>
@@ -88,7 +88,7 @@ export default function CompletionToast({
             onUndo()
             onClose()
           }}
-          className="text-xs font-medium text-[#5a5757] hover:text-[#5a5757] hover:bg-[#F3F3F3] px-2 py-1 rounded transition"
+          className="text-xs font-medium text-[#474747] hover:text-[#474747] hover:bg-[#F3F3F3] px-2 py-1 rounded transition"
         >
           Undo
         </button>

@@ -121,7 +121,7 @@ export default function TaskBoardTile({
         <div className="flex-1 min-w-0">
           <h3
             title={task.title}
-            className="text-sm font-medium text-[#1c1b1b] truncate leading-tight"
+            className="text-sm font-medium text-[#1A1C1C] truncate leading-tight"
           >
             {task.title}
           </h3>
@@ -131,14 +131,14 @@ export default function TaskBoardTile({
           {task.description && (
             <FaFileAlt
               size={12}
-              className="text-[#C4C0C0] hover:text-[#5a5757]"
+              className="text-[#C4C0C0] hover:text-[#474747]"
               title="Has description"
             />
           )}
           {hasAttachments && (
             <FaPaperclip
               size={12}
-              className="text-[#C4C0C0] hover:text-[#5a5757]"
+              className="text-[#C4C0C0] hover:text-[#474747]"
               title={`${task.attachments?.length} attachment(s)`}
             />
           )}
@@ -165,7 +165,7 @@ export default function TaskBoardTile({
           )}
           {task.assigneeName && (
             <div className="flex items-center gap-1 flex-shrink-0">
-              <div className="w-4 h-4 rounded-full bg-[#DD3A44] text-white flex items-center justify-center text-[9px] font-medium flex-shrink-0">
+              <div className="w-4 h-4 rounded-full bg-[#000000] text-white flex items-center justify-center text-[9px] font-medium flex-shrink-0">
                 {task.assigneeName.charAt(0).toUpperCase()}
               </div>
               <span className="truncate max-w-[80px]">{task.assigneeName}</span>
@@ -178,7 +178,7 @@ export default function TaskBoardTile({
       <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
         {/* Due Date */}
         {dueDate && (
-          <span className="text-[#5a5757]">{dueDate}</span>
+          <span className="text-[#474747]">{dueDate}</span>
         )}
 
         {/* Priority */}
@@ -232,7 +232,7 @@ export default function TaskBoardTile({
               </span>
             ))}
             {remainingTags > 0 && (
-              <span className="px-2 py-1 bg-[#F3F3F3] text-[#5a5757] rounded font-medium">
+              <span className="px-2 py-1 bg-[#F3F3F3] text-[#474747] rounded font-medium">
                 +{remainingTags}
               </span>
             )}
@@ -267,9 +267,9 @@ export default function TaskBoardTile({
             </div>
           )}
           {hasAssignee && !hasBlockedReason && (
-            <div className="flex items-center gap-1 text-[#5a5757]">
+            <div className="flex items-center gap-1 text-[#474747]">
               <span className="font-medium">Assigned to:</span>
-              <span className="text-[#5a5757]">{task.assignee?.name}</span>
+              <span className="text-[#474747]">{task.assignee?.name}</span>
             </div>
           )}
         </div>

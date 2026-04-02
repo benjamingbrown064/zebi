@@ -150,11 +150,11 @@ export default function ConvertToTaskModal({
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-[#1c1b1b] flex items-center gap-2">
+              <h2 className="text-xl font-bold text-[#1A1C1C] flex items-center gap-2">
                 <FontAwesomeIcon icon={faArrowRight} className="text-[#006766]" />
                 Convert to Task
               </h2>
-              <p className="text-sm text-[#5a5757] mt-1">
+              <p className="text-sm text-[#474747] mt-1">
                 Turn this inbox item into a structured task
               </p>
             </div>
@@ -162,7 +162,7 @@ export default function ConvertToTaskModal({
               onClick={onClose}
               className="p-2 hover:bg-[#F3F3F3] rounded transition"
             >
-              <FontAwesomeIcon icon={faTimes} className="text-[#5a5757]" />
+              <FontAwesomeIcon icon={faTimes} className="text-[#474747]" />
             </button>
           </div>
         </div>
@@ -183,7 +183,7 @@ export default function ConvertToTaskModal({
 
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+                <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
                   Task Title <span className="text-red-600">*</span>
                 </label>
                 <input
@@ -191,13 +191,13 @@ export default function ConvertToTaskModal({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter task title..."
-                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1A1C1C]"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+                <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
                   Description
                 </label>
                 <textarea
@@ -205,19 +205,19 @@ export default function ConvertToTaskModal({
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Add details..."
                   rows={4}
-                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b] resize-none"
+                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1A1C1C] resize-none"
                 />
               </div>
 
               {/* Status */}
               <div>
-                <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+                <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
                   Status <span className="text-red-600">*</span>
                 </label>
                 <select
                   value={statusId}
                   onChange={(e) => setStatusId(e.target.value)}
-                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1A1C1C]"
                 >
                   <option value="">Select status...</option>
                   {statuses.map((status) => (
@@ -230,13 +230,13 @@ export default function ConvertToTaskModal({
 
               {/* Project */}
               <div>
-                <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+                <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
                   Project
                 </label>
                 <select
                   value={projectId}
                   onChange={(e) => setProjectId(e.target.value)}
-                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                  className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1A1C1C]"
                 >
                   <option value="">No project</option>
                   {projects.map((project) => (
@@ -250,13 +250,13 @@ export default function ConvertToTaskModal({
               <div className="grid grid-cols-2 gap-4">
                 {/* Priority */}
                 <div>
-                  <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+                  <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
                     Priority
                   </label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(parseInt(e.target.value))}
-                    className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                    className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1A1C1C]"
                   >
                     <option value={1}>1 - Critical</option>
                     <option value={2}>2 - High</option>
@@ -267,22 +267,22 @@ export default function ConvertToTaskModal({
 
                 {/* Due Date */}
                 <div>
-                  <label className="block text-sm font-medium text-[#1c1b1b] mb-2">
+                  <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
                     Due Date
                   </label>
                   <input
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1c1b1b]"
+                    className="w-full px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#DD3A44] text-[#1A1C1C]"
                   />
                 </div>
               </div>
 
               {/* Original Capture Info */}
               <div className="p-4 bg-[#F3F3F3] rounded">
-                <div className="text-xs font-semibold text-[#1c1b1b] mb-2">Original Capture</div>
-                <div className="text-sm text-[#5a5757]">{inboxItem.rawText}</div>
+                <div className="text-xs font-semibold text-[#1A1C1C] mb-2">Original Capture</div>
+                <div className="text-sm text-[#474747]">{inboxItem.rawText}</div>
                 <div className="text-xs text-[#A3A3A3] mt-2">
                   Captured {new Date(inboxItem.capturedAt).toLocaleString()}
                 </div>
@@ -296,7 +296,7 @@ export default function ConvertToTaskModal({
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-6 py-2 text-[#5a5757] hover:bg-[#F3F3F3] rounded transition font-medium disabled:opacity-50"
+            className="px-6 py-2 text-[#474747] hover:bg-[#F3F3F3] rounded transition font-medium disabled:opacity-50"
           >
             Cancel
           </button>
@@ -306,7 +306,7 @@ export default function ConvertToTaskModal({
             className={`px-6 py-2 rounded font-medium transition flex items-center gap-2 ${
               loading || loadingData || !title.trim() || !statusId
                 ? 'bg-[#F3F3F3] text-[#C4C0C0] cursor-not-allowed'
-                : 'bg-[#DD3A44] text-white hover:opacity-90'
+                : 'bg-[#000000] text-white hover:opacity-90'
             }`}
           >
             {loading && <FontAwesomeIcon icon={faSpinner} spin />}

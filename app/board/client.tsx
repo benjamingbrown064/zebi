@@ -16,21 +16,21 @@ import { getGoals, calculateGoalProgress } from '@/app/actions/goals'
 
 const STATUS_COLORS: Record<string, string> = {
   inbox: 'bg-[#F3F3F3]',
-  planned: 'bg-[#f0fafa]',
+  planned: 'bg-[#F3F3F3]',
   doing: 'bg-amber-50',
   review: 'bg-cyan-50',
   blocked: 'bg-red-50',
-  done: 'bg-[#f0fafa]',
+  done: 'bg-[#F3F3F3]',
   check: 'bg-purple-50', // Match lane color in board
 }
 
 const STATUS_PILL_COLORS: Record<string, string> = {
-  inbox: 'bg-[#F3F3F3] text-[#5a5757]',
-  planned: 'bg-[#e6f4f4] text-[#006766]',
+  inbox: 'bg-[#F3F3F3] text-[#474747]',
+  planned: 'bg-[#F3F3F3] text-[#474747]',
   doing: 'bg-amber-100 text-amber-700',
   review: 'bg-cyan-100 text-cyan-700',
   blocked: 'bg-red-100 text-red-700',
-  done: 'bg-[#e6f4f4] text-[#006766]',
+  done: 'bg-[#F3F3F3] text-[#474747]',
   check: 'bg-purple-100 text-purple-700', // Match lane background
 }
 
@@ -533,7 +533,7 @@ export default function BoardClient({
                 <div className="sticky bottom-0 z-10 px-4 py-3 bg-inherit">
                   <button 
                     onClick={() => handleOpenQuickAdd(status.id)}
-                    className="w-full flex items-center justify-center gap-2 py-2 text-sm text-[#5a5757] hover:bg-white/50 rounded transition"
+                    className="w-full flex items-center justify-center gap-2 py-2 text-sm text-[#474747] hover:bg-white/50 rounded transition"
                   >
                     <FaPlus size={14} />
                     Add task

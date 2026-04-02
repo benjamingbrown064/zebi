@@ -85,11 +85,11 @@ export default function ProgressChart({
       <div className="flex items-center gap-4 mb-4">
         <div className="flex items-center gap-2">
           <div className="w-4 h-0.5 bg-accent-500" />
-          <span className="text-sm text-[#5a5757]">Actual Progress</span>
+          <span className="text-sm text-[#474747]">Actual Progress</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-0.5 bg-gray-400 border-t-2 border-dashed" />
-          <span className="text-sm text-[#5a5757]">Target Trajectory</span>
+          <span className="text-sm text-[#474747]">Target Trajectory</span>
         </div>
       </div>
 

@@ -146,7 +146,7 @@ export default function DocumentsPage() {
   const getTypeBadge = (type: string) => {
     const typeLabel = DOCUMENT_TYPES.find(t => t.value === type)?.label || type;
     return (
-      <span className="px-2 py-1 rounded-md text-[11px] font-semibold bg-[#e6f4f4] text-[#006766]">
+      <span className="px-2 py-1 rounded-md text-[11px] font-semibold bg-[#F3F3F3] text-[#474747]">
         {typeLabel}
       </span>
     );
@@ -178,7 +178,7 @@ export default function DocumentsPage() {
           primaryAction={
             <button
               onClick={() => router.push('/documents/new')}
-              className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
+              className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
             >
               <FaPlus className="text-sm" />
               <span className="hidden sm:inline">New Document</span>
@@ -203,8 +203,8 @@ export default function DocumentsPage() {
                   px-4 py-2 rounded text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
                   ${
                     typeFilter === type.value
-                      ? 'bg-[#FEF2F2] text-[#DD3A44] border border-[#DD3A44]'
-                      : 'bg-white text-[#525252] hover:bg-[#F5F5F5]'
+                      ? 'bg-[#F3F3F3] text-[#1A1C1C] border border-[#DD3A44]'
+                      : 'bg-white text-[#474747] hover:bg-[#F3F3F3]'
                   }
                 `}
               >
@@ -218,7 +218,7 @@ export default function DocumentsPage() {
           <div className="py-6 md:py-12">
             {documents.length === 0 ? (
               <div className="text-center py-12 md:py-20">
-                <div className="w-16 h-16 rounded-full bg-[#F5F5F5] flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-full bg-[#F3F3F3] flex items-center justify-center mx-auto mb-4">
                   <FaFile className="text-[#A3A3A3] text-2xl" />
                 </div>
                 <h3 className="text-lg font-medium text-[#1A1A1A] mb-2">No documents found</h3>
@@ -230,7 +230,7 @@ export default function DocumentsPage() {
                 {!search && !typeFilter && (
                   <button
                     onClick={() => router.push('/documents/new')}
-                    className="px-6 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium transition-colors min-h-[44px]"
+                    className="px-6 py-3 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium transition-colors min-h-[44px]"
                   >
                     Create First Document
                   </button>
@@ -287,13 +287,13 @@ export default function DocumentsPage() {
                       {/* Metadata */}
                       <div className="space-y-2 mb-4">
                         {doc.space && (
-                          <div className="flex items-center gap-2 text-[12px] text-[#525252]">
+                          <div className="flex items-center gap-2 text-[12px] text-[#474747]">
                             <FaBuilding className="text-[#A3A3A3]" />
                             <span>{doc.space.name}</span>
                           </div>
                         )}
                         {doc.project && (
-                          <div className="flex items-center gap-2 text-[12px] text-[#525252]">
+                          <div className="flex items-center gap-2 text-[12px] text-[#474747]">
                             <FaFolder className="text-[#A3A3A3]" />
                             <span>{doc.project.name}</span>
                           </div>
@@ -350,7 +350,7 @@ export default function DocumentsPage() {
               {search && (
                 <button
                   onClick={() => setSearch('')}
-                  className="text-[#A3A3A3] hover:text-[#525252] min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="text-[#A3A3A3] hover:text-[#474747] min-h-[44px] min-w-[44px] flex items-center justify-center"
                 >
                   ✕
                 </button>

@@ -168,7 +168,7 @@ export default function FileUpload({
           className="hidden"
         />
         <FaUpload className="mx-auto text-2xl text-[#C4C0C0] mb-2" />
-        <p className="text-sm text-[#5a5757]">
+        <p className="text-sm text-[#474747]">
           {uploading ? 'Uploading...' : 'Drop files here or click to upload'}
         </p>
         <p className="text-xs text-[#A3A3A3] mt-1">
@@ -183,7 +183,7 @@ export default function FileUpload({
       {/* Attachments List */}
       {attachments.length > 0 && (
         <div className="mt-4 space-y-2">
-          <h4 className="text-sm font-medium text-[#1c1b1b]">Attachments</h4>
+          <h4 className="text-sm font-medium text-[#1A1C1C]">Attachments</h4>
           {attachments.map((attachment) => (
             <div
               key={attachment.id}
@@ -192,7 +192,7 @@ export default function FileUpload({
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <span className="text-xl">{getFileIcon(attachment.mimeType)}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#1c1b1b] truncate">
+                  <p className="text-sm font-medium text-[#1A1C1C] truncate">
                     {attachment.filename}
                   </p>
                   <p className="text-xs text-[#A3A3A3]">

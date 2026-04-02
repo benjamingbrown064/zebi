@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} bg-[#F3F3F3] text-[#1c1b1b] font-sans`}>
+      <body className={`${inter.variable} bg-[#F3F3F3] text-[#1A1C1C] font-sans`}>
         <Providers>
           {children}
           <DynamicAIChatButton />

@@ -38,7 +38,7 @@ export default function TaskOutcomeFields({
       {showExpected && (
         <div className="mb-3">
           <label className="text-[11px] font-medium text-[#A3A3A3] uppercase tracking-wide flex items-center gap-1.5 mb-1.5">
-            <FaBullseye className="text-[#DD3A44]" />
+            <FaBullseye className="text-[#1A1C1C]" />
             Expected outcome
           </label>
           <textarea
@@ -92,7 +92,7 @@ export default function TaskOutcomeFields({
           {!showExpected && (
             <button
               onClick={() => setShowExpected(true)}
-              className="text-[11px] text-[#A3A3A3] hover:text-[#DD3A44] flex items-center gap-1 transition-colors"
+              className="text-[11px] text-[#A3A3A3] hover:text-[#1A1C1C] flex items-center gap-1 transition-colors"
             >
               <FaBullseye className="text-xs" />
               + Expected outcome

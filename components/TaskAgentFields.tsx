@@ -81,7 +81,7 @@ export default function TaskAgentFields({ values, onChange }: Props) {
           <FaRobot size={12} className="text-[#737373]" />
           <span className="text-[13px] font-semibold text-[#525252]">Agent & Workflow</span>
           {hasAgentData && (
-            <span className="w-1.5 h-1.5 rounded-full bg-[#DD3A44]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#000000]" />
           )}
         </div>
         {open ? <FaChevronDown size={11} className="text-[#A3A3A3]" /> : <FaChevronRight size={11} className="text-[#A3A3A3]" />}
@@ -137,7 +137,7 @@ export default function TaskAgentFields({ values, onChange }: Props) {
             <button
               type="button"
               onClick={() => set({ decisionNeeded: !values.decisionNeeded, decisionSummary: values.decisionNeeded ? null : values.decisionSummary })}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${values.decisionNeeded ? 'bg-[#DD3A44]' : 'bg-[#E5E5E5]'}`}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${values.decisionNeeded ? 'bg-[#000000]' : 'bg-[#E5E5E5]'}`}
             >
               <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${values.decisionNeeded ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </button>

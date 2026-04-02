@@ -1,6 +1,6 @@
 export default function GoalsLoading() {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] pl-64">
+    <div className="min-h-screen bg-[#F9F9F9] pl-64">
       <div className="px-4 sm:px-6 lg:px-8 pt-8">
         {/* Header skeleton */}
         <div className="mb-8">

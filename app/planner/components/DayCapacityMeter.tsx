@@ -19,7 +19,7 @@ export default function DayCapacityMeter({
   }
 
   const getBgColor = () => {
-    if (percent < 60) return 'bg-[#ECFDF5]' // Green bg
+    if (percent < 60) return 'bg-[#F3F3F3]' // Green bg
     if (percent < 90) return 'bg-[#FFFBEB]' // Yellow bg
     return 'bg-[#FEF2F2]' // Red bg
   }

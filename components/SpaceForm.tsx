@@ -67,10 +67,10 @@ export default function SpaceForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Info */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-[#1c1b1b]">Basic Information</h3>
+        <h3 className="font-semibold text-[#1A1C1C]">Basic Information</h3>
 
         <div>
-          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
             Space Name *
           </label>
           <input
@@ -85,7 +85,7 @@ export default function SpaceForm({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
               Industry
             </label>
             <input
@@ -98,7 +98,7 @@ export default function SpaceForm({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
               Stage
             </label>
             <select
@@ -117,7 +117,7 @@ export default function SpaceForm({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
               Business Model
             </label>
             <select
@@ -135,7 +135,7 @@ export default function SpaceForm({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
               Monthly Revenue (£)
             </label>
             <input
@@ -150,7 +150,7 @@ export default function SpaceForm({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
               Logo URL
             </label>
             <input
@@ -163,7 +163,7 @@ export default function SpaceForm({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
               Website URL
             </label>
             <input
@@ -179,10 +179,10 @@ export default function SpaceForm({
 
       {/* Strategy */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-[#1c1b1b]">Strategy</h3>
+        <h3 className="font-semibold text-[#1A1C1C]">Strategy</h3>
 
         <div>
-          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
             Mission Statement
           </label>
           <input
@@ -195,7 +195,7 @@ export default function SpaceForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
             Executive Summary
           </label>
           <textarea
@@ -208,7 +208,7 @@ export default function SpaceForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
             Vision
           </label>
           <textarea
@@ -223,10 +223,10 @@ export default function SpaceForm({
 
       {/* Market */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-[#1c1b1b]">Market</h3>
+        <h3 className="font-semibold text-[#1A1C1C]">Market</h3>
 
         <div>
-          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
             Target Customers
           </label>
           <textarea
@@ -239,7 +239,7 @@ export default function SpaceForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
             Market Size
           </label>
           <input
@@ -254,10 +254,10 @@ export default function SpaceForm({
 
       {/* Product */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-[#1c1b1b]">Product</h3>
+        <h3 className="font-semibold text-[#1A1C1C]">Product</h3>
 
         <div>
-          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
             Core Product
           </label>
           <textarea
@@ -270,7 +270,7 @@ export default function SpaceForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#5a5757] uppercase mb-2">
+          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
             Positioning
           </label>
           <textarea
@@ -289,14 +289,14 @@ export default function SpaceForm({
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="flex-1 px-4 py-2 bg-[#F3F3F3] text-[#1c1b1b] rounded hover:bg-[#e8e4e4] transition font-medium disabled:opacity-50"
+          className="flex-1 px-4 py-2 bg-[#F3F3F3] text-[#1A1C1C] rounded hover:bg-[#E5E5E5] transition font-medium disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading || !formData.name}
-          className="flex-1 px-5 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded transition font-medium disabled:opacity-50"
+          className="flex-1 px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded transition font-medium disabled:opacity-50"
         >
           {isLoading ? 'Saving...' : submitLabel}
         </button>

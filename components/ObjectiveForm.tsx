@@ -120,12 +120,12 @@ export default function ObjectiveForm({
       <div className="bg-white rounded shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6">
-          <h2 className="text-2xl font-bold text-[#1c1b1b]">
+          <h2 className="text-2xl font-bold text-[#1A1C1C]">
             {initialData ? 'Edit Objective' : 'Create Objective'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-[#C4C0C0] hover:text-[#5a5757] transition"
+            className="p-2 text-[#C4C0C0] hover:text-[#474747] transition"
           >
             <FaTimes size={20} />
           </button>
@@ -142,7 +142,7 @@ export default function ObjectiveForm({
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-[#5a5757] mb-2">
+            <label className="block text-sm font-medium text-[#474747] mb-2">
               Objective Title *
             </label>
             <input
@@ -157,7 +157,7 @@ export default function ObjectiveForm({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-[#5a5757] mb-2">
+            <label className="block text-sm font-medium text-[#474747] mb-2">
               Description
             </label>
             <textarea
@@ -172,7 +172,7 @@ export default function ObjectiveForm({
           {/* Space & Goal */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">Space *</label>
+              <label className="block text-sm font-medium text-[#474747] mb-2">Space *</label>
               <select
                 value={formData.companyId}
                 onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
@@ -189,7 +189,7 @@ export default function ObjectiveForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">Goal</label>
+              <label className="block text-sm font-medium text-[#474747] mb-2">Goal</label>
               <select
                 value={formData.goalId}
                 onChange={(e) => setFormData({ ...formData, goalId: e.target.value })}
@@ -208,7 +208,7 @@ export default function ObjectiveForm({
           {/* Objective Type & Priority */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">Type</label>
+              <label className="block text-sm font-medium text-[#474747] mb-2">Type</label>
               <select
                 value={formData.objectiveType}
                 onChange={(e) => setFormData({ ...formData, objectiveType: e.target.value })}
@@ -224,7 +224,7 @@ export default function ObjectiveForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">Priority</label>
+              <label className="block text-sm font-medium text-[#474747] mb-2">Priority</label>
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) })}
@@ -241,7 +241,7 @@ export default function ObjectiveForm({
           {/* Metric */}
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">
+              <label className="block text-sm font-medium text-[#474747] mb-2">
                 Metric Type *
               </label>
               <select
@@ -264,7 +264,7 @@ export default function ObjectiveForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">
+              <label className="block text-sm font-medium text-[#474747] mb-2">
                 Target Value *
               </label>
               <input
@@ -279,7 +279,7 @@ export default function ObjectiveForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">Unit</label>
+              <label className="block text-sm font-medium text-[#474747] mb-2">Unit</label>
               <input
                 type="text"
                 value={formData.unit}
@@ -293,7 +293,7 @@ export default function ObjectiveForm({
           {/* Dates */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">
+              <label className="block text-sm font-medium text-[#474747] mb-2">
                 Start Date *
               </label>
               <input
@@ -306,7 +306,7 @@ export default function ObjectiveForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#5a5757] mb-2">
+              <label className="block text-sm font-medium text-[#474747] mb-2">
                 Deadline *
               </label>
               <input
@@ -324,7 +324,7 @@ export default function ObjectiveForm({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 border border-gray-300 rounded text-[#5a5757] hover:bg-[#F3F3F3] transition"
+              className="px-6 py-2 border border-gray-300 rounded text-[#474747] hover:bg-[#F3F3F3] transition"
             >
               Cancel
             </button>

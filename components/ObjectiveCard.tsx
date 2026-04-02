@@ -114,7 +114,7 @@ export default function ObjectiveCard({
                 </div>
                 <Link
                   href={`/spaces/${companyId}`}
-                  className="text-[15px] font-medium text-[#525252] hover:text-[#DD3A44] transition-colors"
+                  className="text-[15px] font-medium text-[#525252] hover:text-[#1A1C1C] transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {spaceName}
@@ -123,7 +123,7 @@ export default function ObjectiveCard({
             )}
 
             {/* Title */}
-            <h3 className="text-[18px] leading-[28px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition-colors">
+            <h3 className="text-[18px] leading-[28px] font-medium text-[#1A1A1A] group-hover:text-[#1A1C1C] transition-colors">
               {title}
             </h3>
           </div>
@@ -222,7 +222,7 @@ export default function ObjectiveCard({
           <div className="space-y-2 mb-5">
             {aiWork && (
               <div className="flex items-start gap-2">
-                <FaRobot className="text-[#DD3A44] mt-0.5 text-sm flex-shrink-0" />
+                <FaRobot className="text-[#1A1C1C] mt-0.5 text-sm flex-shrink-0" />
                 <div className="text-[13px] leading-[20px]">
                   <span className="text-[#A3A3A3]">Doug:</span>{' '}
                   <span className="text-[#525252]">{aiWork}</span>
@@ -245,7 +245,7 @@ export default function ObjectiveCard({
         <div className="flex gap-2 pt-5 border-t border-[#F5F5F5]">
           <Link
             href={`/objectives/${id}`}
-            className="flex-1 px-4 py-2 bg-[#DD3A44] hover:bg-[#C7333D] rounded text-[13px] font-medium text-white transition-colors text-center"
+            className="flex-1 px-4 py-2 bg-[#000000] hover:bg-[#1A1C1C] rounded text-[13px] font-medium text-white transition-colors text-center"
             onClick={(e) => e.stopPropagation()}
           >
             View Details

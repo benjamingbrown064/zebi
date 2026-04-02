@@ -180,7 +180,7 @@ export default function TaskHandoffPanel({ taskId, workspaceId, ownerAgent }: Pr
                     <p><span className="text-[#737373]">Remaining:</span> {h.remainingWork}</p>
                     {h.blockers !== 'none' && <p><span className="text-orange-600">Blockers:</span> {h.blockers}</p>}
                     {h.decisionNeeded && h.decisionSummary && (
-                      <p><span className="text-[#DD3A44] font-medium">Decision needed:</span> {h.decisionSummary}</p>
+                      <p><span className="text-[#1A1C1C] font-medium">Decision needed:</span> {h.decisionSummary}</p>
                     )}
                   </div>
                   {h.status === 'pending' && (
@@ -285,7 +285,7 @@ export default function TaskHandoffPanel({ taskId, workspaceId, ownerAgent }: Pr
               <div className="flex items-center justify-between">
                 <label className="text-[12px] font-medium text-[#525252]">Decision needed from Ben?</label>
                 <button type="button" onClick={() => setDecisionNeeded(d => !d)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${decisionNeeded ? 'bg-[#DD3A44]' : 'bg-[#E5E5E5]'}`}>
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${decisionNeeded ? 'bg-[#000000]' : 'bg-[#E5E5E5]'}`}>
                   <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${decisionNeeded ? 'translate-x-4' : 'translate-x-0.5'}`} />
                 </button>
               </div>
@@ -298,7 +298,7 @@ export default function TaskHandoffPanel({ taskId, workspaceId, ownerAgent }: Pr
               {/* actions */}
               <div className="flex gap-2 pt-1">
                 <button onClick={handleCreate} disabled={saving}
-                  className="px-4 py-2 bg-[#DD3A44] text-white rounded-[7px] text-[12px] font-medium hover:bg-[#C7333D] transition-colors disabled:opacity-50">
+                  className="px-4 py-2 bg-[#000000] text-white rounded-[7px] text-[12px] font-medium hover:bg-[#1A1C1C] transition-colors disabled:opacity-50">
                   {saving ? 'Creating…' : 'Create handoff'}
                 </button>
                 <button onClick={resetForm}
@@ -312,7 +312,7 @@ export default function TaskHandoffPanel({ taskId, workspaceId, ownerAgent }: Pr
               <button
                 type="button"
                 onClick={() => setCreating(true)}
-                className="text-[12px] font-medium text-[#DD3A44] hover:text-[#C7333D] transition-colors"
+                className="text-[12px] font-medium text-[#1A1C1C] hover:text-[#C7333D] transition-colors"
               >
                 + Create handoff
               </button>

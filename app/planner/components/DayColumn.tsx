@@ -59,9 +59,9 @@ export default function DayColumn({
       ref={setNodeRef}
       className={`flex flex-col bg-white border rounded overflow-hidden transition-all ${
         isOver
-          ? 'border-[#DD3A44] shadow-[0_4px_12px_rgba(28,27,27,0.08)]'
+          ? 'border-[#1A1C1C] shadow-[0_4px_12px_rgba(28,27,27,0.08)]'
           : 'border-[#E5E5E5]'
-      } ${isCurrentDay ? 'ring-2 ring-[#DD3A44]/20' : ''}`}
+      } ${isCurrentDay ? 'ring-2 ring-[#1A1C1C]/10' : ''}`}
     >
       {/* Day header */}
       <div className="px-4 py-3 bg-[#F9F9F9]">
@@ -72,7 +72,7 @@ export default function DayColumn({
             </div>
             <div
               className={`text-lg font-semibold ${
-                isCurrentDay ? 'text-[#DD3A44]' : 'text-[#1A1A1A]'
+                isCurrentDay ? 'text-[#1A1C1C]' : 'text-[#1A1A1A]'
               }`}
             >
               {format(date, 'd')}

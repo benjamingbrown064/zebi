@@ -65,14 +65,14 @@ export default function SettingsPage() {
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Workspace</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#525252] mb-2">
+                  <label className="block text-sm font-medium text-[#474747] mb-2">
                     Workspace Name
                   </label>
                   <input
                     type="text"
                     value="My Workspace"
                     disabled
-                    className="w-full px-4 py-2.5  rounded bg-[#F5F5F5] text-[#5a5757] min-h-[44px]"
+                    className="w-full px-4 py-2.5  rounded bg-[#F3F3F3] text-[#474747] min-h-[44px]"
                   />
                   <p className="text-xs text-[#A3A3A3] mt-1">Workspace name cannot be changed</p>
                 </div>
@@ -84,7 +84,7 @@ export default function SettingsPage() {
               <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Preferences</h2>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-[#525252]">
+                  <label className="text-sm font-medium text-[#474747]">
                     Default view
                   </label>
                   <select className="px-3 py-2.5  rounded text-sm min-h-[44px]">
@@ -96,7 +96,7 @@ export default function SettingsPage() {
 
                 <div className="flex items-center justify-between pt-4">
                   <div>
-                    <label className="text-sm font-medium text-[#525252]">
+                    <label className="text-sm font-medium text-[#474747]">
                       Dark mode
                     </label>
                     <p className="text-xs text-[#A3A3A3] mt-1">
@@ -106,7 +106,7 @@ export default function SettingsPage() {
                   <button
                     onClick={toggleDarkMode}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      darkMode ? 'bg-[#DD3A44]' : 'bg-[#E5E5E5]'
+                      darkMode ? 'bg-[#000000]' : 'bg-[#E5E5E5]'
                     }`}
                   >
                     <span
@@ -127,7 +127,7 @@ export default function SettingsPage() {
               </p>
               <button
                 onClick={() => router.push('/filters')}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] transition-colors min-h-[44px]"
               >
                 <FaFilter />
                 Manage Filters

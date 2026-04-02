@@ -70,7 +70,7 @@ export default function SmartDeadlineButton({
         ) : (
           <FaLightbulb className="text-yellow-500" size={14} />
         )}
-        <span className="text-[#5a5757] dark:text-gray-300">Suggest Deadline</span>
+        <span className="text-[#474747] dark:text-gray-300">Suggest Deadline</span>
       </button>
 
       {showSuggestion && suggestion && (
@@ -78,10 +78,10 @@ export default function SmartDeadlineButton({
           <div className="flex items-start gap-2 mb-3">
             <FaCalendarAlt className="text-accent-500 mt-1" size={16} />
             <div>
-              <p className="font-semibold text-sm text-[#1c1b1b] dark:text-gray-100">
+              <p className="font-semibold text-sm text-[#1A1C1C] dark:text-gray-100">
                 Suggested: {new Date(suggestion.deadline).toLocaleDateString()}
               </p>
-              <p className="text-xs text-[#5a5757] dark:text-[#C4C0C0] mt-1">
+              <p className="text-xs text-[#474747] dark:text-[#C4C0C0] mt-1">
                 {suggestion.reasoning}
               </p>
             </div>
@@ -95,7 +95,7 @@ export default function SmartDeadlineButton({
             </button>
             <button
               onClick={() => setShowSuggestion(false)}
-              className="flex-1 px-3 py-1 border border-gray-300 dark:border-gray-600 text-sm rounded hover:bg-[#F3F3F3] dark:hover:bg-gray-700 transition text-[#5a5757] dark:text-gray-300"
+              className="flex-1 px-3 py-1 border border-gray-300 dark:border-gray-600 text-sm rounded hover:bg-[#F3F3F3] dark:hover:bg-gray-700 transition text-[#474747] dark:text-gray-300"
             >
               Dismiss
             </button>

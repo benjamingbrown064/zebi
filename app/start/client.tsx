@@ -89,12 +89,12 @@ function InlineEdit({
           onKeyDown={handleKeyDown}
           onBlur={handleSave}
           disabled={edit.saving}
-          className="flex-1 text-[13px] font-medium text-[#1A1A1A] bg-transparent border-b border-[#DD3A44] outline-none min-w-0 py-0.5"
+          className="flex-1 text-[13px] font-medium text-[#1A1A1A] bg-transparent border-b border-[#1A1C1C] outline-none min-w-0 py-0.5"
         />
         {edit.saving && (
-          <div className="w-3 h-3 rounded-full border border-[#DD3A44] border-t-transparent animate-spin shrink-0" />
+          <div className="w-3 h-3 rounded-full border border-[#1A1C1C] border-t-transparent animate-spin shrink-0" />
         )}
-        {edit.error && <span className="text-[11px] text-[#DD3A44] shrink-0">{edit.error}</span>}
+        {edit.error && <span className="text-[11px] text-[#1A1C1C] shrink-0">{edit.error}</span>}
       </div>
     )
   }
@@ -151,7 +151,7 @@ function ObjectCard({
     <div
       className={`flex items-start gap-3 p-4 rounded-xl border transition-colors ${
         success
-          ? 'bg-white border-[#E5E5E5] hover:border-[#DD3A44]/20'
+          ? 'bg-white border-[#E5E5E5] hover:border-[#1A1C1C]/20'
           : 'bg-[#FEF2F2] border-[#FECACA]'
       }`}
     >
@@ -165,17 +165,17 @@ function ObjectCard({
             <span className="text-[13px] font-medium text-[#1A1A1A] truncate">{title}</span>
           )}
           {reused && (
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#F5F5F5] text-[#737373] shrink-0">
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#F3F3F3] text-[#737373] shrink-0">
               already existed
             </span>
           )}
         </div>
         {meta && <p className="text-[12px] text-[#737373] mt-0.5 line-clamp-2">{meta}</p>}
-        {error && <p className="text-[12px] text-[#DD3A44] mt-0.5">{error}</p>}
+        {error && <p className="text-[12px] text-[#1A1C1C] mt-0.5">{error}</p>}
       </div>
 
       {success && href && (
-        <Link href={href} className="shrink-0 mt-0.5 text-[#A3A3A3] hover:text-[#DD3A44] transition-colors" title="Open">
+        <Link href={href} className="shrink-0 mt-0.5 text-[#A3A3A3] hover:text-[#1A1C1C] transition-colors" title="Open">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
@@ -380,7 +380,7 @@ export default function StartClient() {
         <div className="w-full max-w-xl">
           {/* Logo */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-[#DD3A44] rounded mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-[#000000] rounded mb-4">
               <span className="font-semibold text-white text-xl">Z</span>
             </div>
             <h1 className="text-[28px] font-semibold text-[#1A1A1A] leading-snug">
@@ -407,7 +407,7 @@ export default function StartClient() {
               <button
                 onClick={handleSubmit}
                 disabled={!prompt.trim()}
-                className="px-5 py-2 bg-[#DD3A44] hover:bg-[#C7333D] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-md text-[14px] font-medium transition"
+                className="px-5 py-2 bg-[#000000] hover:bg-[#1A1C1C] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-md text-[14px] font-medium transition"
               >
                 Build it →
               </button>
@@ -416,7 +416,7 @@ export default function StartClient() {
 
           {error && (
             <div className="mt-4 p-3 bg-[#FEF2F2] border border-[#FECACA] rounded">
-              <p className="text-[13px] text-[#DD3A44]">{error}</p>
+              <p className="text-[13px] text-[#1A1C1C]">{error}</p>
             </div>
           )}
 
@@ -435,7 +435,7 @@ export default function StartClient() {
                     setPrompt(example)
                     setTimeout(() => textareaRef.current?.focus(), 50)
                   }}
-                  className="text-left px-4 py-2.5 rounded border border-[#E5E5E5] bg-white hover:border-[#DD3A44]/40 hover:bg-[#FFF5F5] text-[13px] text-[#525252] transition"
+                  className="text-left px-4 py-2.5 rounded border border-[#E5E5E5] bg-white hover:border-[#1A1C1C]/40 hover:bg-[#F3F3F3] text-[13px] text-[#474747] transition"
                 >
                   {example}
                 </button>
@@ -445,7 +445,7 @@ export default function StartClient() {
 
           <p className="text-center text-[12px] text-[#A3A3A3] mt-8">
             Already have work in Zebi?{' '}
-            <Link href="/dashboard" className="text-[#DD3A44] hover:underline">
+            <Link href="/now" className="text-[#1A1C1C] hover:underline">
               Go to dashboard
             </Link>
           </p>
@@ -459,7 +459,7 @@ export default function StartClient() {
     return (
       <div className="min-h-screen bg-[#F9F9F9] flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-[#DD3A44] rounded mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-[#000000] rounded mb-8">
             <span className="font-semibold text-white text-xl">Z</span>
           </div>
 
@@ -487,7 +487,7 @@ export default function StartClient() {
                         </svg>
                       </div>
                     ) : active ? (
-                      <div className="w-5 h-5 rounded-full border-2 border-[#DD3A44] border-t-transparent animate-spin" />
+                      <div className="w-5 h-5 rounded-full border-2 border-[#1A1C1C] border-t-transparent animate-spin" />
                     ) : (
                       <div className="w-5 h-5 rounded-full border-2 border-[#E5E5E5]" />
                     )}
@@ -579,7 +579,7 @@ export default function StartClient() {
             <p className="text-[11px] font-medium text-[#A3A3A3] uppercase tracking-wider mb-1.5 px-1">
               Tasks
               {failedTaskIndexes.length > 0 && (
-                <span className="text-[#DD3A44] normal-case ml-1">
+                <span className="text-[#1A1C1C] normal-case ml-1">
                   ({failedTaskIndexes.length} failed)
                 </span>
               )}
@@ -606,7 +606,7 @@ export default function StartClient() {
                       <button
                         onClick={() => retryTask(i)}
                         disabled={isRetrying}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-[#DD3A44] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-[#1A1C1C] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isRetrying ? 'Retrying…' : 'Retry'}
                       </button>
@@ -659,12 +659,12 @@ export default function StartClient() {
           <div className="flex flex-col gap-3">
             <button
               onClick={() => setScreen('invite')}
-              className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] text-white rounded font-medium text-[15px] transition"
+              className="w-full px-5 py-3 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[15px] transition"
             >
               Invite a teammate →
             </button>
             <Link
-              href="/dashboard"
+              href="/now"
               className="w-full px-5 py-3 border border-[#E5E5E5] bg-white hover:bg-[#F9F9F9] text-[#1A1A1A] rounded font-medium text-[15px] transition text-center"
             >
               Go to dashboard
@@ -679,7 +679,7 @@ export default function StartClient() {
                 setStructure(null)
                 setScreen('entry')
               }}
-              className="text-[#DD3A44] hover:underline"
+              className="text-[#1A1C1C] hover:underline"
             >
               Start over
             </button>
@@ -695,7 +695,7 @@ export default function StartClient() {
       <div className="min-h-screen bg-[#F9F9F9] flex flex-col items-center justify-center px-4 py-16">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-[#F5F5F5] rounded-full mb-4 text-2xl">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-[#F3F3F3] rounded-full mb-4 text-2xl">
               👋
             </div>
             <h2 className="text-[24px] font-semibold text-[#1A1A1A]">Invite a teammate</h2>
@@ -721,7 +721,7 @@ export default function StartClient() {
               </p>
               <button
                 onClick={() => { setInviteEmail(''); setInviteStatus('idle') }}
-                className="mt-4 text-[13px] text-[#DD3A44] hover:underline"
+                className="mt-4 text-[13px] text-[#1A1C1C] hover:underline"
               >
                 Invite someone else
               </button>
@@ -734,12 +734,12 @@ export default function StartClient() {
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="colleague@example.com"
                 required
-                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#DD3A44] transition"
+                className="w-full px-4 py-3 border border-[#D4D4D4] rounded text-[15px] text-[#1A1A1A] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#1A1C1C] transition"
               />
               <button
                 type="submit"
                 disabled={inviteStatus === 'sending' || !inviteEmail.trim()}
-                className="w-full px-5 py-3 bg-[#DD3A44] hover:bg-[#C7333D] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded font-medium text-[15px] transition"
+                className="w-full px-5 py-3 bg-[#000000] hover:bg-[#1A1C1C] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded font-medium text-[15px] transition"
               >
                 {inviteStatus === 'sending' ? 'Sending…' : 'Send invite'}
               </button>
@@ -748,7 +748,7 @@ export default function StartClient() {
 
           <div className="mt-8 pt-6 border-t border-[#E5E5E5]">
             <Link
-              href="/dashboard"
+              href="/now"
               className="block w-full text-center px-5 py-3 border border-[#E5E5E5] bg-white hover:bg-[#F9F9F9] text-[#1A1A1A] rounded font-medium text-[15px] transition"
             >
               Go to dashboard
@@ -758,7 +758,7 @@ export default function StartClient() {
           <p className="text-center text-[12px] text-[#A3A3A3] mt-4">
             <button
               onClick={() => setScreen('summary')}
-              className="text-[#DD3A44] hover:underline"
+              className="text-[#1A1C1C] hover:underline"
             >
               ← Back to summary
             </button>

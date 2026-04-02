@@ -98,7 +98,7 @@ export default function BrainDumpClient() {
       <div className="bg-white">
         <div className="max-w-4xl mx-auto px-8 py-6">
           <h1 className="text-2xl font-semibold text-[#1A1A1A]">Brain Dump</h1>
-          <p className="text-sm text-[#5a5757] mt-1">Speak your updates, we'll structure them</p>
+          <p className="text-sm text-[#474747] mt-1">Speak your updates, we'll structure them</p>
         </div>
       </div>
 
@@ -110,13 +110,13 @@ export default function BrainDumpClient() {
               <div className="text-center py-16">
                 <Spinner size="lg" color="default" className="mb-6" />
                 <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">Processing your update</h3>
-                <p className="text-sm text-[#5a5757]">This will take a few moments...</p>
+                <p className="text-sm text-[#474747]">This will take a few moments...</p>
               </div>
             ) : (
               <>
                 <div className="text-center mb-8">
                   <h2 className="text-xl font-semibold text-[#1A1A1A] mb-2">Record Your Update</h2>
-                  <p className="text-sm text-[#5a5757]">
+                  <p className="text-sm text-[#474747]">
                     Speak naturally about your work. Mention tasks, projects, deadlines, or priorities.
                   </p>
                 </div>
@@ -128,7 +128,7 @@ export default function BrainDumpClient() {
                 />
 
                 <div className="mt-8 p-4 bg-[#F3F3F3] rounded">
-                  <p className="text-xs text-[#5a5757] leading-relaxed">
+                  <p className="text-xs text-[#474747] leading-relaxed">
                     <span className="font-medium">Tips:</span> Mention specific names, dates (like "Friday" or "next week"), 
                     and priorities. For example: "Add high priority task for Love Warranty claims review, due Friday" 
                     or "Update DGS integration to at risk status."
@@ -158,9 +158,9 @@ export default function BrainDumpClient() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`inline-block w-2 h-2 rounded-full ${
-                          session.status === 'processed' ? 'bg-[#f0fafa]0' :
+                          session.status === 'processed' ? 'bg-[#F3F3F3]0' :
                           session.status === 'processing' ? 'bg-yellow-500' :
-                          session.status === 'applied' ? 'bg-[#f0fafa]0' :
+                          session.status === 'applied' ? 'bg-[#F3F3F3]0' :
                           'bg-gray-400'
                         }`} />
                         <span className="text-xs font-medium text-[#A3A3A3] uppercase">
@@ -171,7 +171,7 @@ export default function BrainDumpClient() {
                           {formatDate(session.createdAt)}
                         </span>
                       </div>
-                      <p className="text-sm text-[#1c1b1b] line-clamp-2 leading-relaxed">
+                      <p className="text-sm text-[#1A1C1C] line-clamp-2 leading-relaxed">
                         {session.summary || session.transcript || 'No transcript available'}
                       </p>
                     </div>

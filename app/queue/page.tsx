@@ -94,7 +94,7 @@ function SectionHeader({ title, count, icon }: { title: string; count: number; i
   return (
     <div className="flex items-center gap-2 mb-3">
       <span className="text-[#737373]">{icon}</span>
-      <h3 className="text-[13px] font-semibold text-[#525252]">{title}</h3>
+      <h3 className="text-[13px] font-semibold text-[#474747]">{title}</h3>
       <span className="text-[11px] text-[#A3A3A3]">({count})</span>
     </div>
   )
@@ -216,7 +216,7 @@ function QueueContent() {
                 className={`flex items-center gap-2 px-4 py-2.5 rounded text-[13px] font-medium transition-all border ${
                   isActive
                     ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
-                    : 'bg-white text-[#525252] border-[#E5E5E5] hover:border-[#C4C4C4]'
+                    : 'bg-white text-[#474747] border-[#E5E5E5] hover:border-[#C4C4C4]'
                 }`}>
                 <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-white' : c.dot}`} />
                 {c.label}

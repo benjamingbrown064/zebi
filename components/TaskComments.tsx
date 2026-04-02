@@ -93,7 +93,7 @@ export default function TaskComments({
 
   return (
     <div className="border-t border-gray-200 pt-4 mt-4">
-      <h3 className="text-sm font-medium text-[#1c1b1b] mb-3">Comments</h3>
+      <h3 className="text-sm font-medium text-[#1A1C1C] mb-3">Comments</h3>
 
       {/* Comments List */}
       <div className="space-y-3 mb-4 max-h-48 overflow-y-auto">
@@ -112,7 +112,7 @@ export default function TaskComments({
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#1c1b1b]">
+                  <span className="text-sm font-medium text-[#1A1C1C]">
                     {comment.createdBy === userId ? userName : 'Team Member'}
                   </span>
                   <span className="text-xs text-[#A3A3A3]">
@@ -128,7 +128,7 @@ export default function TaskComments({
                     </button>
                   )}
                 </div>
-                <p className="text-sm text-[#5a5757] whitespace-pre-wrap break-words">
+                <p className="text-sm text-[#474747] whitespace-pre-wrap break-words">
                   {comment.body}
                 </p>
               </div>

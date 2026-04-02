@@ -147,7 +147,7 @@ export default function FilterBuilder({
     <div className="space-y-6">
       {/* Statuses */}
       <div>
-        <label className="block text-sm font-medium text-[#5a5757] mb-2">
+        <label className="block text-sm font-medium text-[#474747] mb-2">
           Status
         </label>
         <div className="flex flex-wrap gap-2">
@@ -159,7 +159,7 @@ export default function FilterBuilder({
               className={`px-3 py-2 rounded text-sm font-medium transition ${
                 selectedStatuses.includes(status.id)
                   ? 'bg-accent-500 text-white'
-                  : 'bg-[#F3F3F3] text-[#5a5757] hover:bg-[#e8e4e4]'
+                  : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#e8e4e4]'
               }`}
             >
               {status.name}
@@ -173,7 +173,7 @@ export default function FilterBuilder({
 
       {/* Priorities */}
       <div>
-        <label className="block text-sm font-medium text-[#5a5757] mb-2">
+        <label className="block text-sm font-medium text-[#474747] mb-2">
           Priority
         </label>
         <div className="flex flex-wrap gap-2">
@@ -185,7 +185,7 @@ export default function FilterBuilder({
               className={`px-3 py-2 rounded text-sm font-medium transition ${
                 selectedPriorities.includes(opt.value)
                   ? 'bg-accent-500 text-white'
-                  : 'bg-[#F3F3F3] text-[#5a5757] hover:bg-[#e8e4e4]'
+                  : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#e8e4e4]'
               }`}
             >
               {opt.label}
@@ -196,7 +196,7 @@ export default function FilterBuilder({
 
       {/* Tags */}
       <div>
-        <label className="block text-sm font-medium text-[#5a5757] mb-2">
+        <label className="block text-sm font-medium text-[#474747] mb-2">
           Tags
         </label>
         <div className="flex gap-2 mb-2">
@@ -216,7 +216,7 @@ export default function FilterBuilder({
           <button
             type="button"
             onClick={addTag}
-            className="px-4 py-2 bg-[#F3F3F3] text-[#5a5757] rounded text-sm font-medium hover:bg-[#e8e4e4] transition"
+            className="px-4 py-2 bg-[#F3F3F3] text-[#474747] rounded text-sm font-medium hover:bg-[#e8e4e4] transition"
           >
             Add
           </button>
@@ -244,7 +244,7 @@ export default function FilterBuilder({
 
       {/* Due Date Range */}
       <div>
-        <label className="block text-sm font-medium text-[#5a5757] mb-2">
+        <label className="block text-sm font-medium text-[#474747] mb-2">
           Due Date Range
         </label>
         <div className="flex gap-4">
@@ -272,7 +272,7 @@ export default function FilterBuilder({
       {/* Summary */}
       {(selectedStatuses.length > 0 || selectedPriorities.length > 0 || selectedTags.length > 0 || dateFrom || dateTo) && (
         <div className="pt-4">
-          <p className="text-sm text-[#5a5757]">
+          <p className="text-sm text-[#474747]">
             <span className="font-medium">Filter criteria:</span>{' '}
             {selectedStatuses.length > 0 && (
               <span className="text-accent-600">
