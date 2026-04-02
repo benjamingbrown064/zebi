@@ -8,6 +8,7 @@ import { cachedFetch, invalidateCache } from '@/lib/client-cache'
 import Sidebar from '@/components/Sidebar'
 import CaptureBar from '@/components/CaptureBar'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import SpaceForm from '@/components/SpaceForm'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,6 +25,14 @@ interface Space {
   marketSize: string | null
   coreProduct: string | null
   positioning: string | null
+  competitors: any | null
+  differentiators: any | null
+  usps: any | null
+  pricing: any | null
+  features: any | null
+  roadmap: any | null
+  aiImprovementAreas: any | null
+  aiOpportunities: any | null
   logoUrl: string | null
   websiteUrl: string | null
   revenue: number | null
@@ -185,24 +194,77 @@ function InlineForm({
 
 // ─── Tab: Overview ────────────────────────────────────────────────────────────
 
-function OverviewTab({ space }: { space: Space }) {
+function JsonField({ value }: { value: any }) {
+  if (!value) return null
+  if (typeof value === 'string') return <p className="text-[13px] text-[#474747] leading-relaxed whitespace-pre-wrap">{value}</p>
+  if (Array.isArray(value)) {
+    return (
+      <ul className="space-y-1">
+        {value.map((item: any, i: number) => (
+          <li key={i} className="flex items-start gap-2 text-[13px] text-[#474747]">
+            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#C6C6C6] flex-shrink-0" />
+            {typeof item === 'string' ? item : JSON.stringify(item)}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  if (typeof value === 'object') {
+    return (
+      <div className="space-y-2">
+        {Object.entries(value).map(([k, v]) => (
+          <div key={k}>
+            <span className="text-[11px] font-semibold text-[#A3A3A3] uppercase tracking-wide">{k}</span>
+            <p className="text-[13px] text-[#474747] mt-0.5">{String(v)}</p>
+          </div>
+        ))}
+      </div>
+    )
+  }
+  return <p className="text-[13px] text-[#474747]">{String(value)}</p>
+}
+
+function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => void }) {
   const router = useRouter()
 
   const topObjectives = space.objectives.slice(0, 3)
   const topProjects = space.projects.slice(0, 3)
   const recentMemory = space.memories.slice(0, 3)
 
+  // Sections that have content — only render populated ones
+  const strategyFields = [
+    { label: 'Mission Statement', value: space.missionStatement },
+    { label: 'Executive Summary', value: space.executiveSummary },
+    { label: 'Vision', value: space.vision },
+  ].filter(f => f.value)
+
+  const marketFields = [
+    { label: 'Target Customers', value: space.targetCustomers },
+    { label: 'Market Size', value: space.marketSize },
+    { label: 'Competitors', value: space.competitors },
+    { label: 'Differentiators', value: space.differentiators },
+    { label: 'USPs', value: space.usps },
+  ].filter(f => f.value)
+
+  const productFields = [
+    { label: 'Core Product', value: space.coreProduct },
+    { label: 'Positioning', value: space.positioning },
+    { label: 'Pricing', value: space.pricing },
+    { label: 'Features', value: space.features },
+    { label: 'Roadmap', value: space.roadmap },
+  ].filter(f => f.value)
+
+  const aiFields = [
+    { label: 'AI Improvement Areas', value: space.aiImprovementAreas },
+    { label: 'AI Opportunities', value: space.aiOpportunities },
+  ].filter(f => f.value)
+
+  const hasProfile = strategyFields.length > 0 || marketFields.length > 0 || productFields.length > 0
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left: strategy */}
+      {/* Left: live ops + profile */}
       <div className="lg:col-span-2 space-y-5">
-        {/* Mission */}
-        {space.missionStatement && (
-          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
-            <SectionHeader title="Mission" />
-            <p className="text-[14px] text-[#1A1A1A] leading-relaxed">{space.missionStatement}</p>
-          </div>
-        )}
 
         {/* Objectives */}
         <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
@@ -210,10 +272,7 @@ function OverviewTab({ space }: { space: Space }) {
             title="Active Objectives"
             action={
               space.objectives.length > 3 ? (
-                <button
-                  onClick={() => router.push(`/spaces/${space.id}?tab=objectives`)}
-                  className="text-[11px] text-[#737373] hover:text-[#1A1A1A]"
-                >
+                <button onClick={() => router.push(`/spaces/${space.id}?tab=objectives`)} className="text-[11px] text-[#737373] hover:text-[#1A1A1A]">
                   View all {space._count.objectives}
                 </button>
               ) : undefined
@@ -225,23 +284,16 @@ function OverviewTab({ space }: { space: Space }) {
             <div className="space-y-4">
               {topObjectives.map((obj: any) => {
                 const pct = obj.targetValue > 0
-                  ? Math.min(100, Math.round((obj.currentValue / obj.targetValue) * 100))
+                  ? Math.min(100, Math.round((Number(obj.currentValue || 0) / Number(obj.targetValue)) * 100))
                   : 0
                 return (
                   <div key={obj.id}>
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{obj.title}</p>
-                      <span className={`text-[11px] font-semibold flex-shrink-0 ${
-                        obj.status === 'blocked' ? 'text-red-600' :
-                        obj.status === 'at_risk' ? 'text-amber-600' : 'text-green-600'
-                      }`}>{pct}%</span>
+                      <span className={`text-[11px] font-semibold flex-shrink-0 ${obj.status === 'blocked' ? 'text-red-600' : obj.status === 'at_risk' ? 'text-amber-600' : 'text-green-600'}`}>{pct}%</span>
                     </div>
-                    <ProgressBar value={obj.currentValue} max={obj.targetValue} />
-                    {obj.deadline && (
-                      <p className="text-[11px] text-[#A3A3A3] mt-1">
-                        Due {new Date(obj.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                      </p>
-                    )}
+                    <ProgressBar value={Number(obj.currentValue || 0)} max={Number(obj.targetValue)} />
+                    {obj.deadline && <p className="text-[11px] text-[#A3A3A3] mt-1">Due {new Date(obj.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>}
                   </div>
                 )
               })}
@@ -249,7 +301,7 @@ function OverviewTab({ space }: { space: Space }) {
           )}
         </div>
 
-        {/* Active Projects */}
+        {/* Projects */}
         <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
           <SectionHeader title="Projects" />
           {topProjects.length === 0 ? (
@@ -265,22 +317,98 @@ function OverviewTab({ space }: { space: Space }) {
                       <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#DD3A44] transition truncate">{p.name}</p>
                       <p className="text-[11px] text-[#A3A3A3]">{done}/{total} tasks done</p>
                     </div>
-                    <svg className="w-3.5 h-3.5 text-[#C6C6C6] group-hover:text-[#1A1A1A] transition flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
+                    <svg className="w-3.5 h-3.5 text-[#C6C6C6] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
                   </Link>
                 )
               })}
             </div>
           )}
         </div>
+
+        {/* Strategy */}
+        {strategyFields.length > 0 && (
+          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+            <SectionHeader title="Strategy" />
+            <div className="space-y-5">
+              {strategyFields.map(f => (
+                <div key={f.label}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">{f.label}</p>
+                  <JsonField value={f.value} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Market */}
+        {marketFields.length > 0 && (
+          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+            <SectionHeader title="Market & Competition" />
+            <div className="space-y-5">
+              {marketFields.map(f => (
+                <div key={f.label}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">{f.label}</p>
+                  <JsonField value={f.value} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Product */}
+        {productFields.length > 0 && (
+          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+            <SectionHeader title="Product" />
+            <div className="space-y-5">
+              {productFields.map(f => (
+                <div key={f.label}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">{f.label}</p>
+                  <JsonField value={f.value} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* AI */}
+        {aiFields.length > 0 && (
+          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
+            <SectionHeader title="AI Intelligence" />
+            <div className="space-y-5">
+              {aiFields.map(f => (
+                <div key={f.label}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">{f.label}</p>
+                  <JsonField value={f.value} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Empty profile prompt */}
+        {!hasProfile && (
+          <div className="bg-white rounded-[12px] p-6 border border-dashed border-[#E5E5E5] text-center">
+            <p className="text-[13px] text-[#A3A3A3] mb-3">No business profile yet — add mission, market, and product details</p>
+            <button
+              onClick={onEditClick}
+              className="text-[12px] font-medium text-[#1A1A1A] border border-[#C6C6C6] px-3 py-1.5 rounded-[6px] hover:bg-[#F9F9F9] transition"
+            >
+              Fill in profile
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Right: meta + memory */}
+      {/* Right: meta + stats + memory */}
       <div className="space-y-5">
-        {/* Key metrics */}
+        {/* Business details */}
         <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
-          <SectionHeader title="Business Details" />
+          <SectionHeader
+            title="Details"
+            action={
+              <button onClick={onEditClick} className="text-[11px] text-[#737373] hover:text-[#1A1A1A]">Edit</button>
+            }
+          />
           <div className="space-y-3">
             {[
               { label: 'Industry',   value: space.industry },
@@ -291,36 +419,29 @@ function OverviewTab({ space }: { space: Space }) {
             ].filter(r => r.value).map(r => (
               <div key={r.label} className="flex justify-between gap-2">
                 <span className="text-[12px] text-[#A3A3A3]">{r.label}</span>
-                <span className="text-[12px] font-medium text-[#1A1A1A] text-right">{r.value}</span>
+                <span className="text-[12px] font-medium text-[#1A1A1A] text-right capitalize">{r.value}</span>
               </div>
             ))}
             {space.websiteUrl && (
-              <a
-                href={space.websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-[12px] text-[#DD3A44] hover:underline"
-              >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
+              <a href={space.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[12px] text-[#DD3A44] hover:underline">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 Website
               </a>
             )}
           </div>
         </div>
 
-        {/* Quick stats */}
+        {/* Stats */}
         <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
           <SectionHeader title="Stats" />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             {[
-              { label: 'Tasks',     n: space._count.tasks },
+              { label: 'Tasks',      n: space._count.tasks },
               { label: 'Objectives', n: space._count.objectives },
-              { label: 'Projects',  n: space._count.projects },
-              { label: 'Docs',      n: space._count.documents },
-              { label: 'Notes',     n: space._count.notes },
-              { label: 'Insights',  n: space._count.insights },
+              { label: 'Projects',   n: space._count.projects },
+              { label: 'Docs',       n: space._count.documents },
+              { label: 'Notes',      n: space._count.notes },
+              { label: 'Insights',   n: space._count.insights },
             ].map(s => (
               <div key={s.label} className="text-center py-2 bg-[#F9F9F9] rounded-[8px]">
                 <div className="text-[18px] font-bold text-[#1A1A1A]">{s.n}</div>
@@ -343,15 +464,6 @@ function OverviewTab({ space }: { space: Space }) {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Product info */}
-        {(space.coreProduct || space.positioning) && (
-          <div className="bg-white rounded-[12px] p-5 border border-[#E5E5E5]">
-            <SectionHeader title="Product" />
-            {space.coreProduct && <p className="text-[13px] text-[#474747] mb-2">{space.coreProduct}</p>}
-            {space.positioning && <p className="text-[12px] text-[#737373] italic">{space.positioning}</p>}
           </div>
         )}
       </div>
@@ -968,7 +1080,6 @@ export default function SpaceDetailPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [editData, setEditData] = useState<Partial<Space>>({})
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -992,16 +1103,16 @@ export default function SpaceDetailPage() {
 
   useEffect(() => { loadSpace() }, [loadSpace])
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = async (formData: any) => {
     setSaving(true)
     try {
       const res = await fetch(`/api/spaces/${spaceId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editData),
+        body: JSON.stringify(formData),
       })
       if (res.ok) {
-        setSpace(await res.json())
+        await loadSpace()
         setIsEditing(false)
       }
     } finally {
@@ -1051,31 +1162,18 @@ export default function SpaceDetailPage() {
             </div>
 
             <div className="flex-1 min-w-0">
-              {isEditing ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    value={editData.name ?? space.name}
-                    onChange={e => setEditData(d => ({ ...d, name: e.target.value }))}
-                    className="text-[22px] font-bold text-[#1A1A1A] bg-white border border-[#C6C6C6] rounded-[8px] px-3 py-1 outline-none focus:border-[#1A1A1A]"
-                  />
-                  <button onClick={handleSaveEdit} disabled={saving} className="text-[12px] bg-[#1A1A1A] text-white px-3 py-1.5 rounded-[6px] hover:bg-[#333] disabled:opacity-50 transition">
-                    {saving ? 'Saving…' : 'Save'}
-                  </button>
-                  <button onClick={() => setIsEditing(false)} className="text-[12px] text-[#737373] px-3 py-1.5 rounded-[6px] hover:bg-[#F3F3F3] transition">Cancel</button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <h1 className="text-[22px] font-bold text-[#1A1A1A] truncate">{space.name}</h1>
-                  <button
-                    onClick={() => { setEditData({ name: space.name }); setIsEditing(true) }}
-                    className="flex-shrink-0 text-[#C6C6C6] hover:text-[#737373] transition"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center gap-3">
+                <h1 className="text-[22px] font-bold text-[#1A1A1A] truncate">{space.name}</h1>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex-shrink-0 text-[#C6C6C6] hover:text-[#737373] transition"
+                  title="Edit space profile"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              </div>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 {space.industry && <span className="text-[12px] text-[#737373]">{space.industry}</span>}
                 {space.industry && space.stage && <span className="text-[#C6C6C6]">·</span>}
@@ -1147,7 +1245,7 @@ export default function SpaceDetailPage() {
           </div>
 
           {/* ── Tab content ───────────────────────────────────────────────── */}
-          {activeTab === 'overview'     && <OverviewTab space={space} />}
+          {activeTab === 'overview'     && <OverviewTab space={space} onEditClick={() => setIsEditing(true)} />}
           {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={loadSpace} />}
           {activeTab === 'objectives'   && <ObjectivesTab space={space} wsId={wsId} onRefresh={loadSpace} />}
           {activeTab === 'projects'     && <ProjectsTab space={space} wsId={wsId} onRefresh={loadSpace} />}
@@ -1157,6 +1255,47 @@ export default function SpaceDetailPage() {
 
         </div>
       </div>
+
+      {/* ── Edit Space Modal (slide-over) ─────────────────────────────── */}
+      {isEditing && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-start justify-end">
+          <div className="w-full max-w-xl h-screen bg-white shadow-2xl overflow-y-auto flex flex-col">
+            <div className="sticky top-0 bg-white border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between z-10">
+              <h2 className="text-[16px] font-semibold text-[#1A1A1A]">Edit Space Profile</h2>
+              <button onClick={() => setIsEditing(false)} className="text-[#A3A3A3] hover:text-[#1A1A1A] transition">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="px-6 py-6 flex-1">
+              <SpaceForm
+                initialData={{
+                  name:              space.name,
+                  industry:          space.industry          || '',
+                  stage:             space.stage             || 'startup',
+                  businessModel:     space.businessModel     || '',
+                  missionStatement:  space.missionStatement  || '',
+                  executiveSummary:  space.executiveSummary  || '',
+                  vision:            space.vision            || '',
+                  targetCustomers:   space.targetCustomers   || '',
+                  marketSize:        space.marketSize        || '',
+                  coreProduct:       space.coreProduct       || '',
+                  positioning:       space.positioning       || '',
+                  logoUrl:           space.logoUrl           || '',
+                  websiteUrl:        space.websiteUrl        || '',
+                  revenue:           space.revenue           ? String(space.revenue) : '',
+                }}
+                onSubmit={handleSaveEdit}
+                onCancel={() => setIsEditing(false)}
+                submitLabel="Save Changes"
+                isLoading={saving}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
