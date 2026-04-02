@@ -71,7 +71,7 @@ export default function Sidebar({
   }
 
   const NAV_ITEMS: NavItem[] = [
-    { href: '/dashboard', icon: <FontAwesomeIcon icon={faHouse} />, label: 'Dashboard' },
+    { href: '/now', icon: <FontAwesomeIcon icon={faHouse} />, label: 'Now' },
     { href: '/inbox', icon: <FontAwesomeIcon icon={faInbox} />, label: 'Inbox' },
     { href: '/goals', icon: <FontAwesomeIcon icon={faBullseyeArrow} />, label: 'Goals' },
     { href: '/spaces', icon: <FontAwesomeIcon icon={faBox} />, label: 'Spaces' },
