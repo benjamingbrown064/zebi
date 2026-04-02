@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
         created.company = { success: true, id: space.id, title: space.name, reused: false }
       }
     } catch (e) {
-      console.error('[build] company step failed:', e)
+      console.error('[build] space step failed:', e)
       created.company = { success: false, error: 'Failed to create company' }
     }
 

@@ -7,8 +7,8 @@ const DEFAULT_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
 
 /**
  * POST /api/doug/space
- * 
- * Create a new space
+ *
+ * Create a new space (canonical endpoint — replaces /api/doug/company)
  * 
  * Body:
  * {

@@ -1,6 +1,6 @@
 # Doug API Documentation
 
-Complete API access for Doug (AI assistant) to manage Focus App via Telegram.
+Complete API access for Doug (AI assistant) to manage Zebi via Telegram.
 
 ## Authentication
 
@@ -14,9 +14,9 @@ Configured in `.env.local` as `DOUG_API_TOKEN`.
 
 ## Base URL
 
-Local: `http://localhost:3001/api/doug`
+Local: `http://localhost:3000/api/doug`
 
-Production: TBD (when deployed)
+Production: `https://zebi.app/api/doug`
 
 ---
 
@@ -243,9 +243,9 @@ Resolve a blocker.
 
 ---
 
-### 8. POST /company
+### 8. POST /space
 
-Create a new company.
+Create a new space.
 
 **Request:**
 ```json
@@ -296,8 +296,8 @@ Create a new company.
 # Resolve blocker
 ./focus-app-api-helper.sh resolve-blocker <blocker-id>
 
-# Create company
-./focus-app-api-helper.sh create-company "New Company" "Tech" "growth" 50000
+# Create space
+./focus-app-api-helper.sh create-space "New Company" "Tech" "growth" 50000
 ```
 
 ---
@@ -318,7 +318,7 @@ Doug can now:
 **User:** "Create an objective to reach £50k MRR by June for Love Warranty"
 
 **Doug:** 
-1. Calls `/status` to get Love Warranty company ID
+1. Calls `/status` to get Love Warranty space ID
 2. Calls `/objective` with AI breakdown enabled
 3. Reports back: "Created objective with 5 projects and 23 tasks. First milestone is £10k by April 15th."
 

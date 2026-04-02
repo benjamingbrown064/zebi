@@ -927,7 +927,7 @@ Return a "creation" object in your JSON response (example):
 
 Field extraction rules:
 - Extract every field you can from the message and conversation context
-- "companyId" field: use space name — the server will resolve to ID. Use spaces from workspace context above.
+- "spaceId" field: use space name — the server will resolve to ID. Use spaces from workspace context above.
 - "projectId" field: use project name — the server will resolve to ID
 - For document: set generateContent=true ONLY when the user clearly wants substantive content ("write a doc", "draft a how-to", "create a guide"). For "add a document to this task", set generateContent=false.
 - For objective: if deadline/dates not given, leave blank — the server uses sensible defaults (today, 90 days out)
@@ -935,7 +935,7 @@ Field extraction rules:
 Missing field rules:
 - If a genuinely required field is missing AND cannot be inferred from context, set missingRequired to the field name and clarificationQuestion to a single short question
 - Ask AT MOST ONE question. Do not ask for optional fields.
-- Required fields: space=name, objective=title+companyId, project=name, task=title, document=title, inbox=content
+- Required fields: space=name, objective=title+spaceId, project=name, task=title, document=title, inbox=content
 
 Object type mapping:
 - "space", "startup", "business" => objectType: "space"
@@ -945,9 +945,9 @@ Object type mapping:
 - "document", "doc", "note", "write-up" => objectType: "document"
 - "inbox", "capture", "save this", "idea" => objectType: "inbox"
 - "remember this", "log this", "save to memory", "daily wrap", "end of day note", "write to memory" => objectType: "memory"
-  - fields: title (required), description (required), entryType (daily_wrap|progress|blocker|decision|handoff|note|routine), authorAgent, companyId, projectId
+  - fields: title (required), description (required), entryType (daily_wrap|progress|blocker|decision|handoff|note|routine), authorAgent, spaceId, projectId
 - "publish research", "add to insights", "save as insight", "reusable reference", "architecture doc", "SOP", "playbook" => objectType: "insight"
-  - fields: title (required), summary (required), insightType (research|opportunity|risk|strategy|optimization), authorAgent, companyId, projectId, tags
+  - fields: title (required), summary (required), insightType (research|opportunity|risk|strategy|optimization), authorAgent, spaceId, projectId, tags
 
 Response text rules:
 - If creating: short confirmation + one follow-up suggestion
@@ -1042,7 +1042,7 @@ If you're recommending actions but aren't sure they meet the bar for task creati
 ## Context inference for plan mode
 
 When mode is "plan":
-- Infer companyId from conversation context first, then from task/objective data
+- Infer spaceId from conversation context first, then from task/objective data
 - Only set needsConfirmation: true when genuinely ambiguous (multiple equal candidates)
 - Limit tasks to 3–5 maximum — specific and actionable only
 

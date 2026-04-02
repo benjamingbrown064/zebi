@@ -56,6 +56,7 @@ function DocumentContentPreview({ content }: { content: any }) {
   )
 }
 import { useRouter, useParams } from 'next/navigation'
+import { useWorkspace } from '@/lib/use-workspace'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -125,7 +126,8 @@ type MoreMenuType = 'insights' | 'memory' | 'files' | 'activity'
 export default function SpaceDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const companyId = params.id as string
+  const spaceId = params.id as string
+  const { workspaceId: wsId } = useWorkspace()
 
   const [space, setSpace] = useState<Space | null>(null)
   const [loading, setLoading] = useState(true)
@@ -177,7 +179,7 @@ export default function SpaceDetailPage() {
 
   useEffect(() => {
     loadSpace()
-  }, [companyId])
+  }, [spaceId])
 
   useEffect(() => {
     if (moreMenuTab === 'activity') {
@@ -202,7 +204,7 @@ export default function SpaceDetailPage() {
 
   async function loadSpace() {
     try {
-      const data = await cachedFetch<Space>(`/api/spaces/${companyId}`)
+      const data = await cachedFetch<Space>(`/api/spaces/${spaceId}`)
       setSpace(data)
     } catch (error: any) {
       console.error('Failed to load space:', error)
@@ -217,7 +219,7 @@ export default function SpaceDetailPage() {
   async function loadActivity() {
     setLoadingActivity(true)
     try {
-      const response = await fetch(`/api/activity?companyId=${companyId}&limit=50`)
+      const response = await fetch(`/api/activity?companyId=${spaceId}&limit=50`)
       if (response.ok) {
         const data = await response.json()
         setActivityLogs(data.logs || [])
@@ -232,7 +234,7 @@ export default function SpaceDetailPage() {
   async function handleUpdateSpace(formData: any) {
     setIsSaving(true)
     try {
-      const response = await fetch(`/api/spaces/${companyId}`, {
+      const response = await fetch(`/api/spaces/${spaceId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -265,8 +267,8 @@ export default function SpaceDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspaceId: 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
-          companyId: companyId,
+          workspaceId: wsId || 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
+          companyId: spaceId,
           title: projectFormData.title,
           description: projectFormData.description,
           createdBy: 'user-id', // TODO: Get from auth
@@ -300,8 +302,8 @@ export default function SpaceDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspaceId: 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
-          companyId: companyId,
+          workspaceId: wsId || 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
+          companyId: spaceId,
           title: documentFormData.title,
           documentType: documentFormData.documentType,
         }),
@@ -334,8 +336,8 @@ export default function SpaceDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspaceId: 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
-          companyId: companyId,
+          workspaceId: wsId || 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
+          companyId: spaceId,
           title: objectiveFormData.title,
           description: objectiveFormData.description,
         }),
@@ -368,8 +370,8 @@ export default function SpaceDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspaceId: 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
-          companyId: companyId,
+          workspaceId: wsId || 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
+          companyId: spaceId,
           title: taskFormData.title,
           description: taskFormData.description,
         }),
@@ -402,8 +404,8 @@ export default function SpaceDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspaceId: 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
-          companyId: companyId,
+          workspaceId: wsId || 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
+          companyId: spaceId,
           title: noteFormData.title,
           body: noteFormData.body,
           noteType: noteFormData.noteType,
@@ -437,7 +439,7 @@ export default function SpaceDetailPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspaceId: 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
+          workspaceId: wsId || 'dfd6d384-9e2f-4145-b4f3-254aa82c0237',
           title: noteFormData.title,
           body: noteFormData.body,
           noteType: noteFormData.noteType,
