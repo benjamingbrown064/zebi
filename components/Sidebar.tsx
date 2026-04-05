@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import CaptureBar from '@/components/CaptureBar'
+import CaptureModal from '@/components/CaptureModal'
 import {
   faHouse,
   faBox,
@@ -115,6 +115,7 @@ function DesktopSidebar({
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isCaptureOpen, setIsCaptureOpen] = useState(false)
 
   // CMD+K / CTRL+K shortcut
   useEffect(() => {
@@ -195,12 +196,23 @@ function DesktopSidebar({
         </div>
       </nav>
 
-      {/* Capture Bar — always visible, fixed at bottom of nav */}
-      {!isCollapsed && (
-        <div className="px-3 pb-3 border-t border-[#E5E5E5] pt-3">
-          <CaptureBar />
-        </div>
-      )}
+      {/* Capture button */}
+      <div className={`px-3 pb-3 border-t border-[#E5E5E5] pt-3 ${isCollapsed ? 'flex justify-center' : ''}`}>
+        <button
+          onClick={() => setIsCaptureOpen(true)}
+          title={isCollapsed ? 'Capture anything' : undefined}
+          className={`flex items-center gap-2.5 px-3 py-2.5 rounded bg-[#1A1A1A] hover:bg-[#333] text-white text-[13px] font-medium transition-colors min-h-[44px] ${
+            isCollapsed ? 'w-10 justify-center' : 'w-full'
+          }`}
+        >
+          <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          {!isCollapsed && <span>Capture anything</span>}
+        </button>
+      </div>
+
+      <CaptureModal isOpen={isCaptureOpen} onClose={() => setIsCaptureOpen(false)} />
 
       {/* Bottom: settings + logout */}
       <div className="px-3 py-4 space-y-0.5 border-t border-[#E5E5E5]">
@@ -243,6 +255,7 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
   const [open, setOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isCaptureOpen, setIsCaptureOpen] = useState(false)
 
   // CMD+K / CTRL+K shortcut
   useEffect(() => {
@@ -319,6 +332,19 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
           </div>
         </nav>
 
+        {/* Capture button */}
+        <div className="px-3 pt-3 border-t border-[#E5E5E5]">
+          <button
+            onClick={() => { setIsCaptureOpen(true); setOpen(false) }}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded bg-[#1A1A1A] hover:bg-[#333] text-white text-[13px] font-medium transition-colors min-h-[44px]"
+          >
+            <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Capture anything</span>
+          </button>
+        </div>
+
         <div className="px-3 py-4 border-t border-[#E5E5E5] space-y-0.5">
           <NavLink item={{ href: '/settings', icon: faGear, label: 'Settings' }} collapsed={false} onClick={() => setOpen(false)} />
           <button
@@ -339,6 +365,7 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
 
       {/* Global Search Modal */}
       <GlobalSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <CaptureModal isOpen={isCaptureOpen} onClose={() => setIsCaptureOpen(false)} />
     </>
   )
 }
