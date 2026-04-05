@@ -31,6 +31,9 @@ interface Task {
   project?: { id: string; name: string } | null
   space?: { id: string; name: string } | null
   objective?: { id: string; title: string } | null
+  ownerAgent?: string | null
+  botAssignee?: string | null
+  assigneeId?: string | null
 }
 
 interface WeeklyPlannerClientProps {

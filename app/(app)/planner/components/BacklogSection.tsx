@@ -24,7 +24,7 @@ interface BacklogSectionProps {
 type SortOption = 'priority' | 'created' | 'effort'
 type PriorityFilter = 'all' | 1 | 2 | 3 | 4
 
-const PRIORITY_LABELS: Record<number, string> = { 1: 'CRITICAL', 2: 'HIGH PRIORITY', 3: 'MEDIUM', 4: 'LOW' }
+const PRIORITY_LABELS: Record<number, string> = { 1: 'CRITICAL', 2: 'HIGH', 3: 'MEDIUM', 4: 'LOW' }
 const PRIORITY_DOT: Record<number, string> = {
   1: 'bg-[#EF4444]',
   2: 'bg-[#F59E0B]',
