@@ -1,4 +1,5 @@
 'use client';
+import LoadingScreen from '@/components/LoadingScreen';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -361,16 +362,7 @@ export default function DocumentDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F9F9F9]">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
-            <p className="text-[#474747] mt-4">Loading document...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading document..." />;
   }
 
   if (!document) {
