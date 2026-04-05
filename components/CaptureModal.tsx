@@ -3,6 +3,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useWorkspace } from '@/lib/use-workspace'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faBolt,
+  faListCheck,
+  faFolderOpen,
+  faBuilding,
+  faFlagCheckered,
+  faFileLines,
+  faLightbulb,
+} from '@fortawesome/pro-duotone-svg-icons'
 
 interface CaptureModalProps {
   isOpen: boolean
@@ -11,14 +21,14 @@ interface CaptureModalProps {
 
 type CaptureType = 'task' | 'note' | 'idea' | 'space' | 'objective' | 'project' | 'any'
 
-const TYPES: { id: CaptureType; label: string; icon: string; placeholder: string; hasForm: boolean }[] = [
-  { id: 'any',       label: 'Quick Capture', icon: '⚡', placeholder: 'Type anything — AI will route it…',       hasForm: false },
-  { id: 'task',      label: 'Task',          icon: '✓',  placeholder: 'What needs to be done?',                  hasForm: false },
-  { id: 'project',   label: 'Project',       icon: '📁', placeholder: 'Project name…',                           hasForm: true  },
-  { id: 'space',     label: 'Space',         icon: '🏢', placeholder: 'Company or space name…',                  hasForm: true  },
-  { id: 'objective', label: 'Objective',     icon: '🎯', placeholder: 'What do you want to achieve?',            hasForm: true  },
-  { id: 'note',      label: 'Note',          icon: '✎',  placeholder: 'Jot a note…',                             hasForm: false },
-  { id: 'idea',      label: 'Idea',          icon: '✦',  placeholder: 'Capture an idea…',                        hasForm: false },
+const TYPES: { id: CaptureType; label: string; icon: any; placeholder: string; hasForm: boolean }[] = [
+  { id: 'any',       label: 'Quick Capture', icon: faBolt,           placeholder: 'Type anything — AI will route it…', hasForm: false },
+  { id: 'task',      label: 'Task',          icon: faListCheck,      placeholder: 'What needs to be done?',            hasForm: false },
+  { id: 'project',   label: 'Project',       icon: faFolderOpen,     placeholder: 'Project name…',                     hasForm: true  },
+  { id: 'space',     label: 'Space',         icon: faBuilding,       placeholder: 'Company or space name…',            hasForm: true  },
+  { id: 'objective', label: 'Objective',     icon: faFlagCheckered,  placeholder: 'What do you want to achieve?',      hasForm: true  },
+  { id: 'note',      label: 'Note',          icon: faFileLines,      placeholder: 'Jot a note…',                       hasForm: false },
+  { id: 'idea',      label: 'Idea',          icon: faLightbulb,      placeholder: 'Capture an idea…',                  hasForm: false },
 ]
 
 export default function CaptureModal({ isOpen, onClose }: CaptureModalProps) {
@@ -189,7 +199,7 @@ export default function CaptureModal({ isOpen, onClose }: CaptureModalProps) {
                   : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]'
               }`}
             >
-              <span>{t.icon}</span>
+              <FontAwesomeIcon icon={t.icon} className="text-[11px]" />
               <span>{t.label}</span>
             </button>
           ))}
