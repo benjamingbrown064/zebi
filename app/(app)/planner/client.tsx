@@ -143,7 +143,7 @@ export default function WeeklyPlannerClient({
       >
         <div className="flex-1 flex flex-col overflow-hidden min-h-0">
           {/* Week navigator */}
-          <div className="mb-4 flex-shrink-0 px-5 pt-5">
+          <div className="mb-4 flex-shrink-0 px-6 pt-5">
             <WeekNavigator
               currentStart={currentDayStart}
               visibleDays={visibleDays}

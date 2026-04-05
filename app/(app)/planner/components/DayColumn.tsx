@@ -39,7 +39,7 @@ export default function DayColumn({ date, tasks, capacity, onMarkComplete }: Day
       }`}
     >
       {/* Day header */}
-      <div className={`px-5 py-4 ${isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-white'}`}>
+      <div className={`px-5 py-5 ${isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-white'}`}>
         <div className="flex items-start justify-between mb-1">
           <div>
             <div className={`text-[11px] font-semibold uppercase tracking-[0.08em] mb-1 ${
@@ -89,7 +89,7 @@ export default function DayColumn({ date, tasks, capacity, onMarkComplete }: Day
       <div className={isCurrentDay ? 'border-t border-white/10' : 'border-t border-[#F3F3F3]'} />
 
       {/* Tasks list — scrolls independently, header stays fixed */}
-      <div className={`flex-1 p-3 space-y-2 overflow-y-auto ${
+      <div className={`flex-1 p-4 space-y-2 overflow-y-auto ${
         isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-[#F9F9F9]'
       }`}>
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
