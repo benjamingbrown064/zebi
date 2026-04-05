@@ -336,6 +336,10 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
   )
 }
 
+// ─── Singleton guard — prevents double-rendering when layout + page both render Sidebar ──
+
+let _sidebarMounted = false
+
 // ─── Export ───────────────────────────────────────────────────────────────────
 
 export default function Sidebar({
@@ -345,6 +349,20 @@ export default function Sidebar({
 }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(initialCollapsed)
+  const [shouldRender, setShouldRender] = useState(false)
+
+  useEffect(() => {
+    // Only the first Sidebar instance renders — subsequent ones (from individual pages
+    // that haven't been cleaned up yet) are suppressed
+    if (!_sidebarMounted) {
+      _sidebarMounted = true
+      setShouldRender(true)
+    }
+    return () => {
+      // When this instance unmounts it releases the lock
+      if (shouldRender) _sidebarMounted = false
+    }
+  }, [])
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -352,6 +370,14 @@ export default function Sidebar({
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])
+
+  // Sync collapse state changes from parent (e.g. individual page passing sidebarCollapsed)
+  useEffect(() => {
+    if (initialCollapsed !== isCollapsed) setIsCollapsed(initialCollapsed)
+  }, [initialCollapsed])
+
+  // If not the primary instance, render nothing
+  if (!shouldRender) return null
 
   const handleCollapse = (v: boolean) => {
     setIsCollapsed(v)
