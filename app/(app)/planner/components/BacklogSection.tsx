@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { FaSearch, FaTimes } from 'react-icons/fa'
+import PlannerTaskCard from './PlannerTaskCard'
 
 interface Task {
   id: string
@@ -13,6 +14,9 @@ interface Task {
   status: { id: string; name: string; type: string }
   project?: { id: string; name: string } | null
   space?: { id: string; name: string } | null
+  ownerAgent?: string | null
+  botAssignee?: string | null
+  assigneeId?: string | null
 }
 
 interface BacklogSectionProps {
@@ -176,31 +180,26 @@ export default function BacklogSection({ tasks, onMarkComplete }: BacklogSection
       {/* Divider */}
       <div className="border-t border-[#F3F3F3]" />
 
-      {/* Task list */}
-      <div className="flex-1 overflow-y-auto">
-        <>
-          {filteredTasks.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-32 text-center px-4">
-              <p className="text-[12px] text-[#C6C6C6]">
-                {tasks.length === 0 ? 'All tasks are planned!' : 'No tasks match your filters'}
-              </p>
-            </div>
-          ) : (
-            filteredTasks.map(task => (
-              <BacklogRow key={task.id} task={task} onMarkComplete={onMarkComplete} />
-            ))
-          )}
-        </>
-
-        {/* Create backlog item CTA */}
-        <div className="px-4 py-4 border-t border-dashed border-[#E5E5E5] mt-2">
-          <button className="w-full flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] hover:text-[#1A1A1A] transition-colors py-2">
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            Create Backlog Item
-          </button>
-        </div>
+      {/* Task list — card tiles matching board view */}
+      <div className="flex-1 overflow-y-auto bg-[#F9F9F9]">
+        {filteredTasks.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-32 text-center px-4">
+            <p className="text-[12px] text-[#C6C6C6]">
+              {tasks.length === 0 ? 'All tasks are planned!' : 'No tasks match your filters'}
+            </p>
+          </div>
+        ) : (
+          <div className="p-3 space-y-3">
+            {filteredTasks.map(task => (
+              <PlannerTaskCard
+                key={task.id}
+                task={task as any}
+                onMarkComplete={onMarkComplete}
+                inverted={false}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

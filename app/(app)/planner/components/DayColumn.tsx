@@ -14,6 +14,9 @@ interface Task {
   status: { id: string; name: string; type: string }
   project?: { id: string; name: string } | null
   space?: { id: string; name: string } | null
+  ownerAgent?: string | null
+  botAssignee?: string | null
+  assigneeId?: string | null
 }
 
 interface DayColumnProps {
@@ -32,69 +35,55 @@ export default function DayColumn({ date, tasks, capacity, onMarkComplete }: Day
     <div
       ref={setNodeRef}
       className={`flex flex-col h-full overflow-hidden rounded border transition-all ${
-        isOver ? 'border-[#1A1A1A]/30 shadow-md' : 'border-[#E5E5E5]'
+        isOver ? 'border-[#1A1A1A]/40 shadow-lg' : 'border-[#E5E5E5]'
       } ${
         isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-white'
       }`}
     >
-      {/* Day header */}
-      <div className={`px-5 py-5 ${isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-white'}`}>
-        <div className="flex items-start justify-between mb-1">
-          <div>
-            <div className={`text-[11px] font-semibold uppercase tracking-[0.08em] mb-1 ${
-              isCurrentDay ? 'text-white/50' : 'text-[#A3A3A3]'
+      {/* ── Column header — compact, matches board column headers ── */}
+      <div className={`px-4 py-4 flex-shrink-0 ${isCurrentDay ? '' : ''}`}>
+        {/* Day + date + task count — same pattern as board */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className={`text-[11px] font-bold uppercase tracking-[0.1em] ${
+              isCurrentDay ? 'text-white/60' : 'text-[#A3A3A3]'
             }`}>
-              {format(date, 'EEE')}
-            </div>
-            <div className={`text-[32px] font-bold leading-none ${
-              isCurrentDay ? 'text-white' : 'text-[#1A1A1A]'
-            }`}>
-              {format(date, 'd')}
-            </div>
+              {format(date, 'EEE d MMM')}
+            </span>
+            {isCurrentDay && (
+              <span className="text-[10px] font-bold uppercase tracking-[0.08em] bg-white text-[#1A1A1A] px-2 py-0.5 rounded-full">
+                Today
+              </span>
+            )}
           </div>
-          <div className="text-right">
-            <div className={`text-[10px] font-semibold uppercase tracking-[0.08em] ${
-              isCurrentDay ? 'text-white/40' : 'text-[#C6C6C6]'
-            }`}>
-              Capacity
-            </div>
-            <div className={`text-[13px] font-semibold ${
-              isCurrentDay ? 'text-white/70' : 'text-[#474747]'
-            }`}>
-              {capacity.totalHours}h / {capacity.capacity}h
-            </div>
-          </div>
+          <span className={`text-[11px] font-bold w-5 h-5 flex items-center justify-center rounded-full border ${
+            isCurrentDay
+              ? 'border-white/30 text-white/70'
+              : 'border-[#E5E5E5] text-[#1A1A1A]'
+          }`}>
+            {tasks.length}
+          </span>
         </div>
 
+        {/* Capacity bar */}
         <DayCapacityMeter
           totalHours={capacity.totalHours}
           capacity={capacity.capacity}
           percent={capacity.percent}
         />
-
-        {tasks.length > 0 && (
-          <div className={`flex items-center gap-1.5 mt-3 text-[11px] ${
-            isCurrentDay ? 'text-white/50' : 'text-[#A3A3A3]'
-          }`}>
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {tasks.length} Active Task{tasks.length !== 1 ? 's' : ''}
-          </div>
-        )}
       </div>
 
       {/* Divider */}
-      <div className={isCurrentDay ? 'border-t border-white/10' : 'border-t border-[#F3F3F3]'} />
+      <div className={isCurrentDay ? 'border-t border-white/10' : 'border-t border-[#E5E5E5]'} />
 
-      {/* Tasks list — scrolls independently, header stays fixed */}
-      <div className={`flex-1 p-4 space-y-2 overflow-y-auto ${
-        isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-[#F9F9F9]'
+      {/* Tasks — scrolls, cards match board tiles */}
+      <div className={`flex-1 p-3 space-y-3 overflow-y-auto ${
+        isCurrentDay ? '' : 'bg-[#F9F9F9]'
       }`}>
         {tasks.length === 0 ? (
           <div className={`flex items-center justify-center h-24 rounded border-2 border-dashed text-[12px] ${
             isCurrentDay
-              ? 'border-white/10 text-white/25'
+              ? 'border-white/15 text-white/30'
               : 'border-[#E5E5E5] text-[#C6C6C6]'
           }`}>
             Drop tasks here
@@ -103,7 +92,7 @@ export default function DayColumn({ date, tasks, capacity, onMarkComplete }: Day
           tasks.map(task => (
             <PlannerTaskCard
               key={task.id}
-              task={task}
+              task={task as any}
               onMarkComplete={onMarkComplete}
               inverted={isCurrentDay}
             />
