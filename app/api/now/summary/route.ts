@@ -3,26 +3,22 @@ import { prisma } from '@/lib/prisma'
 import { requireWorkspace } from '@/lib/workspace'
 
 export const dynamic = 'force-dynamic'
-// Per-workspace in-memory cache for the Now summary — 60s TTL
+
+// Per-workspace in-memory cache — 60s TTL
 const summaryCache = new Map<string, { data: any; expiresAt: number }>()
-const SUMMARY_TTL = 60 * 1000 // 60 seconds
+const SUMMARY_TTL = 60 * 1000
 
 const AGENTS = ['harvey', 'theo', 'doug', 'casper'] as const
 
-/**
- * GET /api/now/summary
- *
- * Returns everything the Now screen needs in a single request:
- * - myQueue         Ben's personal task queue (tasks with no ownerAgent or assigneeId = ben)
- * - agentStatus     Per-agent: active, blocked, waitingOnBen, pendingHandoffs, decisionsNeeded
- * - needsAttention  Decisions needed, waiting on Ben, overdue, stale (48h+)
- * - recentWins      Tasks completed in the last 24h
- */
+// How long until an agent is considered "stale" / idle based on heartbeat
+const AGENT_ACTIVE_THRESHOLD_MS  = 10 * 60 * 1000  // 10 min  → ACTIVE
+const AGENT_IDLE_THRESHOLD_MS    = 60 * 60 * 1000  // 1 hour  → IDLE
+// Beyond 1 hour with no ping → OFFLINE
+
 export async function GET(request: NextRequest) {
   try {
     const workspaceId = await requireWorkspace()
 
-    // Check cache — serve stale data instantly, re-query in background on miss
     const cached = summaryCache.get(workspaceId)
     if (cached && Date.now() < cached.expiresAt) {
       return NextResponse.json(cached.data)
@@ -30,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     const now = new Date()
     const staleThreshold = new Date(now.getTime() - 48 * 60 * 60 * 1000)
-    const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    const last24h        = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
     const [
       myQueueTasks,
@@ -41,15 +37,11 @@ export async function GET(request: NextRequest) {
       staleTasks,
       pendingHandoffs,
       recentCompletions,
+      agentHeartbeats,
     ] = await Promise.all([
-      // My Queue — Ben's tasks (no ownerAgent set, or explicitly assigned)
+      // My Queue — Ben's tasks (no ownerAgent set)
       prisma.task.findMany({
-        where: {
-          workspaceId,
-          archivedAt: null,
-          completedAt: null,
-          ownerAgent: null,
-        },
+        where: { workspaceId, archivedAt: null, completedAt: null, ownerAgent: null },
         orderBy: [{ priority: 'asc' }, { dueAt: 'asc' }, { createdAt: 'asc' }],
         take: 20,
         select: {
@@ -73,7 +65,7 @@ export async function GET(request: NextRequest) {
         },
       }),
 
-      // Decisions needed — any agent
+      // Decisions needed
       prisma.task.findMany({
         where: { workspaceId, archivedAt: null, completedAt: null, decisionNeeded: true },
         orderBy: { priority: 'asc' },
@@ -97,12 +89,9 @@ export async function GET(request: NextRequest) {
         },
       }),
 
-      // Overdue tasks
+      // Overdue
       prisma.task.findMany({
-        where: {
-          workspaceId, archivedAt: null, completedAt: null,
-          dueAt: { lt: now },
-        },
+        where: { workspaceId, archivedAt: null, completedAt: null, dueAt: { lt: now } },
         orderBy: { dueAt: 'asc' },
         take: 10,
         select: {
@@ -113,7 +102,7 @@ export async function GET(request: NextRequest) {
         },
       }),
 
-      // Stale tasks — not updated in 48h
+      // Stale (not updated in 48h)
       prisma.task.findMany({
         where: {
           workspaceId, archivedAt: null, completedAt: null,
@@ -135,8 +124,7 @@ export async function GET(request: NextRequest) {
         take: 20,
         select: {
           id: true, fromAgent: true, toAgent: true,
-          summary: true, createdAt: true, decisionNeeded: true,
-          taskId: true,
+          summary: true, createdAt: true, decisionNeeded: true, taskId: true,
         },
       }),
 
@@ -150,23 +138,70 @@ export async function GET(request: NextRequest) {
           company: { select: { id: true, name: true } },
         },
       }),
+
+      // ── Real agent heartbeats ──────────────────────────────────────────────
+      prisma.agentHeartbeat.findMany({
+        where: { workspaceId },
+        select: {
+          agent: true,
+          lastSeenAt: true,
+          event: true,
+          currentTaskId: true,
+          currentTaskTitle: true,
+        },
+      }),
     ])
 
-    // Build per-agent status
-    const agentStatus = AGENTS.map(agent => {
-      const agentTasks = allActiveTasks.filter(t => t.ownerAgent === agent)
-      const blocked = agentTasks.filter(t => !!t.blockedReason)
-      const waitingOnBen = agentTasks.filter(t => t.waitingOn === 'ben')
-      const decisions = agentTasks.filter(t => t.decisionNeeded)
-      const myHandoffs = pendingHandoffs.filter(h => h.toAgent === agent)
+    // Build a quick lookup: agent → heartbeat row
+    const hbMap = new Map(agentHeartbeats.map(h => [h.agent, h]))
 
-      let statusSignal: 'active' | 'waiting' | 'blocked' = 'active'
-      if (blocked.length > 0) statusSignal = 'blocked'
-      else if (waitingOnBen.length > 0 || myHandoffs.length > 0) statusSignal = 'waiting'
+    // Build per-agent status — heartbeat takes priority over task inference
+    const agentStatus = AGENTS.map(agent => {
+      const agentTasks   = allActiveTasks.filter(t => t.ownerAgent === agent)
+      const blocked      = agentTasks.filter(t => !!t.blockedReason)
+      const waitingOnBen = agentTasks.filter(t => t.waitingOn === 'ben')
+      const decisions    = agentTasks.filter(t => t.decisionNeeded)
+      const myHandoffs   = pendingHandoffs.filter(h => h.toAgent === agent)
+
+      const hb = hbMap.get(agent)
+      const msSinceLastSeen = hb
+        ? now.getTime() - new Date(hb.lastSeenAt).getTime()
+        : null
+
+      // Determine online presence from heartbeat
+      let presenceSignal: 'online' | 'idle' | 'offline' =
+        msSinceLastSeen === null
+          ? 'offline'
+          : msSinceLastSeen <= AGENT_ACTIVE_THRESHOLD_MS
+          ? 'online'
+          : msSinceLastSeen <= AGENT_IDLE_THRESHOLD_MS
+          ? 'idle'
+          : 'offline'
+
+      // Determine work status from task data
+      let workSignal: 'active' | 'waiting' | 'blocked' = 'active'
+      if (blocked.length > 0) workSignal = 'blocked'
+      else if (waitingOnBen.length > 0 || myHandoffs.length > 0) workSignal = 'waiting'
+
+      // Combined status label shown in UI
+      // If offline/idle — show that. If online — show work signal.
+      let statusSignal: 'active' | 'waiting' | 'blocked' | 'idle' | 'offline' =
+        presenceSignal === 'offline'
+          ? 'offline'
+          : presenceSignal === 'idle'
+          ? 'idle'
+          : workSignal  // 'active' | 'waiting' | 'blocked'
 
       return {
         agent,
+        // UI-facing combined status
         status: statusSignal,
+        // Presence info for "last seen" display
+        lastSeenAt: hb?.lastSeenAt?.toISOString() ?? null,
+        lastEvent: hb?.event ?? null,
+        currentTaskId: hb?.currentTaskId ?? null,
+        currentTaskTitle: hb?.currentTaskTitle ?? null,
+        // Task counts
         activeCount: agentTasks.length,
         blockedCount: blocked.length,
         waitingOnBenCount: waitingOnBen.length,
@@ -185,66 +220,43 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Dedupe needsAttention items
     const decisionIds = new Set(decisionTasks.map(t => t.id))
-    const waitingIds = new Set(waitingOnBenTasks.map(t => t.id))
+    const waitingIds  = new Set(waitingOnBenTasks.map(t => t.id))
     const overdueNotDecision = overdueTasks.filter(t => !decisionIds.has(t.id) && !waitingIds.has(t.id))
-    const staleNotOther = staleTasks.filter(t => !decisionIds.has(t.id) && !waitingIds.has(t.id))
+    const staleNotOther      = staleTasks.filter(t => !decisionIds.has(t.id) && !waitingIds.has(t.id))
 
     const responseData = {
       myQueue: myQueueTasks.map(t => ({
-        id: t.id,
-        title: t.title,
-        priority: t.priority,
-        dueAt: t.dueAt?.toISOString() || null,
-        taskType: t.taskType,
-        spaceName: t.company?.name || null,
-        spaceId: t.company?.id || null,
-        projectName: t.project?.name || null,
-        statusName: t.status?.name || null,
-        decisionNeeded: t.decisionNeeded,
-        ownerAgent: (t as any).ownerAgent || null,
+        id: t.id, title: t.title, priority: t.priority,
+        dueAt: t.dueAt?.toISOString() || null, taskType: t.taskType,
+        spaceName: t.company?.name || null, spaceId: t.company?.id || null,
+        projectName: t.project?.name || null, statusName: t.status?.name || null,
+        decisionNeeded: t.decisionNeeded, ownerAgent: (t as any).ownerAgent || null,
       })),
       agentStatus,
       needsAttention: {
         decisions: decisionTasks.map(t => ({
-          id: t.id,
-          title: t.title,
-          priority: t.priority,
-          ownerAgent: t.ownerAgent,
-          decisionSummary: t.decisionSummary,
-          dueAt: t.dueAt?.toISOString() || null,
+          id: t.id, title: t.title, priority: t.priority, ownerAgent: t.ownerAgent,
+          decisionSummary: t.decisionSummary, dueAt: t.dueAt?.toISOString() || null,
           spaceName: t.company?.name || null,
         })),
         waitingOnBen: waitingOnBenTasks.map(t => ({
-          id: t.id,
-          title: t.title,
-          priority: t.priority,
-          ownerAgent: t.ownerAgent,
-          blockedReason: t.blockedReason,
-          dueAt: t.dueAt?.toISOString() || null,
+          id: t.id, title: t.title, priority: t.priority, ownerAgent: t.ownerAgent,
+          blockedReason: t.blockedReason, dueAt: t.dueAt?.toISOString() || null,
           spaceName: t.company?.name || null,
         })),
         overdue: overdueNotDecision.map(t => ({
-          id: t.id,
-          title: t.title,
-          priority: t.priority,
-          dueAt: t.dueAt?.toISOString() || null,
-          ownerAgent: t.ownerAgent,
+          id: t.id, title: t.title, priority: t.priority,
+          dueAt: t.dueAt?.toISOString() || null, ownerAgent: t.ownerAgent,
           spaceName: t.company?.name || null,
         })),
         stale: staleNotOther.map(t => ({
-          id: t.id,
-          title: t.title,
-          ownerAgent: t.ownerAgent,
-          updatedAt: t.updatedAt.toISOString(),
-          spaceName: t.company?.name || null,
+          id: t.id, title: t.title, ownerAgent: t.ownerAgent,
+          updatedAt: t.updatedAt.toISOString(), spaceName: t.company?.name || null,
         })),
       },
       recentWins: recentCompletions.map(t => ({
-        id: t.id,
-        title: t.title,
-        ownerAgent: t.ownerAgent,
+        id: t.id, title: t.title, ownerAgent: t.ownerAgent,
         completedAt: t.completedAt?.toISOString() || null,
         spaceName: t.company?.name || null,
       })),
@@ -258,9 +270,7 @@ export async function GET(request: NextRequest) {
       },
     }
 
-    // Cache for 60 seconds per workspace
     summaryCache.set(workspaceId, { data: responseData, expiresAt: Date.now() + SUMMARY_TTL })
-
     return NextResponse.json(responseData)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)

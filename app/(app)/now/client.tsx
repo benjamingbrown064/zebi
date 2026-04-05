@@ -25,7 +25,11 @@ interface QueueTask {
 
 interface AgentStatus {
   agent: string
-  status: 'active' | 'waiting' | 'blocked'
+  status: 'active' | 'waiting' | 'blocked' | 'idle' | 'offline'
+  lastSeenAt: string | null
+  lastEvent: string | null
+  currentTaskId: string | null
+  currentTaskTitle: string | null
   activeCount: number
   blockedCount: number
   waitingOnBenCount: number
@@ -256,8 +260,36 @@ function QueueTable({ tasks, onComplete, router }: {
 
 // ─── Agent Intelligence Panel ─────────────────────────────────────────────────
 
+function formatLastSeen(lastSeenAt: string | null): string {
+  if (!lastSeenAt) return 'Never connected'
+  const diff = Date.now() - new Date(lastSeenAt).getTime()
+  const mins = Math.floor(diff / 60000)
+  const hrs  = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+  if (mins < 1)   return 'Just now'
+  if (mins < 60)  return `${mins}m ago`
+  if (hrs  < 24)  return `${hrs}h ago`
+  return `${days}d ago`
+}
+
+function AgentStatusBadge({ status }: { status: AgentStatus['status'] }) {
+  const cfg: Record<AgentStatus['status'], { label: string; cls: string; dot: string }> = {
+    active:  { label: 'ACTIVE',   cls: 'bg-[#F0FDF4] text-[#16A34A]', dot: '#16A34A' },
+    waiting: { label: 'WAITING',  cls: 'bg-[#FFFBEB] text-[#D97706]', dot: '#D97706' },
+    blocked: { label: 'BLOCKED',  cls: 'bg-[#FEF2F2] text-[#EF4444]', dot: '#EF4444' },
+    idle:    { label: 'IDLE',     cls: 'bg-[#F3F3F3] text-[#A3A3A3]', dot: '#C6C6C6' },
+    offline: { label: 'OFFLINE',  cls: 'bg-[#F3F3F3] text-[#C6C6C6]', dot: '#E5E5E5' },
+  }
+  const c = cfg[status]
+  return (
+    <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.08em] px-1.5 py-0.5 rounded ${c.cls}`}>
+      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.dot }} />
+      {c.label}
+    </span>
+  )
+}
+
 function AgentIntelligence({ agents, router }: { agents: AgentStatus[]; router: ReturnType<typeof useRouter> }) {
-  const totalTasks = agents.reduce((s, a) => s + a.activeCount, 0)
   const maxTasks = Math.max(...agents.map(a => a.activeCount), 1)
 
   return (
@@ -269,57 +301,80 @@ function AgentIntelligence({ agents, router }: { agents: AgentStatus[]; router: 
 
       <div className="divide-y divide-[#F3F3F3]">
         {agents.length === 0 ? (
-          <p className="px-5 py-6 text-[12px] text-[#C6C6C6]">No agents active</p>
+          <p className="px-5 py-6 text-[12px] text-[#C6C6C6]">No agents configured</p>
         ) : agents.map(a => {
           const col = AGENT_COLOURS[a.agent] || '#737373'
           const pct = Math.round((a.activeCount / maxTasks) * 100)
-          const isActive = a.status === 'active'
-          const isBlocked = a.status === 'blocked'
+          const isOffline = a.status === 'offline'
 
           return (
             <div
               key={a.agent}
-              className="flex items-center gap-3 px-5 py-3.5 hover:bg-[#F9F9F9] cursor-pointer transition-colors"
+              className="flex items-start gap-3 px-5 py-4 hover:bg-[#F9F9F9] cursor-pointer transition-colors"
               onClick={() => router.push(`/queue?agent=${a.agent}`)}
             >
-              {/* Avatar */}
-              <div
-                className="w-9 h-9 rounded flex-shrink-0 flex items-center justify-center text-[13px] font-bold text-white"
-                style={{ backgroundColor: col }}
-              >
-                {AGENT_INITIALS[a.agent] || a.agent[0].toUpperCase()}
+              {/* Avatar with online dot */}
+              <div className="relative flex-shrink-0">
+                <div
+                  className="w-9 h-9 rounded flex items-center justify-center text-[13px] font-bold text-white"
+                  style={{ backgroundColor: isOffline ? '#C6C6C6' : col }}
+                >
+                  {AGENT_INITIALS[a.agent] || a.agent[0].toUpperCase()}
+                </div>
+                {/* Online presence dot */}
+                <span
+                  className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white"
+                  style={{
+                    backgroundColor:
+                      a.status === 'active'  ? '#16A34A' :
+                      a.status === 'waiting' ? '#D97706' :
+                      a.status === 'blocked' ? '#EF4444' :
+                      a.status === 'idle'    ? '#A3A3A3' :
+                      '#E5E5E5'
+                  }}
+                />
               </div>
 
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-[12px] font-bold uppercase tracking-[0.04em] text-[#1A1A1A]">
+                  <p className={`text-[12px] font-bold uppercase tracking-[0.04em] ${isOffline ? 'text-[#A3A3A3]' : 'text-[#1A1A1A]'}`}>
                     {AGENT_LABELS[a.agent] || a.agent}
                   </p>
-                  <span className={`text-[9px] font-bold uppercase tracking-[0.08em] px-1.5 py-0.5 rounded ${
-                    isBlocked
-                      ? 'bg-[#FEF2F2] text-[#EF4444]'
-                      : isActive
-                      ? 'bg-[#F0FDF4] text-[#16A34A]'
-                      : 'bg-[#F3F3F3] text-[#A3A3A3]'
-                  }`}>
-                    {isBlocked ? 'BLOCKED' : isActive ? 'ACTIVE' : 'IDLE'}
-                  </span>
+                  <AgentStatusBadge status={a.status} />
                 </div>
+
+                {/* Current task (if agent reported one) */}
+                {a.currentTaskTitle && (
+                  <p className="text-[11px] text-[#474747] truncate mb-1.5">
+                    ↳ {a.currentTaskTitle}
+                  </p>
+                )}
+
                 {/* Capacity bar */}
                 <div className="h-1 bg-[#F3F3F3] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all"
-                    style={{ width: `${pct}%`, backgroundColor: isBlocked ? '#EF4444' : col }}
+                    style={{
+                      width: `${pct}%`,
+                      backgroundColor:
+                        a.status === 'blocked' ? '#EF4444' :
+                        isOffline ? '#E5E5E5' : col
+                    }}
                   />
                 </div>
-                <div className="flex items-center justify-between mt-1">
+
+                {/* Meta row */}
+                <div className="flex items-center justify-between mt-1.5">
                   <p className="text-[10px] text-[#A3A3A3]">
                     {a.activeCount} task{a.activeCount !== 1 ? 's' : ''}
                     {a.blockedCount > 0 && <span className="text-[#EF4444] ml-1">· {a.blockedCount} blocked</span>}
-                    {a.waitingOnBenCount > 0 && <span className="text-[#F59E0B] ml-1">· {a.waitingOnBenCount} waiting</span>}
+                    {a.waitingOnBenCount > 0 && <span className="text-[#D97706] ml-1">· {a.waitingOnBenCount} waiting</span>}
                   </p>
-                  <p className="text-[10px] text-[#A3A3A3]">{pct}%</p>
+                  {/* Last seen timestamp */}
+                  <p className="text-[10px] text-[#A3A3A3]" title={a.lastSeenAt ?? 'Never'}>
+                    {formatLastSeen(a.lastSeenAt)}
+                  </p>
                 </div>
               </div>
             </div>

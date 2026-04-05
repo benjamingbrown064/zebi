@@ -44,3 +44,4 @@ Thumbs.db
 prisma/migrations/
 .vercel
 .env*
+.env*.local
