@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import Sidebar from '@/components/Sidebar';
 import DocumentEditor from '@/components/DocumentEditor';
 import {
   FaArrowLeft,
@@ -183,7 +182,6 @@ export default function DocumentDetailPage() {
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [versions, setVersions] = useState<DocumentVersion[]>([]);
   const [selectedVersion, setSelectedVersion] = useState<DocumentVersion | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     if (documentId) {
@@ -365,7 +363,6 @@ export default function DocumentDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F9F9F9]">
-        <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
@@ -379,7 +376,6 @@ export default function DocumentDetailPage() {
   if (!document) {
     return (
       <div className="min-h-screen bg-[#F9F9F9]">
-        <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-[#1A1C1C] mb-2">Document not found</h2>
@@ -394,7 +390,6 @@ export default function DocumentDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
       <div>
 
         {/* Header */}
