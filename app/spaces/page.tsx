@@ -7,7 +7,7 @@ import CaptureBar from '@/components/CaptureBar'
 import SpaceForm from '@/components/SpaceForm'
 import VoiceEntityModal from '@/components/voice-entity/VoiceEntityModal'
 import { useWorkspace } from '@/lib/use-workspace'
-import { cachedFetch, invalidateCache } from '@/lib/client-cache'
+import { cachedFetch, invalidateCache, STABLE_TTL } from '@/lib/client-cache'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -251,7 +251,7 @@ export default function SpacesPage() {
     if (!workspaceId) return
     try {
       invalidateCache(`/api/spaces?workspaceId=${workspaceId}`)
-      const data = await cachedFetch<Space[]>(`/api/spaces?workspaceId=${workspaceId}`)
+      const data = await cachedFetch<Space[]>(`/api/spaces?workspaceId=${workspaceId}`, { ttl: STABLE_TTL })
       setSpaces(data)
     } catch {
       // silent

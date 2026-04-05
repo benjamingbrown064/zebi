@@ -10,7 +10,9 @@ interface CacheEntry<T> {
 
 const cache = new Map<string, CacheEntry<unknown>>()
 
-export const DEFAULT_TTL = 60 * 1000 // 60 seconds
+export const DEFAULT_TTL = 60 * 1000      // 60 seconds — default
+export const STABLE_TTL = 5 * 60 * 1000  // 5 minutes — for spaces, projects, objectives
+export const SHORT_TTL  = 30 * 1000      // 30 seconds — for tasks, now summary
 
 export function getCache<T>(key: string, ttl = DEFAULT_TTL): T | null {
   const entry = cache.get(key) as CacheEntry<T> | undefined

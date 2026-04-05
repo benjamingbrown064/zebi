@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma'
 import { requireWorkspace } from '@/lib/workspace'
 
 export const dynamic = 'force-dynamic'
+// Per-workspace in-memory cache for the Now summary — 60s TTL
+const summaryCache = new Map<string, { data: any; expiresAt: number }>()
+const SUMMARY_TTL = 60 * 1000 // 60 seconds
 
 const AGENTS = ['harvey', 'theo', 'doug', 'casper'] as const
 
@@ -18,6 +21,13 @@ const AGENTS = ['harvey', 'theo', 'doug', 'casper'] as const
 export async function GET(request: NextRequest) {
   try {
     const workspaceId = await requireWorkspace()
+
+    // Check cache — serve stale data instantly, re-query in background on miss
+    const cached = summaryCache.get(workspaceId)
+    if (cached && Date.now() < cached.expiresAt) {
+      return NextResponse.json(cached.data)
+    }
+
     const now = new Date()
     const staleThreshold = new Date(now.getTime() - 48 * 60 * 60 * 1000)
     const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000)
@@ -44,7 +54,7 @@ export async function GET(request: NextRequest) {
         take: 20,
         select: {
           id: true, title: true, priority: true, dueAt: true,
-          taskType: true, waitingOn: true, decisionNeeded: true,
+          taskType: true, waitingOn: true, decisionNeeded: true, ownerAgent: true,
           company: { select: { id: true, name: true } },
           project: { select: { id: true, name: true } },
           status: { select: { name: true, type: true } },
@@ -181,7 +191,7 @@ export async function GET(request: NextRequest) {
     const overdueNotDecision = overdueTasks.filter(t => !decisionIds.has(t.id) && !waitingIds.has(t.id))
     const staleNotOther = staleTasks.filter(t => !decisionIds.has(t.id) && !waitingIds.has(t.id))
 
-    return NextResponse.json({
+    const responseData = {
       myQueue: myQueueTasks.map(t => ({
         id: t.id,
         title: t.title,
@@ -193,6 +203,7 @@ export async function GET(request: NextRequest) {
         projectName: t.project?.name || null,
         statusName: t.status?.name || null,
         decisionNeeded: t.decisionNeeded,
+        ownerAgent: (t as any).ownerAgent || null,
       })),
       agentStatus,
       needsAttention: {
@@ -245,7 +256,12 @@ export async function GET(request: NextRequest) {
         totalStale: staleTasks.length,
         totalPendingHandoffs: pendingHandoffs.length,
       },
-    })
+    }
+
+    // Cache for 60 seconds per workspace
+    summaryCache.set(workspaceId, { data: responseData, expiresAt: Date.now() + SUMMARY_TTL })
+
+    return NextResponse.json(responseData)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[Now] Failed to load summary:', msg)

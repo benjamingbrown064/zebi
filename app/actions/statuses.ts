@@ -1,6 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { unstable_cache } from 'next/cache'
 
 export interface Status {
   id: string
@@ -22,14 +23,22 @@ const DEFAULT_STATUSES = [
  * Get all statuses for a workspace.
  * Creates default system statuses if none exist.
  */
+// Statuses almost never change — cache for 10 minutes
+const _getStatusesCached = unstable_cache(
+  async (workspaceId: string) => {
+    return prisma.status.findMany({
+      where: { workspaceId },
+      orderBy: { sortOrder: 'asc' },
+      select: { id: true, name: true, type: true, isSystem: true, sortOrder: true },
+    })
+  },
+  ['statuses'],
+  { revalidate: 600, tags: ['statuses'] }
+)
+
 export async function getStatuses(workspaceId: string): Promise<Status[]> {
   try {
-    console.log(`getStatuses: Fetching statuses for workspace ${workspaceId}`)
-    
-    let statuses = await prisma.status.findMany({
-      where: { workspaceId },
-      orderBy: { sortOrder: 'asc' }
-    })
+    let statuses = await _getStatusesCached(workspaceId)
 
     console.log(`getStatuses: Found ${statuses.length} statuses`)
 

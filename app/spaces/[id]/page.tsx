@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useWorkspace } from '@/lib/use-workspace'
 import Link from 'next/link'
-import { cachedFetch, invalidateCache } from '@/lib/client-cache'
+import { cachedFetch, invalidateCache, STABLE_TTL } from '@/lib/client-cache'
 import Sidebar from '@/components/Sidebar'
 import CaptureBar from '@/components/CaptureBar'
 import LoadingSpinner from '@/components/LoadingSpinner'
@@ -1097,7 +1097,7 @@ export default function SpaceDetailPage() {
   const loadSpace = useCallback(async () => {
     try {
       invalidateCache(`/api/spaces/${spaceId}`)
-      const data = await cachedFetch<Space>(`/api/spaces/${spaceId}`)
+      const data = await cachedFetch<Space>(`/api/spaces/${spaceId}`, { ttl: STABLE_TTL })
       setSpace(data)
     } catch (err: any) {
       if (err?.message?.includes('404')) router.push('/spaces')

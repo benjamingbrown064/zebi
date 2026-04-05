@@ -28,51 +28,43 @@ export interface Task {
 
 export async function getTasks(workspaceId: string, options?: { limit?: number; offset?: number }): Promise<Task[]> {
   try {
-    // OPTIMIZED: Added pagination support and limit to prevent loading too many tasks
-    const limit = options?.limit || 1000 // Default limit of 1000 tasks
+    const limit = options?.limit || 500 // Reduced from 1000 — board never needs 1000 tasks
     const offset = options?.offset || 0
-    
+
+    // Use select instead of include to avoid over-fetching heavy fields (description, etc.)
     const tasks = await prisma.task.findMany({
-      where: { 
+      where: {
         workspaceId,
-        archivedAt: null
+        archivedAt: null,
       },
-      include: {
-        tags: {
-          include: { tag: true }
-        },
-        goal: {
-          select: {
-            id: true,
-            name: true,
-            status: true
-          }
-        },
-        company: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        project: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        objective: {
-          select: {
-            id: true,
-            title: true
-          }
-        }
+      select: {
+        id: true,
+        title: true,
+        priority: true,
+        statusId: true,
+        description: true,
+        dueAt: true,
+        completedAt: true,
+        archivedAt: true,
+        goalId: true,
+        companyId: true,
+        projectId: true,
+        objectiveId: true,
+        assigneeId: true,
+        workspaceId: true,
+        createdAt: true,
+        updatedAt: true,
+        // Lightweight nested selects — no deep joins
+        tags: { select: { tag: { select: { name: true } } } },
+        goal: { select: { id: true, name: true, status: true } },
+        company: { select: { id: true, name: true } },
+        project: { select: { id: true, name: true } },
+        objective: { select: { id: true, title: true } },
       },
       orderBy: { createdAt: 'desc' },
       take: limit,
-      skip: offset
+      skip: offset,
     })
-
-    console.log(`getTasks: Fetched ${tasks.length} tasks for workspace ${workspaceId} (limit: ${limit}, offset: ${offset})`)
     
     return tasks.map((t) => ({
       id: t.id,

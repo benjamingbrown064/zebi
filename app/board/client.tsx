@@ -72,46 +72,33 @@ export default function BoardClient({
   // Use useRef to persist across renders
   const pendingUpdatesRef = useRef(new Map<string, { statusId: string; timestamp: number }>())
 
-  // Refetch tasks on mount and every 5 seconds to show newly created tasks
+  // Refetch on mount, then every 30 seconds — paused when tab is hidden
   useEffect(() => {
     const refetchData = async () => {
+      // Don't poll when tab is not visible — saves DB load
+      if (document.visibilityState === 'hidden') return
       try {
         const [newTasks, newStatuses, newGoals] = await Promise.all([
           getTasks(DEFAULT_WORKSPACE_ID),
           getStatuses(DEFAULT_WORKSPACE_ID),
           getGoals(DEFAULT_WORKSPACE_ID),
         ])
-        console.log('[Board] Refetch complete:', {
-          taskCount: newTasks.length,
-          statusCount: newStatuses.length,
-          goalCount: newGoals.length,
-          pendingCount: pendingUpdatesRef.current.size,
-          tasks: newTasks.slice(0, 3).map(t => ({ id: t.id, title: t.title, statusId: t.statusId }))
-        })
-        
+
         // Clean up stale pending updates (older than 10 seconds)
         const now = Date.now()
         for (const [taskId, update] of pendingUpdatesRef.current.entries()) {
-          if (now - update.timestamp > 10000) {
-            console.log(`[Board] Clearing stale pending update for task ${taskId}`)
-            pendingUpdatesRef.current.delete(taskId)
-          }
+          if (now - update.timestamp > 10000) pendingUpdatesRef.current.delete(taskId)
         }
-        
-        // Only update tasks that don't have pending updates
-        // This prevents the refetch from overwriting recent drags/actions
-        setTasks(prevTasks => {
-          return newTasks.map(newTask => {
-            // If task has a pending update, keep the local version
+
+        // Only update tasks that don't have pending local updates
+        setTasks(prevTasks =>
+          newTasks.map(newTask => {
             if (pendingUpdatesRef.current.has(newTask.id)) {
-              const localTask = prevTasks.find(t => t.id === newTask.id)
-              console.log(`[Board] Skipping refetch for task ${newTask.id} - has pending update`)
-              return localTask || newTask
+              return prevTasks.find(t => t.id === newTask.id) || newTask
             }
             return newTask
           })
-        })
-        
+        )
         setStatuses(newStatuses)
         setGoals(newGoals)
       } catch (err) {
@@ -119,14 +106,21 @@ export default function BoardClient({
       }
     }
 
-    // Refetch immediately on mount
-    console.log('[Board] Initial mount - fetching tasks...')
     refetchData()
 
-    // Then refetch every 5 seconds
-    const interval = setInterval(refetchData, 5000)
+    // Poll every 30s instead of 5s — 6x fewer DB hits
+    const interval = setInterval(refetchData, 30000)
 
-    return () => clearInterval(interval)
+    // Also refetch immediately when tab becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') refetchData()
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [])
 
   // Extract unique assignees from tasks
