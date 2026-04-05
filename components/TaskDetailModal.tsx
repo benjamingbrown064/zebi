@@ -501,7 +501,7 @@ export default function TaskDetailModal({
             {task && workspaceId && userId && (
               <button
                 onClick={() => setIsShareModalOpen(true)}
-                className="p-3 text-[#A3A3A3] hover:text-accent-600 transition rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-3 text-[#A3A3A3] hover:text-[#474747] transition rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Share task"
               >
                 <FaShareAlt />

@@ -65,7 +65,7 @@ export default function BoardFilters({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-[#474747] hover:bg-[#F3F3F3] transition"
+        className="flex items-center gap-2 px-3 py-2 bg-white border border-[#C6C6C6] rounded text-sm font-medium text-[#474747] hover:bg-[#F3F3F3] transition"
       >
         <FaFilter size={14} />
         Filters
