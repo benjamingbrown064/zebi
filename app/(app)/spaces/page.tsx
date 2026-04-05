@@ -391,23 +391,76 @@ export default function SpacesPage() {
 
       {/* ── Add Space modal ── */}
       {isAdding && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-start justify-end">
-          <div className="w-full max-w-xl h-screen bg-white shadow-2xl overflow-y-auto flex flex-col">
-            <div className="sticky top-0 bg-white border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between z-10">
-              <h2 className="text-[16px] font-semibold text-[#1A1C1C]">Add a new space</h2>
-              <button onClick={() => setIsAdding(false)} className="text-[#A3A3A3] hover:text-[#1A1C1C] transition">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.45)' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setIsAdding(false) }}
+        >
+          <div
+            className="relative bg-white w-full max-w-[700px] rounded flex flex-col"
+            style={{
+              maxHeight: '90vh',
+              boxShadow: '0 24px 80px rgba(0,0,0,0.18)',
+            }}
+          >
+            {/* ── Modal header ── */}
+            <div className="px-8 pt-7 pb-5 border-b border-[#F3F3F3] flex-shrink-0">
+              {/* Close */}
+              <button
+                onClick={() => setIsAdding(false)}
+                className="absolute top-5 right-5 text-[#A3A3A3] hover:text-[#1A1C1C] transition"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
+
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1">
+                Initialize Module
+              </p>
+              <h2 className="text-[26px] font-bold text-[#1A1C1C]">Add a new space</h2>
             </div>
-            <div className="px-6 py-6 flex-1">
+
+            {/* ── Scrollable form body ── */}
+            <div className="overflow-y-auto flex-1 px-8 py-7">
               <SpaceForm
                 onSubmit={handleCreateSpace}
                 onCancel={() => setIsAdding(false)}
-                submitLabel="Create Space"
+                submitLabel="Create"
                 isLoading={isSaving}
+                hideActions
               />
+            </div>
+
+            {/* ── Sticky footer ── */}
+            <div className="flex-shrink-0 border-t border-[#E5E5E5] bg-[#FAFAFA] px-8 py-4 flex items-center justify-between rounded-b">
+              {/* Verification status */}
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#474747]">
+                  Verification Status: Draft
+                </span>
+                <span className="w-2 h-2 rounded-full bg-[#C6C6C6] flex-shrink-0" />
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsAdding(false)}
+                  disabled={isSaving}
+                  className="px-5 py-2 text-[14px] font-medium text-[#474747] hover:text-[#1A1C1C] transition disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="space-form"
+                  disabled={isSaving}
+                  className="px-6 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white text-[14px] font-semibold rounded transition disabled:opacity-50"
+                >
+                  {isSaving ? 'Saving...' : 'Create'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

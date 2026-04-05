@@ -25,22 +25,76 @@ interface SpaceFormProps {
   onCancel: () => void
   submitLabel?: string
   isLoading?: boolean
+  /** If true, hides the action buttons (use when parent renders its own footer) */
+  hideActions?: boolean
+  /** Expose form data externally for parent-controlled submit */
+  formRef?: React.MutableRefObject<SpaceFormData | null>
+  onFormChange?: (data: SpaceFormData) => void
 }
 
-const STAGES = ['idea', 'startup', 'growth', 'mature']
-const BUSINESS_MODELS = ['SaaS', 'Marketplace', 'E-commerce', 'Consulting', 'Product', 'Other']
+const STAGES = [
+  { value: 'pre-seed', label: 'Pre-Seed' },
+  { value: 'seed', label: 'Seed' },
+  { value: 'startup', label: 'Startup' },
+  { value: 'series-a', label: 'Series A' },
+  { value: 'growth', label: 'Growth' },
+  { value: 'mature', label: 'Mature' },
+]
+
+// ─── Underline input components ───────────────────────────────────────────────
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#474747] mb-2">
+      {children}
+    </label>
+  )
+}
+
+const inputBase =
+  'w-full bg-transparent border-0 border-b border-[#C6C6C6] focus:border-[#1A1C1C] outline-none pb-2 text-[14px] text-[#1A1C1C] placeholder-[#C6C6C6] transition-colors'
+
+const selectBase =
+  'w-full bg-transparent border-0 border-b border-[#C6C6C6] focus:border-[#1A1C1C] outline-none pb-2 text-[14px] text-[#1A1C1C] appearance-none cursor-pointer transition-colors pr-6'
+
+function SelectWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative">
+      {children}
+      {/* Custom chevron */}
+      <svg
+        className="absolute right-0 bottom-3 w-4 h-4 text-[#A3A3A3] pointer-events-none"
+        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  )
+}
+
+// ─── Section header ───────────────────────────────────────────────────────────
+
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="text-[18px] font-bold text-[#1A1C1C] mb-6">{children}</h3>
+  )
+}
+
+// ─── Main form ────────────────────────────────────────────────────────────────
 
 export default function SpaceForm({
   initialData = {},
   onSubmit,
   onCancel,
-  submitLabel = 'Create Space',
+  submitLabel = 'Create',
   isLoading = false,
+  hideActions = false,
+  onFormChange,
 }: SpaceFormProps) {
   const [formData, setFormData] = useState<SpaceFormData>({
     name: initialData.name || '',
     industry: initialData.industry || '',
-    stage: initialData.stage || 'startup',
+    stage: initialData.stage || 'pre-seed',
     businessModel: initialData.businessModel || '',
     missionStatement: initialData.missionStatement || '',
     executiveSummary: initialData.executiveSummary || '',
@@ -60,247 +114,231 @@ export default function SpaceForm({
   }
 
   const updateField = (field: keyof SpaceFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    const next = { ...formData, [field]: value }
+    setFormData(next)
+    onFormChange?.(next)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Basic Info */}
-      <div className="space-y-4">
-        <h3 className="font-semibold text-[#1A1C1C]">Basic Information</h3>
+    <form id="space-form" onSubmit={handleSubmit} className="space-y-10">
 
-        <div>
-          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-            Space Name *
-          </label>
-          <input
-            type="text"
-            value={formData.name}
-            onChange={(e) => updateField('name', e.target.value)}
-            placeholder="e.g., Love Warranty"
-            required
-            className="w-full px-4 py-2 rounded focus:focus-ring"
-          />
-        </div>
+      {/* ── Basic Information ── */}
+      <section>
+        <SectionHeader>Basic Information</SectionHeader>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-8">
+          {/* Space Name */}
           <div>
-            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-              Industry
-            </label>
+            <FieldLabel>Space Name</FieldLabel>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => updateField('name', e.target.value)}
+              placeholder="Enter entity name..."
+              required
+              className={inputBase}
+            />
+          </div>
+
+          {/* Industry */}
+          <div>
+            <FieldLabel>Industry</FieldLabel>
             <input
               type="text"
               value={formData.industry}
               onChange={(e) => updateField('industry', e.target.value)}
-              placeholder="e.g., SaaS, E-commerce"
-              className="w-full px-4 py-2 rounded focus:focus-ring"
+              placeholder="e.g. Quantitative Finance"
+              className={inputBase}
             />
           </div>
 
+          {/* Stage */}
           <div>
-            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-              Stage
-            </label>
-            <select
-              value={formData.stage}
-              onChange={(e) => updateField('stage', e.target.value)}
-              className="w-full px-4 py-2 rounded focus:focus-ring"
-            >
-              {STAGES.map((stage) => (
-                <option key={stage} value={stage}>
-                  {stage.charAt(0).toUpperCase() + stage.slice(1)}
-                </option>
-              ))}
-            </select>
+            <FieldLabel>Stage</FieldLabel>
+            <SelectWrapper>
+              <select
+                value={formData.stage}
+                onChange={(e) => updateField('stage', e.target.value)}
+                className={selectBase}
+              >
+                {STAGES.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </SelectWrapper>
           </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4">
+          {/* Business Model */}
           <div>
-            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-              Business Model
-            </label>
-            <select
+            <FieldLabel>Business Model</FieldLabel>
+            <input
+              type="text"
               value={formData.businessModel}
               onChange={(e) => updateField('businessModel', e.target.value)}
-              className="w-full px-4 py-2 rounded focus:focus-ring"
-            >
-              <option value="">Select...</option>
-              {BUSINESS_MODELS.map((model) => (
-                <option key={model} value={model}>
-                  {model}
-                </option>
-              ))}
-            </select>
+              placeholder="e.g. SaaS / B2B"
+              className={inputBase}
+            />
           </div>
 
+          {/* Revenue */}
           <div>
-            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-              Monthly Revenue (£)
-            </label>
+            <FieldLabel>Current Revenue (Annual)</FieldLabel>
             <input
               type="number"
               value={formData.revenue}
               onChange={(e) => updateField('revenue', e.target.value)}
-              placeholder="0"
-              className="w-full px-4 py-2 rounded focus:focus-ring"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-              Logo URL
-            </label>
-            <input
-              type="url"
-              value={formData.logoUrl}
-              onChange={(e) => updateField('logoUrl', e.target.value)}
-              placeholder="https://..."
-              className="w-full px-4 py-2 rounded focus:focus-ring"
+              placeholder="USD 0.00"
+              className={inputBase}
             />
           </div>
 
+          {/* Website URL */}
           <div>
-            <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-              Website URL
-            </label>
+            <FieldLabel>Website URL</FieldLabel>
             <input
               type="url"
               value={formData.websiteUrl}
               onChange={(e) => updateField('websiteUrl', e.target.value)}
               placeholder="https://..."
-              className="w-full px-4 py-2 rounded focus:focus-ring"
+              className={inputBase}
             />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Strategy */}
-      <div className="space-y-4">
-        <h3 className="font-semibold text-[#1A1C1C]">Strategy</h3>
+      {/* ── Strategy ── */}
+      <section>
+        <SectionHeader>Strategy</SectionHeader>
 
-        <div>
-          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-            Mission Statement
-          </label>
-          <input
-            type="text"
-            value={formData.missionStatement}
-            onChange={(e) => updateField('missionStatement', e.target.value)}
-            placeholder="What's the space's mission?"
-            className="w-full px-4 py-2 rounded focus:focus-ring"
-          />
+        <div className="space-y-8">
+          {/* Mission Statement */}
+          <div>
+            <FieldLabel>Mission Statement</FieldLabel>
+            <textarea
+              value={formData.missionStatement}
+              onChange={(e) => updateField('missionStatement', e.target.value)}
+              placeholder="Define the core purpose of this space..."
+              rows={2}
+              className={`${inputBase} resize-none`}
+            />
+          </div>
+
+          {/* Executive Summary */}
+          <div>
+            <FieldLabel>Executive Summary</FieldLabel>
+            <textarea
+              value={formData.executiveSummary}
+              onChange={(e) => updateField('executiveSummary', e.target.value)}
+              placeholder="Brief overview of the space..."
+              rows={3}
+              className={`${inputBase} resize-none`}
+            />
+          </div>
+
+          {/* Vision */}
+          <div>
+            <FieldLabel>Vision</FieldLabel>
+            <textarea
+              value={formData.vision}
+              onChange={(e) => updateField('vision', e.target.value)}
+              placeholder="Long-term vision..."
+              rows={2}
+              className={`${inputBase} resize-none`}
+            />
+          </div>
         </div>
+      </section>
 
-        <div>
-          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-            Executive Summary
-          </label>
-          <textarea
-            value={formData.executiveSummary}
-            onChange={(e) => updateField('executiveSummary', e.target.value)}
-            placeholder="Brief overview of the space..."
-            rows={3}
-            className="w-full px-4 py-2 rounded focus:focus-ring"
-          />
+      {/* ── Market ── */}
+      <section>
+        <SectionHeader>Market</SectionHeader>
+
+        <div className="space-y-8">
+          <div>
+            <FieldLabel>Target Customers</FieldLabel>
+            <textarea
+              value={formData.targetCustomers}
+              onChange={(e) => updateField('targetCustomers', e.target.value)}
+              placeholder="Who are the ideal customers?"
+              rows={2}
+              className={`${inputBase} resize-none`}
+            />
+          </div>
+
+          <div>
+            <FieldLabel>Market Size</FieldLabel>
+            <input
+              type="text"
+              value={formData.marketSize}
+              onChange={(e) => updateField('marketSize', e.target.value)}
+              placeholder="e.g. £500M TAM"
+              className={inputBase}
+            />
+          </div>
         </div>
+      </section>
 
-        <div>
-          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-            Vision
-          </label>
-          <textarea
-            value={formData.vision}
-            onChange={(e) => updateField('vision', e.target.value)}
-            placeholder="Long-term vision..."
-            rows={2}
-            className="w-full px-4 py-2 rounded focus:focus-ring"
-          />
+      {/* ── Product ── */}
+      <section>
+        <SectionHeader>Product</SectionHeader>
+
+        <div className="space-y-8">
+          <div>
+            <FieldLabel>Core Product</FieldLabel>
+            <textarea
+              value={formData.coreProduct}
+              onChange={(e) => updateField('coreProduct', e.target.value)}
+              placeholder="What does the product do?"
+              rows={2}
+              className={`${inputBase} resize-none`}
+            />
+          </div>
+
+          <div>
+            <FieldLabel>Positioning</FieldLabel>
+            <textarea
+              value={formData.positioning}
+              onChange={(e) => updateField('positioning', e.target.value)}
+              placeholder="How do you position vs competitors?"
+              rows={2}
+              className={`${inputBase} resize-none`}
+            />
+          </div>
+
+          <div>
+            <FieldLabel>Logo URL</FieldLabel>
+            <input
+              type="url"
+              value={formData.logoUrl}
+              onChange={(e) => updateField('logoUrl', e.target.value)}
+              placeholder="https://..."
+              className={inputBase}
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Market */}
-      <div className="space-y-4">
-        <h3 className="font-semibold text-[#1A1C1C]">Market</h3>
-
-        <div>
-          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-            Target Customers
-          </label>
-          <textarea
-            value={formData.targetCustomers}
-            onChange={(e) => updateField('targetCustomers', e.target.value)}
-            placeholder="Who are the ideal customers?"
-            rows={2}
-            className="w-full px-4 py-2 rounded focus:focus-ring"
-          />
+      {/* ── Standalone actions (only shown when not using modal footer) ── */}
+      {!hideActions && (
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isLoading}
+            className="flex-1 px-4 py-2.5 bg-[#F3F3F3] text-[#1A1C1C] rounded hover:bg-[#E5E5E5] transition font-medium text-[14px] disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading || !formData.name}
+            className="flex-1 px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded transition font-medium text-[14px] disabled:opacity-50"
+          >
+            {isLoading ? 'Saving...' : submitLabel}
+          </button>
         </div>
+      )}
 
-        <div>
-          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-            Market Size
-          </label>
-          <input
-            type="text"
-            value={formData.marketSize}
-            onChange={(e) => updateField('marketSize', e.target.value)}
-            placeholder="e.g., £500M TAM"
-            className="w-full px-4 py-2 rounded focus:focus-ring"
-          />
-        </div>
-      </div>
-
-      {/* Product */}
-      <div className="space-y-4">
-        <h3 className="font-semibold text-[#1A1C1C]">Product</h3>
-
-        <div>
-          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-            Core Product
-          </label>
-          <textarea
-            value={formData.coreProduct}
-            onChange={(e) => updateField('coreProduct', e.target.value)}
-            placeholder="What does the product do?"
-            rows={2}
-            className="w-full px-4 py-2 rounded focus:focus-ring"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-[#474747] uppercase mb-2">
-            Positioning
-          </label>
-          <textarea
-            value={formData.positioning}
-            onChange={(e) => updateField('positioning', e.target.value)}
-            placeholder="How do you position vs competitors?"
-            rows={2}
-            className="w-full px-4 py-2 rounded focus:focus-ring"
-          />
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex gap-3 pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={isLoading}
-          className="flex-1 px-4 py-2 bg-[#F3F3F3] text-[#1A1C1C] rounded hover:bg-[#E5E5E5] transition font-medium disabled:opacity-50"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading || !formData.name}
-          className="flex-1 px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded transition font-medium disabled:opacity-50"
-        >
-          {isLoading ? 'Saving...' : submitLabel}
-        </button>
-      </div>
     </form>
   )
 }
