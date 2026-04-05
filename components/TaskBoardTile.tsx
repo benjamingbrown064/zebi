@@ -12,6 +12,8 @@ interface TaskBoardTileProps {
     project?: { id: string; name: string } | null
     space?: { id: string; name: string } | null
     assigneeName?: string | null
+    ownerAgent?: string | null
+    botAssignee?: string | null
   }
   onDragStart?: (task: Task) => void
   onComplete?: (taskId: string) => void
@@ -27,20 +29,32 @@ const PRIORITY_STYLES: Record<number, string> = {
   4: 'border border-[#E5E5E5] text-[#A3A3A3]',
 }
 
+const AGENT_COLOURS: Record<string, string> = {
+  harvey: '#2563EB',
+  theo: '#7C3AED',
+  doug: '#059669',
+  casper: '#D97706',
+}
+
+const AGENT_LABELS: Record<string, string> = {
+  harvey: 'Harvey', theo: 'Theo', doug: 'Doug', casper: 'Casper',
+}
+
 export default function TaskBoardTile({
   task,
   onDragStart,
   onComplete,
+  onSnooze,
+  onPriorityChange,
   onView,
 }: TaskBoardTileProps) {
-  const context = task.project?.name || (task as any).space?.name || task.goal?.name
+  const spaceName = (task as any).space?.name
+  const projectName = task.project?.name
   const attachmentCount = task.attachments?.length || 0
-  const commentCount = 0 // placeholder — wire when comments are available
-  const assigneeInitial = task.assigneeName
-    ? task.assigneeName.charAt(0).toUpperCase()
-    : task.assigneeId
-    ? task.assigneeId.charAt(0).toUpperCase()
-    : null
+
+  // Who is assigned — agent takes priority over human assignee
+  const agent = task.ownerAgent || task.botAssignee
+  const assigneeLabel = task.assigneeName || task.assigneeId?.slice(0, 6) || null
 
   return (
     <div
@@ -50,13 +64,25 @@ export default function TaskBoardTile({
         if ((e.target as HTMLElement).closest('button')) return
         onView?.(task.id)
       }}
-      className="bg-white rounded border border-[#E5E5E5] p-4 cursor-pointer hover:border-[#C6C6C6] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all group"
+      className="bg-white rounded border border-[#E5E5E5] p-4 cursor-pointer hover:border-[#C6C6C6] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all"
     >
-      {/* Context label */}
-      {context && (
-        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-2">
-          {context}
-        </p>
+      {/* Space + Project labels */}
+      {(spaceName || projectName) && (
+        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+          {spaceName && (
+            <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">
+              {spaceName}
+            </span>
+          )}
+          {spaceName && projectName && (
+            <span className="text-[#D4D4D4] text-[10px]">·</span>
+          )}
+          {projectName && (
+            <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#C6C6C6]">
+              {projectName}
+            </span>
+          )}
+        </div>
       )}
 
       {/* Title */}
@@ -73,11 +99,18 @@ export default function TaskBoardTile({
 
       {/* Footer row: priority + meta + assignee */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Priority */}
           <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${PRIORITY_STYLES[task.priority] || PRIORITY_STYLES[4]}`}>
             P{task.priority}
           </span>
+
+          {/* Due date */}
+          {task.dueAt && (
+            <span className="text-[11px] text-[#A3A3A3]">
+              {new Date(task.dueAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+            </span>
+          )}
 
           {/* Attachment count */}
           {attachmentCount > 0 && (
@@ -88,19 +121,41 @@ export default function TaskBoardTile({
               {attachmentCount}
             </span>
           )}
-
-          {/* Due date */}
-          {task.dueAt && (
-            <span className="text-[11px] text-[#A3A3A3]">
-              {new Date(task.dueAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-            </span>
-          )}
         </div>
 
-        {/* Assignee avatar */}
-        {assigneeInitial && (
-          <div className="w-6 h-6 rounded-full bg-[#1A1A1A] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
-            {assigneeInitial}
+        {/* Assigned bot or person */}
+        {agent ? (
+          <div
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold"
+            style={{
+              backgroundColor: (AGENT_COLOURS[agent] || '#737373') + '18',
+              color: AGENT_COLOURS[agent] || '#737373',
+            }}
+            title={`Assigned to ${AGENT_LABELS[agent] || agent}`}
+          >
+            <div
+              className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
+              style={{ backgroundColor: AGENT_COLOURS[agent] || '#737373' }}
+            >
+              {(AGENT_LABELS[agent] || agent).charAt(0).toUpperCase()}
+            </div>
+            {AGENT_LABELS[agent] || agent}
+          </div>
+        ) : assigneeLabel ? (
+          <div
+            className="w-6 h-6 rounded-full bg-[#1A1A1A] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0"
+            title={`Assigned to ${assigneeLabel}`}
+          >
+            {assigneeLabel.charAt(0).toUpperCase()}
+          </div>
+        ) : (
+          <div
+            className="w-6 h-6 rounded-full border border-dashed border-[#D4D4D4] flex items-center justify-center flex-shrink-0"
+            title="Unassigned"
+          >
+            <svg className="w-3 h-3 text-[#C6C6C6]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
           </div>
         )}
       </div>
