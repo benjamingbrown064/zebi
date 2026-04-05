@@ -364,7 +364,7 @@ export default function DocumentDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-cream">
+      <div className="min-h-screen bg-[#F9F9F9]">
         <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
@@ -378,7 +378,7 @@ export default function DocumentDetailPage() {
 
   if (!document) {
     return (
-      <div className="min-h-screen bg-bg-cream">
+      <div className="min-h-screen bg-[#F9F9F9]">
         <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
@@ -393,7 +393,7 @@ export default function DocumentDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-cream">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
       <div>
 

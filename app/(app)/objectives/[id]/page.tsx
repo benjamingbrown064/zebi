@@ -331,7 +331,7 @@ export default async function ObjectiveDetailPage({ params }: { params: { id: st
     const msg = err instanceof Error ? err.message : String(err)
     console.error('Failed to load objective:', msg)
     return (
-      <div className="min-h-screen bg-bg-cream flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <div className="text-red-600">Failed to load objective: {msg}</div>
       </div>
     )

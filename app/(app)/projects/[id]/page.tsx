@@ -99,7 +99,7 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-cream flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <div className="text-[#474747]">Loading project...</div>
       </div>
     )

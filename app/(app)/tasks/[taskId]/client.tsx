@@ -55,7 +55,7 @@ export default function TaskDetailClient({
   }
 
   return (
-    <div className="min-h-screen bg-bg-cream">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}

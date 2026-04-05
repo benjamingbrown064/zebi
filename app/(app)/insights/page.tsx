@@ -226,14 +226,14 @@ export default function InsightsPage() {
 
   if (workspaceLoading || (loading && insights.length === 0) || !workspaceId) {
     return (
-      <div className="min-h-screen bg-bg-cream flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <div className="text-[#474747]">Loading insights...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-bg-cream">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}

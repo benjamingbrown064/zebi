@@ -40,7 +40,7 @@ export default async function BoardPage() {
   } catch (err) {
     console.error('Failed to load board data:', err)
     return (
-      <div className="min-h-screen bg-bg-cream flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <div className="text-red-600">Failed to load board</div>
       </div>
     )

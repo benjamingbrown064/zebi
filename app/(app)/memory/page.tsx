@@ -130,14 +130,14 @@ export default function MemoryPage() {
 
   if (workspaceLoading || (loading && memories.length === 0) || !workspaceId) {
     return (
-      <div className="min-h-screen bg-bg-cream flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <div className="text-gray-600">Loading memories...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-bg-cream">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
         workspaceName="My Workspace"
         isCollapsed={sidebarCollapsed}
