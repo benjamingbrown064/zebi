@@ -239,7 +239,7 @@ export default function InsightsPage() {
         isCollapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
       />
-      <div className={sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'}>
+      <div>
         <header className="bg-white sticky top-0 z-10">
           <div className="px-8 py-6 flex items-center justify-between">
             <div>

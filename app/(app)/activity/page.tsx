@@ -128,7 +128,7 @@ export default function ActivityPage() {
     <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar workspaceName="Zebi" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
 
-      <main className={`transition-all duration-300 ${sidebarCollapsed ? 'md:ml-[60px]' : 'md:ml-[220px]'} p-6 md:p-8`}>
+      <main className="p-6 md:p-8">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8 gap-4">
