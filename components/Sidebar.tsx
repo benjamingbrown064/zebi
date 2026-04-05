@@ -26,7 +26,9 @@ import {
   faChartLine,
   faMicrochip,
   faTimeline,
+  faSearch,
 } from '@fortawesome/pro-duotone-svg-icons'
+import GlobalSearch from './GlobalSearch'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -112,6 +114,19 @@ function DesktopSidebar({
   onCollapsedChange: (v: boolean) => void
 }) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+  // CMD+K / CTRL+K shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   async function handleLogout() {
     setIsLoading(true)
@@ -138,6 +153,25 @@ function DesktopSidebar({
         {!isCollapsed && (
           <span className="font-semibold text-[14px] text-[#1A1A1A] truncate">{workspaceName}</span>
         )}
+      </div>
+
+      {/* Search button */}
+      <div className="px-3 mb-2">
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          title={isCollapsed ? 'Search (Cmd+K)' : undefined}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-[13px] font-medium transition min-h-[44px] text-[#525252] hover:bg-[#F3F3F3] ${
+            isCollapsed ? 'justify-center' : ''
+          }`}
+        >
+          <span className="text-base w-5 flex items-center justify-center flex-shrink-0">
+            <FontAwesomeIcon icon={faSearch} />
+          </span>
+          {!isCollapsed && <span className="truncate">Search</span>}
+          {!isCollapsed && (
+            <span className="ml-auto text-[10px] text-[#A3A3A3] font-mono">⌘K</span>
+          )}
+        </button>
       </div>
 
       {/* Primary nav */}
@@ -189,6 +223,9 @@ function DesktopSidebar({
           <FontAwesomeIcon icon={isCollapsed ? faChevronRight : faChevronLeft} />
         </button>
       </div>
+
+      {/* Global Search Modal */}
+      <GlobalSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   )
 }
@@ -198,6 +235,19 @@ function DesktopSidebar({
 function MobileSidebar({ workspaceName }: { workspaceName: string }) {
   const [open, setOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+  // CMD+K / CTRL+K shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   async function handleLogout() {
     setIsLoading(true)
@@ -224,6 +274,12 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
           <div className="w-7 h-7 bg-[#000000] rounded flex items-center justify-center text-xs font-bold text-white">Z</div>
           <span className="font-semibold text-[13px] text-[#1A1A1A]">Zebi</span>
         </div>
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="ml-auto p-2 text-[#525252] rounded hover:bg-[#F3F3F3] transition"
+        >
+          <FontAwesomeIcon icon={faSearch} />
+        </button>
       </div>
 
       {/* Overlay */}
@@ -273,6 +329,9 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
 
       {/* Spacer so page content clears the top bar */}
       <div className="h-14" />
+
+      {/* Global Search Modal */}
+      <GlobalSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   )
 }

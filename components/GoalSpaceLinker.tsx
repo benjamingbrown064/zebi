@@ -1,8 +1,24 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FaLink, FaUnlink, FaSpinner } from 'react-icons/fa'
+import Link from 'next/link'
+import { FaLink, FaUnlink } from 'react-icons/fa'
 import { linkSpacesToGoal, getLinkedSpaces } from '@/app/actions/goals'
+
+// Shared "linked item" row component
+function LinkedItem({ title, subtitle, href }: { title: string; subtitle?: string; href: string }) {
+  return (
+    <Link href={href} className="flex items-center justify-between py-3 px-4 bg-[#F9F9F9] rounded hover:bg-[#F3F3F3] transition-colors">
+      <div>
+        <p className="text-[13px] font-medium text-[#1A1A1A]">{title}</p>
+        {subtitle && <p className="text-[11px] text-[#A3A3A3] mt-0.5">{subtitle}</p>}
+      </div>
+      <svg className="w-3.5 h-3.5 text-[#C6C6C6]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
+      </svg>
+    </Link>
+  )
+}
 
 interface Space {
   id: string
@@ -83,15 +99,12 @@ export default function GoalSpaceLinker({
     return null
   }
 
-  const totalRevenue = selectedSpaces.reduce((sum, companyId) => {
-    const space = allSpaces.find(c => c.id === companyId)
-    return sum + (space?.revenue || 0)
-  }, 0)
+  const totalRevenue = linkedSpaces.reduce((sum, s) => sum + (Number(s.revenue) || 0), 0)
 
   return (
-    <div className="mt-6 pt-6">
+    <div className="bg-white rounded p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-[#1A1A1A]">Link Spaces</h3>
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Linked Spaces</h3>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="text-[13px] px-3 py-1.5 bg-[#000000] text-white rounded hover:opacity-90 transition inline-flex items-center gap-2"
@@ -102,31 +115,27 @@ export default function GoalSpaceLinker({
       </div>
 
       {/* Display linked spaces */}
-      {linkedSpaces.length > 0 && (
-        <div className="bg-[#F3F3F3] rounded p-4 mb-4">
-          <p className="text-[12px] text-[#525252] mb-3">
-            {linkedSpaces.length} compan{linkedSpaces.length === 1 ? 'y' : 'ies'} linked
-          </p>
-          <div className="space-y-2">
+      {linkedSpaces.length > 0 ? (
+        <>
+          <div className="space-y-2 mb-4">
             {linkedSpaces.map(space => (
-              <div
+              <LinkedItem
                 key={space.id}
-                className="flex items-center justify-between bg-white p-3 rounded "
-              >
-                <span className="text-[14px] font-medium text-[#1A1A1A]">{space.name}</span>
-                <span className="text-[13px] text-[#1A1C1C] font-semibold">
-                  £{(space.revenue || 0).toLocaleString()}
-                </span>
-              </div>
+                title={space.name}
+                subtitle={space.revenue ? `£${(Number(space.revenue) / 1000).toFixed(1)}k MRR` : '—'}
+                href={`/spaces/${space.id}`}
+              />
             ))}
           </div>
-          <div className="mt-4 pt-4">
-            <p className="text-[13px] text-[#525252]">Total Revenue:</p>
-            <p className="text-2xl font-bold text-[#1A1C1C]">
-              £{totalRevenue.toLocaleString()}
+          <div className="pt-4 border-t border-[#E5E5E5]">
+            <p className="text-[11px] text-[#A3A3A3] mb-1">Total Revenue</p>
+            <p className="text-[20px] font-medium text-[#1A1A1A]">
+              {totalRevenue > 0 ? `£${(totalRevenue / 1000).toFixed(1)}k MRR` : '—'}
             </p>
           </div>
-        </div>
+        </>
+      ) : (
+        <p className="text-[13px] text-[#A3A3A3] py-4">No spaces linked yet</p>
       )}
 
       {/* Modal */}
@@ -137,7 +146,7 @@ export default function GoalSpaceLinker({
 
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <FaSpinner className="animate-spin text-[#1A1C1C] text-2xl" />
+                <div className="w-6 h-6 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" />
               </div>
             ) : (
               <>
@@ -191,7 +200,10 @@ export default function GoalSpaceLinker({
                     className="flex-1 px-4 py-2 bg-[#000000] text-white rounded text-[13px] font-medium hover:opacity-90 transition disabled:opacity-50"
                   >
                     {isSaving ? (
-                      <FaSpinner className="animate-spin inline mr-2" />
+                      <>
+                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block mr-2" />
+                        Saving...
+                      </>
                     ) : (
                       'Save'
                     )}

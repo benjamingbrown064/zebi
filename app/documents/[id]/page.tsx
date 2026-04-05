@@ -22,6 +22,7 @@ interface Document {
   documentType: string;
   contentRich: any;
   version: number;
+  createdAt: string;
   updatedAt: string;
   space?: { id: string; name: string };
   project?: { id: string; name: string };
@@ -37,6 +38,39 @@ interface DocumentVersion {
   version: number;
   contentRich: any;
   createdAt: string;
+}
+
+function DocumentMetaPanel({ doc }: { doc: Document }) {
+  const [open, setOpen] = useState(false);
+  
+  return (
+    <div className="border border-[#E5E5E5] rounded overflow-hidden mb-4">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-[#F9F9F9] hover:bg-[#F3F3F3] transition-colors"
+      >
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Document Info</span>
+        <svg className={`w-3.5 h-3.5 text-[#A3A3A3] transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      
+      {open && (
+        <div className="px-4 py-4 space-y-3 bg-white">
+          {[
+            { label: 'Created', value: doc.createdAt ? new Date(doc.createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null },
+            { label: 'Last edited', value: doc.updatedAt ? new Date(doc.updatedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null },
+            { label: 'Version', value: doc.version ? `v${doc.version}` : null },
+            { label: 'Space', value: doc.space?.name || null },
+            { label: 'Project', value: doc.project?.name || null },
+          ].filter(r => r.value).map(r => (
+            <div key={r.label} className="flex items-start justify-between gap-4">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#A3A3A3] flex-shrink-0">{r.label}</span>
+              <span className="text-[12px] text-[#474747] text-right">{r.value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 const DOCUMENT_TYPES = [
@@ -453,6 +487,9 @@ export default function DocumentDetailPage() {
           <div className="flex gap-4 md:gap-6">
             {/* Editor */}
             <div className="flex-1 min-w-0">
+              {/* Document Info Panel */}
+              <DocumentMetaPanel doc={document} />
+              
               <div className="bg-white rounded overflow-hidden">
                 {content && (
                   <DocumentEditor

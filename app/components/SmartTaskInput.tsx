@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { FaLightbulb, FaSpinner } from 'react-icons/fa'
+import { FaLightbulb } from 'react-icons/fa'
 
 interface SmartTaskInputProps {
   value: string
@@ -86,7 +86,7 @@ export default function SmartTaskInput({
         />
         {loading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <FaSpinner className="animate-spin text-[#C4C0C0]" size={16} />
+            <div className="w-4 h-4 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" />
           </div>
         )}
         {!loading && suggestions.length > 0 && (

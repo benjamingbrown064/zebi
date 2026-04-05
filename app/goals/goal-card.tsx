@@ -117,58 +117,70 @@ export default function GoalCard({ goal, isMobile }: GoalCardProps) {
     <div
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
-      className="bg-white rounded p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
+      className="bg-white rounded p-5 border border-[#E5E5E5] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] cursor-pointer transition-all"
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-5">
         <div className="flex-1 min-w-0">
-          <h3 className="text-[17px] font-medium text-[#1A1A1A] truncate mb-1">
+          <h3 className="text-[18px] leading-[28px] font-medium text-[#1A1A1A]">
             {goal.name}
           </h3>
-          <p className="text-[13px] text-[#A3A3A3]">
-            {formatValue()}
-          </p>
         </div>
-        <span className="ml-3 px-2.5 py-1 rounded-md text-[12px] font-semibold bg-[#F3F3F3] text-[#474747]">
-          {progress}%
-        </span>
+        <div className="px-3 py-1.5 rounded-md border bg-[#F9F9F9] border-[#E5E5E5]">
+          <span className="text-[12px] font-medium text-[#1A1A1A]">
+            {progress}%
+          </span>
+        </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="mb-4">
-        <div className="w-full h-2 bg-[#F3F3F3] rounded-full overflow-hidden">
+      {/* Progress */}
+      <div className="mb-5">
+        <div className="flex items-baseline justify-between mb-2">
+          <div className="text-[13px] text-[#525252]">
+            <span className="font-medium text-[#1A1A1A]">{formatValue()}</span>
+          </div>
+          <span className="text-[15px] font-medium text-[#1A1A1A]">
+            {progress}%
+          </span>
+        </div>
+        <div className="w-full h-1.5 bg-[#F3F3F3] rounded-full overflow-hidden">
           <div
-            className={`h-full ${getProgressColor()} transition-all duration-300`}
+            className="h-full bg-[#1A1A1A] rounded-full transition-all duration-300"
             style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between pt-4">
-        <div className="text-[12px] text-[#A3A3A3]">
-          {daysRemaining > 0 ? (
-            `${daysRemaining} days remaining`
-          ) : daysRemaining === 0 ? (
-            'Due today'
-          ) : (
-            <span className="text-red-600">{Math.abs(daysRemaining)} days overdue</span>
-          )}
+      {/* Meta row */}
+      <div className="flex items-center justify-between text-[13px] text-[#525252]">
+        <div className="flex items-center gap-1.5">
+          <svg className="w-3.5 h-3.5 text-[#A3A3A3]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>
+            {daysRemaining > 0 ? (
+              `${daysRemaining} days`
+            ) : daysRemaining === 0 ? (
+              'Due today'
+            ) : (
+              <span className="text-red-600">{Math.abs(daysRemaining)} days overdue</span>
+            )}
+          </span>
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleEdit}
-            className="p-2 text-[#474747] hover:bg-[#F3F3F3] rounded-md transition"
+            className="p-1.5 text-[#A3A3A3] hover:text-[#1A1A1A] hover:bg-[#F3F3F3] rounded transition"
             title="Edit goal"
           >
-            <FaEdit />
+            <FaEdit className="text-sm" />
           </button>
           <button
             onClick={handleDelete}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition"
+            className="p-1.5 text-[#A3A3A3] hover:text-red-600 hover:bg-red-50 rounded transition"
             title="Delete goal"
           >
-            <FaTrash />
+            <FaTrash className="text-sm" />
           </button>
         </div>
       </div>

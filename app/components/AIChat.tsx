@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { FaTimes, FaSpinner, FaPaperPlane, FaTrash, FaStickyNote, FaTasks, FaArrowRight } from 'react-icons/fa'
+import { FaTimes, FaPaperPlane, FaTrash, FaStickyNote, FaTasks, FaArrowRight } from 'react-icons/fa'
 
 interface ObjectRef {
   type: 'task' | 'note' | 'document' | 'project' | 'objective'
@@ -350,7 +350,7 @@ export default function AIChat({ workspaceId, userId, onClose }: AIChatProps) {
         {loading && (
           <div className="flex justify-start">
             <div className="bg-[#F3F3F3] rounded rounded-bl-[4px] px-4 py-3 flex items-center gap-2">
-              <FaSpinner className="animate-spin text-[#A3A3A3] text-[12px]" />
+              <div className="w-3 h-3 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" />
               <span className="text-[13px] text-[#A3A3A3]">Thinking…</span>
             </div>
           </div>

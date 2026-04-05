@@ -8,7 +8,7 @@ import ResponsiveHeader from '@/components/responsive/ResponsiveHeader';
 import MobileListItem from '@/components/responsive/MobileListItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileLines } from '@fortawesome/pro-duotone-svg-icons'
-import { FaPlus, FaSearch, FaFile, FaBuilding, FaFolder, FaSpinner } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaFile, FaBuilding, FaFolder, FaTh, FaList, FaFilter } from 'react-icons/fa';
 import LoadingScreen from '@/components/LoadingScreen';
 
 interface Document {
@@ -46,6 +46,8 @@ export default function DocumentsPage() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
@@ -176,14 +178,38 @@ export default function DocumentsPage() {
           title="Documents"
           subtitle={`${documents.length} document${documents.length !== 1 ? 's' : ''}`}
           primaryAction={
-            <button
-              onClick={() => router.push('/documents/new')}
-              className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
-            >
-              <FaPlus className="text-sm" />
-              <span className="hidden sm:inline">New Document</span>
-              <span className="sm:hidden">New</span>
-            </button>
+            <div className="flex items-center gap-2">
+              {/* View toggle */}
+              <div className="flex items-center gap-1 bg-[#F3F3F3] rounded p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded transition-colors ${
+                    viewMode === 'list' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#A3A3A3] hover:text-[#474747]'
+                  }`}
+                  aria-label="List view"
+                >
+                  <FaList className="text-sm" />
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded transition-colors ${
+                    viewMode === 'grid' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#A3A3A3] hover:text-[#474747]'
+                  }`}
+                  aria-label="Grid view"
+                >
+                  <FaTh className="text-sm" />
+                </button>
+              </div>
+              
+              <button
+                onClick={() => router.push('/documents/new')}
+                className="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-[#000000] hover:bg-[#1A1C1C] text-white rounded font-medium text-[13px] md:text-[15px] transition-colors min-h-[44px]"
+              >
+                <FaPlus className="text-sm" />
+                <span className="hidden sm:inline">New Document</span>
+                <span className="sm:hidden">New</span>
+              </button>
+            </div>
           }
           secondaryActions={[
             {
@@ -193,24 +219,50 @@ export default function DocumentsPage() {
             },
           ]}
         >
-          {/* Type Filters - Horizontal scroll on mobile */}
-          <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide mt-4">
-            {DOCUMENT_TYPES.map((type) => (
-              <button
-                key={type.value}
-                onClick={() => setTypeFilter(type.value)}
-                className={`
-                  px-4 py-2 rounded text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
-                  ${
-                    typeFilter === type.value
-                      ? 'bg-[#F3F3F3] text-[#1A1C1C] border border-[#DD3A44]'
-                      : 'bg-white text-[#474747] hover:bg-[#F3F3F3]'
-                  }
-                `}
-              >
-                {type.label}
-              </button>
-            ))}
+          {/* Filters button */}
+          <div className="mt-4 relative">
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E5E5] rounded text-[13px] font-medium text-[#474747] hover:bg-[#F3F3F3] transition-colors min-h-[44px]"
+            >
+              <FaFilter className="text-xs" />
+              <span>Filters</span>
+              {typeFilter && <span className="px-2 py-0.5 bg-[#DD3A44] text-white text-[11px] rounded-full">1</span>}
+            </button>
+            
+            {isFilterOpen && (
+              <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-[#E5E5E5] rounded shadow-lg z-10 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Type</span>
+                  {typeFilter && (
+                    <button
+                      onClick={() => setTypeFilter('')}
+                      className="text-[11px] text-[#DD3A44] hover:underline"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  {DOCUMENT_TYPES.map((type) => (
+                    <button
+                      key={type.value}
+                      onClick={() => {
+                        setTypeFilter(type.value);
+                        setIsFilterOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded text-[13px] transition-colors ${
+                        typeFilter === type.value
+                          ? 'bg-[#FEF2F2] text-[#DD3A44] font-medium'
+                          : 'text-[#474747] hover:bg-[#F3F3F3]'
+                      }`}
+                    >
+                      {type.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </ResponsiveHeader>
 
@@ -238,76 +290,91 @@ export default function DocumentsPage() {
               </div>
             ) : (
               <>
-                {/* Mobile: List View */}
-                <div className="block lg:hidden space-y-3">
-                  {documents.map((doc) => (
-                    <MobileListItem
-                      key={doc.id}
-                      title={doc.title}
-                      icon={
-                        <div className="w-10 h-10 rounded-md bg-[#FEF2F2] flex items-center justify-center">
-                          {getDocumentIcon(doc.documentType)}
+                {/* List View */}
+                {viewMode === 'list' && (
+                  <div className="bg-white rounded border border-[#E5E5E5] overflow-hidden">
+                    {documents.map((doc) => (
+                      <div
+                        key={doc.id}
+                        onClick={() => router.push(`/documents/${doc.id}`)}
+                        className="flex items-center gap-4 px-5 py-3.5 border-b border-[#F3F3F3] hover:bg-[#F9F9F9] cursor-pointer transition-colors last:border-0"
+                      >
+                        {/* Icon */}
+                        <div className="w-8 h-8 rounded bg-[#F3F3F3] flex items-center justify-center flex-shrink-0">
+                          <FontAwesomeIcon icon={faFileLines} className="text-[#474747] text-[13px]" />
                         </div>
-                      }
-                      badge={getTypeBadge(doc.documentType)}
-                      metadata={[
-                        ...(doc.space ? [{ label: 'Space', value: doc.space.name }] : []),
-                        ...(doc.project ? [{ label: 'Project', value: doc.project.name }] : []),
-                        { label: 'Updated', value: formatDate(doc.updatedAt) },
-                        { label: 'Version', value: `v${doc.version}` },
-                      ]}
-                      href={`/documents/${doc.id}`}
-                    />
-                  ))}
-                </div>
-
-                {/* Desktop: Card Grid */}
-                <div className="hidden lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {documents.map((doc) => (
-                    <div
-                      key={doc.id}
-                      onClick={() => router.push(`/documents/${doc.id}`)}
-                      className="bg-white rounded p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
-                    >
-                      {/* Header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-10 h-10 rounded-md bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">
-                            {getDocumentIcon(doc.documentType)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-[15px] font-medium text-[#1A1A1A] truncate">
-                              {doc.title}
-                            </h3>
-                            {getTypeBadge(doc.documentType)}
+                        
+                        {/* Title + meta */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{doc.title}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {doc.space && <span className="text-[11px] text-[#737373]">{doc.space.name}</span>}
+                            {doc.project && <span className="text-[11px] text-[#A3A3A3]">{doc.project.name}</span>}
                           </div>
                         </div>
+                        
+                        {/* Type badge */}
+                        {getTypeBadge(doc.documentType)}
+                        
+                        {/* Updated + version — right side */}
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-[12px] text-[#737373]">{formatDate(doc.updatedAt)}</p>
+                          <p className="text-[10px] text-[#C6C6C6]">v{doc.version}</p>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                )}
 
-                      {/* Metadata */}
-                      <div className="space-y-2 mb-4">
-                        {doc.space && (
-                          <div className="flex items-center gap-2 text-[12px] text-[#474747]">
-                            <FaBuilding className="text-[#A3A3A3]" />
-                            <span>{doc.space.name}</span>
+                {/* Grid View */}
+                {viewMode === 'grid' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {documents.map((doc) => (
+                      <div
+                        key={doc.id}
+                        onClick={() => router.push(`/documents/${doc.id}`)}
+                        className="bg-white rounded p-6 hover:shadow-[0_20px_40px_rgba(28,27,27,0.06)] transition-shadow cursor-pointer"
+                      >
+                        {/* Header */}
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="w-10 h-10 rounded-md bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">
+                              {getDocumentIcon(doc.documentType)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-[15px] font-medium text-[#1A1A1A] truncate">
+                                {doc.title}
+                              </h3>
+                              {getTypeBadge(doc.documentType)}
+                            </div>
                           </div>
-                        )}
-                        {doc.project && (
-                          <div className="flex items-center gap-2 text-[12px] text-[#474747]">
-                            <FaFolder className="text-[#A3A3A3]" />
-                            <span>{doc.project.name}</span>
-                          </div>
-                        )}
-                      </div>
+                        </div>
 
-                      {/* Footer */}
-                      <div className="flex items-center justify-between pt-4 text-[12px] text-[#A3A3A3]">
-                        <span>Updated {formatDate(doc.updatedAt)}</span>
-                        <span>v{doc.version}</span>
+                        {/* Metadata */}
+                        <div className="space-y-2 mb-4">
+                          {doc.space && (
+                            <div className="flex items-center gap-2 text-[12px] text-[#474747]">
+                              <FaBuilding className="text-[#A3A3A3]" />
+                              <span>{doc.space.name}</span>
+                            </div>
+                          )}
+                          {doc.project && (
+                            <div className="flex items-center gap-2 text-[12px] text-[#474747]">
+                              <FaFolder className="text-[#A3A3A3]" />
+                              <span>{doc.project.name}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between pt-4 text-[12px] text-[#A3A3A3]">
+                          <span>Updated {formatDate(doc.updatedAt)}</span>
+                          <span>v{doc.version}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
 
@@ -315,7 +382,7 @@ export default function DocumentsPage() {
             <div ref={observerTarget} className="py-8 flex justify-center">
               {loadingMore && (
                 <div className="flex items-center gap-2 text-[#A3A3A3]">
-                  <FaSpinner className="animate-spin" />
+                  <div className="w-4 h-4 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" />
                   <span className="text-[13px]">Loading more documents...</span>
                 </div>
               )}

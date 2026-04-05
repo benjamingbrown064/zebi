@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FaCalendarAlt, FaSpinner, FaLightbulb } from 'react-icons/fa'
+import { FaCalendarAlt, FaLightbulb } from 'react-icons/fa'
 
 interface SmartDeadlineButtonProps {
   taskDescription: string
@@ -66,7 +66,7 @@ export default function SmartDeadlineButton({
         className={`flex items-center gap-2 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-[#F3F3F3] dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition ${className}`}
       >
         {loading ? (
-          <FaSpinner className="animate-spin" size={14} />
+          <div className="w-3.5 h-3.5 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" />
         ) : (
           <FaLightbulb className="text-yellow-500" size={14} />
         )}

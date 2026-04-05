@@ -160,12 +160,12 @@ export default function ObjectiveCard({
               {Math.round(progressPercent)}%
             </span>
           </div>
-          <div className="w-full h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-[#F3F3F3] rounded-full overflow-hidden">
             <div
               className="h-full transition-all duration-300 rounded-full"
               style={{ 
                 width: `${Math.min(progressPercent, 100)}%`,
-                backgroundColor: statusStyle.bar
+                backgroundColor: status === 'at_risk' ? '#F59E0B' : status === 'blocked' ? '#EF4444' : '#1A1A1A'
               }}
             />
           </div>

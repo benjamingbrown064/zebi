@@ -8,7 +8,7 @@ import ResponsivePageContainer from '@/components/responsive/ResponsivePageConta
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import MobileListItem from '@/components/responsive/MobileListItem'
 import VoiceEntityModal from '@/components/voice-entity/VoiceEntityModal'
-import { FaPlus, FaSearch, FaFolder, FaTasks, FaBuilding, FaFlag, FaMicrophone } from 'react-icons/fa'
+import { FaPlus, FaSearch, FaFolder, FaTasks, FaBuilding, FaFlag, FaMicrophone, FaTh, FaList, FaFilter } from 'react-icons/fa'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFolderOpen, faFlagCheckered } from '@fortawesome/pro-duotone-svg-icons'
 import { useWorkspace } from '@/lib/use-workspace'
@@ -59,6 +59,10 @@ export default function ProjectsPage() {
   const [isMobile, setIsMobile] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [showFilters, setShowFilters] = useState(false)
+  const [filterSpace, setFilterSpace] = useState<string>('all')
+  const [filterObjective, setFilterObjective] = useState<string>('all')
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -115,7 +119,9 @@ export default function ProjectsPage() {
       (project.title?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
       (project.description?.toLowerCase() || '').includes(searchQuery.toLowerCase())
     const matchesStatus = filterStatus === 'all' || project.status === filterStatus
-    return matchesSearch && matchesStatus
+    const matchesSpace = filterSpace === 'all' || project.company?.id === filterSpace
+    const matchesObjective = filterObjective === 'all' || project.objective?.id === filterObjective
+    return matchesSearch && matchesStatus && matchesSpace && matchesObjective
   })
 
   const getStatusColor = (status: string) => {
@@ -199,31 +205,119 @@ export default function ProjectsPage() {
             },
           ]}
         >
-          {/* Filters - Horizontal scroll on mobile */}
-          <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide mt-4">
-            {[
-              { value: 'all', label: 'All' },
-              { value: 'active', label: 'Active' },
-              { value: 'planning', label: 'Planning' },
-              { value: 'on_hold', label: 'On Hold' },
-              { value: 'completed', label: 'Completed' },
-            ].map((filter) => (
+          {/* Header Controls */}
+          <div className="mt-4 flex items-center justify-between gap-3">
+            {/* Filter Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-2 rounded text-[13px] font-medium transition-colors min-h-[44px] ${
+                showFilters ? 'bg-[#1A1C1C] text-white' : 'bg-white text-[#474747] hover:bg-[#F3F3F3]'
+              }`}
+            >
+              <FaFilter size={12} />
+              Filters
+            </button>
+
+            {/* View Toggle */}
+            <div className="hidden lg:flex items-center gap-1 bg-white rounded p-1">
               <button
-                key={filter.value}
-                onClick={() => setFilterStatus(filter.value)}
-                className={`
-                  px-4 py-2 rounded text-[13px] font-medium transition-colors whitespace-nowrap min-h-[44px]
-                  ${
-                    filterStatus === filter.value
-                      ? 'bg-[#F3F3F3] text-[#1A1C1C] border border-[#1A1C1C]'
-                      : 'bg-white text-[#474747] hover:bg-[#F3F3F3]'
-                  }
-                `}
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded transition ${
+                  viewMode === 'grid' ? 'bg-[#F3F3F3] text-[#1A1C1C]' : 'text-[#A3A3A3] hover:text-[#474747]'
+                }`}
+                title="Grid view"
               >
-                {filter.label}
+                <FaTh size={14} />
               </button>
-            ))}
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded transition ${
+                  viewMode === 'list' ? 'bg-[#F3F3F3] text-[#1A1C1C]' : 'text-[#A3A3A3] hover:text-[#474747]'
+                }`}
+                title="List view"
+              >
+                <FaList size={14} />
+              </button>
+            </div>
           </div>
+
+          {/* Filter Panel */}
+          {showFilters && (
+            <div className="mt-4 p-4 bg-white rounded space-y-4">
+              {/* Status Filter */}
+              <div>
+                <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">
+                  Status
+                </label>
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  {[
+                    { value: 'all', label: 'All' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'planning', label: 'Planning' },
+                    { value: 'on_hold', label: 'On Hold' },
+                    { value: 'completed', label: 'Completed' },
+                  ].map((filter) => (
+                    <button
+                      key={filter.value}
+                      onClick={() => setFilterStatus(filter.value)}
+                      className={`
+                        px-3 py-1.5 rounded text-[12px] font-medium transition-colors whitespace-nowrap
+                        ${
+                          filterStatus === filter.value
+                            ? 'bg-[#1A1C1C] text-white'
+                            : 'bg-[#F3F3F3] text-[#474747] hover:bg-[#E5E5E5]'
+                        }
+                      `}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Space Filter */}
+              {spaces.length > 0 && (
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">
+                    Space
+                  </label>
+                  <select
+                    value={filterSpace}
+                    onChange={(e) => setFilterSpace(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#F3F3F3] rounded text-[13px] text-[#474747] focus:outline-none focus:ring-2 focus:ring-[#1A1C1C]"
+                  >
+                    <option value="all">All Spaces</option>
+                    {spaces.map((space) => (
+                      <option key={space.id} value={space.id}>
+                        {space.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Objective Filter */}
+              {objectives.length > 0 && (
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">
+                    Objective
+                  </label>
+                  <select
+                    value={filterObjective}
+                    onChange={(e) => setFilterObjective(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#F3F3F3] rounded text-[13px] text-[#474747] focus:outline-none focus:ring-2 focus:ring-[#1A1C1C]"
+                  >
+                    <option value="all">All Objectives</option>
+                    {objectives.map((objective) => (
+                      <option key={objective.id} value={objective.id}>
+                        {objective.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          )}
         </ResponsiveHeader>
 
         <ResponsivePageContainer>
@@ -275,9 +369,59 @@ export default function ProjectsPage() {
                   ))}
                 </div>
 
+                {/* Desktop: List View */}
+                {viewMode === 'list' && (
+                  <div className="hidden lg:block bg-white rounded border border-[#E5E5E5] overflow-hidden">
+                    {filteredProjects.map((project) => (
+                      <Link
+                        key={project.id}
+                        href={`/projects/${project.id}`}
+                        className="flex items-center gap-4 px-5 py-3.5 bg-white border-b border-[#F3F3F3] hover:bg-[#F9F9F9] cursor-pointer transition"
+                      >
+                        {/* Left: Icon + Title */}
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="w-8 h-8 rounded-md bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">
+                            <FontAwesomeIcon icon={faFolderOpen} className="text-[#1A1C1C] text-sm" />
+                          </div>
+                          <span className="font-medium text-[13px] text-[#1A1A1A] truncate">
+                            {project.title}
+                          </span>
+                        </div>
+
+                        {/* Middle: Space + Objective */}
+                        <div className="flex items-center gap-4 flex-1">
+                          {project.company && (
+                            <span className="text-[12px] text-[#737373] truncate">
+                              {project.company.name}
+                            </span>
+                          )}
+                          {project.objective && (
+                            <span className="text-[12px] text-[#A3A3A3] truncate">
+                              {project.objective.title}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Right: Tasks + Progress + Status */}
+                        <div className="flex items-center gap-6 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 text-[12px] text-[#474747]">
+                            <FaTasks className="text-[#A3A3A3]" size={12} />
+                            {project._count.tasks}
+                          </div>
+                          <span className="text-[12px] font-medium text-[#474747] w-10 text-right">
+                            {project.progress}%
+                          </span>
+                          {getStatusBadge(project.status)}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
                 {/* Desktop: Card Grid */}
-                <div className="hidden lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredProjects.map((project) => (
+                {viewMode === 'grid' && (
+                  <div className="hidden lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {filteredProjects.map((project) => (
                     <Link
                       key={project.id}
                       href={`/projects/${project.id}`}
@@ -338,7 +482,8 @@ export default function ProjectsPage() {
                       </div>
                     </Link>
                   ))}
-                </div>
+                  </div>
+                )}
               </>
             )}
           </div>

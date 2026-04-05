@@ -2,12 +2,28 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { FaArrowLeft, FaEdit, FaTrash, FaTasks, FaBullseye } from 'react-icons/fa'
 import Sidebar from '@/components/Sidebar'
 import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import { deleteGoal } from '@/app/actions/goals'
 import GoalSpaceLinker from '@/components/GoalSpaceLinker'
+
+// Shared "linked item" row component
+function LinkedItem({ title, subtitle, href }: { title: string; subtitle?: string; href: string }) {
+  return (
+    <Link href={href} className="flex items-center justify-between py-3 px-4 bg-[#F9F9F9] rounded hover:bg-[#F3F3F3] transition-colors">
+      <div>
+        <p className="text-[13px] font-medium text-[#1A1A1A]">{title}</p>
+        {subtitle && <p className="text-[11px] text-[#A3A3A3] mt-0.5">{subtitle}</p>}
+      </div>
+      <svg className="w-3.5 h-3.5 text-[#C6C6C6]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
+      </svg>
+    </Link>
+  )
+}
 
 interface GoalDetailClientProps {
   goal: any
@@ -189,30 +205,18 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
             {/* Objectives */}
             {goal.objectives && goal.objectives.length > 0 && (
               <div className="bg-white rounded p-6">
-                <h2 className="text-[17px] font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
-                  <FaBullseye className="text-[#1A1C1C]" />
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-3">
                   Linked Objectives
                 </h2>
 
                 <div className="space-y-2">
                   {goal.objectives.map((objective: any) => (
-                    <div
+                    <LinkedItem
                       key={objective.id}
-                      onClick={() => router.push(`/objectives/${objective.id}`)}
-                      className="flex items-center gap-3 p-3 rounded hover:bg-[#F3F3F3] transition-colors cursor-pointer"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[15px] text-[#1A1A1A]">{objective.title}</p>
-                      </div>
-                      <span className={`px-2 py-1 rounded-md text-[11px] font-medium ${
-                        objective.status === 'complete' ? 'bg-[#F3F3F3] text-[#474747]' :
-                        objective.status === 'at_risk' ? 'bg-red-100 text-red-700' :
-                        objective.status === 'on_track' ? 'bg-[#F3F3F3] text-[#474747]' :
-                        'bg-[#F3F3F3] text-[#474747]'
-                      }`}>
-                        {objective.status.replace('_', ' ')}
-                      </span>
-                    </div>
+                      title={objective.title}
+                      subtitle={objective.status ? objective.status.replace('_', ' ') : undefined}
+                      href={`/objectives/${objective.id}`}
+                    />
                   ))}
                 </div>
               </div>
