@@ -53,6 +53,7 @@ export default function PlannerTaskCard({
 }: PlannerTaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging: isActiveDragging } = useDraggable({
     id: task.id,
+    disabled: isDragging, // don't register as a draggable when rendered inside DragOverlay
   })
 
   const style = transform ? { transform: CSS.Translate.toString(transform), zIndex: 999 } : undefined

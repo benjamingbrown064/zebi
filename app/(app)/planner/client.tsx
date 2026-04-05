@@ -10,13 +10,32 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  pointerWithin,
   rectIntersection,
 } from '@dnd-kit/core'
 import WeekNavigator from './components/WeekNavigator'
 import DayColumn from './components/DayColumn'
 import PlannerTaskCard from './components/PlannerTaskCard'
 import BacklogSection from './components/BacklogSection'
+
+// Static preview shown in DragOverlay — no useDraggable hook to avoid ID conflicts
+function PlannerTaskCardPreview({ task }: { task: any }) {
+  const contextLabel = task.space?.name || task.project?.name
+  const PRIORITY_BADGE: Record<number, string> = {
+    1: 'bg-[#1A1A1A] text-white', 2: 'bg-[#474747] text-white',
+    3: 'bg-[#F3F3F3] text-[#474747]', 4: 'bg-[#F3F3F3] text-[#A3A3A3]',
+  }
+  return (
+    <div className="bg-white rounded border border-[#E5E5E5] p-4 shadow-2xl">
+      {contextLabel && (
+        <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">{contextLabel}</p>
+      )}
+      <p className="text-[14px] font-semibold text-[#1A1A1A] leading-snug mb-3">{task.title}</p>
+      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${PRIORITY_BADGE[task.priority] || PRIORITY_BADGE[4]}`}>
+        P{task.priority}
+      </span>
+    </div>
+  )
+}
 
 interface Task {
   id: string
@@ -141,7 +160,7 @@ export default function WeeklyPlannerClient({
 
       <DndContext
         sensors={sensors}
-        collisionDetection={pointerWithin}
+        collisionDetection={rectIntersection}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
@@ -197,10 +216,10 @@ export default function WeeklyPlannerClient({
           )}
         </div>
 
-        <DragOverlay>
+        <DragOverlay dropAnimation={null}>
           {activeTask && (
-            <div className="opacity-90">
-              <PlannerTaskCard task={activeTask} isDragging />
+            <div className="opacity-90 w-72 rotate-2 shadow-2xl">
+              <PlannerTaskCardPreview task={activeTask} />
             </div>
           )}
         </DragOverlay>
