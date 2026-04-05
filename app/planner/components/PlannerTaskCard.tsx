@@ -2,7 +2,7 @@
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { FaGripVertical, FaCheck, FaClock } from 'react-icons/fa'
+import { FaCheck, FaClock } from 'react-icons/fa'
 
 interface Task {
   id: string
@@ -29,12 +29,28 @@ interface PlannerTaskCardProps {
   task: Task
   isDragging?: boolean
   onMarkComplete?: (taskId: string) => void
+  inverted?: boolean // true when rendered inside the "today" black column
+}
+
+const PRIORITY_LABELS: Record<number, string> = {
+  1: 'CRITICAL',
+  2: 'HIGH',
+  3: 'MEDIUM',
+  4: 'LOW',
+}
+
+const PRIORITY_DOT: Record<number, string> = {
+  1: 'bg-[#EF4444]',
+  2: 'bg-[#F59E0B]',
+  3: 'bg-[#A3A3A3]',
+  4: 'bg-[#D4D4D4]',
 }
 
 export default function PlannerTaskCard({
   task,
   isDragging = false,
   onMarkComplete,
+  inverted = false,
 }: PlannerTaskCardProps) {
   const {
     attributes,
@@ -43,68 +59,59 @@ export default function PlannerTaskCard({
     transform,
     transition,
     isDragging: isSortableDragging,
-  } = useSortable({
-    id: task.id,
-  })
+  } = useSortable({ id: task.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   }
 
-  const getPriorityColor = (priority: number) => {
-    if (priority === 1) return 'border-l-[#EF4444]' // High
-    if (priority === 2) return 'border-l-[#F59E0B]' // Medium
-    return 'border-l-[#A3A3A3]' // Low
-  }
-
   const handleMarkComplete = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (onMarkComplete) {
-      onMarkComplete(task.id)
-    }
+    onMarkComplete?.(task.id)
   }
+
+  const context = task.project?.name || task.space?.name
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative bg-white border border-[#E5E5E5] rounded p-3 hover:shadow-sm transition-all cursor-grab active:cursor-grabbing border-l-4 ${getPriorityColor(
-        task.priority
-      )} ${isSortableDragging || isDragging ? 'opacity-50' : ''}`}
+      {...attributes}
+      {...listeners}
+      className={`group relative rounded p-3.5 cursor-grab active:cursor-grabbing transition-all select-none ${
+        isSortableDragging || isDragging ? 'opacity-40' : ''
+      } ${
+        inverted
+          ? 'bg-white/10 hover:bg-white/15 border border-white/20'
+          : 'bg-white border border-[#E5E5E5] hover:border-[#C6C6C6] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
+      }`}
     >
-      <div className="flex items-start gap-2">
-        {/* Drag handle */}
-        <button
-          {...attributes}
-          {...listeners}
-          className="flex-shrink-0 p-1 text-[#A3A3A3] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
-          aria-label="Drag task"
-        >
-          <FaGripVertical className="w-3 h-3" />
-        </button>
-
-        {/* Task content */}
+      <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-medium text-[#1A1A1A] line-clamp-2 mb-1">
-            {task.title}
-          </h4>
+          {/* Priority label */}
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${PRIORITY_DOT[task.priority] || PRIORITY_DOT[4]}`} />
+            <span className={`text-[10px] font-semibold uppercase tracking-[0.08em] ${inverted ? 'text-white/50' : 'text-[#A3A3A3]'}`}>
+              {PRIORITY_LABELS[task.priority] || 'NORMAL'}
+            </span>
+          </div>
 
-          {/* Metadata */}
-          <div className="flex flex-wrap items-center gap-2 text-xs text-[#A3A3A3]">
-            {task.project && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F3F3F3] rounded-md">
-                {task.project.name}
-              </span>
-            )}
-            {task.space && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F3F3F3] rounded-md">
-                {task.space.name}
+          {/* Title */}
+          <p className={`text-[13px] font-medium leading-snug mb-2 ${inverted ? 'text-white' : 'text-[#1A1A1A]'}`}>
+            {task.title}
+          </p>
+
+          {/* Meta row */}
+          <div className={`flex items-center gap-2 flex-wrap ${inverted ? 'text-white/50' : 'text-[#A3A3A3]'}`}>
+            {context && (
+              <span className={`text-[11px] px-2 py-0.5 rounded ${inverted ? 'bg-white/10' : 'bg-[#F3F3F3]'}`}>
+                {context}
               </span>
             )}
             {task.effortPoints && (
-              <span className="inline-flex items-center gap-1">
-                <FaClock className="w-3 h-3" />
+              <span className="text-[11px] flex items-center gap-1">
+                <FaClock className="w-2.5 h-2.5" />
                 {task.effortPoints}h
               </span>
             )}
@@ -115,10 +122,15 @@ export default function PlannerTaskCard({
         {onMarkComplete && (
           <button
             onClick={handleMarkComplete}
-            className="flex-shrink-0 w-5 h-5 rounded-full border-2 border-[#D4D4D4] hover:border-[#10B981] hover:bg-[#10B981] hover:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+            onPointerDown={(e) => e.stopPropagation()} // prevent drag start
+            className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 ${
+              inverted
+                ? 'border-white/40 hover:border-white hover:bg-white hover:text-[#1A1A1A]'
+                : 'border-[#D4D4D4] hover:border-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white'
+            }`}
             aria-label="Mark complete"
           >
-            <FaCheck className="w-2.5 h-2.5" />
+            <FaCheck className="w-2 h-2" />
           </button>
         )}
       </div>

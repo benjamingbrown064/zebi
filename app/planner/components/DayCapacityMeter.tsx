@@ -11,46 +11,22 @@ export default function DayCapacityMeter({
   capacity,
   percent,
 }: DayCapacityMeterProps) {
-  // Color coding based on capacity
-  const getColor = () => {
-    if (percent < 60) return 'bg-[#10B981]' // Green
-    if (percent < 90) return 'bg-[#F59E0B]' // Yellow
-    return 'bg-[#EF4444]' // Red
-  }
-
-  const getBgColor = () => {
-    if (percent < 60) return 'bg-[#F3F3F3]' // Green bg
-    if (percent < 90) return 'bg-[#FFFBEB]' // Yellow bg
-    return 'bg-[#FEF2F2]' // Red bg
-  }
-
-  const getTextColor = () => {
-    if (percent < 60) return 'text-[#10B981]'
-    if (percent < 90) return 'text-[#F59E0B]'
-    return 'text-[#EF4444]'
-  }
-
-  const cappedPercent = Math.min(percent, 100)
+  const isOver = percent > 100
+  const barWidth = Math.min(percent, 100)
 
   return (
-    <div className="space-y-1">
-      {/* Progress bar */}
-      <div className={`h-1.5 rounded-full overflow-hidden ${getBgColor()}`}>
+    <div className="flex items-center gap-2 mt-2">
+      <div className="flex-1 h-1 bg-[#E5E5E5] rounded-full overflow-hidden">
         <div
-          className={`h-full transition-all duration-300 ${getColor()}`}
-          style={{ width: `${cappedPercent}%` }}
+          className={`h-full rounded-full transition-all ${
+            isOver ? 'bg-[#EF4444]' : percent >= 75 ? 'bg-[#F59E0B]' : 'bg-[#1A1A1A]'
+          }`}
+          style={{ width: `${barWidth}%` }}
         />
       </div>
-
-      {/* Stats */}
-      <div className="flex items-center justify-between text-xs">
-        <span className={`font-medium ${getTextColor()}`}>
-          {totalHours}h / {capacity}h
-        </span>
-        <span className={`${getTextColor()}`}>
-          {Math.round(percent)}%
-        </span>
-      </div>
+      <span className="text-[10px] font-semibold text-[#A3A3A3] flex-shrink-0 tabular-nums">
+        {totalHours}h / {capacity}h
+      </span>
     </div>
   )
 }

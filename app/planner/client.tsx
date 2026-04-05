@@ -191,11 +191,10 @@ export default function WeeklyPlannerClient({
       />
 
       <div className={`${mainPaddingClass} flex flex-col h-screen transition-all duration-300`}>
-        {/* Header */}
-        <header className="bg-white sticky top-0 z-10 flex-shrink-0">
-          <div className="px-6 py-4 md:py-6">
-            <h1 className="text-xl md:text-2xl font-semibold text-[#1A1A1A]">Weekly Planner</h1>
-            <p className="text-sm text-[#A3A3A3] mt-0.5">Zebi / Planner</p>
+        {/* Header — minimal, let WeekNavigator own the date display */}
+        <header className="bg-white sticky top-0 z-10 flex-shrink-0 border-b border-[#E5E5E5]">
+          <div className="px-6 py-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Zebi · Weekly Planner</p>
           </div>
         </header>
 
