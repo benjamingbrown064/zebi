@@ -14,8 +14,6 @@ import {
   faChevronRight,
   faBars,
   faTimes,
-  faChevronDown,
-  faChevronUp,
   faInbox,
   faBullseyeArrow,
   faFlagCheckered,
@@ -113,17 +111,7 @@ function DesktopSidebar({
   isCollapsed: boolean
   onCollapsedChange: (v: boolean) => void
 }) {
-  const [showMore, setShowMore] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const pathname = usePathname()
-
-  // Auto-expand More if current route is in MORE_NAV
-  useEffect(() => {
-    const inMore = MORE_NAV.some(
-      item => pathname === item.href || pathname?.startsWith(item.href + '/')
-    )
-    if (inMore) setShowMore(true)
-  }, [pathname])
 
   async function handleLogout() {
     setIsLoading(true)
@@ -165,32 +153,12 @@ function DesktopSidebar({
           <div className="my-2 border-t border-[#E5E5E5]" />
         )}
 
-        {/* More toggle */}
-        {isCollapsed ? (
-          <div className="space-y-0.5">
-            {MORE_NAV.map(item => (
-              <NavLink key={item.href} item={item} collapsed={true} />
-            ))}
-          </div>
-        ) : (
-          <>
-            <button
-              onClick={() => setShowMore(v => !v)}
-              className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] hover:text-[#737373] transition rounded hover:bg-[#F3F3F3]"
-            >
-              <span>More</span>
-              <FontAwesomeIcon icon={showMore ? faChevronUp : faChevronDown} className="text-[10px]" />
-            </button>
-
-            {showMore && (
-              <div className="space-y-0.5 mt-1">
-                {MORE_NAV.map(item => (
-                  <NavLink key={item.href} item={item} collapsed={false} />
-                ))}
-              </div>
-            )}
-          </>
-        )}
+        {/* All navigation items */}
+        <div className="space-y-0.5">
+          {MORE_NAV.map(item => (
+            <NavLink key={item.href} item={item} collapsed={isCollapsed} />
+          ))}
+        </div>
       </nav>
 
       {/* Bottom: settings + logout */}
@@ -229,16 +197,7 @@ function DesktopSidebar({
 
 function MobileSidebar({ workspaceName }: { workspaceName: string }) {
   const [open, setOpen] = useState(false)
-  const [showMore, setShowMore] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const pathname = usePathname()
-
-  useEffect(() => {
-    const inMore = MORE_NAV.some(
-      item => pathname === item.href || pathname?.startsWith(item.href + '/')
-    )
-    if (inMore) setShowMore(true)
-  }, [pathname])
 
   async function handleLogout() {
     setIsLoading(true)
@@ -290,21 +249,11 @@ function MobileSidebar({ workspaceName }: { workspaceName: string }) {
 
           <div className="my-2 border-t border-[#E5E5E5]" />
 
-          <button
-            onClick={() => setShowMore(v => !v)}
-            className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] rounded hover:bg-[#F3F3F3] transition"
-          >
-            <span>More</span>
-            <FontAwesomeIcon icon={showMore ? faChevronUp : faChevronDown} className="text-[10px]" />
-          </button>
-
-          {showMore && (
-            <div className="space-y-0.5 mt-1">
-              {MORE_NAV.map(item => (
-                <NavLink key={item.href} item={item} collapsed={false} onClick={() => setOpen(false)} />
-              ))}
-            </div>
-          )}
+          <div className="space-y-0.5">
+            {MORE_NAV.map(item => (
+              <NavLink key={item.href} item={item} collapsed={false} onClick={() => setOpen(false)} />
+            ))}
+          </div>
         </nav>
 
         <div className="px-3 py-4 border-t border-[#E5E5E5] space-y-0.5">

@@ -35,6 +35,11 @@ export default function TasksPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedPriorities, setSelectedPriorities] = useState<number[]>([])
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
+  const [selectedTaskTypes, setSelectedTaskTypes] = useState<string[]>([])
+  const [selectedAgents, setSelectedAgents] = useState<string[]>([])
+  const [selectedDueDateRange, setSelectedDueDateRange] = useState<string | null>(null)
+  const [selectedWaitingOn, setSelectedWaitingOn] = useState<string[]>([])
+  const [decisionNeededFilter, setDecisionNeededFilter] = useState<boolean | null>(null)
   const [sortBy, setSortBy] = useState<'dueDate' | 'priority' | 'status' | 'updated' | 'created'>('dueDate')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
@@ -114,6 +119,64 @@ export default function TasksPage() {
 
   if (selectedStatuses.length > 0) {
     filteredTasks = filteredTasks.filter(t => selectedStatuses.includes(t.statusId))
+  }
+
+  if (selectedTaskTypes.length > 0) {
+    filteredTasks = filteredTasks.filter(t => {
+      const taskType = (t as any).taskType
+      return taskType && selectedTaskTypes.includes(taskType)
+    })
+  }
+
+  if (selectedAgents.length > 0) {
+    filteredTasks = filteredTasks.filter(t => {
+      const ownerAgent = (t as any).ownerAgent
+      if (selectedAgents.includes('unassigned')) {
+        return !ownerAgent || selectedAgents.includes(ownerAgent)
+      }
+      return ownerAgent && selectedAgents.includes(ownerAgent)
+    })
+  }
+
+  if (selectedDueDateRange) {
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const todayEnd = new Date(today.getTime() + 24 * 60 * 60 * 1000)
+    const weekEnd = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+    const monthEnd = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000)
+
+    filteredTasks = filteredTasks.filter(t => {
+      const dueAt = t.dueAt ? new Date(t.dueAt) : null
+      
+      switch (selectedDueDateRange) {
+        case 'Overdue':
+          return dueAt && dueAt < now && !t.completedAt
+        case 'Today':
+          return dueAt && dueAt >= today && dueAt < todayEnd
+        case 'This week':
+          return dueAt && dueAt >= today && dueAt < weekEnd
+        case 'This month':
+          return dueAt && dueAt >= today && dueAt < monthEnd
+        case 'No due date':
+          return !dueAt
+        default:
+          return true
+      }
+    })
+  }
+
+  if (selectedWaitingOn.length > 0) {
+    filteredTasks = filteredTasks.filter(t => {
+      const waitingOn = (t as any).waitingOn
+      if (selectedWaitingOn.includes('none')) {
+        return !waitingOn || selectedWaitingOn.includes(waitingOn)
+      }
+      return waitingOn && selectedWaitingOn.includes(waitingOn)
+    })
+  }
+
+  if (decisionNeededFilter === true) {
+    filteredTasks = filteredTasks.filter(t => (t as any).decisionNeeded === true)
   }
 
   if (loading) {
@@ -268,12 +331,19 @@ export default function TasksPage() {
               </div>
 
               {/* Clear Filters */}
-              {(searchQuery || selectedPriorities.length > 0 || selectedStatuses.length > 0) && (
+              {(searchQuery || selectedPriorities.length > 0 || selectedStatuses.length > 0 || 
+                selectedTaskTypes.length > 0 || selectedAgents.length > 0 || selectedDueDateRange !== null ||
+                selectedWaitingOn.length > 0 || decisionNeededFilter !== null) && (
                 <button
                   onClick={() => {
                     setSearchQuery('')
                     setSelectedPriorities([])
                     setSelectedStatuses([])
+                    setSelectedTaskTypes([])
+                    setSelectedAgents([])
+                    setSelectedDueDateRange(null)
+                    setSelectedWaitingOn([])
+                    setDecisionNeededFilter(null)
                   }}
                   className="w-full px-4 py-2 text-[13px] bg-white text-[#474747]  rounded hover:bg-[#F3F3F3] transition-colors font-medium min-h-[44px]"
                 >

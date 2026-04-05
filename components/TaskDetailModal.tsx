@@ -35,10 +35,10 @@ const PRIORITIES = [
 
 const STATUS_COLORS: Record<string, string> = {
   inbox: 'bg-[#F3F3F3] text-[#474747]',
-  planned: 'bg-[#e6f4f4] text-[#006766]',
+  planned: 'bg-[#F3F3F3] text-[#474747]',
   doing: 'bg-amber-100 text-amber-700',
   blocked: 'bg-red-100 text-red-700',
-  done: 'bg-[#e6f4f4] text-[#006766]',
+  done: 'bg-[#1A1A1A] text-white',
 }
 
 export default function TaskDetailModal({
@@ -296,7 +296,7 @@ export default function TaskDetailModal({
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
               Task Title
             </label>
             <input
@@ -304,7 +304,7 @@ export default function TaskDetailModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] placeholder-gray-500 min-h-[44px]"
+              className="w-full max-w-full break-words bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
             />
           </div>
 
@@ -312,13 +312,13 @@ export default function TaskDetailModal({
           <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
             {/* Priority */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1C1C] mb-3">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
                 Priority
               </label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(parseInt(e.target.value))}
-                className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] min-h-[44px]"
+                className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
               >
                 {PRIORITIES.map((p) => (
                   <option key={p.num} value={p.num}>
@@ -330,14 +330,14 @@ export default function TaskDetailModal({
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1C1C] mb-3">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
                 Status
               </label>
               {statuses.length > 0 ? (
                 <select
                   value={statusId}
                   onChange={(e) => setStatusId(e.target.value)}
-                  className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] min-h-[44px]"
+                  className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
                 >
                   <option value="">Select a status</option>
                   {statuses.map((s) => (
@@ -355,13 +355,13 @@ export default function TaskDetailModal({
 
             {/* Assignee */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1C1C] mb-3">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
                 Assign to
               </label>
               <select
                 value={assigneeId || ''}
                 onChange={(e) => setAssigneeId(e.target.value || null)}
-                className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] min-h-[44px]"
+                className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
               >
                 <option value="">Unassigned</option>
                 <option value="doug">Doug</option>
@@ -373,20 +373,20 @@ export default function TaskDetailModal({
 
           {/* Due Date */}
           <div>
-            <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
               Due Date
             </label>
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-4 py-3 rounded focus:focus-ring text-[#1A1C1C] min-h-[44px]"
+              className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
               Description
             </label>
             <div className="relative">
@@ -464,7 +464,7 @@ export default function TaskDetailModal({
           {/* Attachments */}
           {task && workspaceId && (
             <div>
-              <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
                 Attachments
               </label>
               <FileUpload
@@ -517,7 +517,7 @@ export default function TaskDetailModal({
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-3 bg-accent-500 text-white rounded hover:bg-accent-600 transition font-medium min-h-[44px] flex items-center justify-center"
+              className="bg-[#000000] hover:bg-[#1A1C1C] text-white rounded px-5 py-2.5 text-[13px] font-medium transition-colors min-h-[44px] flex items-center justify-center"
             >
               Save Task
             </button>

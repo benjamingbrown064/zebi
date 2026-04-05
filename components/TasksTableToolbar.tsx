@@ -10,6 +10,16 @@ interface TasksTableToolbarProps {
   onPriorityChange?: (priorities: number[]) => void
   selectedStatuses?: string[]
   onStatusChange?: (statuses: string[]) => void
+  selectedTaskTypes?: string[]
+  onTaskTypeChange?: (types: string[]) => void
+  selectedAgents?: string[]
+  onAgentChange?: (agents: string[]) => void
+  selectedDueDateRange?: string | null
+  onDueDateRangeChange?: (range: string | null) => void
+  selectedWaitingOn?: string[]
+  onWaitingOnChange?: (vals: string[]) => void
+  decisionNeededFilter?: boolean | null
+  onDecisionNeededChange?: (val: boolean | null) => void
   onClearFilters?: () => void
   statuses?: Array<{ id: string; name: string }>
 }
@@ -28,12 +38,24 @@ export default function TasksTableToolbar({
   onPriorityChange,
   selectedStatuses = [],
   onStatusChange,
+  selectedTaskTypes = [],
+  onTaskTypeChange,
+  selectedAgents = [],
+  onAgentChange,
+  selectedDueDateRange = null,
+  onDueDateRangeChange,
+  selectedWaitingOn = [],
+  onWaitingOnChange,
+  decisionNeededFilter = null,
+  onDecisionNeededChange,
   onClearFilters,
   statuses = [],
 }: TasksTableToolbarProps) {
   const [showFilters, setShowFilters] = useState(false)
 
-  const hasActiveFilters = searchQuery || selectedPriorities.length > 0 || selectedStatuses.length > 0
+  const hasActiveFilters = searchQuery || selectedPriorities.length > 0 || selectedStatuses.length > 0 ||
+    selectedTaskTypes.length > 0 || selectedAgents.length > 0 || selectedDueDateRange !== null ||
+    selectedWaitingOn.length > 0 || decisionNeededFilter !== null
 
   const handlePriorityToggle = (priority: number) => {
     const newPriorities = selectedPriorities.includes(priority)
@@ -47,6 +69,27 @@ export default function TasksTableToolbar({
       ? selectedStatuses.filter(s => s !== statusId)
       : [...selectedStatuses, statusId]
     onStatusChange?.(newStatuses)
+  }
+
+  const handleTaskTypeToggle = (type: string) => {
+    const newTypes = selectedTaskTypes.includes(type)
+      ? selectedTaskTypes.filter(t => t !== type)
+      : [...selectedTaskTypes, type]
+    onTaskTypeChange?.(newTypes)
+  }
+
+  const handleAgentToggle = (agent: string) => {
+    const newAgents = selectedAgents.includes(agent)
+      ? selectedAgents.filter(a => a !== agent)
+      : [...selectedAgents, agent]
+    onAgentChange?.(newAgents)
+  }
+
+  const handleWaitingOnToggle = (val: string) => {
+    const newVals = selectedWaitingOn.includes(val)
+      ? selectedWaitingOn.filter(w => w !== val)
+      : [...selectedWaitingOn, val]
+    onWaitingOnChange?.(newVals)
   }
 
   return (
@@ -69,7 +112,7 @@ export default function TasksTableToolbar({
           onClick={() => setShowFilters(!showFilters)}
           className={`px-4 py-2 rounded border transition flex items-center gap-2 ${
             showFilters
-              ? 'bg-accent-50 border-accent-200 text-accent-700'
+              ? 'bg-[#F3F3F3] border-[#C6C6C6] text-[#1A1A1A]'
               : 'bg-white border-gray-200 text-[#474747] hover:bg-[#F3F3F3]'
           }`}
         >
@@ -93,7 +136,7 @@ export default function TasksTableToolbar({
         <div className="p-4 bg-[#F3F3F3] rounded space-y-4">
           {/* Priority Filter */}
           <div>
-            <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2 block">
               Priority
             </label>
             <div className="space-y-2">
@@ -114,7 +157,7 @@ export default function TasksTableToolbar({
           {/* Status Filter */}
           {statuses.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2 block">
                 Status
               </label>
               <div className="space-y-2">
@@ -133,24 +176,101 @@ export default function TasksTableToolbar({
             </div>
           )}
 
-          {/* Due Date Range (simplified) */}
+          {/* Task Type Filter */}
           <div>
-            <label className="block text-sm font-medium text-[#1A1C1C] mb-2">
-              Due Date
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2 block">
+              Task Type
             </label>
             <div className="space-y-2">
-              {['Overdue', 'Today', 'Next 7 days', 'This month'].map((label) => (
-                <label key={label} className="flex items-center gap-2 cursor-pointer">
+              {['strategy', 'research', 'build', 'ops', 'routine', 'admin', 'review', 'bug', 'briefing'].map((type) => (
+                <label key={type} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    disabled
-                    className="rounded border-gray-300 opacity-50"
+                    checked={selectedTaskTypes.includes(type)}
+                    onChange={() => handleTaskTypeToggle(type)}
+                    className="rounded border-gray-300"
                   />
-                  <span className="text-sm text-[#A3A3A3]">{label}</span>
-                  <span className="text-xs text-[#C4C0C0]">(coming soon)</span>
+                  <span className="text-sm text-[#474747] capitalize">{type}</span>
                 </label>
               ))}
             </div>
+          </div>
+
+          {/* Assigned Agent Filter */}
+          <div>
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2 block">
+              Assigned Agent
+            </label>
+            <div className="space-y-2">
+              {['harvey', 'theo', 'doug', 'casper', 'unassigned'].map((agent) => (
+                <label key={agent} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedAgents.includes(agent)}
+                    onChange={() => handleAgentToggle(agent)}
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm text-[#474747] capitalize">{agent}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Due Date Range */}
+          <div>
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2 block">
+              Due Date
+            </label>
+            <div className="space-y-2">
+              {['Overdue', 'Today', 'This week', 'This month', 'No due date'].map((range) => (
+                <label key={range} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="dueDate"
+                    checked={selectedDueDateRange === range}
+                    onChange={() => onDueDateRangeChange?.(selectedDueDateRange === range ? null : range)}
+                    className="rounded-full border-gray-300"
+                  />
+                  <span className="text-sm text-[#474747]">{range}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Waiting On Filter */}
+          <div>
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2 block">
+              Waiting On
+            </label>
+            <div className="space-y-2">
+              {['ben', 'harvey', 'theo', 'doug', 'casper', 'external', 'none'].map((val) => (
+                <label key={val} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedWaitingOn.includes(val)}
+                    onChange={() => handleWaitingOnToggle(val)}
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm text-[#474747] capitalize">{val}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Decision Needed Filter */}
+          <div>
+            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2 block">
+              Decision Needed
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={decisionNeededFilter === true}
+                onChange={() => onDecisionNeededChange?.(decisionNeededFilter === true ? null : true)}
+                className="rounded border-gray-300"
+              />
+              <span className="text-sm text-[#474747]">Show only tasks needing decisions</span>
+            </label>
           </div>
         </div>
       )}

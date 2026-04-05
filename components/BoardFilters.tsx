@@ -70,14 +70,14 @@ export default function BoardFilters({
         <FaFilter size={14} />
         Filters
         {activeFilterCount > 0 && (
-          <span className="ml-1 px-2 py-0.5 bg-accent-500 text-white rounded text-xs font-semibold">
+          <span className="ml-1 px-2 py-0.5 bg-[#1A1A1A] text-white rounded text-xs font-semibold">
             {activeFilterCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-40 p-4">
+        <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-[50] p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-[#1A1C1C]">Filters</h3>

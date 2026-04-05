@@ -39,10 +39,10 @@ interface Space {
   createdAt: string
   updatedAt: string
   projects: any[]
-  documents: any[]
-  notes: any[]
-  insights: any[]
-  memories: any[]
+  documents?: any[]
+  notes?: any[]
+  insights?: any[]
+  memories?: any[]
   files: any[]
   objectives: any[]
   tasks: any[]
@@ -62,7 +62,7 @@ type TabId = 'overview' | 'work' | 'objectives' | 'projects' | 'agents' | 'docs'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'overview',     label: 'Overview' },
-  { id: 'work',         label: 'Work' },
+  { id: 'work',         label: 'Tasks' },
   { id: 'objectives',   label: 'Objectives' },
   { id: 'projects',     label: 'Projects' },
   { id: 'agents',       label: 'Agents' },
@@ -229,7 +229,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
   const topObjectives = space.objectives.slice(0, 3)
   const topProjects = space.projects.slice(0, 3)
-  const recentMemory = space.memories.slice(0, 3)
+  const recentMemory = (space.memories ?? []).slice(0, 3)
 
   // Sections that have content — only render populated ones
   const strategyFields = [
@@ -780,7 +780,7 @@ function ProjectsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | 
 
 // ─── Tab: Agents ──────────────────────────────────────────────────────────────
 
-function AgentsTab({ space }: { space: Space }) {
+function AgentsTab({ space, onSwitchToWork }: { space: Space; onSwitchToWork?: () => void }) {
   const router = useRouter()
   const agentMap: Record<string, any[]> = {}
   space.tasks.forEach((t: any) => {
@@ -797,8 +797,8 @@ function AgentsTab({ space }: { space: Space }) {
       <EmptyState
         icon="🤖"
         title="No agents assigned to this space yet"
-        cta="Assign tasks to agents in the Work tab"
-        onCta={() => {}}
+        cta="Add tasks in the Tasks tab"
+        onCta={onSwitchToWork}
       />
     )
   }
@@ -933,11 +933,11 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
             saving={savingDoc}
           />
         )}
-        {space.documents.length === 0 ? (
+        {(space.documents ?? []).length === 0 ? (
           <EmptyState icon="📄" title="No documents yet" />
         ) : (
           <div className="space-y-2">
-            {space.documents.map((doc: any) => (
+            {(space.documents ?? []).map((doc: any) => (
               <div key={doc.id} className="flex items-center gap-3 bg-white rounded p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
                 <svg className="w-4 h-4 text-[#C6C6C6] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -974,11 +974,11 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
             saving={savingNote}
           />
         )}
-        {space.notes.length === 0 ? (
+        {(space.notes ?? []).length === 0 ? (
           <EmptyState icon="📝" title="No notes yet" />
         ) : (
           <div className="space-y-2">
-            {space.notes.map((note: any) => (
+            {(space.notes ?? []).map((note: any) => (
               <div key={note.id} className="bg-white rounded p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{note.title}</p>
@@ -1000,14 +1000,19 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
 function IntelligenceTab({ space }: { space: Space }) {
   return (
     <div className="space-y-8">
+      {/* Info banner */}
+      <div className="bg-[#F9F9F9] border border-[#E5E5E5] rounded p-3 text-[12px] text-[#737373]">
+        Agents working on this space reference these insights and memories when planning and executing tasks.
+      </div>
+
       {/* AI Insights */}
       <div>
         <SectionHeader title="AI Insights" />
-        {space.insights.length === 0 ? (
+        {(space.insights ?? []).length === 0 ? (
           <EmptyState icon="💡" title="No insights yet — insights are published by agents from chat" />
         ) : (
           <div className="space-y-3">
-            {space.insights.map((ins: any) => (
+            {(space.insights ?? []).map((ins: any) => (
               <div key={ins.id} className="bg-white rounded p-5 border border-[#E5E5E5]">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <p className="text-[14px] font-semibold text-[#1A1A1A]">{ins.title}</p>
@@ -1038,11 +1043,11 @@ function IntelligenceTab({ space }: { space: Space }) {
       {/* AI Memory */}
       <div>
         <SectionHeader title="AI Memory" />
-        {space.memories.length === 0 ? (
+        {(space.memories ?? []).length === 0 ? (
           <EmptyState icon="🧠" title="No memory entries yet — agents write memory from chat" />
         ) : (
           <div className="space-y-3">
-            {space.memories.map((mem: any) => (
+            {(space.memories ?? []).map((mem: any) => (
               <div key={mem.id} className="bg-white rounded p-4 border border-[#E5E5E5]">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <p className="text-[13px] font-medium text-[#1A1A1A]">{mem.title}</p>
@@ -1143,7 +1148,7 @@ export default function SpaceDetailPage() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
             </button>
             <div className="flex-1">
-              <CaptureBar onCaptured={loadSpace} />
+              <CaptureBar onCaptured={loadSpace} spaceId={space.id} />
             </div>
           </div>
         </div>
@@ -1249,7 +1254,7 @@ export default function SpaceDetailPage() {
           {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={loadSpace} />}
           {activeTab === 'objectives'   && <ObjectivesTab space={space} wsId={wsId} onRefresh={loadSpace} />}
           {activeTab === 'projects'     && <ProjectsTab space={space} wsId={wsId} onRefresh={loadSpace} />}
-          {activeTab === 'agents'       && <AgentsTab space={space} />}
+          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} />}
           {activeTab === 'docs'         && <DocsTab space={space} wsId={wsId} onRefresh={loadSpace} />}
           {activeTab === 'intelligence' && <IntelligenceTab space={space} />}
 

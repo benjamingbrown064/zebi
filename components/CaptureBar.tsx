@@ -5,9 +5,10 @@ import { useWorkspace } from '@/lib/use-workspace'
 
 interface CaptureBarProps {
   onCaptured?: () => void
+  spaceId?: string
 }
 
-export default function CaptureBar({ onCaptured }: CaptureBarProps) {
+export default function CaptureBar({ onCaptured, spaceId }: CaptureBarProps) {
   const { workspaceId } = useWorkspace()
   const [value, setValue] = useState('')
   const [focused, setFocused] = useState(false)
@@ -48,6 +49,7 @@ export default function CaptureBar({ onCaptured }: CaptureBarProps) {
           workspaceId,
           rawText: text,
           sourceType: 'capture_bar',
+          spaceId,
         }),
       })
 

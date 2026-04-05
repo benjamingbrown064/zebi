@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar'
 import CaptureBar from '@/components/CaptureBar'
 import ManagersNote from '@/components/ManagersNote'
 import { useWorkspace } from '@/lib/use-workspace'
+import { FaMicrophone } from 'react-icons/fa'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -20,6 +21,7 @@ interface QueueTask {
   projectName: string | null
   statusName: string | null
   decisionNeeded: boolean
+  ownerAgent: string | null
 }
 
 interface AgentStatus {
@@ -144,6 +146,9 @@ function TaskRow({
   const router = useRouter()
   const due = formatDue((task as QueueTask).dueAt ?? (task as AttentionItem).dueAt)
   const priority = (task as QueueTask).priority
+  
+  // Get ownerAgent from either QueueTask or AttentionItem
+  const ownerAgent = (task as QueueTask).ownerAgent ?? (task as AttentionItem).ownerAgent
 
   const handleComplete = async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -155,7 +160,7 @@ function TaskRow({
   return (
     <div
       className="group flex items-start gap-3 py-2.5 px-3 rounded-md hover:bg-[#F9F9F9] cursor-pointer transition-colors"
-      onClick={() => router.push(`/tasks?highlight=${task.id}`)}
+      onClick={() => router.push(`/tasks/${task.id}`)}
     >
       {/* Complete button */}
       {onComplete && (
@@ -176,16 +181,21 @@ function TaskRow({
           {(task as QueueTask).spaceName && (
             <span className="text-[11px] text-[#737373]">{(task as QueueTask).spaceName}</span>
           )}
-          {showAgent && (task as AttentionItem).ownerAgent && (
+          {/* Show agent for QueueTask (always) or when showAgent is true */}
+          {(onComplete || showAgent) && ownerAgent && (
             <span
               className="text-[11px] font-medium px-1.5 py-0.5 rounded"
               style={{
-                color: AGENT_COLOURS[(task as AttentionItem).ownerAgent!] || '#737373',
-                backgroundColor: (AGENT_COLOURS[(task as AttentionItem).ownerAgent!] || '#737373') + '15',
+                color: AGENT_COLOURS[ownerAgent] || '#737373',
+                backgroundColor: (AGENT_COLOURS[ownerAgent] || '#737373') + '15',
               }}
             >
-              {AGENT_LABELS[(task as AttentionItem).ownerAgent!] || (task as AttentionItem).ownerAgent}
+              {AGENT_LABELS[ownerAgent] || ownerAgent}
             </span>
+          )}
+          {/* Show Unassigned for QueueTask when no agent */}
+          {onComplete && !ownerAgent && (
+            <span className="text-[11px] text-[#A3A3A3] italic">Unassigned</span>
           )}
           {due && <span className={`text-[11px] ${due.cls}`}>{due.label}</span>}
         </div>
@@ -383,6 +393,13 @@ export default function NowClient() {
             <div className="flex-1">
               <CaptureBar onCaptured={load} />
             </div>
+            <button
+              onClick={() => router.push('/brain-dump')}
+              className="bg-[#000000] hover:bg-[#1A1C1C] text-white rounded px-4 py-2 text-[13px] font-medium flex items-center gap-2 transition-colors"
+            >
+              <FaMicrophone />
+              <span>Brain Dump</span>
+            </button>
           </div>
         </div>
 
@@ -416,7 +433,23 @@ export default function NowClient() {
 
               {/* ── Col 1: My Queue ────────────────────────────────────── */}
               <div className="bg-white rounded p-5">
-                <SectionHeader title="My Queue" count={data.myQueue.length} />
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">My Queue</h3>
+                    {data.myQueue.length > 0 && (
+                      <span className="text-[10px] font-semibold bg-[#1A1A1A] text-white px-1.5 py-0.5 rounded-full leading-none">
+                        {data.myQueue.length}
+                      </span>
+                    )}
+                  </div>
+                  {/* queue is populated from tasks — route to tasks to add */}
+                  <button
+                    onClick={() => router.push('/tasks')}
+                    className="text-[12px] text-[#737373] hover:text-[#1A1A1A] font-medium flex items-center gap-1 transition-colors"
+                  >
+                    <span>+ Add task</span>
+                  </button>
+                </div>
 
                 {data.myQueue.length === 0 ? (
                   <div className="text-center py-8">
@@ -463,11 +496,13 @@ export default function NowClient() {
 
               {/* ── Col 2: Agent Status ─────────────────────────────────── */}
               <div>
-                <SectionHeader title="Agent Status" />
-                <div className="space-y-3">
-                  {data.agentStatus.map(agent => (
-                    <AgentCard key={agent.agent} agent={agent} />
-                  ))}
+                <div className="bg-white rounded p-5">
+                  <SectionHeader title="Agent Status" />
+                  <div className="space-y-3">
+                    {data.agentStatus.map(agent => (
+                      <AgentCard key={agent.agent} agent={agent} />
+                    ))}
+                  </div>
                 </div>
 
                 {/* Quick link to founder view */}
@@ -483,83 +518,79 @@ export default function NowClient() {
               </div>
 
               {/* ── Col 3: Needs Attention ──────────────────────────────── */}
-              <div className="bg-white rounded p-5">
-                <SectionHeader
-                  title="Needs Attention"
-                  count={totalAlerts || undefined}
-                />
+              <div className="space-y-4">
+                {/* Card 1: Decisions Needed */}
+                <div className="bg-white rounded p-5">
+                  <SectionHeader title="Decisions Needed" count={data.needsAttention.decisions.length || undefined} />
+                  {data.needsAttention.decisions.length === 0 ? (
+                    <p className="text-[12px] text-[#C6C6C6] italic px-1">No decisions pending</p>
+                  ) : (
+                    <div className="space-y-0.5">
+                      {data.needsAttention.decisions.map(item => (
+                        <TaskRow key={item.id} task={item} showAgent />
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-                {totalAlerts === 0 && data.needsAttention.stale.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="text-3xl mb-2">🟢</div>
-                    <p className="text-[13px] text-[#737373]">All clear</p>
-                    <p className="text-[12px] text-[#C6C6C6] mt-1">No decisions or blockers</p>
-                  </div>
-                ) : (
-                  <>
-                    <AttentionSection
-                      title="Decisions needed"
-                      items={data.needsAttention.decisions}
-                      emptyText="No decisions pending"
-                      showAgent
-                    />
-                    <AttentionSection
-                      title="Waiting on you"
-                      items={data.needsAttention.waitingOnBen}
-                      emptyText="Nothing waiting on you"
-                      showAgent
-                    />
-                    <AttentionSection
-                      title="Overdue"
-                      items={data.needsAttention.overdue}
-                      emptyText="Nothing overdue"
-                      showAgent
-                    />
-                    {data.needsAttention.stale.length > 0 && (
-                      <div className="mb-5">
-                        <SectionHeader title="Stale (48h+)" count={data.needsAttention.stale.length} />
-                        <div className="space-y-0.5">
-                          {data.needsAttention.stale.map(item => (
-                            <div
-                              key={item.id}
-                              className="flex items-start gap-2 px-3 py-2.5 rounded-md hover:bg-[#F9F9F9] cursor-pointer"
-                              onClick={() => router.push(`/tasks?highlight=${item.id}`)}
-                            >
-                              <div className="flex-1 min-w-0">
-                                <p className="text-[13px] text-[#1A1A1A] truncate">{item.title}</p>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                  {item.ownerAgent && (
-                                    <span className="text-[11px]" style={{ color: AGENT_COLOURS[item.ownerAgent] || '#A3A3A3' }}>
-                                      {AGENT_LABELS[item.ownerAgent] || item.ownerAgent}
-                                    </span>
-                                  )}
-                                  {item.updatedAt && (
-                                    <span className="text-[11px] text-[#A3A3A3]">{timeAgo(item.updatedAt)}</span>
-                                  )}
-                                </div>
-                              </div>
+                {/* Card 2: Waiting on You */}
+                <div className="bg-white rounded p-5">
+                  <SectionHeader title="Waiting on You" count={data.needsAttention.waitingOnBen.length || undefined} />
+                  {data.needsAttention.waitingOnBen.length === 0 ? (
+                    <p className="text-[12px] text-[#C6C6C6] italic px-1">Nothing waiting on you</p>
+                  ) : (
+                    <div className="space-y-0.5">
+                      {data.needsAttention.waitingOnBen.map(item => (
+                        <TaskRow key={item.id} task={item} showAgent />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Card 3: Overdue */}
+                <div className="bg-white rounded p-5">
+                  <SectionHeader title="Overdue" count={data.needsAttention.overdue.length || undefined} />
+                  {data.needsAttention.overdue.length === 0 ? (
+                    <p className="text-[12px] text-[#C6C6C6] italic px-1">Nothing overdue</p>
+                  ) : (
+                    <div className="space-y-0.5">
+                      {data.needsAttention.overdue.map(item => (
+                        <TaskRow key={item.id} task={item} showAgent />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Card 4: Stale (48h+) */}
+                <div className="bg-white rounded p-5">
+                  <SectionHeader title="Stale (48h+)" count={data.needsAttention.stale.length || undefined} />
+                  {data.needsAttention.stale.length === 0 ? (
+                    <p className="text-[12px] text-[#C6C6C6] italic px-1">Nothing stale</p>
+                  ) : (
+                    <div className="space-y-0.5">
+                      {data.needsAttention.stale.map(item => (
+                        <div
+                          key={item.id}
+                          className="flex items-start gap-2 px-3 py-2.5 rounded-md hover:bg-[#F9F9F9] cursor-pointer"
+                          onClick={() => router.push(`/tasks/${item.id}`)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] text-[#1A1A1A] truncate">{item.title}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {item.ownerAgent && (
+                                <span className="text-[11px]" style={{ color: AGENT_COLOURS[item.ownerAgent] || '#A3A3A3' }}>
+                                  {AGENT_LABELS[item.ownerAgent] || item.ownerAgent}
+                                </span>
+                              )}
+                              {item.updatedAt && (
+                                <span className="text-[11px] text-[#A3A3A3]">{timeAgo(item.updatedAt)}</span>
+                              )}
                             </div>
-                          ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {/* Stats footer */}
-                <div className="mt-4 pt-4 border-t border-[#F3F3F3] grid grid-cols-3 gap-2 text-center">
-                  <div>
-                    <div className="text-[16px] font-bold text-[#1A1A1A]">{data.counts.totalActive}</div>
-                    <div className="text-[10px] text-[#A3A3A3] uppercase tracking-wide">Active</div>
-                  </div>
-                  <div>
-                    <div className="text-[16px] font-bold text-[#1A1A1A]">{data.counts.totalPendingHandoffs}</div>
-                    <div className="text-[10px] text-[#A3A3A3] uppercase tracking-wide">Handoffs</div>
-                  </div>
-                  <div>
-                    <div className="text-[16px] font-bold text-[#1A1A1A]">{data.recentWins.length}</div>
-                    <div className="text-[10px] text-[#A3A3A3] uppercase tracking-wide">Done today</div>
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

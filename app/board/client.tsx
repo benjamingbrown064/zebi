@@ -454,12 +454,6 @@ export default function BoardClient({
       <div className={mainPaddingClass}>
         <ResponsiveHeader
           title="Board"
-          secondaryActions={[
-            {
-              label: 'Filters',
-              onClick: () => {},
-            }
-          ]}
         >
           <div className="flex items-center gap-4 mt-3">
             <BoardFilters
