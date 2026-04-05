@@ -2,7 +2,6 @@
 
 import { format, isToday } from 'date-fns'
 import { useDroppable } from '@dnd-kit/core'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import PlannerTaskCard from './PlannerTaskCard'
 import DayCapacityMeter from './DayCapacityMeter'
 
@@ -92,26 +91,24 @@ export default function DayColumn({ date, tasks, capacity, onMarkComplete }: Day
       <div className={`flex-1 p-4 space-y-2 overflow-y-auto ${
         isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-[#F9F9F9]'
       }`}>
-        <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
-          {tasks.length === 0 ? (
-            <div className={`flex items-center justify-center h-24 rounded border-2 border-dashed text-[12px] ${
-              isCurrentDay
-                ? 'border-white/10 text-white/25'
-                : 'border-[#E5E5E5] text-[#C6C6C6]'
-            }`}>
-              Drop tasks here
-            </div>
-          ) : (
-            tasks.map(task => (
-              <PlannerTaskCard
-                key={task.id}
-                task={task}
-                onMarkComplete={onMarkComplete}
-                inverted={isCurrentDay}
-              />
-            ))
-          )}
-        </SortableContext>
+        {tasks.length === 0 ? (
+          <div className={`flex items-center justify-center h-24 rounded border-2 border-dashed text-[12px] ${
+            isCurrentDay
+              ? 'border-white/10 text-white/25'
+              : 'border-[#E5E5E5] text-[#C6C6C6]'
+          }`}>
+            Drop tasks here
+          </div>
+        ) : (
+          tasks.map(task => (
+            <PlannerTaskCard
+              key={task.id}
+              task={task}
+              onMarkComplete={onMarkComplete}
+              inverted={isCurrentDay}
+            />
+          ))
+        )}
       </div>
     </div>
   )

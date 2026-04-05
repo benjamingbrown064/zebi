@@ -10,7 +10,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  closestCorners,
+  pointerWithin,
+  rectIntersection,
 } from '@dnd-kit/core'
 import WeekNavigator from './components/WeekNavigator'
 import DayColumn from './components/DayColumn'
@@ -137,7 +138,7 @@ export default function WeeklyPlannerClient({
 
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={pointerWithin}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >

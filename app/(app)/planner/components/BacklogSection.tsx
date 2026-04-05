@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react'
 import { useDroppable } from '@dnd-kit/core'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { FaSearch, FaTimes } from 'react-icons/fa'
 
 interface Task {
@@ -179,7 +178,7 @@ export default function BacklogSection({ tasks, onMarkComplete }: BacklogSection
 
       {/* Task list */}
       <div className="flex-1 overflow-y-auto">
-        <SortableContext items={filteredTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
+        <>
           {filteredTasks.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 text-center px-4">
               <p className="text-[12px] text-[#C6C6C6]">
@@ -191,7 +190,7 @@ export default function BacklogSection({ tasks, onMarkComplete }: BacklogSection
               <BacklogRow key={task.id} task={task} onMarkComplete={onMarkComplete} />
             ))
           )}
-        </SortableContext>
+        </>
 
         {/* Create backlog item CTA */}
         <div className="px-4 py-4 border-t border-dashed border-[#E5E5E5] mt-2">
