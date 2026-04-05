@@ -14,24 +14,9 @@ import { getStatuses } from '@/app/actions/statuses'
 import { updateTask, deleteTask, createTask } from '@/app/actions/tasks'
 import { getGoals, calculateGoalProgress } from '@/app/actions/goals'
 
-const STATUS_COLORS: Record<string, string> = {
-  inbox: 'bg-[#F3F3F3]',
-  planned: 'bg-[#F3F3F3]',
-  doing: 'bg-amber-50',
-  review: 'bg-cyan-50',
-  blocked: 'bg-red-50',
-  done: 'bg-[#F3F3F3]',
-  check: 'bg-purple-50', // Match lane color in board
-}
-
-const STATUS_PILL_COLORS: Record<string, string> = {
-  inbox: 'bg-[#F3F3F3] text-[#474747]',
-  planned: 'bg-[#F3F3F3] text-[#474747]',
-  doing: 'bg-amber-100 text-amber-700',
-  review: 'bg-cyan-100 text-cyan-700',
-  blocked: 'bg-red-100 text-red-700',
-  done: 'bg-[#F3F3F3] text-[#474747]',
-  check: 'bg-purple-100 text-purple-700', // Match lane background
+// All lanes use the same neutral background — cleaner Monolith style
+const STATUS_ORDER: Record<string, number> = {
+  inbox: 0, planned: 1, doing: 2, review: 3, check: 4, done: 5,
 }
 
 const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'
@@ -437,6 +422,9 @@ export default function BoardClient({
   }
 
 
+  // Skeleton loading state
+  const isLoading = tasks.length === 0 && statuses.length === 0
+
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar
@@ -444,91 +432,113 @@ export default function BoardClient({
         isCollapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
       />
-        <ResponsiveHeader
-          title="Board"
-        >
-          <div className="flex items-center gap-4 mt-3">
-            <BoardFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              availableGoals={goals.map(g => ({ id: g.id, name: g.name }))}
-              availableAssignees={uniqueAssignees}
-            />
-            <p className="text-[13px] text-[#A3A3A3]">
-              {filteredTasks.length} of {tasks.length} tasks
-            </p>
-          </div>
-        </ResponsiveHeader>
 
-        {/* Board */}
-        <main className="p-4 md:p-8">
-          <div className="grid grid-flow-col gap-6 overflow-x-auto pb-6 auto-cols-max">
-            {statuses
-              .filter(status => status.type !== 'blocked')
-              .sort((a, b) => {
-                // Define the desired order
-                const order: Record<string, number> = {
-                  inbox: 0,
-                  planned: 1,
-                  doing: 2,
-                  review: 3,
-                  check: 4,
-                  done: 5,
-                }
-                return (order[a.type] ?? 999) - (order[b.type] ?? 999)
-              })
-              .map(status => (
-              <div
-                key={status.id}
-                className={`${STATUS_COLORS[status.type] || 'bg-[#F3F3F3]'} rounded w-72 md:w-80 max-h-[calc(100vh-200px)] flex flex-col overflow-hidden`}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(status.id)}
-              >
-                {/* Sticky Header */}
-                <div className="sticky top-0 z-10 flex items-center justify-between px-4 pt-4 pb-4 bg-inherit">
-                  <h2 className="font-medium text-[#1A1A1A]">{status.name}</h2>
-                  <span className="text-[12px] text-[#A3A3A3] bg-white px-2 py-1 rounded">
-                    {tasksByStatus[status.id]?.length || 0}
-                  </span>
+      {/* Header */}
+      <div className="sticky top-0 z-20 bg-white border-b border-[#E5E5E5] px-6 py-3 flex items-center justify-between">
+        <h1 className="text-[15px] font-semibold text-[#1A1A1A]">Board</h1>
+        <div className="flex items-center gap-3">
+          <BoardFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            availableGoals={goals.map(g => ({ id: g.id, name: g.name }))}
+            availableAssignees={uniqueAssignees}
+          />
+          <span className="text-[12px] text-[#A3A3A3]">
+            {filteredTasks.length} of {tasks.length} tasks
+          </span>
+        </div>
+      </div>
+
+      {/* Board */}
+      <main className="p-6 overflow-x-auto">
+        {isLoading ? (
+          /* ── Skeleton ────────────────────────────────────────────── */
+          <div className="flex gap-5 min-w-max">
+            {[1, 2, 3, 4].map(col => (
+              <div key={col} className="w-72 flex-shrink-0">
+                {/* Column header skeleton */}
+                <div className="flex items-center gap-2 mb-4 px-1">
+                  <div className="h-2.5 w-16 bg-[#E5E5E5] rounded animate-pulse" />
+                  <div className="h-4 w-5 bg-[#E5E5E5] rounded animate-pulse" />
                 </div>
-
-                {/* Scrollable Content */}
-                <div className="overflow-y-auto flex-1 px-4 py-3">
-                  <div className="space-y-3">
-                    {!tasksByStatus[status.id] || tasksByStatus[status.id].length === 0 ? (
-                      <div className="text-center py-8 text-[#C4C0C0] text-sm">
-                        No tasks
+                {/* Card skeletons */}
+                <div className="space-y-3">
+                  {Array.from({ length: col === 1 ? 3 : col === 2 ? 2 : col === 3 ? 4 : 1 }).map((_, i) => (
+                    <div key={i} className="bg-white rounded border border-[#E5E5E5] p-4 animate-pulse">
+                      <div className="h-2 w-20 bg-[#F3F3F3] rounded mb-3" />
+                      <div className="h-3.5 w-full bg-[#F3F3F3] rounded mb-1.5" />
+                      <div className="h-3.5 w-3/4 bg-[#F3F3F3] rounded mb-4" />
+                      <div className="flex items-center justify-between">
+                        <div className="h-4 w-8 bg-[#F3F3F3] rounded" />
+                        <div className="h-6 w-6 bg-[#F3F3F3] rounded-full" />
                       </div>
-                    ) : (
-                      tasksByStatus[status.id].map(task => (
-                        <TaskBoardTile
-                          key={task.id}
-                          task={task}
-                          onDragStart={handleDragStart}
-                          onComplete={handleComplete}
-                          onSnooze={handleSnooze}
-                          onPriorityChange={handlePriorityChange}
-                          onView={handleView}
-                        />
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Sticky Footer */}
-                <div className="sticky bottom-0 z-10 px-4 py-3 bg-inherit">
-                  <button 
-                    onClick={() => handleOpenQuickAdd(status.id)}
-                    className="w-full flex items-center justify-center gap-2 py-2 text-sm text-[#474747] hover:bg-white/50 rounded transition"
-                  >
-                    <FaPlus size={14} />
-                    Add task
-                  </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
-        </main>
+        ) : (
+          <div className="flex gap-5 min-w-max pb-6">
+            {statuses
+              .filter(s => s.type !== 'blocked')
+              .sort((a, b) => (STATUS_ORDER[a.type] ?? 999) - (STATUS_ORDER[b.type] ?? 999))
+              .map(status => {
+                const columnTasks = tasksByStatus[status.id] || []
+                return (
+                  <div
+                    key={status.id}
+                    className="w-72 flex-shrink-0 flex flex-col max-h-[calc(100vh-140px)]"
+                    onDragOver={handleDragOver}
+                    onDrop={() => handleDrop(status.id)}
+                  >
+                    {/* Column header */}
+                    <div className="flex items-center gap-2 mb-4 px-1">
+                      <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#A3A3A3]">
+                        {status.name}
+                      </h2>
+                      <span className="text-[11px] font-bold text-[#1A1A1A] bg-white border border-[#E5E5E5] rounded-full w-5 h-5 flex items-center justify-center leading-none">
+                        {columnTasks.length}
+                      </span>
+                    </div>
+
+                    {/* Cards */}
+                    <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                      {columnTasks.length === 0 ? (
+                        <div
+                          className="border-2 border-dashed border-[#E5E5E5] rounded h-24 flex items-center justify-center text-[12px] text-[#C6C6C6]"
+                        >
+                          Drop tasks here
+                        </div>
+                      ) : (
+                        columnTasks.map(task => (
+                          <TaskBoardTile
+                            key={task.id}
+                            task={task}
+                            onDragStart={handleDragStart}
+                            onComplete={handleComplete}
+                            onSnooze={handleSnooze}
+                            onPriorityChange={handlePriorityChange}
+                            onView={handleView}
+                          />
+                        ))
+                      )}
+                    </div>
+
+                    {/* Add task */}
+                    <button
+                      onClick={() => handleOpenQuickAdd(status.id)}
+                      className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 text-[12px] font-medium text-[#A3A3A3] hover:text-[#1A1A1A] hover:bg-white rounded border border-dashed border-[#E5E5E5] transition-colors"
+                    >
+                      <FaPlus size={10} />
+                      Add task
+                    </button>
+                  </div>
+                )
+              })}
+          </div>
+        )}
+      </main>
 
       {/* Task Detail Modal */}
       <TaskDetailModal

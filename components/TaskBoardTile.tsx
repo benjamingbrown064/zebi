@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import { FaCheck, FaClock, FaEye, FaPaperclip, FaStickyNote, FaFileAlt, FaComment, FaFolder, FaUser } from 'react-icons/fa'
 import { Task, Goal } from '@/lib/types'
 
 interface TaskBoardTileProps {
@@ -12,6 +10,7 @@ interface TaskBoardTileProps {
     blockedReason?: string
     assignee?: { id: string; name: string } | null
     project?: { id: string; name: string } | null
+    space?: { id: string; name: string } | null
     assigneeName?: string | null
   }
   onDragStart?: (task: Task) => void
@@ -21,313 +20,90 @@ interface TaskBoardTileProps {
   onView?: (taskId: string) => void
 }
 
+const PRIORITY_STYLES: Record<number, string> = {
+  1: 'bg-[#1A1A1A] text-white',
+  2: 'border border-[#1A1A1A] text-[#1A1A1A]',
+  3: 'border border-[#C6C6C6] text-[#474747]',
+  4: 'border border-[#E5E5E5] text-[#A3A3A3]',
+}
+
 export default function TaskBoardTile({
   task,
   onDragStart,
   onComplete,
-  onSnooze,
-  onPriorityChange,
   onView,
 }: TaskBoardTileProps) {
-  const [isHovering, setIsHovering] = useState(false)
-  const [showPriorityPicker, setShowPriorityPicker] = useState(false)
-
-  // Format date helper
-  const formatDueDate = (dueAt?: string | Date): string | null => {
-    if (!dueAt) return null
-
-    const date = typeof dueAt === 'string' ? new Date(dueAt) : dueAt
-    const today = new Date()
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-
-    // Reset time for date comparison
-    today.setHours(0, 0, 0, 0)
-    tomorrow.setHours(0, 0, 0, 0)
-    date.setHours(0, 0, 0, 0)
-
-    if (date.getTime() === today.getTime()) {
-      return 'Today'
-    } else if (date.getTime() === tomorrow.getTime()) {
-      return 'Tomorrow'
-    } else {
-      // Format as "Fri 12 Mar"
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ]
-      return `${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`
-    }
-  }
-
-  // Get priority label
-  const getPriorityLabel = (priority: number): string => {
-    return `P${priority}`
-  }
-
-  // Get priority color (monochrome + accent)
-  const getPriorityColor = (priority: number): string => {
-    switch (priority) {
-      case 1:
-        return 'text-red-500 bg-red-50'
-      case 2:
-        return 'text-orange-500 bg-orange-50'
-      case 3:
-        return 'text-amber-500 bg-amber-50'
-      case 4:
-        return 'text-[#C4C0C0] bg-[#F3F3F3]'
-      default:
-        return 'text-[#C4C0C0] bg-[#F3F3F3]'
-    }
-  }
-
-  const dueDate = formatDueDate(task.dueAt)
-  const displayTags = task.tags?.slice(0, 2) || []
-  const remainingTags = (task.tags?.length || 0) - displayTags.length
-  const hasAttachments = (task.attachments?.length || 0) > 0
-  const hasBlockedReason = !!task.blockedReason
-  const hasAssignee = !!task.assignee
-  const showRow3 = hasBlockedReason || hasAssignee
+  const context = task.project?.name || (task as any).space?.name || task.goal?.name
+  const attachmentCount = task.attachments?.length || 0
+  const commentCount = 0 // placeholder — wire when comments are available
+  const assigneeInitial = task.assigneeName
+    ? task.assigneeName.charAt(0).toUpperCase()
+    : task.assigneeId
+    ? task.assigneeId.charAt(0).toUpperCase()
+    : null
 
   return (
     <div
       draggable
       onDragStart={() => onDragStart?.(task)}
-      onClick={(e) => {
-        // Only trigger view if not clicking on interactive elements
+      onClick={e => {
         if ((e.target as HTMLElement).closest('button')) return
         onView?.(task.id)
       }}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => {
-        setIsHovering(false)
-        setShowPriorityPicker(false)
-      }}
-      className="card cursor-pointer relative group p-4"
+      className="bg-white rounded border border-[#E5E5E5] p-4 cursor-pointer hover:border-[#C6C6C6] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all group"
     >
-      {/* ROW 1: Title + Indicators + Assignee */}
-      <div className="flex items-start justify-between gap-2 mb-3 relative">
-        <div className="flex-1 min-w-0">
-          <h3
-            title={task.title}
-            className="text-sm font-medium text-[#1A1C1C] truncate leading-tight"
-          >
-            {task.title}
-          </h3>
-        </div>
-        {/* Indicators for description, attachments, notes */}
-        <div className="flex items-center gap-1 flex-shrink-0">
-          {task.description && (
-            <FaFileAlt
-              size={12}
-              className="text-[#C4C0C0] hover:text-[#474747]"
-              title="Has description"
-            />
+      {/* Context label */}
+      {context && (
+        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-2">
+          {context}
+        </p>
+      )}
+
+      {/* Title */}
+      <h3 className="text-[14px] font-semibold text-[#1A1A1A] leading-snug mb-4">
+        {task.title}
+      </h3>
+
+      {/* Blocked reason */}
+      {task.blockedReason && (
+        <p className="text-[11px] text-[#EF4444] mb-3 leading-snug">
+          ⚠ {task.blockedReason}
+        </p>
+      )}
+
+      {/* Footer row: priority + meta + assignee */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {/* Priority */}
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${PRIORITY_STYLES[task.priority] || PRIORITY_STYLES[4]}`}>
+            P{task.priority}
+          </span>
+
+          {/* Attachment count */}
+          {attachmentCount > 0 && (
+            <span className="flex items-center gap-1 text-[11px] text-[#A3A3A3]">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+              {attachmentCount}
+            </span>
           )}
-          {hasAttachments && (
-            <FaPaperclip
-              size={12}
-              className="text-[#C4C0C0] hover:text-[#474747]"
-              title={`${task.attachments?.length} attachment(s)`}
-            />
+
+          {/* Due date */}
+          {task.dueAt && (
+            <span className="text-[11px] text-[#A3A3A3]">
+              {new Date(task.dueAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+            </span>
           )}
         </div>
-        {/* Assignee Badge */}
-        {task.assigneeId && (
-          <div
-            title={`Assigned to: ${task.assigneeId}`}
-            className="flex-shrink-0 w-7 h-7 rounded-full bg-accent-500 text-white text-xs font-medium flex items-center justify-center flex-col"
-          >
-            {task.assigneeId.charAt(0).toUpperCase()}
+
+        {/* Assignee avatar */}
+        {assigneeInitial && (
+          <div className="w-6 h-6 rounded-full bg-[#1A1A1A] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+            {assigneeInitial}
           </div>
         )}
       </div>
-
-      {/* ROW 1b: Project + Assignee */}
-      {(task.project || task.assigneeName) && (
-        <div className="flex items-center gap-3 mb-2 text-xs text-[#737373]">
-          {task.project && (
-            <div className="flex items-center gap-1 min-w-0">
-              <FaFolder size={10} className="text-[#A3A3A3] flex-shrink-0" />
-              <span className="truncate">{task.project.name}</span>
-            </div>
-          )}
-          {task.assigneeName && (
-            <div className="flex items-center gap-1 flex-shrink-0">
-              <div className="w-4 h-4 rounded-full bg-[#000000] text-white flex items-center justify-center text-[9px] font-medium flex-shrink-0">
-                {task.assigneeName.charAt(0).toUpperCase()}
-              </div>
-              <span className="truncate max-w-[80px]">{task.assigneeName}</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ROW 2: Metadata */}
-      <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
-        {/* Due Date */}
-        {dueDate && (
-          <span className="text-[#474747]">{dueDate}</span>
-        )}
-
-        {/* Priority */}
-        <div className="relative">
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              if (isHovering) setShowPriorityPicker(!showPriorityPicker)
-            }}
-            className={`px-2 py-1 rounded font-medium transition-all ${getPriorityColor(
-              task.priority
-            )} ${isHovering ? 'cursor-pointer hover:shadow-[0_1px_3px_rgba(28,27,27,0.06)]' : ''}`}
-            title="Priority"
-          >
-            {getPriorityLabel(task.priority)}
-          </button>
-
-          {/* Priority Picker - appears on hover */}
-          {showPriorityPicker && isHovering && (
-            <div className="absolute top-full mt-1 left-0 bg-white rounded shadow-[0_20px_40px_rgba(28,27,27,0.06)] z-10 py-1">
-              {[1, 2, 3, 4].map((p) => (
-                <button
-                  key={p}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    onPriorityChange?.(task.id, p)
-                    setShowPriorityPicker(false)
-                  }}
-                  className={`block w-full text-left px-3 py-2 text-xs font-medium hover:bg-[#F3F3F3] transition-colors ${
-                    task.priority === p ? 'bg-[#F3F3F3]' : ''
-                  }`}
-                >
-                  {getPriorityLabel(p)}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Tags (max 2 + "+N") */}
-        {displayTags.length > 0 && (
-          <div className="flex items-center gap-1">
-            {displayTags.map((tag) => (
-              <span
-                key={tag.id}
-                className="px-2 py-1 bg-[#e6f4f4] text-[#006766] rounded font-medium"
-              >
-                {tag.name}
-              </span>
-            ))}
-            {remainingTags > 0 && (
-              <span className="px-2 py-1 bg-[#F3F3F3] text-[#474747] rounded font-medium">
-                +{remainingTags}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Goal */}
-        {task.goal && (
-          <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded font-medium">
-            {task.goal.name}
-          </span>
-        )}
-
-        {/* Attachments */}
-        {hasAttachments && (
-          <span
-            className="flex items-center gap-1 text-[#A3A3A3]"
-            title={`${task.attachments?.length} attachment(s)`}
-          >
-            <FaPaperclip size={12} /> {task.attachments?.length}
-          </span>
-        )}
-      </div>
-
-      {/* ROW 3 (Conditional): Blocked Reason OR Assignee */}
-      {showRow3 && (
-        <div className="flex items-center gap-3 pt-2 text-xs mt-2">
-          {hasBlockedReason && (
-            <div className="flex items-center gap-1 text-red-600">
-              <span className="font-medium">Blocked:</span>
-              <span className="text-red-500">{task.blockedReason}</span>
-            </div>
-          )}
-          {hasAssignee && !hasBlockedReason && (
-            <div className="flex items-center gap-1 text-[#474747]">
-              <span className="font-medium">Assigned to:</span>
-              <span className="text-[#474747]">{task.assignee?.name}</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* HOVER ACTIONS - Subtle, no layout shift */}
-      {isHovering && (
-        <div className="absolute inset-0 pointer-events-none rounded bg-gradient-to-t from-black/0 to-transparent" />
-      )}
-
-      {isHovering && (
-        <div className="absolute bottom-0 left-0 right-0 flex gap-2 p-3 bg-white rounded-b-[14px] pointer-events-auto">
-          {/* Complete button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              onComplete?.(task.id)
-            }}
-            className="text-xs font-medium px-2 py-1 bg-[#f0fafa] text-[#006766] hover:bg-[#e6f4f4] rounded transition-colors flex items-center gap-1"
-            title="Mark complete"
-          >
-            <FaCheck size={12} />
-            Complete
-          </button>
-
-          {/* Snooze button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              // Snooze for 1 hour
-              const snoozeUntil = new Date()
-              snoozeUntil.setHours(snoozeUntil.getHours() + 1)
-              onSnooze?.(task.id, snoozeUntil)
-            }}
-            className="text-xs font-medium px-2 py-1 bg-[#f0fafa] text-[#006766] hover:bg-[#e6f4f4] rounded transition-colors flex items-center gap-1"
-            title="Snooze for 1 hour"
-          >
-            <FaClock size={12} />
-            Snooze
-          </button>
-
-          {/* View button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              onView?.(task.id)
-            }}
-            className="text-xs font-medium px-2 py-1 bg-[#f0fafa] text-[#006766] hover:bg-[#e6f4f4] rounded transition-colors ml-auto flex items-center gap-1"
-            title="View task details"
-          >
-            <FaEye size={12} />
-            View
-          </button>
-        </div>
-      )}
     </div>
   )
 }
