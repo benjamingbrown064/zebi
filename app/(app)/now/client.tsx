@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Sidebar from '@/components/Sidebar'
-import CaptureBar from '@/components/CaptureBar'
 import ManagersNote from '@/components/ManagersNote'
 import { useWorkspace } from '@/lib/use-workspace'
 import { FaMicrophone } from 'react-icons/fa'
@@ -543,20 +542,16 @@ export default function NowClient() {
     <div className="min-h-screen bg-[#F9F9F9]">
       <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
 
-        {/* ── Top bar ──────────────────────────────────────────────────────── */}
-        <div className="sticky top-0 z-30 bg-white border-b border-[#E5E5E5] px-4 md:px-8 py-3">
-          <div className="max-w-[1400px] mx-auto flex items-center gap-4">
-            <div className="flex-1">
-              <CaptureBar onCaptured={load} />
-            </div>
-            <button
-              onClick={() => router.push('/brain-dump')}
-              className="bg-[#1A1A1A] hover:bg-[#333] text-white rounded px-4 py-2 text-[11px] font-bold uppercase tracking-[0.08em] flex items-center gap-2 transition-colors"
-            >
-              <FaMicrophone className="text-[10px]" />
-              Brain Dump
-            </button>
-          </div>
+        {/* ── Top bar — consistent with rest of app ────────────────────────── */}
+        <div className="sticky top-0 z-30 bg-white border-b border-[#E5E5E5] px-4 md:px-8 py-3 flex items-center justify-between">
+          <h1 className="text-[15px] font-semibold text-[#1A1A1A]">Now</h1>
+          <button
+            onClick={() => router.push('/brain-dump')}
+            className="bg-[#1A1A1A] hover:bg-[#333] text-white rounded px-4 py-2 text-[11px] font-bold uppercase tracking-[0.08em] flex items-center gap-2 transition-colors"
+          >
+            <FaMicrophone className="text-[10px]" />
+            Brain Dump
+          </button>
         </div>
 
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8">

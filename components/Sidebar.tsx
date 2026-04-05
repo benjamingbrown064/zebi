@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import CaptureBar from '@/components/CaptureBar'
 import {
   faHouse,
   faBox,
@@ -193,6 +194,13 @@ function DesktopSidebar({
           ))}
         </div>
       </nav>
+
+      {/* Capture Bar — always visible, fixed at bottom of nav */}
+      {!isCollapsed && (
+        <div className="px-3 pb-3 border-t border-[#E5E5E5] pt-3">
+          <CaptureBar />
+        </div>
+      )}
 
       {/* Bottom: settings + logout */}
       <div className="px-3 py-4 space-y-0.5 border-t border-[#E5E5E5]">
