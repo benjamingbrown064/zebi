@@ -155,8 +155,8 @@ export default function WeeklyPlannerClient({
           </div>
 
           {/* Day columns + backlog — flex-1 + min-h-0 allows inner scroll */}
-          <div className="flex flex-1 overflow-hidden min-h-0 h-full">
-            <div className={`flex-1 grid gap-0 h-full border-t border-[#E5E5E5] ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+          <div className="flex flex-1 overflow-hidden min-h-0 h-full px-6 pb-6 gap-4">
+            <div className={`flex-1 grid h-full gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
               {visibleDays.map(({ date }) => {
                 const dateKey = format(date, 'yyyy-MM-dd')
                 return (
@@ -172,7 +172,7 @@ export default function WeeklyPlannerClient({
             </div>
 
             {!isMobile && (
-              <div className="w-72 flex-shrink-0 h-full border-t border-l border-[#E5E5E5]">
+              <div className="w-72 flex-shrink-0 h-full">
                 <BacklogSection
                   tasks={tasksByDay.backlog}
                   onMarkComplete={handleMarkComplete}
