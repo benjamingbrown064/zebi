@@ -436,7 +436,6 @@ export default function BoardClient({
     setIsQuickAddOpen(true)
   }
 
-  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
@@ -445,7 +444,6 @@ export default function BoardClient({
         isCollapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
       />
-      <div className={mainPaddingClass}>
         <ResponsiveHeader
           title="Board"
         >
@@ -531,7 +529,6 @@ export default function BoardClient({
             ))}
           </div>
         </main>
-      </div>
 
       {/* Task Detail Modal */}
       <TaskDetailModal

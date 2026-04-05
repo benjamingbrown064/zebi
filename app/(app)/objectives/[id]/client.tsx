@@ -106,7 +106,6 @@ export default function ObjectiveDetailClient({
     }
   }
 
-  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex">
@@ -116,7 +115,6 @@ export default function ObjectiveDetailClient({
         onCollapsedChange={setSidebarCollapsed}
       />
 
-      <div className={`flex-1 transition-all duration-300 ${mainPaddingClass}`}>
         {/* Header */}
         <header className="bg-white sticky top-0 z-10">
           <div className="px-4 md:px-12 py-4 md:py-8">
@@ -576,6 +574,5 @@ export default function ObjectiveDetailClient({
           </div>
         </ResponsivePageContainer>
       </div>
-    </div>
   )
 }

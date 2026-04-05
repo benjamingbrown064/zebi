@@ -112,7 +112,7 @@ export default function NewProjectPage() {
     }
   };
 
-  const mainPaddingClass = isMobile ? 'pt-[64px]' : sidebarCollapsed ? 'ml-16' : 'ml-64';
+  const mainPaddingClass = ''
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">

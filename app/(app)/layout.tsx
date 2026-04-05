@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Sidebar from '@/components/Sidebar'
 import { useWorkspace } from '@/lib/use-workspace'
 
@@ -34,6 +34,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (!workspaceId) return null
 
+  // The layout's only job: render Sidebar once + offset the main content.
+  // Each page manages its own header — no generic header here.
   const mainClass = isMobile ? '' : sidebarCollapsed ? 'ml-[60px]' : 'ml-64'
 
   return (
@@ -44,7 +46,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         isCollapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
       />
-      <div className={`${mainClass} transition-all duration-200`}>
+      {/* Main content — offset to clear sidebar, pages own their headers */}
+      <div className={`${mainClass} transition-all duration-200 min-h-screen`}>
         {children}
       </div>
     </div>

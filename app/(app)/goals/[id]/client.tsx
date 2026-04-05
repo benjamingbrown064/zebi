@@ -78,7 +78,6 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
     return 'bg-red-500'
   }
 
-  const mainPaddingClass = sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
@@ -88,7 +87,6 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
         onCollapsedChange={setSidebarCollapsed}
       />
 
-      <div className={mainPaddingClass}>
         {/* Back Button */}
         <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
           <button
@@ -222,8 +220,6 @@ export default function GoalDetailClient({ goal }: GoalDetailClientProps) {
               </div>
             )}
           </div>
-        </ResponsivePageContainer>
-      </div>
-    </div>
+        </ResponsivePageContainer>    </div>
   )
 }

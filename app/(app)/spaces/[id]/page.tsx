@@ -1134,7 +1134,7 @@ export default function SpaceDetailPage() {
   }
   if (!space) return null
 
-  const mainClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
+  const mainClass = ''
 
   return (
     <div className="min-h-screen bg-[#F3F3F3]">

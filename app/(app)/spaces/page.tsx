@@ -279,7 +279,7 @@ export default function SpacesPage() {
     }
   }
 
-  const mainClass = isMobile ? '' : sidebarCollapsed ? 'ml-[60px]' : 'ml-64'
+  const mainClass = ''
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">

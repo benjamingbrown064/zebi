@@ -128,7 +128,6 @@ export default function NewDocumentPage() {
     }
   };
 
-  const mainPaddingClass = isMobile ? 'pt-[64px]' : sidebarCollapsed ? 'ml-16' : 'ml-64';
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
@@ -138,7 +137,6 @@ export default function NewDocumentPage() {
         onCollapsedChange={setSidebarCollapsed}
       />
       
-      <div className={mainPaddingClass}>
         {/* Header */}
         <header className="bg-white sticky top-0 z-10">
           <div className="px-4 md:px-8 py-4 md:py-6">
@@ -293,7 +291,6 @@ export default function NewDocumentPage() {
             </div>
           </div>
         </ResponsivePageContainer>
-      </div>
     </div>
   );
 }

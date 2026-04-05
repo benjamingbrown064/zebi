@@ -99,7 +99,6 @@ export default function DashboardClient({
     day: 'numeric',
   })
 
-  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   // Load AI suggestions
   useEffect(() => {
@@ -139,7 +138,6 @@ export default function DashboardClient({
         onCollapsedChange={setSidebarCollapsed}
       />
       
-      <div className={mainPaddingClass}>
         {/* Header */}
         <header className="bg-white sticky top-0 z-10">
           <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-4 md:py-8">
@@ -251,7 +249,6 @@ export default function DashboardClient({
             </div>
           </div>
         )}
-      </div>
 
       {/* Modals */}
       {showCompletedModal && (

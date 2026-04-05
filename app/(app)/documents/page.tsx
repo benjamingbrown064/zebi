@@ -163,7 +163,7 @@ export default function DocumentsPage() {
     return <LoadingScreen message="Loading documents..." />;
   }
 
-  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-20' : 'ml-64';
+  const mainPaddingClass = ''
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">

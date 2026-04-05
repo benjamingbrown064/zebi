@@ -155,7 +155,6 @@ export default function InboxPage() {
     await loadStats()
   }
 
-  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
@@ -166,7 +165,6 @@ export default function InboxPage() {
         onCollapsedChange={setSidebarCollapsed}
       />
 
-      <div className={mainPaddingClass}>
         <ResponsiveHeader
           title="Inbox"
           subtitle="Capture first, organize later"
@@ -322,8 +320,6 @@ export default function InboxPage() {
               </button>
             )}
           </div>
-        )}
-      </div>
-    </div>
+        )}    </div>
   )
 }

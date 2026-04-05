@@ -42,7 +42,6 @@ export default function SettingsPage() {
     }
   }
 
-  const mainPaddingClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
@@ -51,7 +50,6 @@ export default function SettingsPage() {
         isCollapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
       />
-      <div className={mainPaddingClass}>
         <ResponsiveHeader
           title="Settings"
           subtitle="Manage your preferences"
@@ -146,8 +144,6 @@ export default function SettingsPage() {
               </div>
             </div>
           </main>
-        </ResponsivePageContainer>
-      </div>
-    </div>
+        </ResponsivePageContainer>    </div>
   )
 }

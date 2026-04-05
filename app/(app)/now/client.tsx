@@ -536,16 +536,12 @@ export default function NowClient() {
     }
   }, [load])
 
-  const mainClass = isMobile ? '' : sidebarCollapsed ? 'ml-16' : 'ml-64'
-
   const today = new Date()
   const dateStr = today.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
     <div className="min-h-screen bg-[#F3F3F3]">
       <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
-
-      <div className={`${mainClass} transition-all duration-200`}>
 
         {/* ── Top bar ──────────────────────────────────────────────────────── */}
         <div className="sticky top-0 z-30 bg-white border-b border-[#E5E5E5] px-4 md:px-8 py-3">
@@ -641,7 +637,6 @@ export default function NowClient() {
             <div className="text-center py-12 text-[#737373]">Failed to load — refresh to try again</div>
           )}
         </div>
-      </div>
     </div>
   )
 }
