@@ -47,25 +47,24 @@ interface SidebarProps {
 // ─── Nav definitions ─────────────────────────────────────────────────────────
 
 const PRIMARY_NAV: NavItem[] = [
-  { href: '/now',      icon: faHouse,  label: 'Now' },
-  { href: '/spaces',   icon: faBox,    label: 'Spaces' },
-  { href: '/memory',   icon: faBrain,  label: 'Memory' },
-]
-
-const MORE_NAV: NavItem[] = [
+  { href: '/founder',     icon: faChartLine,     label: 'Dashboard' },
+  { href: '/now',         icon: faHouse,         label: 'Now' },
+  { href: '/inbox',       icon: faInbox,         label: 'Inbox' },
+  { href: '/goals',       icon: faBullseyeArrow, label: 'Goals' },
+  { href: '/spaces',      icon: faBox,           label: 'Spaces' },
+  { href: '/objectives',  icon: faFlagCheckered, label: 'Objectives' },
+  { href: '/projects',    icon: faFolderOpen,    label: 'Projects' },
   { href: '/tasks',       icon: faListCheck,     label: 'Tasks' },
   { href: '/board',       icon: faGrid2,         label: 'Board' },
   { href: '/planner',     icon: faCalendarWeek,  label: 'Weekly Planner' },
-  { href: '/projects',    icon: faFolderOpen,    label: 'Projects' },
-  { href: '/objectives',  icon: faFlagCheckered, label: 'Objectives' },
-  { href: '/goals',       icon: faBullseyeArrow, label: 'Goals' },
+  { href: '/memory',      icon: faBrain,         label: 'Memory' },
   { href: '/documents',   icon: faFileLines,     label: 'Documents' },
-  { href: '/inbox',       icon: faInbox,         label: 'Inbox' },
   { href: '/insights',    icon: faLightbulb,     label: 'AI Insights' },
-  { href: '/founder',     icon: faChartLine,     label: 'Founder View' },
-  { href: '/queue',       icon: faMicrochip,     label: 'Agent Queue' },
   { href: '/activity',    icon: faTimeline,      label: 'Activity Feed' },
+  { href: '/queue',       icon: faMicrochip,     label: 'Agent Queue' },
 ]
+
+const MORE_NAV: NavItem[] = []
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
