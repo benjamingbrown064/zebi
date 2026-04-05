@@ -26,7 +26,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F3F3F3] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" />
       </div>
     )
@@ -39,7 +39,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const mainClass = isMobile ? '' : sidebarCollapsed ? 'ml-[60px]' : 'ml-64'
 
   return (
-    <div className="min-h-screen bg-[#F3F3F3]">
+    <div className="min-h-screen bg-[#F9F9F9]">
       {/* Sidebar renders ONCE — never remounts on navigation */}
       <Sidebar
         workspaceName="Zebi"
