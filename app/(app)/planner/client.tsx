@@ -141,9 +141,9 @@ export default function WeeklyPlannerClient({
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex-1 flex flex-col overflow-hidden px-6 py-6">
+        <div className="flex-1 flex flex-col overflow-hidden p-0">
           {/* Week navigator */}
-          <div className="mb-6 flex-shrink-0">
+          <div className="mb-4 flex-shrink-0 px-5 pt-5">
             <WeekNavigator
               currentStart={currentDayStart}
               visibleDays={visibleDays}
@@ -155,8 +155,8 @@ export default function WeeklyPlannerClient({
           </div>
 
           {/* Day columns + backlog */}
-          <div className="flex gap-5 flex-1 overflow-hidden min-h-0">
-            <div className={`flex-1 grid gap-4 overflow-auto ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+          <div className="flex gap-0 flex-1 overflow-hidden min-h-0">
+            <div className={`flex-1 grid gap-0 overflow-auto border-t border-[#E5E5E5] ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
               {visibleDays.map(({ date }) => {
                 const dateKey = format(date, 'yyyy-MM-dd')
                 return (
@@ -172,7 +172,7 @@ export default function WeeklyPlannerClient({
             </div>
 
             {!isMobile && (
-              <div className="w-72 flex-shrink-0 overflow-auto">
+              <div className="w-72 flex-shrink-0 overflow-auto border-t border-l border-[#E5E5E5]">
                 <BacklogSection
                   tasks={tasksByDay.backlog}
                   onMarkComplete={handleMarkComplete}

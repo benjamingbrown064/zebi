@@ -32,12 +32,10 @@ export default function DayColumn({ date, tasks, capacity, onMarkComplete }: Day
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col rounded overflow-hidden transition-all ${
-        isOver ? 'ring-2 ring-[#1A1A1A]/20' : ''
+      className={`flex flex-col overflow-hidden transition-all border-r border-[#E5E5E5] ${
+        isOver ? 'ring-inset ring-2 ring-[#1A1A1A]/20' : ''
       } ${
-        isCurrentDay
-          ? 'bg-[#1A1A1A]'
-          : 'bg-white border border-[#E5E5E5]'
+        isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-white'
       }`}
     >
       {/* Day header */}
