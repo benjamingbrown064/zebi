@@ -129,7 +129,7 @@ export default function WeeklyPlannerClient({
   const activeTask = activeId ? tasks.find(t => t.id === activeId) : null
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
+    <div className="h-screen bg-[#F9F9F9] flex flex-col overflow-hidden">
       {/* ── Consistent top bar ───────────────────────────────────────────── */}
       <div className="sticky top-0 z-20 bg-white border-b border-[#E5E5E5] px-6 py-3 flex-shrink-0">
         <h1 className="text-[15px] font-semibold text-[#1A1A1A]">Weekly Planner</h1>
@@ -141,7 +141,7 @@ export default function WeeklyPlannerClient({
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex-1 flex flex-col overflow-hidden p-0">
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
           {/* Week navigator */}
           <div className="mb-4 flex-shrink-0 px-5 pt-5">
             <WeekNavigator
@@ -154,9 +154,9 @@ export default function WeeklyPlannerClient({
             />
           </div>
 
-          {/* Day columns + backlog */}
-          <div className="flex gap-0 flex-1 overflow-hidden min-h-0">
-            <div className={`flex-1 grid gap-0 overflow-auto border-t border-[#E5E5E5] ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+          {/* Day columns + backlog — flex-1 + min-h-0 allows inner scroll */}
+          <div className="flex flex-1 overflow-hidden min-h-0 h-full">
+            <div className={`flex-1 grid gap-0 h-full border-t border-[#E5E5E5] ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
               {visibleDays.map(({ date }) => {
                 const dateKey = format(date, 'yyyy-MM-dd')
                 return (
@@ -172,7 +172,7 @@ export default function WeeklyPlannerClient({
             </div>
 
             {!isMobile && (
-              <div className="w-72 flex-shrink-0 overflow-auto border-t border-l border-[#E5E5E5]">
+              <div className="w-72 flex-shrink-0 h-full border-t border-l border-[#E5E5E5]">
                 <BacklogSection
                   tasks={tasksByDay.backlog}
                   onMarkComplete={handleMarkComplete}

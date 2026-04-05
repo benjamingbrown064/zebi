@@ -32,7 +32,7 @@ export default function DayColumn({ date, tasks, capacity, onMarkComplete }: Day
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col overflow-hidden transition-all border-r border-[#E5E5E5] ${
+      className={`flex flex-col h-full overflow-hidden transition-all border-r border-[#E5E5E5] ${
         isOver ? 'ring-inset ring-2 ring-[#1A1A1A]/20' : ''
       } ${
         isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-white'
@@ -88,8 +88,8 @@ export default function DayColumn({ date, tasks, capacity, onMarkComplete }: Day
       {/* Divider */}
       <div className={isCurrentDay ? 'border-t border-white/10' : 'border-t border-[#F3F3F3]'} />
 
-      {/* Tasks list */}
-      <div className={`flex-1 p-3 space-y-2 overflow-y-auto min-h-[260px] ${
+      {/* Tasks list — scrolls independently, header stays fixed */}
+      <div className={`flex-1 p-3 space-y-2 overflow-y-auto ${
         isCurrentDay ? 'bg-[#1A1A1A]' : 'bg-[#F9F9F9]'
       }`}>
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
