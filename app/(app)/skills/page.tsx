@@ -426,6 +426,12 @@ function SkillModal({
 // ─── Detail panel ─────────────────────────────────────────────────────────────
 
 function SkillDetail({ skill, onEdit, onClose }: { skill: Skill; onEdit: () => void; onClose: () => void }) {
+  const steps: SkillStep[]        = skill.steps           ?? []
+  const good:  string[]           = skill.qualityCriteria?.good        ?? []
+  const bad:   string[]           = skill.qualityCriteria?.bad         ?? []
+  const check: string[]           = skill.qualityCriteria?.checkBefore ?? []
+  const exGood: string[]          = skill.examples?.good ?? []
+  const exBad:  string[]          = skill.examples?.bad  ?? []
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div
@@ -463,11 +469,11 @@ function SkillDetail({ skill, onEdit, onClose }: { skill: Skill; onEdit: () => v
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
           {/* Steps */}
-          {skill.steps.length > 0 && (
+          {steps.length > 0 && (
             <div>
               <h3 className="text-[12px] font-semibold text-[#1A1C1C] uppercase tracking-wide mb-3">Steps</h3>
               <div className="space-y-3">
-                {skill.steps.map((step, i) => (
+                {steps.map((step, i) => (
                   <div key={i} className="flex gap-3">
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1A1C1C] text-white flex items-center justify-center text-[11px] font-semibold mt-0.5">
                       {step.order}
@@ -484,54 +490,56 @@ function SkillDetail({ skill, onEdit, onClose }: { skill: Skill; onEdit: () => v
           )}
 
           {/* Quality Criteria */}
-          <div>
-            <h3 className="text-[12px] font-semibold text-[#1A1C1C] uppercase tracking-wide mb-3">Quality Criteria</h3>
-            <div className="space-y-4">
-              {skill.qualityCriteria.good.length > 0 && (
-                <div>
-                  <p className="text-[12px] font-medium text-green-700 mb-1">✅ What good looks like</p>
-                  <ul className="space-y-1">
-                    {skill.qualityCriteria.good.map((item, i) => (
-                      <li key={i} className="text-[13px] text-[#474747] flex gap-2"><span className="text-green-500 shrink-0">•</span>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {skill.qualityCriteria.bad.length > 0 && (
-                <div>
-                  <p className="text-[12px] font-medium text-red-700 mb-1">❌ What bad looks like</p>
-                  <ul className="space-y-1">
-                    {skill.qualityCriteria.bad.map((item, i) => (
-                      <li key={i} className="text-[13px] text-[#474747] flex gap-2"><span className="text-red-500 shrink-0">•</span>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {skill.qualityCriteria.checkBefore.length > 0 && (
-                <div>
-                  <p className="text-[12px] font-medium text-blue-700 mb-1">🔍 Check before done</p>
-                  <ul className="space-y-1">
-                    {skill.qualityCriteria.checkBefore.map((item, i) => (
-                      <li key={i} className="text-[13px] text-[#474747] flex gap-2"><span className="text-blue-500 shrink-0">•</span>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {(good.length > 0 || bad.length > 0 || check.length > 0) && (
+            <div>
+              <h3 className="text-[12px] font-semibold text-[#1A1C1C] uppercase tracking-wide mb-3">Quality Criteria</h3>
+              <div className="space-y-4">
+                {good.length > 0 && (
+                  <div>
+                    <p className="text-[12px] font-medium text-green-700 mb-1">✅ What good looks like</p>
+                    <ul className="space-y-1">
+                      {good.map((item, i) => (
+                        <li key={i} className="text-[13px] text-[#474747] flex gap-2"><span className="text-green-500 shrink-0">•</span>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {bad.length > 0 && (
+                  <div>
+                    <p className="text-[12px] font-medium text-red-700 mb-1">❌ What bad looks like</p>
+                    <ul className="space-y-1">
+                      {bad.map((item, i) => (
+                        <li key={i} className="text-[13px] text-[#474747] flex gap-2"><span className="text-red-500 shrink-0">•</span>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {check.length > 0 && (
+                  <div>
+                    <p className="text-[12px] font-medium text-blue-700 mb-1">🔍 Check before done</p>
+                    <ul className="space-y-1">
+                      {check.map((item, i) => (
+                        <li key={i} className="text-[13px] text-[#474747] flex gap-2"><span className="text-blue-500 shrink-0">•</span>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Examples */}
-          {skill.examples && (skill.examples.good.length > 0 || skill.examples.bad.length > 0) && (
+          {(exGood.length > 0 || exBad.length > 0) && (
             <div>
               <h3 className="text-[12px] font-semibold text-[#1A1C1C] uppercase tracking-wide mb-3">Examples</h3>
               <div className="space-y-3">
-                {skill.examples.good.map((ex, i) => (
+                {exGood.map((ex, i) => (
                   <div key={i} className="bg-green-50 border border-green-200 rounded-[4px] p-3">
                     <p className="text-[11px] font-semibold text-green-700 mb-1">✅ Good</p>
                     <p className="text-[13px] text-[#474747]">{ex}</p>
                   </div>
                 ))}
-                {skill.examples.bad.map((ex, i) => (
+                {exBad.map((ex, i) => (
                   <div key={i} className="bg-red-50 border border-red-200 rounded-[4px] p-3">
                     <p className="text-[11px] font-semibold text-red-700 mb-1">❌ Bad</p>
                     <p className="text-[13px] text-[#474747]">{ex}</p>
@@ -557,6 +565,7 @@ export default function SkillsPage() {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
   const [editSkill, setEditSkill] = useState<Skill | null>(null)
   const [showCreate, setShowCreate] = useState(false)
+  const [detailLoading, setDetailLoading] = useState(false)
 
   useEffect(() => {
     if (!workspaceLoading && workspaceId) loadSkills()
@@ -573,6 +582,19 @@ export default function SkillsPage() {
       setSkills(data.skills ?? [])
     } finally {
       setLoading(false)
+    }
+  }
+
+  const openDetail = async (skill: Skill) => {
+    setDetailLoading(true)
+    try {
+      const res = await fetch(`/api/skills/${skill.id}`)
+      const data = await res.json()
+      setSelectedSkill(data.skill ?? skill)
+    } catch {
+      setSelectedSkill(skill)
+    } finally {
+      setDetailLoading(false)
     }
   }
 
@@ -730,7 +752,7 @@ export default function SkillsPage() {
                     {grouped[cat.value].map(skill => (
                       <div
                         key={skill.id}
-                        onClick={() => setSelectedSkill(skill)}
+                        onClick={() => openDetail(skill)}
                         className="bg-white border border-[#C6C6C6] rounded-[4px] p-4 cursor-pointer hover:border-[#1A1C1C] hover:shadow-[0px_4px_12px_rgba(0,0,0,0.06)] transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -764,6 +786,13 @@ export default function SkillsPage() {
           )}
         </div>
       </div>
+
+      {/* Detail loading overlay */}
+      {detailLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+          <div className="w-8 h-8 border-2 border-white border-t-[#1A1C1C] rounded-full animate-spin" />
+        </div>
+      )}
 
       {/* Modals */}
       {showCreate && (
