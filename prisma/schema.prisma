@@ -59,6 +59,7 @@ model Workspace {
   agentHeartbeats   AgentHeartbeat[]
   agentMessages     AgentMessage[]
   skills            Skill[]
+  meetings          Meeting[]
 
   // AI Assistant Relations (Week 1 Day 1-2)
   aiConversations   AIConversation[]
@@ -1356,6 +1357,91 @@ model Skill {
   @@index([status])
   @@index([tags])
   @@map("skills")
+}
+
+// ==================== MEETINGS ====================
+
+model Meeting {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId          String    @db.Text
+
+  title                String
+  agenda               String    @db.Text  // markdown
+
+  status               String    @default("draft")
+  // draft | open | contributing | concluded | archived
+
+  // Participants — required must contribute before conclusion; optional are invited but non-blocking
+  requiredParticipants String[]  // ["harvey", "doug", "theo", "casper", "ben"]
+  optionalParticipants String[]  @default([])
+
+  // Skills agents should use when preparing contributions (skill IDs)
+  requiredSkills       String[]  @default([])
+
+  // Structured conclusion (written by Ben or agent)
+  conclusion           Json?
+  // {
+  //   decision: string,
+  //   rationale: string,
+  //   resultingActions: [{ title, assignTo, dueDate? }],
+  //   owners: string[],
+  //   reviewDate?: string
+  // }
+
+  // Who concluded — split into type + value for clean querying
+  concludedByType      String?   @db.Text  // "user" | "agent"
+  concludedBy          String?   @db.Text  // user UUID or agent name
+  concludedAt          DateTime? @db.Timestamptz()
+
+  // Who created — typed for clean querying
+  createdByType        String    @db.Text  // "user" | "agent"
+  createdBy            String    @db.Text  // user UUID or agent name
+
+  createdAt            DateTime  @default(now()) @db.Timestamptz()
+  updatedAt            DateTime  @updatedAt @db.Timestamptz()
+
+  workspace            Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contributions        MeetingContribution[]
+
+  @@index([workspaceId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("meetings")
+}
+
+model MeetingContribution {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  meetingId   String   @db.Text
+
+  author      String   @db.Text
+  // "harvey" | "theo" | "doug" | "casper" | "ben"
+
+  role        String   @db.Text
+  // "strategic-commercial" | "research-planning" | "technical-systems" | "ops-execution" | "founder"
+
+  position       String   @db.Text   // 1–2 sentence headline stance
+  reasoning      String   @db.Text   // full explanation
+  recommendation String   @db.Text   // what they think should happen
+  confidence     Int                  // 1–5
+
+  // Enum-backed allowlist: blocker | risk | opportunity | dependency
+  flags          String[]  @default([])
+
+  // Skill IDs used to inform this contribution (validated against skills table)
+  skillsUsed     String[]  @default([])
+
+  // Structured evidence refs:
+  // [{ type: "document"|"task"|"objective"|"memory"|"insight"|"url", id?: string, url?: string, label?: string }]
+  evidenceRefs   Json      @default("[]")
+
+  createdAt      DateTime  @default(now()) @db.Timestamptz()
+  updatedAt      DateTime  @updatedAt @db.Timestamptz()
+
+  meeting        Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+  @@index([author])
+  @@map("meeting_contributions")
 }
 
 // Force Prisma regeneration Mon Apr  6 00:55:00 GMT 2026

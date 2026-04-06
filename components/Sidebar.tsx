@@ -29,6 +29,7 @@ import {
   faTimeline,
   faSearch,
   faMessages,
+  faScreenUsers,
   faBookOpenLines,
 } from '@fortawesome/pro-duotone-svg-icons'
 import GlobalSearch from './GlobalSearch'
@@ -65,6 +66,7 @@ const PRIMARY_NAV: NavItem[] = [
   { href: '/skills',      icon: faBookOpenLines, label: 'Skills' },
   { href: '/insights',    icon: faLightbulb,     label: 'AI Insights' },
   { href: '/activity',    icon: faTimeline,      label: 'Activity Feed' },
+  { href: '/meetings',    icon: faScreenUsers,   label: 'Meetings' },
   { href: '/comms',       icon: faMessages,      label: 'Agent Comms' },
   { href: '/queue',       icon: faMicrochip,     label: 'Agent Queue' },
 ]
