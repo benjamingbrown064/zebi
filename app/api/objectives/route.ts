@@ -166,12 +166,42 @@ export async function POST(request: NextRequest) {
       autoBreakdown = true, // Generate breakdown by default
     } = body;
 
-    // Validate required fields
-    if (!workspaceId || !title || !metricType || !targetValue || !startDate || !deadline || !createdBy) {
+    // Validate required fields — return explicit list of what's missing
+    const missing: string[] = []
+    if (!workspaceId)   missing.push('workspaceId')
+    if (!title)         missing.push('title')
+    if (!metricType)    missing.push('metricType')
+    if (!targetValue)   missing.push('targetValue')
+    if (!startDate)     missing.push('startDate')
+    if (!deadline)      missing.push('deadline')
+    if (!createdBy)     missing.push('createdBy')
+
+    if (missing.length > 0) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        {
+          success: false,
+          error: `Missing required fields: ${missing.join(', ')}`,
+          required: {
+            workspaceId: 'string — workspace UUID',
+            title: 'string — objective title',
+            metricType: 'string — e.g. "revenue", "mrr", "users", "tasks"',
+            targetValue: 'number — numeric target',
+            startDate: 'string — ISO 8601 date',
+            deadline: 'string — ISO 8601 date',
+            createdBy: 'string — user UUID or agent name (e.g. "harvey")',
+          },
+          optional: {
+            companyId: 'string — space/company UUID',
+            goalId: 'string — goal UUID',
+            description: 'string',
+            objectiveType: 'string — default "general"',
+            unit: 'string — e.g. "£/month", "%", "users"',
+            priority: 'number 1–5 — default 3',
+            autoBreakdown: 'boolean — default true (AI generates milestones/tasks)',
+          },
+        },
         { status: 400 }
-      );
+      )
     }
 
     // Create objective
