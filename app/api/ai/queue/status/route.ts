@@ -1,34 +1,33 @@
-// GET /api/ai/queue/status
-// Returns an overview of the AI work queue status
+import { NextRequest, NextResponse } from 'next/server'
+import { validateAIAuth } from '@/lib/doug-auth'
+import { requireWorkspace } from '@/lib/workspace'
+import { getQueueStatus } from '@/lib/ai-queue'
 
-import { NextResponse } from 'next/server';
-import { getQueueStatus } from '@/lib/ai-queue';
+export const dynamic = 'force-dynamic'
 
-export const dynamic = 'force-dynamic';
+/**
+ * GET /api/ai/queue/status?workspaceId=...
+ *
+ * Returns current queue state: ready, claimed, completed, exhausted counts
+ * broken down by priority and type.
+ */
+export async function GET(request: NextRequest) {
+  const auth = validateAIAuth(request)
 
-export async function GET(request: Request) {
+  let workspaceId: string
+  if (auth.valid) {
+    const wid = request.nextUrl.searchParams.get('workspaceId')
+    if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+    workspaceId = wid
+  } else {
+    workspaceId = await requireWorkspace()
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const workspaceId = searchParams.get('workspaceId');
-
-    if (!workspaceId) {
-      return NextResponse.json(
-        { error: 'workspaceId is required' },
-        { status: 400 }
-      );
-    }
-
-    const status = await getQueueStatus(workspaceId);
-
-    return NextResponse.json({
-      message: 'Queue status retrieved',
-      status,
-    });
-  } catch (error) {
-    console.error('Error in /api/ai/queue/status:', error);
-    return NextResponse.json(
-      { error: 'Failed to get queue status', details: String(error) },
-      { status: 500 }
-    );
+    const status = await getQueueStatus(workspaceId)
+    return NextResponse.json({ success: true, status })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ success: false, error: msg }, { status: 500 })
   }
 }

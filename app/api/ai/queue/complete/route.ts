@@ -1,61 +1,72 @@
-// POST /api/ai/queue/complete
-// Marks a work queue item as completed and logs the work done
+import { NextRequest, NextResponse } from 'next/server'
+import { validateAIAuth } from '@/lib/doug-auth'
+import { requireWorkspace } from '@/lib/workspace'
+import { completeQueueItem, failQueueItem } from '@/lib/ai-queue'
+import type { AgentName } from '@/lib/ai-queue'
 
-import { NextResponse } from 'next/server';
-import { completeQueueItem, failQueueItem } from '@/lib/ai-queue';
+export const dynamic = 'force-dynamic'
 
-export const dynamic = 'force-dynamic';
+/**
+ * POST /api/ai/queue/complete
+ *
+ * Mark a work item as completed or failed.
+ * Must be called by the same agent that claimed the item.
+ *
+ * Body:
+ * {
+ *   workspaceId: string
+ *   itemId:      string
+ *   success:     boolean
+ *   workLog?:    object   // what was done, output, links
+ *   failureReason?: string  // required if success: false
+ * }
+ */
+export async function POST(request: NextRequest) {
+  const auth = validateAIAuth(request)
+  const body = await request.json()
 
-export async function POST(request: Request) {
+  let workspaceId: string
+  if (auth.valid) {
+    if (!body.workspaceId) return NextResponse.json({ error: 'workspaceId is required' }, { status: 400 })
+    workspaceId = body.workspaceId
+  } else {
+    workspaceId = await requireWorkspace()
+  }
+
+  const { itemId, success, workLog, failureReason } = body
+  if (!itemId) return NextResponse.json({ error: 'itemId is required' }, { status: 400 })
+
+  const agent = (auth.assistant ?? body.agent ?? 'doug') as AgentName
+
   try {
-    const body = await request.json();
-    const { itemId, success, workLog, failureReason } = body;
-
-    if (!itemId) {
-      return NextResponse.json(
-        { error: 'itemId is required' },
-        { status: 400 }
-      );
-    }
-
-    // If the work failed, mark as failed and increment retry count
     if (success === false) {
-      if (!failureReason) {
-        return NextResponse.json(
-          { error: 'failureReason is required when success is false' },
-          { status: 400 }
-        );
-      }
-
-      const failedItem = await failQueueItem(itemId, failureReason);
-
+      if (!failureReason) return NextResponse.json({ error: 'failureReason is required when success is false' }, { status: 400 })
+      const item = await failQueueItem(itemId, agent, failureReason)
       return NextResponse.json({
-        message: 'Work item marked as failed',
+        success: true,
+        message: item.retryCount >= 3 ? 'Work item exhausted (max retries)' : 'Work item failed — will retry',
         item: {
-          id: failedItem.id,
-          failureReason: failedItem.failureReason,
-          retryCount: failedItem.retryCount,
-          willRetry: failedItem.retryCount < 3,
+          id:            item.id,
+          failureReason: item.failureReason,
+          retryCount:    item.retryCount,
+          willRetry:     item.retryCount < 3,
         },
-      });
+      })
     }
 
-    // Mark as completed
-    const completedItem = await completeQueueItem(itemId, workLog || {});
-
+    const item = await completeQueueItem(itemId, agent, workLog ?? {})
     return NextResponse.json({
-      message: 'Work item completed successfully',
+      success: true,
+      message: 'Work item completed',
       item: {
-        id: completedItem.id,
-        completedAt: completedItem.completedAt,
-        workLog: completedItem.workLog,
+        id:          item.id,
+        completedAt: item.completedAt,
+        workLog:     item.workLog,
       },
-    });
-  } catch (error) {
-    console.error('Error in /api/ai/queue/complete:', error);
-    return NextResponse.json(
-      { error: 'Failed to complete queue item', details: String(error) },
-      { status: 500 }
-    );
+    })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[queue/complete]', msg)
+    return NextResponse.json({ success: false, error: msg }, { status: 500 })
   }
 }
