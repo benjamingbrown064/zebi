@@ -17,6 +17,10 @@
       "schedule": "0 8 * * *"
     },
     {
+      "path": "/api/cron/stale-tasks",
+      "schedule": "0 9 * * *"
+    },
+    {
       "path": "/api/cron/proactive-questions",
       "schedule": "0 10 * * *"
     },

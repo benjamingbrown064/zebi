@@ -189,6 +189,56 @@ export async function PATCH(
     // Writes AIMemory entries for dependent tasks (fire-and-forget, never blocks response)
     const isNowComplete = updatedTask.completedAt !== null && body.completedAt !== undefined
     if (isNowComplete) {
+      // P1 completion alert — immediately notify Ben for priority 1 tasks
+      if (updatedTask.priority === 1) {
+        const agent     = updatedTask.ownerAgent ?? 'an agent'
+        const space     = (updatedTask as any).company?.name ?? null
+        const outputRef = updatedTask.outputUrl ?? updatedTask.outputDocId ?? null
+        prisma.agentMessage.create({
+          data: {
+            workspaceId:    updatedTask.workspaceId,
+            threadId:       '',
+            fromAgent:      'system',
+            toAgent:        'ben',
+            subject:        `✅ P1 complete: ${updatedTask.title}`,
+            body:           [
+              `${agent.charAt(0).toUpperCase() + agent.slice(1)} just marked a Priority 1 task as done:`,
+              `"${updatedTask.title}"${space ? ` · ${space}` : ''}`,
+              updatedTask.completionNote ? `\nNote: ${updatedTask.completionNote}` : '',
+              outputRef ? `\nOutput: ${outputRef}` : '',
+            ].filter(Boolean).join('\n'),
+            taskId:         updatedTask.id,
+            companyId:      updatedTask.companyId ?? null,
+            projectId:      updatedTask.projectId ?? null,
+            actionRequired: false,
+          },
+        }).then(async (msg) => {
+          await prisma.agentMessage.update({ where: { id: msg.id }, data: { threadId: msg.id } })
+          await prisma.activityLog.create({
+            data: {
+              workspaceId:  updatedTask.workspaceId,
+              eventType:    'agent_message',
+              eventPayload: {
+                messageId:       msg.id,
+                threadId:        msg.id,
+                fromAgent:       'system',
+                toAgent:         'ben',
+                subject:         msg.subject,
+                bodyPreview:     msg.body.slice(0, 200),
+                actionRequired:  false,
+                p1Completion:    true,
+                completedBy:     agent,
+              },
+              createdBy: '00000000-0000-0000-0000-000000000000',
+              aiAgent:   agent,
+              taskId:    updatedTask.id,
+              companyId: updatedTask.companyId ?? null,
+              projectId: updatedTask.projectId ?? null,
+            },
+          })
+        }).catch(() => {})
+      }
+
       propagateTaskCompletion({
         id: updatedTask.id,
         workspaceId: updatedTask.workspaceId,
