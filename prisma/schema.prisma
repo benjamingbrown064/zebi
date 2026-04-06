@@ -57,6 +57,7 @@ model Workspace {
   // Multi-agent operating system
   handoffs          Handoff[]
   agentHeartbeats   AgentHeartbeat[]
+  agentMessages     AgentMessage[]
 
   // AI Assistant Relations (Week 1 Day 1-2)
   aiConversations   AIConversation[]
@@ -1281,6 +1282,43 @@ model AgentHeartbeat {
   @@index([workspaceId])
   @@index([agent])
   @@map("agent_heartbeats")
+}
+
+// ==================== AGENT MESSAGE BUS ====================
+
+model AgentMessage {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId String   @db.Text
+  threadId    String   @db.Text            // groups replies; first message sets this to its own id
+
+  fromAgent   String   @db.Text            // harvey | theo | doug | casper | ben | system
+  toAgent     String   @db.Text            // harvey | theo | doug | casper | ben | all
+
+  subject     String?  @db.Text            // only on thread-opening message
+  body        String   @db.Text
+
+  // Optional context links
+  taskId      String?  @db.Text
+  handoffId   String?  @db.Text
+  companyId   String?  @db.Text
+  projectId   String?  @db.Text
+
+  // State
+  readAt          DateTime? @db.Timestamptz()
+  actionRequired  Boolean   @default(false)
+  actionDeadline  DateTime? @db.Timestamptz()
+
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([threadId])
+  @@index([toAgent])
+  @@index([fromAgent])
+  @@index([taskId])
+  @@index([workspaceId, toAgent, readAt])
+  @@map("agent_messages")
 }
 
 // Force Prisma regeneration Mon Apr  6 00:55:00 GMT 2026

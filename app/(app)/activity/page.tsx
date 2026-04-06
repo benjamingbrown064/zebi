@@ -7,7 +7,7 @@ import { useWorkspace } from '@/lib/use-workspace'
 import {
   FaSync, FaRobot, FaCheckCircle, FaBolt, FaExclamationTriangle,
   FaPlus, FaPen, FaArrowRight, FaLightbulb, FaBrain, FaBalanceScale,
-  FaFilter
+  FaFilter, FaComments
 } from 'react-icons/fa'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -47,6 +47,7 @@ const EVENT_ICONS: Record<string, React.ReactNode> = {
   insight_created:    <FaLightbulb size={11} className="text-yellow-500" />,
   memory_created:     <FaBrain size={11} className="text-sky-500" />,
   status_changed:     <FaArrowRight size={11} className="text-[#737373]" />,
+  agent_message:      <FaComments size={11} className="text-violet-500" />,
 }
 
 function eventLabel(entry: ActivityEntry): string {
@@ -66,6 +67,7 @@ function eventLabel(entry: ActivityEntry): string {
     insight_created:    `Published insight: ${payload.title ?? 'untitled'}`,
     memory_created:     `Memory note: ${payload.title ?? 'untitled'}`,
     status_changed:     `Status changed on "${taskTitle}" → ${payload.status ?? '?'}`,
+    agent_message:      `${payload.fromAgent ?? '?'} → ${payload.toAgent ?? '?'}: ${payload.bodyPreview ?? ''}`,
   }
   return map[t] ?? `${t.replace(/_/g, ' ')} — ${taskTitle}`
 }

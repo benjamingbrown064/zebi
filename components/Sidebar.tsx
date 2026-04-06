@@ -28,6 +28,7 @@ import {
   faMicrochip,
   faTimeline,
   faSearch,
+  faMessages,
 } from '@fortawesome/pro-duotone-svg-icons'
 import GlobalSearch from './GlobalSearch'
 
@@ -62,6 +63,7 @@ const PRIMARY_NAV: NavItem[] = [
   { href: '/documents',   icon: faFileLines,     label: 'Documents' },
   { href: '/insights',    icon: faLightbulb,     label: 'AI Insights' },
   { href: '/activity',    icon: faTimeline,      label: 'Activity Feed' },
+  { href: '/comms',       icon: faMessages,      label: 'Agent Comms' },
   { href: '/queue',       icon: faMicrochip,     label: 'Agent Queue' },
 ]
 
