@@ -14,9 +14,10 @@ import { AIAssistant } from '@/lib/doug-auth'
  * Both operate as Ben's primary user in the system
  */
 const AI_USER_IDS: Record<AIAssistant, string> = {
-  doug: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
+  doug:   'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
   harvey: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
-  theo: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74', // Same workspace as Doug & Harvey
+  theo:   'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
+  casper: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
 }
 
 /**

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import InboxQuickAddModal from '@/components/inbox/InboxQuickAddModal'
 import InboxItemCard from '@/components/inbox/InboxItemCard'
@@ -56,7 +55,6 @@ export default function InboxPage() {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
   const [isConvertModalOpen, setIsConvertModalOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<InboxItem | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [showFilters, setShowFilters] = useState(false)
@@ -78,9 +76,7 @@ export default function InboxPage() {
     try {
       setLoading(true)
       const statusParam = statusFilter !== 'all' ? `&status=${statusFilter}` : ''
-      const res = await cachedFetch<any>(`/api/inbox?workspaceId=${workspaceId}${statusParam}`)
-      if (!res.ok) throw new Error('Failed to fetch inbox items')
-      const data = await res.json()
+      const data = await cachedFetch<any>(`/api/inbox?workspaceId=${workspaceId}${statusParam}`)
       setItems(data.items || [])
     } catch (err) {
       console.error('Failed to load inbox:', err)
@@ -91,9 +87,7 @@ export default function InboxPage() {
 
   const loadStats = async () => {
     try {
-      const res = await cachedFetch<any>(`/api/inbox?workspaceId=${workspaceId}&action=stats`)
-      if (!res.ok) throw new Error('Failed to fetch stats')
-      const data = await res.json()
+      const data = await cachedFetch<any>(`/api/inbox?workspaceId=${workspaceId}&action=stats`)
       setStats(data)
     } catch (err) {
       console.error('Failed to load stats:', err)
@@ -158,12 +152,6 @@ export default function InboxPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      {/* Single Sidebar render */}
-      <Sidebar
-        workspaceName="Zebi"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
 
         <ResponsiveHeader
           title="Inbox"
