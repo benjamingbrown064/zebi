@@ -1,110 +1,113 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'
+import { generateMorningBriefing, formatMorningBriefing, storeBriefing } from '@/lib/morning-briefing'
+import { prisma } from '@/lib/prisma'
 
-import { generateMorningBriefing, formatMorningBriefingForTelegram, storeBriefing } from '@/lib/morning-briefing';
-import { prisma } from '@/lib/prisma';
-
-import { requireApiKey } from '@/lib/auth-api';
-
-
-
-// Force dynamic rendering
 export const dynamic = 'force-dynamic'
 
+const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'
+
 /**
- * POST /api/cron/morning-briefing
- * 
- * Generate morning briefing at 8am daily
- * Called by Vercel cron or external scheduler
- * 
- * Processes all workspaces or a specific workspace if provided
+ * Verify cron secret.
+ * Vercel sends: Authorization: Bearer <CRON_SECRET>
+ * We also allow a bare x-cron-secret header for manual/test calls.
  */
-export async function POST(request: NextRequest) {
+function verifyCronAuth(request: NextRequest): boolean {
+  const cronSecret = process.env.CRON_SECRET
+  if (!cronSecret) {
+    console.error('[morning-briefing] CRON_SECRET not set')
+    return false
+  }
+  const authHeader = request.headers.get('authorization')
+  if (authHeader === `Bearer ${cronSecret}`) return true
+  const legacyHeader = request.headers.get('x-cron-secret')
+  if (legacyHeader === cronSecret) return true
+  return false
+}
+
+/**
+ * GET /api/cron/morning-briefing
+ *
+ * Called by Vercel cron at 08:00 UTC daily (see vercel.json).
+ * Also callable manually for testing with the cron secret.
+ *
+ * Returns the generated briefing text + full data object.
+ * Stores the briefing as an ActivityLog entry.
+ */
+export async function GET(request: NextRequest) {
+  if (!verifyCronAuth(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const workspaceId =
+    request.nextUrl.searchParams.get('workspaceId') ?? DEFAULT_WORKSPACE_ID
+
   try {
-    // Require API authentication
-    const authError = requireApiKey(request);
-    if (authError) return authError;
+    const briefingData = await generateMorningBriefing(workspaceId)
+    const briefingText = formatMorningBriefing(briefingData)
+    await storeBriefing(workspaceId, briefingText, briefingData)
 
-    const { searchParams } = new URL(request.url);
-    const workspaceId = searchParams.get('workspaceId');
-
-    // If specific workspace requested, process only that one
-    if (workspaceId) {
-      return await processWorkspace(workspaceId);
-    }
-
-    // Otherwise, process all workspaces
-    return await processAllWorkspaces();
+    return NextResponse.json({
+      success: true,
+      timestamp: briefingData.generatedAt,
+      workspaceId,
+      briefing: briefingText,
+      data: briefingData,
+    })
   } catch (err) {
-    console.error('[API:cron:morning-briefing] Error:', err);
-    return NextResponse.json(
-      {
-        success: false,
-        error: err instanceof Error ? err.message : 'Unknown error',
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[morning-briefing] Error:', msg)
+    return NextResponse.json({ success: false, error: msg }, { status: 500 })
   }
 }
 
 /**
- * Process a single workspace
+ * POST /api/cron/morning-briefing
+ *
+ * Batch endpoint: process all workspaces (or a specific one in the body).
  */
-async function processWorkspace(workspaceId: string) {
-  // Generate briefing data
-  const briefingData = await generateMorningBriefing(workspaceId);
+export async function POST(request: NextRequest) {
+  if (!verifyCronAuth(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
-  // Format for Telegram
-  const briefingText = formatMorningBriefingForTelegram(briefingData);
+  let body: { workspaceId?: string } = {}
+  try { body = await request.json() } catch { /* no body is fine */ }
 
-  // Store as ActivityLog entry
-  await storeBriefing(workspaceId, briefingText, briefingData);
-
-  return NextResponse.json({
-    success: true,
-    timestamp: new Date().toISOString(),
-    workspaceId,
-    briefing: briefingText,
-    data: briefingData,
-  });
-}
-
-/**
- * Process all active workspaces
- */
-async function processAllWorkspaces() {
-  // Get all workspaces
-  const workspaces = await prisma.workspace.findMany({
-    select: { id: true, name: true },
-  });
-
-  const results = [];
-
-  for (const workspace of workspaces) {
+  if (body.workspaceId) {
     try {
-      // Generate briefing data
-      const briefingData = await generateMorningBriefing(workspace.id);
-
-      // Format for Telegram
-      const briefingText = formatMorningBriefingForTelegram(briefingData);
-
-      // Store as ActivityLog entry
-      await storeBriefing(workspace.id, briefingText, briefingData);
-
-      results.push({
-        workspaceId: workspace.id,
-        workspaceName: workspace.name,
+      const briefingData = await generateMorningBriefing(body.workspaceId)
+      const briefingText = formatMorningBriefing(briefingData)
+      await storeBriefing(body.workspaceId, briefingText, briefingData)
+      return NextResponse.json({
         success: true,
-        briefingLength: briefingText.length,
-      });
+        timestamp: briefingData.generatedAt,
+        workspaceId: body.workspaceId,
+        briefing: briefingText,
+        data: briefingData,
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      return NextResponse.json({ success: false, error: msg }, { status: 500 })
+    }
+  }
+
+  // All workspaces
+  const workspaces = await prisma.workspace.findMany({ select: { id: true, name: true } })
+  const results = []
+
+  for (const ws of workspaces) {
+    try {
+      const briefingData = await generateMorningBriefing(ws.id)
+      const briefingText = formatMorningBriefing(briefingData)
+      await storeBriefing(ws.id, briefingText, briefingData)
+      results.push({ workspaceId: ws.id, workspaceName: ws.name, success: true })
     } catch (error) {
-      console.error(`Failed to generate briefing for workspace ${workspace.id}:`, error);
       results.push({
-        workspaceId: workspace.id,
-        workspaceName: workspace.name,
+        workspaceId: ws.id,
+        workspaceName: ws.name,
         success: false,
         error: error instanceof Error ? error.message : String(error),
-      });
+      })
     }
   }
 
@@ -114,51 +117,5 @@ async function processAllWorkspaces() {
     workspacesProcessed: results.length,
     successfulBriefings: results.filter(r => r.success).length,
     results,
-  });
-}
-
-/**
- * GET /api/cron/morning-briefing
- * 
- * Test endpoint (requires authentication)
- */
-export async function GET(request: NextRequest) {
-  try {
-    // Require API authentication
-    const authError = requireApiKey(request);
-    if (authError) return authError;
-
-    const { searchParams } = new URL(request.url);
-    const workspaceId = searchParams.get('workspaceId');
-
-    if (!workspaceId) {
-      return NextResponse.json(
-        { error: 'workspaceId query parameter required for GET' },
-        { status: 400 }
-      );
-    }
-
-    // Generate briefing data
-    const briefingData = await generateMorningBriefing(workspaceId);
-
-    // Format for Telegram
-    const briefingText = formatMorningBriefingForTelegram(briefingData);
-
-    return NextResponse.json({
-      success: true,
-      timestamp: new Date().toISOString(),
-      workspaceId,
-      briefing: briefingText,
-      data: briefingData,
-    });
-  } catch (err) {
-    console.error('[API:cron:morning-briefing:GET] Error:', err);
-    return NextResponse.json(
-      {
-        success: false,
-        error: err instanceof Error ? err.message : 'Unknown error',
-      },
-      { status: 500 }
-    );
-  }
+  })
 }

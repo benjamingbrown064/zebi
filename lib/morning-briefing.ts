@@ -1,56 +1,91 @@
 /**
- * Morning Briefing Generator
- * 
- * Generates a morning briefing with today's tasks, objectives needing attention,
- * AI work queue status, key metrics, and yesterday's completion rate.
+ * Morning Briefing Generator — Multi-Agent Edition
+ *
+ * Generates a founder-facing morning brief using real agent/task data:
+ * - Decisions needed (tasks with decisionNeeded=true)
+ * - Agent workloads (Harvey / Theo / Doug / Casper)
+ * - Pending handoffs
+ * - Waiting on Ben
+ * - Blocked tasks
+ * - Top priorities
+ * - Yesterday's completions
  */
 
-import { prisma } from './prisma';
+import { prisma } from './prisma'
 
-const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237';
+const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'
+const AGENTS = ['harvey', 'theo', 'doug', 'casper'] as const
 
 export interface MorningBriefingData {
-  date: string;
-  workspace: {
-    id: string;
-    name: string;
-  };
-  todayTasks: Array<{
-    id: string;
-    title: string;
-    effortPoints: number | null;
-    spaceName: string | null;
-    priority: number;
-  }>;
-  objectivesNeedingAttention: Array<{
-    id: string;
-    title: string;
-    spaceName: string | null;
-    progressPercent: number;
-    daysLeft: number;
-    status: string;
-    blockerCount: number;
-    hasBlockers: boolean;
-  }>;
-  aiWorkQueue: {
-    totalReady: number;
-    byPriority: {
-      urgent: number;
-      high: number;
-      medium: number;
-      low: number;
-    };
-  };
-  yesterdayStats: {
-    tasksCompleted: number;
-    insightsGenerated: number;
-    blockersResolved: number;
-  };
-  keyMetrics: {
-    objectivesOnTrack: number;
-    objectivesAtRisk: number;
-    objectivesBlocked: number;
-  };
+  date: string
+  generatedAt: string
+  workspace: { id: string; name: string }
+
+  topPriorities: Array<{
+    id: string
+    title: string
+    priority: number
+    ownerAgent: string | null
+    spaceName: string | null
+    taskType: string | null
+  }>
+
+  decisionInbox: Array<{
+    id: string
+    title: string
+    ownerAgent: string | null
+    decisionSummary: string | null
+    spaceName: string | null
+  }>
+
+  waitingOnBen: Array<{
+    id: string
+    title: string
+    ownerAgent: string | null
+    nextAction: string | null
+    spaceName: string | null
+  }>
+
+  agentWorkloads: Array<{
+    agent: string
+    totalActive: number
+    blocked: number
+    decisionNeeded: number
+    waitingOnBen: number
+  }>
+
+  blockedTasks: Array<{
+    id: string
+    title: string
+    ownerAgent: string | null
+    blockedReason: string | null
+    spaceName: string | null
+  }>
+
+  pendingHandoffs: Array<{
+    id: string
+    fromAgent: string
+    toAgent: string
+    summary: string
+    createdAt: string
+  }>
+
+  recentCompletions: Array<{
+    id: string
+    title: string
+    ownerAgent: string | null
+    completionNote: string | null
+    spaceName: string | null
+  }>
+
+  workflowHealth: {
+    totalActiveTasks: number
+    ownerCoveragePercent: number
+    openDecisions: number
+    waitingOnBenCount: number
+    pendingHandoffCount: number
+    blockedCount: number
+  }
 }
 
 /**
@@ -59,312 +94,285 @@ export interface MorningBriefingData {
 export async function generateMorningBriefing(
   workspaceId: string = DEFAULT_WORKSPACE_ID
 ): Promise<MorningBriefingData> {
-  const today = new Date();
-  const startOfToday = new Date(today);
-  startOfToday.setHours(0, 0, 0, 0);
-  const endOfToday = new Date(today);
-  endOfToday.setHours(23, 59, 59, 999);
+  const now = new Date()
+  const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
-  // Yesterday boundaries
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const startOfYesterday = new Date(yesterday);
-  startOfYesterday.setHours(0, 0, 0, 0);
-  const endOfYesterday = new Date(yesterday);
-  endOfYesterday.setHours(23, 59, 59, 999);
-
-  // Get workspace
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
     select: { id: true, name: true },
-  });
+  })
+  if (!workspace) throw new Error(`Workspace ${workspaceId} not found`)
 
-  if (!workspace) {
-    throw new Error(`Workspace ${workspaceId} not found`);
-  }
-
-  // Fetch all data in parallel
   const [
-    todayTasks,
-    allActiveObjectives,
-    activeObjectivesWithBlockers,
-    aiWorkQueue,
-    yesterdayCompleted,
-    yesterdayInsights,
-    yesterdayBlockersResolved,
+    topPriorityTasks,
+    allActiveTasks,
+    blockedTasks,
+    decisionTasks,
+    waitingOnBenTasks,
+    recentCompletions,
+    pendingHandoffs,
   ] = await Promise.all([
-    // Tasks due today or high priority
+    // Top 5 priorities
+    prisma.task.findMany({
+      where: { workspaceId, archivedAt: null, completedAt: null },
+      orderBy: [{ priority: 'asc' }, { createdAt: 'asc' }],
+      take: 5,
+      select: {
+        id: true, title: true, priority: true, taskType: true,
+        ownerAgent: true,
+        company: { select: { name: true } },
+      },
+    }),
+
+    // All active (for workload calc)
+    prisma.task.findMany({
+      where: { workspaceId, archivedAt: null, completedAt: null },
+      select: {
+        id: true, ownerAgent: true, blockedReason: true,
+        waitingOn: true, decisionNeeded: true, priority: true,
+      },
+    }),
+
+    // Blocked tasks
     prisma.task.findMany({
       where: {
-        workspaceId,
-        completedAt: null,
-        archivedAt: null,
-        OR: [
-          { dueAt: { gte: startOfToday, lte: endOfToday } },
-          { priority: { lte: 2 } }, // Urgent (1) or High (2)
-        ],
+        workspaceId, archivedAt: null, completedAt: null,
+        NOT: { blockedReason: null },
       },
+      orderBy: { priority: 'asc' },
+      take: 10,
       select: {
-        id: true,
-        title: true,
-        effortPoints: true,
-        priority: true,
-        dueAt: true,
-        company: { select: { name: true } },
-      },
-      orderBy: [
-        { priority: 'asc' },
-        { dueAt: 'asc' },
-      ],
-      take: 10, // Top 10 tasks
-    }),
-
-    // All active objectives for metrics
-    prisma.objective.findMany({
-      where: {
-        workspaceId,
-        status: 'active',
-        completedAt: null,
-      },
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        progressPercent: true,
-        deadline: true,
+        id: true, title: true, ownerAgent: true, blockedReason: true,
         company: { select: { name: true } },
       },
     }),
 
-    // Objectives with blockers
-    prisma.objective.findMany({
-      where: {
-        workspaceId,
-        status: 'active',
-        completedAt: null,
-        blockers: {
-          some: {
-            resolvedAt: null,
-          },
-        },
-      },
+    // Decisions inbox
+    prisma.task.findMany({
+      where: { workspaceId, archivedAt: null, completedAt: null, decisionNeeded: true },
+      orderBy: { priority: 'asc' },
+      take: 10,
       select: {
-        id: true,
-        title: true,
-        status: true,
-        progressPercent: true,
-        deadline: true,
+        id: true, title: true, ownerAgent: true, decisionSummary: true,
         company: { select: { name: true } },
-        blockers: {
-          where: { resolvedAt: null },
-          select: { id: true },
-        },
       },
     }),
 
-    // AI Work Queue (unclaimed tasks)
-    prisma.aIWorkQueue.findMany({
-      where: {
-        workspaceId,
-        completedAt: null,
-        claimedAt: null,
-      },
+    // Waiting on Ben
+    prisma.task.findMany({
+      where: { workspaceId, archivedAt: null, completedAt: null, waitingOn: 'ben' },
+      orderBy: { priority: 'asc' },
+      take: 10,
       select: {
-        id: true,
-        priority: true,
+        id: true, title: true, ownerAgent: true, nextAction: true,
+        company: { select: { name: true } },
       },
     }),
 
-    // Yesterday's completed tasks
-    prisma.task.count({
-      where: {
-        workspaceId,
-        completedAt: { gte: startOfYesterday, lte: endOfYesterday },
+    // Completed last 24h
+    prisma.task.findMany({
+      where: { workspaceId, completedAt: { gte: last24h } },
+      orderBy: { completedAt: 'desc' },
+      take: 10,
+      select: {
+        id: true, title: true, ownerAgent: true, completionNote: true,
+        company: { select: { name: true } },
       },
     }),
 
-    // Yesterday's insights
-    prisma.aIInsight.count({
-      where: {
-        workspaceId,
-        createdAt: { gte: startOfYesterday, lte: endOfYesterday },
+    // Pending handoffs
+    prisma.handoff.findMany({
+      where: { workspaceId, status: 'pending' },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      select: {
+        id: true, fromAgent: true, toAgent: true, summary: true, createdAt: true,
       },
     }),
+  ])
 
-    // Yesterday's resolved blockers
-    prisma.objectiveBlocker.count({
-      where: {
-        objective: { workspaceId },
-        resolvedAt: { gte: startOfYesterday, lte: endOfYesterday },
-      },
-    }),
-  ]);
-
-  // Process today's tasks
-  const todayTasksFormatted = todayTasks.map(task => ({
-    id: task.id,
-    title: task.title,
-    effortPoints: task.effortPoints,
-    spaceName: task.company?.name || null,
-    priority: task.priority,
-  }));
-
-  // Process objectives needing attention
-  const objectivesNeedingAttention: MorningBriefingData['objectivesNeedingAttention'] = [];
-  
-  for (const obj of allActiveObjectives) {
-    const daysLeft = Math.ceil((new Date(obj.deadline).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    const progress = obj.progressPercent.toNumber();
-    const hasBlockers = activeObjectivesWithBlockers.some(blocked => blocked.id === obj.id);
-    const blockerCount = hasBlockers
-      ? activeObjectivesWithBlockers.find(blocked => blocked.id === obj.id)?.blockers.length || 0
-      : 0;
-    
-    // Flag objectives that need attention:
-    // - Has active blockers
-    // - Behind schedule (less than 50% progress with less than 50% time remaining)
-    // - Approaching deadline with low progress (< 30 days left and < 80% complete)
-    const timeElapsedPercent = daysLeft <= 0 ? 100 : 0; // Simplified
-    const needsAttention = 
-      hasBlockers ||
-      (daysLeft < 30 && progress < 80) ||
-      obj.status === 'at_risk' ||
-      obj.status === 'blocked';
-    
-    if (needsAttention) {
-      objectivesNeedingAttention.push({
-        id: obj.id,
-        title: obj.title,
-        spaceName: obj.company?.name || null,
-        progressPercent: progress,
-        daysLeft,
-        status: obj.status,
-        blockerCount,
-        hasBlockers,
-      });
+  // Agent workloads
+  const agentWorkloads = AGENTS.map(agent => {
+    const agentTasks = allActiveTasks.filter(t => t.ownerAgent === agent)
+    return {
+      agent,
+      totalActive: agentTasks.length,
+      blocked: agentTasks.filter(t => t.blockedReason).length,
+      decisionNeeded: agentTasks.filter(t => t.decisionNeeded).length,
+      waitingOnBen: agentTasks.filter(t => t.waitingOn === 'ben').length,
     }
-  }
+  })
 
-  // Sort objectives by priority (blockers first, then at risk, then by days left)
-  objectivesNeedingAttention.sort((a, b) => {
-    if (a.hasBlockers && !b.hasBlockers) return -1;
-    if (!a.hasBlockers && b.hasBlockers) return 1;
-    if (a.status === 'at_risk' && b.status !== 'at_risk') return -1;
-    if (a.status !== 'at_risk' && b.status === 'at_risk') return 1;
-    return a.daysLeft - b.daysLeft;
-  });
-
-  // Process AI work queue
-  const aiWorkQueueStats = {
-    totalReady: aiWorkQueue.length,
-    byPriority: {
-      urgent: aiWorkQueue.filter(q => q.priority === 1).length,
-      high: aiWorkQueue.filter(q => q.priority === 2).length,
-      medium: aiWorkQueue.filter(q => q.priority === 3).length,
-      low: aiWorkQueue.filter(q => q.priority >= 4).length,
-    },
-  };
-
-  // Calculate key metrics
-  const keyMetrics = {
-    objectivesOnTrack: allActiveObjectives.filter(obj => 
-      obj.status === 'active' && 
-      !activeObjectivesWithBlockers.some(blocked => blocked.id === obj.id)
-    ).length,
-    objectivesAtRisk: allActiveObjectives.filter(obj => obj.status === 'at_risk').length,
-    objectivesBlocked: activeObjectivesWithBlockers.length,
-  };
+  const totalActiveTasks = allActiveTasks.length
+  const tasksWithOwner = allActiveTasks.filter(t => t.ownerAgent).length
+  const ownerCoveragePercent = totalActiveTasks > 0
+    ? Math.round((tasksWithOwner / totalActiveTasks) * 100)
+    : 100
 
   return {
-    date: today.toISOString().split('T')[0],
-    workspace: {
-      id: workspace.id,
-      name: workspace.name,
+    date: now.toISOString().split('T')[0],
+    generatedAt: now.toISOString(),
+    workspace: { id: workspace.id, name: workspace.name },
+
+    topPriorities: topPriorityTasks.map(t => ({
+      id: t.id,
+      title: t.title,
+      priority: t.priority,
+      ownerAgent: t.ownerAgent,
+      spaceName: t.company?.name ?? null,
+      taskType: t.taskType,
+    })),
+
+    decisionInbox: decisionTasks.map(t => ({
+      id: t.id,
+      title: t.title,
+      ownerAgent: t.ownerAgent,
+      decisionSummary: t.decisionSummary,
+      spaceName: t.company?.name ?? null,
+    })),
+
+    waitingOnBen: waitingOnBenTasks.map(t => ({
+      id: t.id,
+      title: t.title,
+      ownerAgent: t.ownerAgent,
+      nextAction: t.nextAction,
+      spaceName: t.company?.name ?? null,
+    })),
+
+    agentWorkloads,
+
+    blockedTasks: blockedTasks.map(t => ({
+      id: t.id,
+      title: t.title,
+      ownerAgent: t.ownerAgent,
+      blockedReason: t.blockedReason,
+      spaceName: t.company?.name ?? null,
+    })),
+
+    pendingHandoffs: pendingHandoffs.map(h => ({
+      id: h.id,
+      fromAgent: h.fromAgent,
+      toAgent: h.toAgent,
+      summary: h.summary,
+      createdAt: h.createdAt.toISOString(),
+    })),
+
+    recentCompletions: recentCompletions.map(t => ({
+      id: t.id,
+      title: t.title,
+      ownerAgent: t.ownerAgent,
+      completionNote: t.completionNote,
+      spaceName: t.company?.name ?? null,
+    })),
+
+    workflowHealth: {
+      totalActiveTasks,
+      ownerCoveragePercent,
+      openDecisions: decisionTasks.length,
+      waitingOnBenCount: waitingOnBenTasks.length,
+      pendingHandoffCount: pendingHandoffs.length,
+      blockedCount: blockedTasks.length,
     },
-    todayTasks: todayTasksFormatted,
-    objectivesNeedingAttention: objectivesNeedingAttention.slice(0, 5), // Top 5
-    aiWorkQueue: aiWorkQueueStats,
-    yesterdayStats: {
-      tasksCompleted: yesterdayCompleted,
-      insightsGenerated: yesterdayInsights,
-      blockersResolved: yesterdayBlockersResolved,
-    },
-    keyMetrics,
-  };
+  }
 }
 
 /**
- * Format morning briefing for Telegram (MarkdownV2)
+ * Format morning briefing as clean Telegram text (plain, not MarkdownV2 — simpler and safer)
  */
-export function formatMorningBriefingForTelegram(briefing: MorningBriefingData): string {
-  const lines: string[] = [];
-  
-  // Header
-  const date = new Date(briefing.date);
-  const dateStr = date.toLocaleDateString('en-US', { 
-    month: 'long', 
-    day: 'numeric', 
-    year: 'numeric' 
-  });
-  lines.push(`🌅 *Morning Briefing* \\- ${escapeMarkdown(dateStr)}`);
-  lines.push('');
+export function formatMorningBriefing(briefing: MorningBriefingData): string {
+  const lines: string[] = []
+  const date = new Date(briefing.date).toLocaleDateString('en-GB', {
+    weekday: 'long', day: 'numeric', month: 'long',
+  })
 
-  // Today's Tasks
-  if (briefing.todayTasks.length > 0) {
-    lines.push('👤 *Your Tasks Today:*');
-    for (const task of briefing.todayTasks.slice(0, 5)) {
-      const effortStr = task.effortPoints ? ` (${task.effortPoints}pt)` : '';
-      const spaceStr = task.spaceName ? ` \\- ${escapeMarkdown(task.spaceName)}` : '';
-      lines.push(`• ${escapeMarkdown(task.title)}${effortStr}${spaceStr}`);
+  lines.push(`🌅 Morning Brief — ${date}`)
+  lines.push('')
+
+  // Decisions first — most important
+  if (briefing.decisionInbox.length > 0) {
+    lines.push(`🔴 DECISIONS NEEDED (${briefing.decisionInbox.length})`)
+    for (const t of briefing.decisionInbox) {
+      const agent = t.ownerAgent ? ` [${t.ownerAgent}]` : ''
+      const space = t.spaceName ? ` · ${t.spaceName}` : ''
+      lines.push(`  • ${t.title}${agent}${space}`)
+      if (t.decisionSummary) lines.push(`    → ${t.decisionSummary}`)
     }
-    lines.push('');
+    lines.push('')
   }
 
-  // Objectives Needing Attention
-  if (briefing.objectivesNeedingAttention.length > 0) {
-    lines.push('🎯 *Objectives Needing Attention:*');
-    for (const obj of briefing.objectivesNeedingAttention) {
-      const spaceStr = obj.spaceName ? `${escapeMarkdown(obj.spaceName)} \\- ` : '';
-      const statusEmoji = obj.hasBlockers ? '🚫' : obj.daysLeft < 7 ? '⚠️' : '⏰';
-      const blockerNote = obj.hasBlockers ? ` \\- BLOCKED (${obj.blockerCount} issues)` : '';
-      lines.push(`• ${spaceStr}${escapeMarkdown(obj.title)}: ${obj.progressPercent}% complete, ${obj.daysLeft} days left ${statusEmoji}${blockerNote}`);
+  // Waiting on Ben
+  if (briefing.waitingOnBen.length > 0) {
+    lines.push(`⏳ WAITING ON YOU (${briefing.waitingOnBen.length})`)
+    for (const t of briefing.waitingOnBen) {
+      const agent = t.ownerAgent ? ` [${t.ownerAgent}]` : ''
+      lines.push(`  • ${t.title}${agent}`)
+      if (t.nextAction) lines.push(`    → ${t.nextAction}`)
     }
-    lines.push('');
+    lines.push('')
   }
 
-  // AI Work Queue
-  if (briefing.aiWorkQueue.totalReady > 0) {
-    const { byPriority } = briefing.aiWorkQueue;
-    const priorityParts: string[] = [];
-    if (byPriority.urgent > 0) priorityParts.push(`${byPriority.urgent} urgent`);
-    if (byPriority.high > 0) priorityParts.push(`${byPriority.high} high`);
-    if (byPriority.medium > 0) priorityParts.push(`${byPriority.medium} medium`);
-    
-    const priorityStr = priorityParts.length > 0 ? ` (${priorityParts.join(', ')})` : '';
-    lines.push(`🤖 *AI Work Queue:* ${briefing.aiWorkQueue.totalReady} tasks ready${priorityStr}`);
-    lines.push('');
+  // Agent workloads
+  const activeAgents = briefing.agentWorkloads.filter(a => a.totalActive > 0)
+  if (activeAgents.length > 0) {
+    lines.push('🤖 AGENT STATUS')
+    for (const a of briefing.agentWorkloads) {
+      if (a.totalActive === 0) continue
+      const flags: string[] = []
+      if (a.blocked > 0) flags.push(`${a.blocked} blocked`)
+      if (a.decisionNeeded > 0) flags.push(`${a.decisionNeeded} decisions`)
+      if (a.waitingOnBen > 0) flags.push(`${a.waitingOnBen} waiting on you`)
+      const flagStr = flags.length > 0 ? ` — ${flags.join(', ')}` : ''
+      lines.push(`  ${a.agent.charAt(0).toUpperCase() + a.agent.slice(1)}: ${a.totalActive} tasks${flagStr}`)
+    }
+    lines.push('')
   }
 
-  // Yesterday's Stats
-  const stats = briefing.yesterdayStats;
-  if (stats.tasksCompleted > 0 || stats.insightsGenerated > 0 || stats.blockersResolved > 0) {
-    const yesterdayParts: string[] = [];
-    if (stats.tasksCompleted > 0) yesterdayParts.push(`${stats.tasksCompleted} tasks completed`);
-    if (stats.insightsGenerated > 0) yesterdayParts.push(`${stats.insightsGenerated} insights generated`);
-    if (stats.blockersResolved > 0) yesterdayParts.push(`${stats.blockersResolved} blockers resolved`);
-    
-    lines.push(`📊 *Yesterday:* ${yesterdayParts.join(', ')}`);
+  // Pending handoffs
+  if (briefing.pendingHandoffs.length > 0) {
+    lines.push(`🔄 PENDING HANDOFFS (${briefing.pendingHandoffs.length})`)
+    for (const h of briefing.pendingHandoffs) {
+      lines.push(`  • ${h.fromAgent} → ${h.toAgent}: ${h.summary}`)
+    }
+    lines.push('')
   }
 
-  return lines.join('\n');
-}
+  // Blocked
+  if (briefing.blockedTasks.length > 0) {
+    lines.push(`🚫 BLOCKED (${briefing.blockedTasks.length})`)
+    for (const t of briefing.blockedTasks.slice(0, 5)) {
+      const agent = t.ownerAgent ? ` [${t.ownerAgent}]` : ''
+      lines.push(`  • ${t.title}${agent}`)
+      if (t.blockedReason) lines.push(`    → ${t.blockedReason}`)
+    }
+    lines.push('')
+  }
 
-/**
- * Escape special characters for Telegram MarkdownV2
- */
-function escapeMarkdown(text: string): string {
-  // Telegram MarkdownV2 requires escaping these characters: _ * [ ] ( ) ~ ` > # + - = | { } . !
-  return text.replace(/[_*[\]()~`>#+\-=|{}.!\\]/g, '\\$&');
+  // Top priorities
+  if (briefing.topPriorities.length > 0) {
+    lines.push('📋 TOP PRIORITIES')
+    for (const t of briefing.topPriorities) {
+      const agent = t.ownerAgent ? ` [${t.ownerAgent}]` : ' [unassigned]'
+      const space = t.spaceName ? ` · ${t.spaceName}` : ''
+      lines.push(`  • ${t.title}${agent}${space}`)
+    }
+    lines.push('')
+  }
+
+  // Yesterday
+  if (briefing.recentCompletions.length > 0) {
+    lines.push(`✅ COMPLETED YESTERDAY (${briefing.recentCompletions.length})`)
+    for (const t of briefing.recentCompletions.slice(0, 5)) {
+      const agent = t.ownerAgent ? ` [${t.ownerAgent}]` : ''
+      lines.push(`  • ${t.title}${agent}`)
+    }
+    lines.push('')
+  }
+
+  // Health footer
+  const h = briefing.workflowHealth
+  lines.push(`📊 ${h.totalActiveTasks} active tasks · ${h.ownerCoveragePercent}% assigned · zebi.app/founder`)
+
+  return lines.join('\n')
 }
 
 /**
@@ -382,10 +390,13 @@ export async function storeBriefing(
       eventPayload: JSON.parse(JSON.stringify({
         text: briefingText,
         data: briefingData,
-        generatedAt: new Date().toISOString(),
+        generatedAt: briefingData.generatedAt,
       })),
-      createdBy: '00000000-0000-0000-0000-000000000000', // System user
-      aiAgent: 'morning-briefing-generator',
+      createdBy: '00000000-0000-0000-0000-000000000000',
+      aiAgent: 'morning-briefing',
     },
-  });
+  })
 }
+
+// Keep old export name as alias for any existing callers
+export const formatMorningBriefingForTelegram = formatMorningBriefing
