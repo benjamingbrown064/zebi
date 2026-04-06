@@ -5,6 +5,7 @@ import { validateAIAuth } from '@/lib/doug-auth'
 import { getAffectedObjectives } from '@/lib/objective-progress'
 import { queueMultipleRecalculations } from '@/lib/progress-queue'
 import { propagateTaskCompletion } from '@/lib/context-propagation'
+import { wakeupAgent } from '@/lib/agent-wakeup'
 
 
 export async function PATCH(
@@ -167,6 +168,22 @@ export async function PATCH(
     })
 
     console.log(`[API:tasks/${taskId}] Task updated successfully`)
+
+    // Agent wakeup — fires when ownerAgent is newly assigned or changed
+    const prevOwner = existingTask.ownerAgent ?? null
+    const newOwner  = updatedTask.ownerAgent  ?? null
+    if (body.ownerAgent !== undefined && newOwner && newOwner !== prevOwner) {
+      wakeupAgent({
+        workspaceId:  updatedTask.workspaceId,
+        toAgent:      newOwner,
+        taskId:       updatedTask.id,
+        taskTitle:    updatedTask.title,
+        fromAgent:    auth.valid ? (auth.assistant ?? 'system') : 'ben',
+        reason:       'task_assigned',
+        companyId:    updatedTask.companyId  ?? undefined,
+        projectId:    updatedTask.projectId  ?? undefined,
+      }).catch(() => {})
+    }
 
     // Context propagation — fires when a task is marked done
     // Writes AIMemory entries for dependent tasks (fire-and-forget, never blocks response)

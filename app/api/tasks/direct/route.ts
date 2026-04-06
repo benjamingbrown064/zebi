@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateAIAuth } from '@/lib/doug-auth'
 import { requireWorkspace } from '@/lib/workspace'
+import { wakeupAgent } from '@/lib/agent-wakeup'
 
 // Force dynamic rendering — never cache this route
 export const dynamic = 'force-dynamic'
@@ -93,6 +94,20 @@ export async function POST(request: NextRequest) {
         ...(outputDocId      && { outputDocId }),
       },
     })
+
+    // Wake up the assigned agent immediately if ownerAgent was set on creation
+    if (ownerAgent) {
+      wakeupAgent({
+        workspaceId,
+        toAgent:   ownerAgent,
+        taskId:    task.id,
+        taskTitle: task.title,
+        fromAgent: auth.valid ? (auth.assistant ?? 'system') : 'ben',
+        reason:    'task_assigned',
+        companyId: task.companyId  ?? undefined,
+        projectId: task.projectId  ?? undefined,
+      }).catch(() => {})
+    }
 
     return NextResponse.json({
       success: true,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateAIAuth } from '@/lib/doug-auth'
 import { requireWorkspace } from '@/lib/workspace'
+import { wakeupAgent } from '@/lib/agent-wakeup'
 
 /**
  * GET /api/handoffs
@@ -108,6 +109,18 @@ export async function POST(request: NextRequest) {
         data: { handoffToAgent: body.toAgent.trim() },
       })
     }
+
+    // Wake up the receiving agent immediately
+    wakeupAgent({
+      workspaceId,
+      toAgent:   handoff.toAgent,
+      taskId:    handoff.taskId   ?? undefined,
+      handoffId: handoff.id,
+      fromAgent: handoff.fromAgent,
+      reason:    'handoff_created',
+      companyId: handoff.companyId  ?? undefined,
+      projectId: handoff.projectId  ?? undefined,
+    }).catch(() => {})
 
     return NextResponse.json({ success: true, handoff }, { status: 201 })
   } catch (err) {
