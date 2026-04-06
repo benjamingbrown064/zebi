@@ -8,6 +8,107 @@ import { propagateTaskCompletion } from '@/lib/context-propagation'
 import { wakeupAgent } from '@/lib/agent-wakeup'
 
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { taskId: string } }
+) {
+  try {
+    const auth = validateAIAuth(request)
+    const { searchParams } = new URL(request.url)
+
+    let workspaceId: string
+    if (auth.valid) {
+      const wid = searchParams.get('workspaceId')
+      if (!wid) {
+        return NextResponse.json(
+          { success: false, error: 'workspaceId is required when using API token' },
+          { status: 400 }
+        )
+      }
+      workspaceId = wid
+    } else {
+      workspaceId = await requireWorkspace()
+    }
+
+    const { taskId } = params
+
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, workspaceId },
+      include: {
+        status: true,
+        tags: {
+          include: { tag: true }
+        },
+        goal: true,
+        company: true,
+        project: true,
+        objective: true,
+      }
+    })
+
+    if (!task) {
+      return NextResponse.json(
+        { success: false, error: 'Task not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      task: {
+        id: task.id,
+        title: task.title,
+        description: task.description || undefined,
+        priority: task.priority,
+        status: task.status.name,
+        statusId: task.statusId,
+        dueAt: task.dueAt?.toISOString(),
+        plannedDate: task.plannedDate?.toISOString(),
+        completedAt: task.completedAt?.toISOString(),
+        archivedAt: task.archivedAt?.toISOString(),
+        tags: task.tags.map(tt => tt.tag.name),
+        goal: task.goal || undefined,
+        goalId: task.goalId || undefined,
+        company: task.company || undefined,
+        companyId: task.companyId || undefined,
+        project: task.project || undefined,
+        projectId: task.projectId || undefined,
+        objective: task.objective || undefined,
+        objectiveId: task.objectiveId || undefined,
+        assigneeId: task.assigneeId || undefined,
+        botAssignee: task.botAssignee || undefined,
+        // Outcome fields
+        expectedOutcome: task.expectedOutcome || undefined,
+        completionNote: task.completionNote || undefined,
+        outputUrl: task.outputUrl || undefined,
+        // Multi-agent OS fields
+        ownerAgent: task.ownerAgent || undefined,
+        reviewerAgent: task.reviewerAgent || undefined,
+        handoffToAgent: task.handoffToAgent || undefined,
+        requestedBy: task.requestedBy || undefined,
+        taskType: task.taskType || undefined,
+        decisionNeeded: task.decisionNeeded,
+        decisionSummary: task.decisionSummary || undefined,
+        waitingOn: task.waitingOn || undefined,
+        blockedReason: task.blockedReason || undefined,
+        definitionOfDone: task.definitionOfDone || undefined,
+        nextAction: task.nextAction || undefined,
+        dependencyIds: task.dependencyIds,
+        outputDocId: task.outputDocId || undefined,
+        workspaceId: task.workspaceId,
+        createdBy: task.createdBy,
+        createdAt: task.createdAt.toISOString(),
+        updatedAt: task.updatedAt.toISOString(),
+      }
+    })
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err)
+    console.error(`[API:tasks/GET ${params.taskId}]`, errorMsg)
+    return NextResponse.json({ success: false, error: errorMsg }, { status: 500 })
+  }
+}
+
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { taskId: string } }
