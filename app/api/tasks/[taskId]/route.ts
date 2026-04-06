@@ -4,6 +4,7 @@ import { requireWorkspace } from '@/lib/workspace'
 import { validateAIAuth } from '@/lib/doug-auth'
 import { getAffectedObjectives } from '@/lib/objective-progress'
 import { queueMultipleRecalculations } from '@/lib/progress-queue'
+import { propagateTaskCompletion } from '@/lib/context-propagation'
 
 
 export async function PATCH(
@@ -166,6 +167,25 @@ export async function PATCH(
     })
 
     console.log(`[API:tasks/${taskId}] Task updated successfully`)
+
+    // Context propagation — fires when a task is marked done
+    // Writes AIMemory entries for dependent tasks (fire-and-forget, never blocks response)
+    const isNowComplete = updatedTask.completedAt !== null && body.completedAt !== undefined
+    if (isNowComplete) {
+      propagateTaskCompletion({
+        id: updatedTask.id,
+        workspaceId: updatedTask.workspaceId,
+        title: updatedTask.title,
+        ownerAgent: updatedTask.ownerAgent ?? null,
+        completionNote: updatedTask.completionNote ?? null,
+        outputUrl: updatedTask.outputUrl ?? null,
+        outputDocId: updatedTask.outputDocId ?? null,
+        companyId: updatedTask.companyId ?? null,
+        projectId: updatedTask.projectId ?? null,
+        objectiveId: updatedTask.objectiveId ?? null,
+        dependencyIds: updatedTask.dependencyIds ?? [],
+      }).catch(err => console.error('[propagation] failed:', err))
+    }
 
     // Trigger async objective progress recalculation (V2)
     // Queue recalc if completion status changed or objective/project changed
