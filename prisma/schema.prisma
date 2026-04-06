@@ -58,6 +58,7 @@ model Workspace {
   handoffs          Handoff[]
   agentHeartbeats   AgentHeartbeat[]
   agentMessages     AgentMessage[]
+  skills            Skill[]
 
   // AI Assistant Relations (Week 1 Day 1-2)
   aiConversations   AIConversation[]
@@ -357,6 +358,7 @@ model Task {
   nextAction       String?  @db.Text
   dependencyIds    String[]
   outputDocId      String?  @db.Text  // link to Document or AIInsight id
+  skillId          String?  @db.Text  // skill/playbook used for this task
 
   workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   status     Status    @relation(fields: [statusId], references: [id])
@@ -367,7 +369,8 @@ model Task {
 
   // NEW RELATIONS
   company       Space?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  objective     Objective?     @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  objective     Objective?   @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  skill         Skill?       @relation("TaskSkill", fields: [skillId], references: [id], onDelete: SetNull)
   repeatingTask RepeatingTask? @relation(fields: [repeatingTaskId], references: [id], onDelete: SetNull)
   files         File[]
 
@@ -1319,6 +1322,40 @@ model AgentMessage {
   @@index([taskId])
   @@index([workspaceId, toAgent, readAt])
   @@map("agent_messages")
+}
+
+// ==================== SKILLS ====================
+
+model Skill {
+  id           String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId  String   @db.Text
+  title        String
+  description  String?  @db.Text
+  category     String   // research | outreach | content | scraping | mailer | lead-gen | build | ops | other
+  skillType    String   @default("procedure") // procedure | checklist | template | sop
+  tags         String[]
+
+  // The meat
+  steps        Json     // ordered array of { order, title, description, tips? }
+  qualityCriteria Json  // { good: string[], bad: string[], checkBefore: string[] }
+  examples     Json?    // { good: string[], bad: string[] } — optional
+
+  // Meta
+  status       String   @default("active") // active | draft | archived
+  version      Int      @default(1)
+  createdBy    String?  @db.Text // user UUID or agent name
+  lastUpdatedBy String? @db.Text
+  createdAt    DateTime @default(now()) @db.Timestamptz()
+  updatedAt    DateTime @updatedAt @db.Timestamptz()
+
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks        Task[]    @relation("TaskSkill")
+
+  @@index([workspaceId])
+  @@index([category])
+  @@index([status])
+  @@index([tags])
+  @@map("skills")
 }
 
 // Force Prisma regeneration Mon Apr  6 00:55:00 GMT 2026

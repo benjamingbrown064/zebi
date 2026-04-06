@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateAIAuth } from '@/lib/doug-auth'
 import { requireWorkspace } from '@/lib/workspace'
-import { wakeupAgent } from '@/lib/agent-wakeup'
+import { createResilientHandoff } from '@/lib/ai/orchestration-resilience'
 
 /**
  * GET /api/handoffs
@@ -10,7 +10,7 @@ import { wakeupAgent } from '@/lib/agent-wakeup'
  * Query params: workspaceId, toAgent, fromAgent, taskId, status
  *
  * POST /api/handoffs
- * Create a new handoff record.
+ * Create a new handoff record with full validation and resilience.
  */
 
 export async function GET(request: NextRequest) {
@@ -81,48 +81,37 @@ export async function POST(request: NextRequest) {
       if (!task) return NextResponse.json({ error: 'Task not found' }, { status: 404 })
     }
 
-    const handoff = await prisma.handoff.create({
-      data: {
-        workspaceId,
-        taskId:           body.taskId    || null,
-        companyId:        body.companyId || null,
-        projectId:        body.projectId || null,
-        fromAgent:        body.fromAgent.trim(),
-        toAgent:          body.toAgent.trim(),
-        summary:          body.summary.trim(),
-        requestedOutcome: body.requestedOutcome.trim(),
-        completedWork:    body.completedWork.trim(),
-        remainingWork:    body.remainingWork.trim(),
-        blockers:         body.blockers.trim(),
-        filesChanged:     body.filesChanged    || [],
-        linkedDocIds:     body.linkedDocIds    || [],
-        decisionNeeded:   body.decisionNeeded  ?? false,
-        decisionSummary:  body.decisionSummary || null,
-        status:           'pending',
-      },
+    // Use resilient handoff creation with validation, transactions, and wakeup
+    const result = await createResilientHandoff({
+      workspaceId,
+      fromAgent: body.fromAgent.trim(),
+      toAgent: body.toAgent.trim(),
+      taskId: body.taskId,
+      companyId: body.companyId,
+      projectId: body.projectId,
+      summary: body.summary.trim(),
+      requestedOutcome: body.requestedOutcome.trim(),
+      completedWork: body.completedWork.trim(),
+      remainingWork: body.remainingWork.trim(),
+      blockers: body.blockers.trim(),
+      filesChanged: body.filesChanged,
+      linkedDocIds: body.linkedDocIds,
+      decisionNeeded: body.decisionNeeded,
+      decisionSummary: body.decisionSummary,
     })
 
-    // If a task was linked, stamp handoffToAgent on it
-    if (body.taskId) {
-      await prisma.task.update({
-        where: { id: body.taskId },
-        data: { handoffToAgent: body.toAgent.trim() },
-      })
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error, warnings: result.warnings },
+        { status: 400 }
+      )
     }
 
-    // Wake up the receiving agent immediately
-    wakeupAgent({
-      workspaceId,
-      toAgent:   handoff.toAgent,
-      taskId:    handoff.taskId   ?? undefined,
-      handoffId: handoff.id,
-      fromAgent: handoff.fromAgent,
-      reason:    'handoff_created',
-      companyId: handoff.companyId  ?? undefined,
-      projectId: handoff.projectId  ?? undefined,
-    }).catch(() => {})
-
-    return NextResponse.json({ success: true, handoff }, { status: 201 })
+    return NextResponse.json({
+      success: true,
+      handoff: result.handoff,
+      warnings: result.warnings,
+    }, { status: 201 })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[API:handoffs POST]', msg)
