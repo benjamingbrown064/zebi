@@ -489,24 +489,80 @@ export async function POST(request: NextRequest) {
       if (!match && lastSuggested.length > 0) {
         const withId = lastSuggested.filter(a => a.taskId)
         if (withId.length === 1) {
-          // Unambiguous — use it
           match = { type: 'task', id: withId[0].taskId, title: withId[0].title }
         }
       }
 
       if (match) {
         resolvedObjects = [match]
-        // Store resolved object for follow-up references
         await prisma.aIConversation.update({
           where: { id: conversation.id },
-          data: {
-            context: {
-              ...ctxData,
-              lastResolvedObject: match,
-            },
-          },
+          data: { context: { ...ctxData, lastResolvedObject: match } },
         })
       }
+    }
+
+    // Pass B extended — return real task objects for priority/blocked/agent queries
+    // so the UI can render clickable cards even when intent isn't task_list
+    if (['daily_priority', 'next_priority', 'goal_progress'].includes(intent)) {
+      // Surface the top 3 priority tasks the response is likely talking about
+      const priorityTasks = tasks.slice(0, 3)
+      if (priorityTasks.length > 0) {
+        resolvedObjects = priorityTasks.map(t => ({
+          type: 'task' as const,
+          id: t.id,
+          title: t.title,
+          meta: {
+            priority:     t.priority,
+            ownerAgent:   t.ownerAgent,
+            spaceName:    spaces.find(s => s.id === t.companyId)?.name ?? null,
+            blockedReason: t.blockedReason,
+          },
+        }))
+      }
+    }
+
+    // Blocked / waiting-on-ben queries surfaced as cards
+    if (intent === 'summary' || intent === 'chat') {
+      const lowerMsg = message.toLowerCase()
+      // Detect blocked / agent / handoff query patterns
+      if (/block|stuck|waiting|handoff|harvey|theo|doug|casper|decision/i.test(lowerMsg)) {
+        let matchedTasks: typeof tasks = []
+        if (/block|stuck/i.test(lowerMsg)) {
+          matchedTasks = tasks.filter(t => t.blockedReason).slice(0, 5)
+        } else if (/waiting/i.test(lowerMsg)) {
+          matchedTasks = tasks.filter(t => t.waitingOn === 'ben').slice(0, 5)
+        } else if (/decision/i.test(lowerMsg)) {
+          matchedTasks = tasks.filter(t => t.decisionNeeded).slice(0, 5)
+        } else {
+          // Agent name mentioned — return their tasks
+          const agentMatch = lowerMsg.match(/harvey|theo|doug|casper/)
+          if (agentMatch) {
+            matchedTasks = tasks.filter(t => t.ownerAgent === agentMatch[0]).slice(0, 5)
+          }
+        }
+        if (matchedTasks.length > 0) {
+          resolvedObjects = matchedTasks.map(t => ({
+            type: 'task' as const,
+            id: t.id,
+            title: t.title,
+            meta: {
+              priority:     t.priority,
+              ownerAgent:   t.ownerAgent,
+              spaceName:    spaces.find(s => s.id === t.companyId)?.name ?? null,
+              blockedReason: t.blockedReason,
+            },
+          }))
+        }
+      }
+    }
+
+    // Persist any newly resolved objects so follow-up refs work
+    if (resolvedObjects.length > 0 && intent !== 'object_reference') {
+      await prisma.aIConversation.update({
+        where: { id: conversation.id },
+        data: { context: { ...ctxData, lastListedObjects: resolvedObjects } },
+      }).catch(() => {})
     }
 
     // Track newly created objects from plan mode
