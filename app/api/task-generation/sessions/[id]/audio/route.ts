@@ -8,13 +8,12 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+const getSupabaseAdmin = () => createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
+const getOpenAI = () => new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 /**
  * POST /api/task-generation/sessions/:id/audio
@@ -22,11 +21,11 @@ const openai = new OpenAI({
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const workspaceId = await requireWorkspace();
-    const sessionId = params.id;
+    const { id: sessionId } = await params;
 
     // Get session
     const session = await prisma.taskGenerationSession.findFirst({
@@ -58,7 +57,7 @@ export async function POST(
     const arrayBuffer = await audioFile.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const { error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await getSupabaseAdmin().storage
       .from('voice-to-task-audio')
       .upload(filePath, buffer, {
         contentType: 'audio/webm',
@@ -73,7 +72,7 @@ export async function POST(
       );
     }
 
-    const { data: { publicUrl } } = supabaseAdmin.storage
+    const { data: { publicUrl } } = getSupabaseAdmin().storage
       .from('voice-to-task-audio')
       .getPublicUrl(filePath);
 
@@ -113,7 +112,7 @@ async function processAudioInBackground(
     const audioBlob = await audioRes.arrayBuffer();
     const audioFile = new File([audioBlob], 'audio.webm', { type: 'audio/webm' });
 
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await getOpenAI().audio.transcriptions.create({
       file: audioFile,
       model: 'whisper-1',
     });
@@ -121,7 +120,7 @@ async function processAudioInBackground(
     const transcript = transcription.text.trim();
 
     // Extract tasks
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {

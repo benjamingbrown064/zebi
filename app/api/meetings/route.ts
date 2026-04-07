@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-export async function notifyParticipants(meeting: any, workspaceId: string) {
+async function notifyParticipants(meeting: any, workspaceId: string) {
   for (const agent of meeting.requiredParticipants) {
     if (agent === 'ben') continue // Ben sees it in the UI
     try {

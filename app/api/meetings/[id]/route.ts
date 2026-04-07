@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateAIAuth } from '@/lib/doug-auth'
-import { notifyParticipants } from '../route'
+import { notifyParticipants } from '@/lib/meetings-notify'
 
 /**
  * GET  /api/meetings/[id]   — full meeting + contributions
