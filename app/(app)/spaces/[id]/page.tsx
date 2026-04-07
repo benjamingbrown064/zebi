@@ -573,7 +573,7 @@ function WorkTab({ space, wsId, onRefresh, onTaskClick }: { space: Space; wsId: 
               <div
                 key={task.id}
                 className="group flex items-start gap-3 py-3 px-3 bg-white rounded hover:border-[#E5E5E5] border border-transparent hover:shadow-sm transition cursor-pointer"
-                onClick={() => onTaskClick ? onTaskClick(task) : router.push(`/tasks?highlight=${task.id}`)}
+                onClick={() => onTaskClick?.(task)}
               >
                 <button
                   onClick={e => { e.stopPropagation(); handleComplete(task.id) }}
@@ -849,7 +849,7 @@ function AgentsTab({ space, onSwitchToWork, onTaskClick }: { space: Space; onSwi
                 <div
                   key={t.id}
                   className="flex items-start gap-2 cursor-pointer group"
-                  onClick={() => onTaskClick ? onTaskClick(t) : router.push(`/tasks?highlight=${t.id}`)}
+                  onClick={() => onTaskClick?.(t)}
                 >
                   <div className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${t.blockedReason ? 'bg-red-500' : t.waitingOn === 'ben' ? 'bg-amber-400' : 'bg-green-400'}`} />
                   <div className="flex-1 min-w-0">
