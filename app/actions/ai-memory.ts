@@ -15,6 +15,15 @@ export interface AIMemory {
   createdAt: Date
   updatedAt: Date
   createdBy: string | null // "doug", "harvey", user UUID, or null
+  authorAgent: string | null
+  entryType: string | null
+  date: string | null
+  tags: string[]
+  completed: any
+  decisions: any
+  blockers: any
+  pending: any
+  tomorrowFirst: any
   space?: {
     id: string
     name: string
@@ -29,11 +38,20 @@ export interface CreateAIMemoryInput {
   companyId?: string
   projectId?: string
   memoryType: string
+  entryType?: string
+  authorAgent?: string
   title: string
   description: string
   confidenceScore: number
   source?: string
-  createdBy?: string // "doug", "harvey", or user UUID
+  createdBy?: string
+  date?: string        // "YYYY-MM-DD"
+  tags?: string[]
+  completed?: any
+  decisions?: any
+  blockers?: any
+  pending?: any
+  tomorrowFirst?: any
 }
 
 export interface UpdateAIMemoryInput {
@@ -50,8 +68,12 @@ export interface AIMemoryFilters {
   companyId?: string
   projectId?: string
   memoryType?: string
+  entryType?: string
+  authorAgent?: string
   search?: string
   minConfidence?: number
+  date?: string       // filter to single date "YYYY-MM-DD"
+  tags?: string[]
 }
 
 /**
@@ -80,9 +102,14 @@ export async function getAIMemories(
       where.confidenceScore = { gte: filters.minConfidence }
     }
 
+    if (filters?.entryType)   where.entryType  = filters.entryType
+    if (filters?.authorAgent) where.authorAgent = filters.authorAgent
+    if (filters?.date)        where.date        = filters.date
+    if (filters?.tags?.length) where.tags = { hasSome: filters.tags }
+
     if (filters?.search) {
       where.OR = [
-        { title: { contains: filters.search, mode: 'insensitive' as any } },
+        { title:       { contains: filters.search, mode: 'insensitive' as any } },
         { description: { contains: filters.search, mode: 'insensitive' as any } },
       ]
     }
@@ -90,25 +117,13 @@ export async function getAIMemories(
     const memories = await prisma.aIMemory.findMany({
       where,
       include: {
-        company: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        project: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+        company: { select: { id: true, name: true } },
+        project: { select: { id: true, name: true } },
       },
-      orderBy: {
-        updatedAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
     })
 
-    return memories
+    return memories as unknown as AIMemory[]
   } catch (error) {
     console.error('Error fetching AI memories:', error)
     throw new Error('Failed to fetch AI memories')
@@ -144,7 +159,7 @@ export async function getAIMemory(
       },
     })
 
-    return memory
+    return memory as unknown as AIMemory
   } catch (error) {
     console.error('Error fetching AI memory:', error)
     throw new Error('Failed to fetch AI memory')
@@ -160,17 +175,27 @@ export async function createAIMemory(
   input: CreateAIMemoryInput
 ): Promise<AIMemory> {
   try {
+    const today = new Date().toISOString().split('T')[0]
     const memory = await prisma.aIMemory.create({
       data: {
         workspaceId,
-        companyId: input.companyId || null,
-        projectId: input.projectId || null,
-        memoryType: input.memoryType,
-        title: input.title,
-        description: input.description,
+        companyId:      input.companyId   || null,
+        projectId:      input.projectId   || null,
+        memoryType:     input.memoryType,
+        entryType:      input.entryType   || 'note',
+        authorAgent:    input.authorAgent || null,
+        title:          input.title,
+        description:    input.description,
         confidenceScore: input.confidenceScore,
-        source: input.source || null,
-        createdBy: input.createdBy || userId, // Can be "doug", "harvey", or user UUID
+        source:         input.source      || null,
+        createdBy:      input.createdBy   || userId,
+        date:           input.date        || today,
+        tags:           input.tags        || [],
+        completed:      input.completed   ?? null,
+        decisions:      input.decisions   ?? null,
+        blockers:       input.blockers    ?? null,
+        pending:        input.pending     ?? null,
+        tomorrowFirst:  input.tomorrowFirst ?? null,
       },
       include: {
         company: {
@@ -188,7 +213,7 @@ export async function createAIMemory(
       },
     })
 
-    return memory
+    return memory as unknown as AIMemory
   } catch (error) {
     console.error('Error creating AI memory:', error)
     throw new Error('Failed to create AI memory')
@@ -226,7 +251,7 @@ export async function updateAIMemory(
       },
     })
 
-    return memory
+    return memory as unknown as AIMemory
   } catch (error) {
     console.error('Error updating AI memory:', error)
     throw new Error('Failed to update AI memory')

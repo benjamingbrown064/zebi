@@ -688,6 +688,10 @@ model AIMemory {
   blockers        Json?    // array of blockers discovered
   pending         Json?    // array of carry-over items
   tomorrowFirst   Json?    // array of next-day priorities
+  // Timeline grouping + filtering
+  date            String?  @db.Text  // "YYYY-MM-DD" — date of the memory entry for timeline grouping
+  tags            String[] @default([])
+
   createdAt       DateTime @default(now()) @db.Timestamptz()
   updatedAt       DateTime @updatedAt @db.Timestamptz()
 
@@ -702,6 +706,7 @@ model AIMemory {
   @@index([createdBy])
   @@index([authorAgent])
   @@index([entryType])
+  @@index([date])
   @@index([updatedAt])
 }
 
