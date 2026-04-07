@@ -458,33 +458,62 @@ function SkillsTab() {
         </select>
       </div>
       {loading ? <div className="flex justify-center py-12"><LoadingSpinner /></div> :
-       skills.length === 0 ? <p className="text-[#A3A3A3] text-[14px] py-12 text-center">No skills found.</p> : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {skills.map((skill: any) => (
-            <div key={skill.id} onClick={() => router.push(`/skills/${skill.id}`)}
-              className="bg-white border border-[#E5E5E5] rounded p-4 cursor-pointer hover:border-[#C6C6C6] transition">
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <h3 className="text-[14px] font-semibold text-[#1A1A1A]">{skill.title}</h3>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  {skill.status !== 'active' && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${STATUS_COLORS[skill.status] || 'bg-[#F3F3F3] text-[#474747]'}`}>{skill.status}</span>
-                  )}
-                  <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${CAT_COLORS[skill.category] || CAT_COLORS.other}`}>{skill.category}</span>
+       skills.length === 0 ? <p className="text-[#A3A3A3] text-[14px] py-12 text-center">No skills found.</p> : (() => {
+        // Group by category
+        const grouped: Record<string, any[]> = {}
+        for (const skill of skills) {
+          const cat = skill.category || 'other'
+          if (!grouped[cat]) grouped[cat] = []
+          grouped[cat].push(skill)
+        }
+        const sortedCats = Object.keys(grouped).sort()
+
+        return (
+          <div className="space-y-8">
+            {sortedCats.map(cat => (
+              <div key={cat}>
+                {/* Category header */}
+                <div className="flex items-center gap-3 mb-3">
+                  <span className={`text-[11px] px-2.5 py-1 rounded font-semibold uppercase tracking-[0.08em] ${CAT_COLORS[cat] || CAT_COLORS.other}`}>
+                    {cat}
+                  </span>
+                  <span className="text-[11px] text-[#A3A3A3]">{grouped[cat].length} skill{grouped[cat].length !== 1 ? 's' : ''}</span>
+                  <div className="flex-1 h-px bg-[#E5E5E5]" />
+                </div>
+                {/* Skills grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {grouped[cat].map((skill: any) => (
+                    <div key={skill.id} onClick={() => router.push(`/skills/${skill.id}`)}
+                      className="bg-white border border-[#E5E5E5] rounded p-4 cursor-pointer hover:border-[#C6C6C6] transition group">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="text-[13px] font-semibold text-[#1A1A1A] group-hover:text-black">{skill.title}</h3>
+                        {skill.status !== 'active' && (
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${STATUS_COLORS[skill.status] || 'bg-[#F3F3F3] text-[#474747]'}`}>{skill.status}</span>
+                        )}
+                      </div>
+                      {skill.description && <p className="text-[12px] text-[#737373] line-clamp-2 mb-2">{skill.description}</p>}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-[#A3A3A3] capitalize">{skill.skillType}</span>
+                        <span className="text-[#C6C6C6]">·</span>
+                        <span className="text-[11px] text-[#A3A3A3]">v{skill.version}</span>
+                        {skill.ownerAgent && (
+                          <>
+                            <span className="text-[#C6C6C6]">·</span>
+                            <span className="text-[11px] text-[#A3A3A3] capitalize">{skill.ownerAgent}</span>
+                          </>
+                        )}
+                        {skill.tags?.length > 0 && skill.tags.slice(0,2).map((tag: string) => (
+                          <span key={tag} className="text-[10px] bg-[#F3F3F3] text-[#474747] px-1.5 py-0.5 rounded">{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-              {skill.description && <p className="text-[12px] text-[#737373] line-clamp-2">{skill.description}</p>}
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-[11px] text-[#A3A3A3] capitalize">{skill.skillType}</span>
-                <span className="text-[#C6C6C6]">·</span>
-                <span className="text-[11px] text-[#A3A3A3]">v{skill.version}</span>
-                {skill.tags?.length > 0 && skill.tags.slice(0,3).map((tag: string) => (
-                  <span key={tag} className="text-[10px] bg-[#F3F3F3] text-[#474747] px-1.5 py-0.5 rounded">{tag}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )
+       })()}
     </div>
   )
 }
