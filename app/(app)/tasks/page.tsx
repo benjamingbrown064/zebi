@@ -28,6 +28,8 @@ export default function TasksPage() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')
@@ -98,6 +100,11 @@ export default function TasksPage() {
     if (updated) {
       setTasks(tasks.map(t => t.id === taskId ? { ...t, ...updated } : t))
     }
+  }
+
+  const handleDeleteTask = async (taskId: string) => {
+    await deleteTask(workspaceId!, taskId)
+    setTasks(tasks.filter(t => t.id !== taskId))
   }
 
   // Apply filters
@@ -386,7 +393,7 @@ export default function TasksPage() {
                         }] : []),
                         ...(task.project ? [{ label: 'Project', value: task.project.name }] : []),
                       ]}
-                      href={`/tasks/${task.id}`}
+                      onClick={() => { setSelectedTask(task); setIsTaskModalOpen(true) }}
                     />
                   ))}
                 </div>
@@ -395,7 +402,7 @@ export default function TasksPage() {
                 <div className="hidden lg:block">
                   <TasksTable
                     tasks={filteredTasks}
-                    onTaskClick={(task) => router.push(`/tasks/${task.id}`)}
+                    onTaskClick={(task) => { setSelectedTask(task); setIsTaskModalOpen(true) }}
                     onComplete={async (taskId) => {
                       await handleUpdateTask(taskId, { completedAt: new Date().toISOString() } as any)
                     }}
@@ -464,6 +471,25 @@ export default function TasksPage() {
           isMobile={isMobile}
         />
       )}
+
+      {/* Task Detail Modal — opens inline, no page navigation */}
+      <TaskDetailModal
+        isOpen={isTaskModalOpen}
+        onClose={() => { setIsTaskModalOpen(false); setSelectedTask(null) }}
+        task={selectedTask ?? undefined}
+        onUpdate={async (taskId, updates) => {
+          await handleUpdateTask(taskId, updates as any)
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+        }}
+        onDelete={async (taskId) => {
+          await handleDeleteTask(taskId)
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+        }}
+        workspaceId={workspaceId!}
+        statuses={statuses}
+      />
     </div>
   )
 }

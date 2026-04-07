@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+
 import TaskBoardTile from '@/components/TaskBoardTile'
 import TaskDetailModal from '@/components/TaskDetailModal'
 import QuickAddModal from '@/components/QuickAddModal'
@@ -27,7 +27,7 @@ export default function BoardClient({
   initialTasks: any[]
   initialStatuses: any[]
 }) {
-  const router = useRouter()
+
   const [tasks, setTasks] = useState(initialTasks)
   const [statuses, setStatuses] = useState(initialStatuses)
   const [isMobile, setIsMobile] = useState(false)
@@ -344,9 +344,10 @@ export default function BoardClient({
     }
   }
 
-  // Handle view task - navigate to task URL
+  // Handle view task — open modal inline, no navigation
   const handleView = (taskId: string) => {
-    router.push(`/tasks/${taskId}`)
+    const task = tasks.find((t: any) => t.id === taskId)
+    if (task) { setSelectedTask(task); setIsModalOpen(true) }
   }
 
   // Handle task update
