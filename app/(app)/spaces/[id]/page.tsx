@@ -1100,18 +1100,22 @@ export default function SpaceDetailPage() {
   const loadSpace = useCallback(async (forceRefresh = false) => {
     try {
       if (forceRefresh) invalidateCache(`/api/spaces/${spaceId}`)
-      const [spaceData, statusesData] = await Promise.all([
-        cachedFetch<Space>(`/api/spaces/${spaceId}`, { ttl: STABLE_TTL }),
-        cachedFetch<any>(`/api/statuses?workspaceId=${wsId}`, { ttl: 5 * 60 * 1000 }),
-      ])
+      const spaceData = await cachedFetch<Space>(`/api/spaces/${spaceId}`, { ttl: STABLE_TTL })
       setSpace(spaceData)
-      setModalStatuses(statusesData?.statuses ?? [])
     } catch (err: any) {
       if (err?.message?.includes('404')) router.push('/spaces')
     } finally {
       setLoading(false)
     }
-  }, [spaceId, router, wsId])
+  }, [spaceId, router])
+
+  // Load statuses separately once wsId is available
+  useEffect(() => {
+    if (!wsId) return
+    cachedFetch<any>(`/api/statuses?workspaceId=${wsId}`, { ttl: 5 * 60 * 1000 })
+      .then(d => setModalStatuses(d?.statuses ?? []))
+      .catch(() => {})
+  }, [wsId])
 
   useEffect(() => { loadSpace() }, [loadSpace])
 
@@ -1257,10 +1261,10 @@ export default function SpaceDetailPage() {
 
           {/* ── Tab content ───────────────────────────────────────────────── */}
           {activeTab === 'overview'     && <OverviewTab space={space} onEditClick={() => setIsEditing(true)} />}
-          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} onTaskClick={(t) => { setSelectedTask(t); setIsTaskModalOpen(true) }} />}
+          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} onTaskClick={(t) => { setSelectedTask({ ...t, workspaceId: wsId }); setIsTaskModalOpen(true) }} />}
           {activeTab === 'objectives'   && <ObjectivesTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'projects'     && <ProjectsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
-          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} onTaskClick={(t) => { setSelectedTask(t); setIsTaskModalOpen(true) }} />}
+          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} onTaskClick={(t) => { setSelectedTask({ ...t, workspaceId: wsId }); setIsTaskModalOpen(true) }} />}
           {activeTab === 'docs'         && <DocsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'intelligence' && <IntelligenceTab space={space} />}
 
