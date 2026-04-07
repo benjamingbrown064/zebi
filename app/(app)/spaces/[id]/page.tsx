@@ -8,6 +8,7 @@ import { cachedFetch, invalidateCache, STABLE_TTL } from '@/lib/client-cache'
 import CaptureBar from '@/components/CaptureBar'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import SpaceForm from '@/components/SpaceForm'
+import TaskDetailModal from '@/components/TaskDetailModal'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -472,7 +473,7 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
 // ─── Tab: Work ────────────────────────────────────────────────────────────────
 
-function WorkTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null; onRefresh: () => void }) {
+function WorkTab({ space, wsId, onRefresh, onTaskClick }: { space: Space; wsId: string | null; onRefresh: () => void; onTaskClick?: (task: any) => void }) {
   const router = useRouter()
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -572,7 +573,7 @@ function WorkTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
               <div
                 key={task.id}
                 className="group flex items-start gap-3 py-3 px-3 bg-white rounded hover:border-[#E5E5E5] border border-transparent hover:shadow-sm transition cursor-pointer"
-                onClick={() => router.push(`/tasks?highlight=${task.id}`)}
+                onClick={() => onTaskClick ? onTaskClick(task) : router.push(`/tasks?highlight=${task.id}`)}
               >
                 <button
                   onClick={e => { e.stopPropagation(); handleComplete(task.id) }}
@@ -779,7 +780,7 @@ function ProjectsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | 
 
 // ─── Tab: Agents ──────────────────────────────────────────────────────────────
 
-function AgentsTab({ space, onSwitchToWork }: { space: Space; onSwitchToWork?: () => void }) {
+function AgentsTab({ space, onSwitchToWork, onTaskClick }: { space: Space; onSwitchToWork?: () => void; onTaskClick?: (task: any) => void }) {
   const router = useRouter()
   const agentMap: Record<string, any[]> = {}
   space.tasks.forEach((t: any) => {
@@ -848,7 +849,7 @@ function AgentsTab({ space, onSwitchToWork }: { space: Space; onSwitchToWork?: (
                 <div
                   key={t.id}
                   className="flex items-start gap-2 cursor-pointer group"
-                  onClick={() => router.push(`/tasks?highlight=${t.id}`)}
+                  onClick={() => onTaskClick ? onTaskClick(t) : router.push(`/tasks?highlight=${t.id}`)}
                 >
                   <div className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${t.blockedReason ? 'bg-red-500' : t.waitingOn === 'ben' ? 'bg-amber-400' : 'bg-green-400'}`} />
                   <div className="flex-1 min-w-0">
@@ -1085,6 +1086,9 @@ export default function SpaceDetailPage() {
   const [isMobile, setIsMobile] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<any>(null)
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+  const [modalStatuses, setModalStatuses] = useState<any[]>([])
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -1096,14 +1100,18 @@ export default function SpaceDetailPage() {
   const loadSpace = useCallback(async (forceRefresh = false) => {
     try {
       if (forceRefresh) invalidateCache(`/api/spaces/${spaceId}`)
-      const data = await cachedFetch<Space>(`/api/spaces/${spaceId}`, { ttl: STABLE_TTL })
-      setSpace(data)
+      const [spaceData, statusesData] = await Promise.all([
+        cachedFetch<Space>(`/api/spaces/${spaceId}`, { ttl: STABLE_TTL }),
+        cachedFetch<any>(`/api/statuses?workspaceId=${wsId}`, { ttl: 5 * 60 * 1000 }),
+      ])
+      setSpace(spaceData)
+      setModalStatuses(statusesData?.statuses ?? [])
     } catch (err: any) {
       if (err?.message?.includes('404')) router.push('/spaces')
     } finally {
       setLoading(false)
     }
-  }, [spaceId, router])
+  }, [spaceId, router, wsId])
 
   useEffect(() => { loadSpace() }, [loadSpace])
 
@@ -1249,10 +1257,10 @@ export default function SpaceDetailPage() {
 
           {/* ── Tab content ───────────────────────────────────────────────── */}
           {activeTab === 'overview'     && <OverviewTab space={space} onEditClick={() => setIsEditing(true)} />}
-          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
+          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} onTaskClick={(t) => { setSelectedTask(t); setIsTaskModalOpen(true) }} />}
           {activeTab === 'objectives'   && <ObjectivesTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'projects'     && <ProjectsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
-          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} />}
+          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} onTaskClick={(t) => { setSelectedTask(t); setIsTaskModalOpen(true) }} />}
           {activeTab === 'docs'         && <DocsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'intelligence' && <IntelligenceTab space={space} />}
 
@@ -1343,6 +1351,31 @@ export default function SpaceDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Task Detail Modal */}
+      <TaskDetailModal
+        isOpen={isTaskModalOpen}
+        onClose={() => { setIsTaskModalOpen(false); setSelectedTask(null) }}
+        task={selectedTask ?? undefined}
+        onUpdate={async (taskId, updates) => {
+          await fetch(`/api/tasks/${taskId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...updates, workspaceId: wsId }),
+          })
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+          loadSpace(true)
+        }}
+        onDelete={async (taskId) => {
+          await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' })
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+          loadSpace(true)
+        }}
+        workspaceId={wsId ?? ''}
+        statuses={modalStatuses}
+      />
 
     </div>
   )
