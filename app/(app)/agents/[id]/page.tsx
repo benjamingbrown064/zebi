@@ -250,9 +250,29 @@ function WorkTab({ agent }: { agent: any }) {
 
 // ─── Knowledge Tab ───────────────────────────────────────────────────────────
 function KnowledgeTab({ agent, onRefresh }: { agent: any; onRefresh: () => void }) {
+  const { workspaceId } = useWorkspace()
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({ title: '', linkType: 'skill', url: '', notes: '', required: false })
+  const [form, setForm] = useState({ title: '', linkType: 'skill', url: '', notes: '', required: false, skillId: '' })
+
+  // Skill search state
+  const [skillSearch, setSkillSearch] = useState('')
+  const [skills, setSkills] = useState<any[]>([])
+  const [loadingSkills, setLoadingSkills] = useState(false)
+  const [selectedSkill, setSelectedSkill] = useState<any | null>(null)
+
+  // Load skills when type = skill and search changes
+  useEffect(() => {
+    if (form.linkType !== 'skill' || !workspaceId) return
+    setLoadingSkills(true)
+    const wsId = workspaceId || agent.workspaceId
+    const p = new URLSearchParams({ workspaceId: wsId, status: 'active', limit: '50' })
+    if (skillSearch) p.set('search', skillSearch)
+    fetch(`/api/skills?${p}`)
+      .then(r => r.json())
+      .then(d => setSkills(d.skills ?? []))
+      .finally(() => setLoadingSkills(false))
+  }, [form.linkType, skillSearch, workspaceId, agent.workspaceId])
 
   const links: any[] = agent.knowledgeLinks || []
   const required = links.filter(l => l.required)
@@ -266,16 +286,28 @@ function KnowledgeTab({ agent, onRefresh }: { agent: any; onRefresh: () => void 
   }
 
   async function handleAdd() {
-    if (!form.title) return
+    const title = form.linkType === 'skill' ? (selectedSkill?.title || '') : form.title
+    if (!title) return
     setSaving(true)
     try {
+      const payload: any = {
+        ...form,
+        title,
+        workspaceId: agent.workspaceId,
+      }
+      if (form.linkType === 'skill' && selectedSkill) {
+        payload.skillId = selectedSkill.id
+        payload.title   = selectedSkill.title
+      }
       await fetch(`/api/agents/${agent.id}/knowledge`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, workspaceId: agent.workspaceId }),
+        body: JSON.stringify(payload),
       })
       setShowAdd(false)
-      setForm({ title: '', linkType: 'skill', url: '', notes: '', required: false })
+      setForm({ title: '', linkType: 'skill', url: '', notes: '', required: false, skillId: '' })
+      setSelectedSkill(null)
+      setSkillSearch('')
       onRefresh()
     } finally { setSaving(false) }
   }
@@ -301,10 +333,15 @@ function KnowledgeTab({ agent, onRefresh }: { agent: any; onRefresh: () => void 
                 )}
               </div>
               <p className="text-[13px] font-medium text-[#1A1A1A]">
-                {link.url ? (
+                {link.skillId ? (
+                  <span>{link.title}</span>
+                ) : link.url ? (
                   <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{link.title}</a>
                 ) : link.title}
               </p>
+              {link.skill && (
+                <p className="text-[11px] text-[#A3A3A3] capitalize mt-0.5">{link.skill.category} · {link.skill.skillType}</p>
+              )}
               {link.notes && <p className="text-[12px] text-[#737373] mt-0.5">{link.notes}</p>}
             </div>
             <button
@@ -337,42 +374,109 @@ function KnowledgeTab({ agent, onRefresh }: { agent: any; onRefresh: () => void 
 
       {showAdd && (
         <div className="bg-[#F9F9F9] border border-[#E5E5E5] rounded p-4 space-y-3">
-          <select value={form.linkType} onChange={e => setForm(f => ({ ...f, linkType: e.target.value }))}
-            className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]">
-            <option value="briefing">Briefing</option>
-            <option value="document">Document</option>
-            <option value="skill">Skill</option>
-            <option value="url">URL</option>
-            <option value="file">File</option>
-          </select>
-          <input
-            value={form.title}
-            onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-            placeholder="Title"
-            className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]"
-          />
-          <input
-            value={form.url}
-            onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
-            placeholder="URL (optional)"
-            className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]"
-          />
-          <input
-            value={form.notes}
-            onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-            placeholder="Notes (optional)"
-            className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]"
-          />
+          {/* Type selector */}
+          <div>
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">Type</label>
+            <select value={form.linkType} onChange={e => { setForm(f => ({ ...f, linkType: e.target.value })); setSelectedSkill(null); setSkillSearch('') }}
+              className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]">
+              <option value="skill">Skill (from library)</option>
+              <option value="briefing">Briefing</option>
+              <option value="document">Document</option>
+              <option value="url">URL</option>
+              <option value="file">File</option>
+            </select>
+          </div>
+
+          {/* Skill picker */}
+          {form.linkType === 'skill' ? (
+            <div>
+              <label className="block text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">Search Skills</label>
+              {selectedSkill ? (
+                <div className="flex items-center gap-3 bg-white border border-[#1A1A1A] rounded px-3 py-2.5">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium text-[#1A1A1A]">{selectedSkill.title}</p>
+                    <p className="text-[11px] text-[#737373] capitalize">{selectedSkill.category} · {selectedSkill.skillType}</p>
+                  </div>
+                  <button onClick={() => { setSelectedSkill(null); setSkillSearch('') }}
+                    className="text-[#A3A3A3] hover:text-[#1A1A1A] flex-shrink-0 text-[12px]">✕</button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <input
+                    value={skillSearch}
+                    onChange={e => setSkillSearch(e.target.value)}
+                    placeholder="Search by skill name…"
+                    className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]"
+                    autoFocus
+                  />
+                  {skills.length > 0 && (
+                    <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-[#E5E5E5] rounded shadow-lg max-h-48 overflow-y-auto">
+                      {loadingSkills ? (
+                        <p className="px-3 py-2 text-[12px] text-[#A3A3A3]">Loading…</p>
+                      ) : skills.map((s: any) => (
+                        <button key={s.id} onClick={() => setSelectedSkill(s)}
+                          className="w-full text-left px-3 py-2.5 hover:bg-[#F9F9F9] transition border-b border-[#F3F3F3] last:border-0">
+                          <p className="text-[13px] font-medium text-[#1A1A1A]">{s.title}</p>
+                          <p className="text-[11px] text-[#737373] capitalize">{s.category} · {s.skillType}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {!loadingSkills && skillSearch && skills.length === 0 && (
+                    <p className="text-[12px] text-[#A3A3A3] mt-1">No skills found matching "{skillSearch}"</p>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <label className="block text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">Title</label>
+              <input
+                value={form.title}
+                onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                placeholder="Title"
+                className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]"
+              />
+            </div>
+          )}
+
+          {/* URL (not for skills) */}
+          {form.linkType !== 'skill' && (
+            <div>
+              <label className="block text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">URL (optional)</label>
+              <input
+                value={form.url}
+                onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
+                placeholder="https://…"
+                className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]"
+              />
+            </div>
+          )}
+
+          <div>
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">Notes (optional)</label>
+            <input
+              value={form.notes}
+              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+              placeholder="Why this agent needs this…"
+              className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]"
+            />
+          </div>
+
           <label className="flex items-center gap-2 text-[13px] text-[#474747] cursor-pointer">
             <input type="checkbox" checked={form.required} onChange={e => setForm(f => ({ ...f, required: e.target.checked }))} />
             Required reading
           </label>
-          <div className="flex gap-2">
-            <button onClick={handleAdd} disabled={saving || !form.title}
+
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={handleAdd}
+              disabled={saving || (form.linkType === 'skill' ? !selectedSkill : !form.title)}
               className="px-4 py-2 bg-[#1A1A1A] text-white text-[13px] rounded hover:bg-black transition disabled:opacity-50">
               {saving ? 'Saving…' : 'Add'}
             </button>
-            <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-[#737373] text-[13px] hover:text-[#1A1A1A] transition">
+            <button onClick={() => { setShowAdd(false); setSelectedSkill(null); setSkillSearch('') }}
+              className="px-4 py-2 text-[#737373] text-[13px] hover:text-[#1A1A1A] transition">
               Cancel
             </button>
           </div>

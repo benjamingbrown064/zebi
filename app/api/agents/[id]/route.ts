@@ -24,7 +24,15 @@ export async function GET(
     const [agent, heartbeat, tasks, handoffs, memories, insights] = await Promise.all([
       prisma.agent.findUnique({
         where: { workspaceId_id: { workspaceId, id } },
-        include: { knowledgeLinks: { orderBy: { order: 'asc' } } },
+        include: {
+          knowledgeLinks: {
+            orderBy: { order: 'asc' },
+            include: {
+              skill: { select: { id: true, title: true, category: true, skillType: true, description: true } },
+              document: { select: { id: true, title: true, documentType: true } },
+            }
+          }
+        },
       }),
       prisma.agentHeartbeat.findUnique({ where: { workspaceId_agent: { workspaceId, agent: id } } }),
       prisma.task.findMany({

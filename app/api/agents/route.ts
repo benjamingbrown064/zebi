@@ -21,7 +21,14 @@ export async function GET(request: NextRequest) {
     const [agents, heartbeats, taskCounts] = await Promise.all([
       prisma.agent.findMany({
         where: { workspaceId },
-        include: { knowledgeLinks: { orderBy: { order: 'asc' } } },
+        include: {
+          knowledgeLinks: {
+            orderBy: { order: 'asc' },
+            include: {
+              skill: { select: { id: true, title: true, category: true, skillType: true } },
+            }
+          }
+        },
         orderBy: { name: 'asc' },
       }),
       prisma.agentHeartbeat.findMany({ where: { workspaceId } }),
