@@ -67,10 +67,18 @@ function MemoryCard({ memory, onClick }: { memory: AIMemory; onClick: () => void
   const entry  = entryStyle(memory.entryType)
   const isDailyWrap = memory.entryType === 'daily_wrap'
 
-  const completed     = Array.isArray(memory.completed)    ? memory.completed    : []
-  const decisions     = Array.isArray(memory.decisions)    ? memory.decisions    : []
-  const blockers      = Array.isArray(memory.blockers)     ? memory.blockers     : []
-  const pending       = Array.isArray(memory.pending)      ? memory.pending      : []
+  const toStr = (arr: any): string[] =>
+    (Array.isArray(arr) ? arr : []).map((item: any) =>
+      typeof item === 'string' ? item
+      : typeof item === 'object' && item !== null
+        ? item.title ?? item.note ?? item.description ?? JSON.stringify(item)
+        : String(item ?? '')
+    ).filter(Boolean)
+
+  const completed     = toStr(memory.completed)
+  const decisions     = toStr(memory.decisions)
+  const blockers      = toStr(memory.blockers)
+  const pending       = toStr(memory.pending)
 
   return (
     <div
@@ -154,11 +162,19 @@ function MemoryDetail({ memory, onClose }: { memory: AIMemory; onClose: () => vo
   const agent  = agentStyle(memory.authorAgent ?? memory.createdBy)
   const entry  = entryStyle(memory.entryType)
 
-  const completed    = Array.isArray(memory.completed)    ? memory.completed    : []
-  const decisions    = Array.isArray(memory.decisions)    ? memory.decisions    : []
-  const blockers     = Array.isArray(memory.blockers)     ? memory.blockers     : []
-  const pending      = Array.isArray(memory.pending)      ? memory.pending      : []
-  const tmrw         = Array.isArray(memory.tomorrowFirst)? memory.tomorrowFirst: []
+  const toStrings = (arr: any): string[] =>
+    (Array.isArray(arr) ? arr : []).map((item: any) =>
+      typeof item === 'string' ? item
+      : typeof item === 'object' && item !== null
+        ? item.title ?? item.note ?? item.description ?? JSON.stringify(item)
+        : String(item ?? '')
+    ).filter(Boolean)
+
+  const completed    = toStrings(memory.completed)
+  const decisions    = toStrings(memory.decisions)
+  const blockers     = toStrings(memory.blockers)
+  const pending      = toStrings(memory.pending)
+  const tmrw         = toStrings(memory.tomorrowFirst)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
