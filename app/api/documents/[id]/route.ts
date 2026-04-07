@@ -106,6 +106,14 @@ export async function PUT(
   }
 }
 
+// PATCH /api/documents/[id] - Alias for PUT (agents may use PATCH)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  return PUT(request, { params });
+}
+
 // DELETE /api/documents/[id] - Delete document
 export async function DELETE(
   request: NextRequest,
