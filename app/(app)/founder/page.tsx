@@ -9,6 +9,7 @@ import {
   FaUser, FaBolt, FaInbox, FaHourglass
 } from 'react-icons/fa'
 import { useWorkspace } from '@/lib/use-workspace'
+import { cachedFetch, SHORT_TTL } from '@/lib/client-cache'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -176,9 +177,7 @@ export default function FounderPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/founder/summary?workspaceId=${workspaceId}`)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const json = await res.json()
+      const json = await cachedFetch<any>(`/api/founder/summary?workspaceId=${workspaceId}`, { ttl: SHORT_TTL })
       setData(json)
       setLastRefresh(new Date())
     } catch (e) {

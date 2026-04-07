@@ -12,7 +12,7 @@ import { FaPlus, FaSearch, FaFolder, FaTasks, FaBuilding, FaFlag, FaMicrophone, 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFolderOpen, faFlagCheckered } from '@fortawesome/pro-duotone-svg-icons'
 import { useWorkspace } from '@/lib/use-workspace'
-import { cachedFetch, invalidateCache } from '@/lib/client-cache'
+import { cachedFetch, invalidateCache, STABLE_TTL } from '@/lib/client-cache'
 import LoadingScreen from '@/components/LoadingScreen'
 
 interface Project {
@@ -79,34 +79,15 @@ export default function ProjectsPage() {
 
   const fetchData = async () => {
     try {
-      const [projectsRes, objectivesRes, spacesRes] = await Promise.all([
-        fetch(`/api/projects?workspaceId=${workspaceId}`),
-        fetch(`/api/objectives?workspaceId=${workspaceId}`),
-        fetch(`/api/spaces?workspaceId=${workspaceId}`)
+      const [projectsData, objectivesData, spacesData] = await Promise.all([
+        cachedFetch<any>(`/api/projects?workspaceId=${workspaceId}`, { ttl: STABLE_TTL }),
+        cachedFetch<any>(`/api/objectives?workspaceId=${workspaceId}`, { ttl: STABLE_TTL }),
+        cachedFetch<any>(`/api/spaces?workspaceId=${workspaceId}`, { ttl: STABLE_TTL }),
       ])
-      
-      if (projectsRes.ok) {
-        const data = await projectsRes.json()
-        setProjects(data.projects || [])
-      }
-      
-      if (objectivesRes.ok) {
-        const data = await objectivesRes.json()
-        const objectivesList = (data.objectives || []).map((obj: any) => ({
-          id: obj.id,
-          title: obj.title
-        }))
-        setObjectives(objectivesList)
-      }
-      
-      if (spacesRes.ok) {
-        const data = await spacesRes.json()
-        const spacesList = (data || []).map((space: any) => ({
-          id: space.id,
-          name: space.name
-        }))
-        setSpaces(spacesList)
-      }
+
+      setProjects(projectsData?.projects ?? [])
+      setObjectives((objectivesData?.objectives ?? []).map((obj: any) => ({ id: obj.id, title: obj.title })))
+      setSpaces((Array.isArray(spacesData) ? spacesData : spacesData?.spaces ?? []).map((s: any) => ({ id: s.id, name: s.name })))
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {

@@ -9,10 +9,8 @@ import QuickAddModal from '@/components/QuickAddModal'
 import BoardFilters, { BoardFiltersState } from '@/components/BoardFilters'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import { FaPlus } from 'react-icons/fa'
-import { getTasks } from '@/app/actions/tasks'
-import { getStatuses } from '@/app/actions/statuses'
 import { updateTask, deleteTask, createTask } from '@/app/actions/tasks'
-import { getGoals, calculateGoalProgress } from '@/app/actions/goals'
+import { cachedFetch, invalidateCache, SHORT_TTL, STABLE_TTL } from '@/lib/client-cache'
 
 // All lanes use the same neutral background — cleaner Monolith style
 const STATUS_ORDER: Record<string, number> = {
@@ -65,11 +63,14 @@ export default function BoardClient({
       // Don't poll when tab is not visible — saves DB load
       if (document.visibilityState === 'hidden') return
       try {
-        const [newTasks, newStatuses, newGoals] = await Promise.all([
-          getTasks(DEFAULT_WORKSPACE_ID),
-          getStatuses(DEFAULT_WORKSPACE_ID),
-          getGoals(DEFAULT_WORKSPACE_ID),
+        const [tasksData, statusesData, goalsData] = await Promise.all([
+          cachedFetch<any>(`/api/tasks/direct?workspaceId=${DEFAULT_WORKSPACE_ID}&limit=500`, { ttl: SHORT_TTL }),
+          cachedFetch<any>(`/api/statuses?workspaceId=${DEFAULT_WORKSPACE_ID}`, { ttl: STABLE_TTL }),
+          cachedFetch<any>(`/api/goals?workspaceId=${DEFAULT_WORKSPACE_ID}`, { ttl: STABLE_TTL }),
         ])
+        const newTasks = tasksData?.tasks ?? tasksData ?? []
+        const newStatuses = statusesData?.statuses ?? statusesData ?? []
+        const newGoals = goalsData?.goals ?? goalsData ?? []
 
         // Clean up stale pending updates (older than 10 seconds)
         const now = Date.now()
@@ -78,10 +79,10 @@ export default function BoardClient({
         }
 
         // Only update tasks that don't have pending local updates
-        setTasks(prevTasks =>
-          newTasks.map(newTask => {
+        setTasks((prevTasks: any[]) =>
+          newTasks.map((newTask: any) => {
             if (pendingUpdatesRef.current.has(newTask.id)) {
-              return prevTasks.find(t => t.id === newTask.id) || newTask
+              return prevTasks.find((t: any) => t.id === newTask.id) || newTask
             }
             return newTask
           })
@@ -296,15 +297,11 @@ export default function BoardClient({
         body: JSON.stringify(updates),
       })
       
-      // Recalculate goal progress if task has a goal
-      const completedTask = tasks.find(t => t.id === taskId)
+      // Refresh goals after task completion (invalidate cache first)
+      const completedTask = tasks.find((t: any) => t.id === taskId)
       if (completedTask?.goalId) {
-        console.log(`Recalculating progress for goal ${completedTask.goalId}`)
-        await calculateGoalProgress(DEFAULT_WORKSPACE_ID, completedTask.goalId)
-        
-        // Update goals in state to trigger re-render
-        const updatedGoals = await getGoals(DEFAULT_WORKSPACE_ID)
-        setGoals(updatedGoals)
+        const goalsData = await cachedFetch<any>(`/api/goals?workspaceId=${DEFAULT_WORKSPACE_ID}`, { ttl: 0 })
+        setGoals(goalsData?.goals ?? goalsData ?? [])
       }
     } catch (err) {
       console.error('Failed to update task:', err)

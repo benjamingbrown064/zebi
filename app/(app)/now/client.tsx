@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Sidebar from '@/components/Sidebar'
 import ManagersNote from '@/components/ManagersNote'
 import { useWorkspace } from '@/lib/use-workspace'
+import { cachedFetch, SHORT_TTL } from '@/lib/client-cache'
 import { FaMicrophone } from 'react-icons/fa'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -564,8 +565,8 @@ export default function NowClient() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch('/api/now/summary')
-      if (res.ok) setData(await res.json())
+      const data = await cachedFetch<any>('/api/now/summary', { ttl: SHORT_TTL })
+      setData(data)
     } catch (e) {
       console.error('Failed to load Now summary', e)
     } finally {

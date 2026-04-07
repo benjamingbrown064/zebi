@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Sidebar from '@/components/Sidebar'
 import { useWorkspace } from '@/lib/use-workspace'
+import { cachedFetch, SHORT_TTL } from '@/lib/client-cache'
 import {
   FaSync, FaRobot, FaCheckCircle, FaBolt, FaExclamationTriangle,
   FaPlus, FaPen, FaArrowRight, FaLightbulb, FaBrain, FaBalanceScale,
@@ -106,8 +107,7 @@ export default function ActivityPage() {
     setLoading(true)
     try {
       const params = new URLSearchParams({ limit: '100' })
-      const res = await fetch(`/api/activity?${params}`)
-      const data = await res.json()
+      const data = await cachedFetch<any>(`/api/activity?${params}`, { ttl: SHORT_TTL })
       setLogs(data.logs ?? [])
     } catch (e) {
       console.error(e)

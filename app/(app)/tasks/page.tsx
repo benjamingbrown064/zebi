@@ -11,10 +11,10 @@ import ResponsivePageContainer from '@/components/responsive/ResponsivePageConta
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import MobileListItem from '@/components/responsive/MobileListItem'
 import { FaPlus, FaSearch, FaFilter, FaCircle, FaCheckCircle, FaClock } from 'react-icons/fa'
-import { getTasks, createTask, updateTask, deleteTask, Task } from '@/app/actions/tasks'
-import { getStatuses, Status } from '@/app/actions/statuses'
+import { createTask, updateTask, deleteTask, Task } from '@/app/actions/tasks'
+import { Status } from '@/app/actions/statuses'
 import { useWorkspace } from '@/lib/use-workspace'
-import { cachedFetch, invalidateCache } from '@/lib/client-cache'
+import { cachedFetch, invalidateCache, SHORT_TTL, STABLE_TTL } from '@/lib/client-cache'
 import LoadingScreen from '@/components/LoadingScreen'
 
 const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
@@ -56,13 +56,13 @@ export default function TasksPage() {
     
     async function loadInitialData() {
       try {
-        const [fetchedTasks, fetchedStatuses] = await Promise.all([
-          getTasks(workspaceId!), // Load all tasks (default limit of 1000)
-          getStatuses(workspaceId!),
+        const [tasksData, statusesData] = await Promise.all([
+          cachedFetch<any>(`/api/tasks/direct?workspaceId=${workspaceId}&limit=500`, { ttl: SHORT_TTL }),
+          cachedFetch<any>(`/api/statuses?workspaceId=${workspaceId}`, { ttl: STABLE_TTL }),
         ])
 
-        setTasks(fetchedTasks)
-        setStatuses(fetchedStatuses)
+        setTasks(tasksData?.tasks ?? tasksData ?? [])
+        setStatuses(statusesData?.statuses ?? statusesData ?? [])
         setLoading(false)
       } catch (err) {
         console.error('Failed to load data:', err)

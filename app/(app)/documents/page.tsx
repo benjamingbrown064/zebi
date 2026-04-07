@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileLines } from '@fortawesome/pro-duotone-svg-icons'
 import { FaPlus, FaSearch, FaFile, FaBuilding, FaFolder, FaTh, FaList, FaFilter } from 'react-icons/fa';
 import LoadingScreen from '@/components/LoadingScreen';
+import { cachedFetch, DEFAULT_TTL } from '@/lib/client-cache';
 
 interface Document {
   id: string;
@@ -71,8 +72,7 @@ export default function DocumentsPage() {
       if (typeFilter) params.append('documentType', typeFilter);
       if (search) params.append('search', search);
 
-      const res = await fetch(`/api/documents?${params.toString()}`);
-      const data = await res.json();
+      const data = await cachedFetch<any>(`/api/documents?${params.toString()}`, { ttl: DEFAULT_TTL });
       
       if (data.success) {
         setDocuments(data.documents);

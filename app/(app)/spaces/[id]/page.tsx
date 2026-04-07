@@ -1095,9 +1095,9 @@ export default function SpaceDetailPage() {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  const loadSpace = useCallback(async () => {
+  const loadSpace = useCallback(async (forceRefresh = false) => {
     try {
-      invalidateCache(`/api/spaces/${spaceId}`)
+      if (forceRefresh) invalidateCache(`/api/spaces/${spaceId}`)
       const data = await cachedFetch<Space>(`/api/spaces/${spaceId}`, { ttl: STABLE_TTL })
       setSpace(data)
     } catch (err: any) {
@@ -1118,7 +1118,7 @@ export default function SpaceDetailPage() {
         body: JSON.stringify(formData),
       })
       if (res.ok) {
-        await loadSpace()
+        await loadSpace(true)
         setIsEditing(false)
       }
     } finally {
@@ -1149,7 +1149,7 @@ export default function SpaceDetailPage() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
             </button>
             <div className="flex-1">
-              <CaptureBar onCaptured={loadSpace} spaceId={space.id} />
+              <CaptureBar onCaptured={() => loadSpace(true)} spaceId={space.id} />
             </div>
           </div>
         </div>
@@ -1252,11 +1252,11 @@ export default function SpaceDetailPage() {
 
           {/* ── Tab content ───────────────────────────────────────────────── */}
           {activeTab === 'overview'     && <OverviewTab space={space} onEditClick={() => setIsEditing(true)} />}
-          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={loadSpace} />}
-          {activeTab === 'objectives'   && <ObjectivesTab space={space} wsId={wsId} onRefresh={loadSpace} />}
-          {activeTab === 'projects'     && <ProjectsTab space={space} wsId={wsId} onRefresh={loadSpace} />}
+          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
+          {activeTab === 'objectives'   && <ObjectivesTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
+          {activeTab === 'projects'     && <ProjectsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} />}
-          {activeTab === 'docs'         && <DocsTab space={space} wsId={wsId} onRefresh={loadSpace} />}
+          {activeTab === 'docs'         && <DocsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'intelligence' && <IntelligenceTab space={space} />}
 
         </div>
