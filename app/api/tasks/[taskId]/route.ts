@@ -173,6 +173,7 @@ export async function PATCH(
         completionNote:   body.completionNote     ?? existingTask.completionNote,
         outputDocId:      body.outputDocId        ?? existingTask.outputDocId,
         outputUrl:        body.outputUrl          ?? existingTask.outputUrl,
+        skillId:          body.skillId            ?? existingTask.skillId,
       }
 
       const statusName = status.name.toLowerCase().replace(/\s+/g, '_')
@@ -201,6 +202,17 @@ export async function PATCH(
       if (statusName === 'done' || statusName === 'complete' || statusName === 'completed') {
         const hasOutput = merged.completionNote || merged.outputDocId || merged.outputUrl
         if (!hasOutput) gateErrors.push('completionNote, outputDocId, or outputUrl is required to mark done')
+
+        // Skill evaluation gate — if task has a skillId, require evaluation unless skipped
+        if (merged.skillId && !body.skipEvaluation && !body.force) {
+          // Check if an evaluation already exists for this task+skill
+          const existingEval = await prisma.skillEvaluation.findFirst({
+            where: { taskId, skillId: merged.skillId }
+          })
+          if (!existingEval) {
+            gateErrors.push('A skill evaluation is required before marking this task done. Submit via POST /api/skills/' + merged.skillId + '/evaluate with taskId, or pass skipEvaluation: true to bypass.')
+          }
+        }
       }
 
       // Soft gates — return warnings but allow bypass with { force: true }

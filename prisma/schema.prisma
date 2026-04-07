@@ -82,6 +82,9 @@ model Workspace {
   // Agent Profile Relations
   agents             Agent[]
 
+  // Skill Evolution Relations
+  skillEvaluations   SkillEvaluation[]
+
   @@index([ownerId])
 }
 
@@ -1385,15 +1388,60 @@ model Skill {
   createdAt    DateTime @default(now()) @db.Timestamptz()
   updatedAt    DateTime @updatedAt @db.Timestamptz()
 
+  // Ownership
+  ownerAgent        String?  @db.Text  // primary agent responsible for this skill
+  maintainerAgents  String[]           // other agents who maintain it
+
   workspace      Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   tasks          Task[]              @relation("TaskSkill")
   knowledgeLinks AgentKnowledgeLink[]
+  evaluations    SkillEvaluation[]
 
   @@index([workspaceId])
   @@index([category])
   @@index([status])
   @@index([tags])
+  @@index([ownerAgent])
   @@map("skills")
+}
+
+// ==================== SKILL EVALUATIONS ====================
+
+model SkillEvaluation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId String   @db.Text
+  skillId     String   @db.Text
+  taskId      String?  @db.Text   // task this evaluation came from
+  skillVersion Int                // version of the skill that was evaluated
+
+  // Who evaluated
+  agentId     String   @db.Text   // "harvey" | "doug" | "theo" | "casper"
+  agentSkillRole String @default("incidental-user") // owner | regular-user | incidental-user
+
+  // Outcome
+  qualityScore  String            // met | partial | not_met
+  confidence    String @default("medium") // low | medium | high
+
+  // Notes
+  strengthNotes   String?  @db.Text  // what worked well
+  gapNotes        String?  @db.Text  // what was unclear/missing/wrong
+  deviationNotes  String?  @db.Text  // did they deviate from steps, and why
+
+  // Suggestion trigger
+  suggestUpdate   Boolean  @default(false)
+  suggestionId    String?  @db.Text  // if a suggestion was created from this
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+
+  skill    Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([skillId])
+  @@index([workspaceId])
+  @@index([agentId])
+  @@index([taskId])
+  @@index([qualityScore])
+  @@map("skill_evaluations")
 }
 
 // ==================== MEETINGS ====================
