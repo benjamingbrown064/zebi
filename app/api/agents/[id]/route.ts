@@ -12,6 +12,7 @@ function getWorkspaceId(req: NextRequest, body?: any): string {
 }
 
 // GET /api/agents/[id] — full agent profile + live stats
+// ?includeSkillContent=true → inlines full steps/criteria for required skills and document content
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -19,6 +20,7 @@ export async function GET(
   try {
     const { id } = await params
     const workspaceId = getWorkspaceId(request)
+    const includeSkillContent = request.nextUrl.searchParams.get('includeSkillContent') === 'true'
     const now = Date.now()
 
     const [agent, heartbeat, tasks, handoffs, memories, insights] = await Promise.all([
@@ -28,8 +30,12 @@ export async function GET(
           knowledgeLinks: {
             orderBy: { order: 'asc' },
             include: {
-              skill: { select: { id: true, title: true, category: true, skillType: true, description: true } },
-              document: { select: { id: true, title: true, documentType: true } },
+              skill: includeSkillContent
+                ? { select: { id: true, title: true, category: true, skillType: true, description: true, steps: true, qualityCriteria: true, examples: true, version: true, ownerAgent: true } }
+                : { select: { id: true, title: true, category: true, skillType: true, description: true } },
+              document: includeSkillContent
+                ? { select: { id: true, title: true, documentType: true, contentRich: true, version: true } }
+                : { select: { id: true, title: true, documentType: true } },
             }
           }
         },
