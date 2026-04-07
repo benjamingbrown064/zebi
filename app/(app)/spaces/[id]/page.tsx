@@ -1261,10 +1261,22 @@ export default function SpaceDetailPage() {
 
           {/* ── Tab content ───────────────────────────────────────────────── */}
           {activeTab === 'overview'     && <OverviewTab space={space} onEditClick={() => setIsEditing(true)} />}
-          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} onTaskClick={(t) => { setSelectedTask({ ...t, workspaceId: wsId }); setIsTaskModalOpen(true) }} />}
+          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} onTaskClick={async (t) => {
+              try {
+                const data = await fetch(`/api/tasks/${t.id}`).then(r => r.json())
+                setSelectedTask({ ...(data.task ?? t), workspaceId: wsId })
+              } catch { setSelectedTask({ ...t, workspaceId: wsId }) }
+              setIsTaskModalOpen(true)
+            }} />}
           {activeTab === 'objectives'   && <ObjectivesTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'projects'     && <ProjectsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
-          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} onTaskClick={(t) => { setSelectedTask({ ...t, workspaceId: wsId }); setIsTaskModalOpen(true) }} />}
+          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} onTaskClick={async (t) => {
+              try {
+                const data = await fetch(`/api/tasks/${t.id}`).then(r => r.json())
+                setSelectedTask({ ...(data.task ?? t), workspaceId: wsId })
+              } catch { setSelectedTask({ ...t, workspaceId: wsId }) }
+              setIsTaskModalOpen(true)
+            }} />}
           {activeTab === 'docs'         && <DocsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'intelligence' && <IntelligenceTab space={space} />}
 
