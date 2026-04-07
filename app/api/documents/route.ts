@@ -133,7 +133,12 @@ export async function POST(request: NextRequest) {
       documentType: documentType || 'notes',
       contentRich,
       version: 1,
-      createdBy: DEFAULT_USER_ID
+      createdBy: DEFAULT_USER_ID,
+      functionTags: body.functionTags || [],
+      typeTags: body.typeTags || [],
+      stageTags: body.stageTags || [],
+      canonical: body.canonical || false,
+      supersededBy: body.supersededBy || null,
     };
 
     const document = await prisma.document.create({

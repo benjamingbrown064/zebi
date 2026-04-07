@@ -31,6 +31,140 @@ interface Document {
     version: number;
     createdAt: string;
   }>;
+  functionTags?: string[];
+  typeTags?: string[];
+  stageTags?: string[];
+  canonical?: boolean;
+  supersededBy?: string | null;
+}
+
+const FUNCTION_TAGS = ['source','core-strategy','technical','security','ops','gtm','meta']
+const TYPE_TAGS     = ['brief','memo','research','spec','playbook','sop','interview','script']
+const STAGE_TAGS    = ['validation','mvp','pilot','launch-ready']
+
+function TagPill({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-[11px] px-2 py-0.5 rounded border transition font-medium ${
+        active
+          ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
+          : 'bg-white text-[#737373] border-[#E5E5E5] hover:border-[#C6C6C6] hover:text-[#1A1A1A]'
+      }`}
+    >
+      {label}
+    </button>
+  )
+}
+
+function DocumentTagsPanel({ doc, onSaved }: { doc: Document; onSaved: (updated: Partial<Document>) => void }) {
+  const [open, setOpen] = useState(false)
+  const [functionTags, setFunctionTags] = useState<string[]>(doc.functionTags || [])
+  const [typeTags, setTypeTags]         = useState<string[]>(doc.typeTags || [])
+  const [stageTags, setStageTags]       = useState<string[]>(doc.stageTags || [])
+  const [canonical, setCanonical]       = useState(doc.canonical || false)
+  const [supersededBy, setSupersededBy] = useState(doc.supersededBy || '')
+  const [saving, setSaving] = useState(false)
+
+  function toggle(arr: string[], setArr: (v: string[]) => void, val: string) {
+    setArr(arr.includes(val) ? arr.filter(t => t !== val) : [...arr, val])
+  }
+
+  async function save() {
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/documents/${doc.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ functionTags, typeTags, stageTags, canonical, supersededBy: supersededBy || null }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        onSaved({ functionTags, typeTags, stageTags, canonical, supersededBy: supersededBy || null })
+      }
+    } finally { setSaving(false) }
+  }
+
+  const allTags = [...functionTags, ...typeTags, ...stageTags]
+
+  return (
+    <div className="border border-[#E5E5E5] rounded overflow-hidden mb-4">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-[#F9F9F9] hover:bg-[#F3F3F3] transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Tags</span>
+          {canonical && <span className="text-[10px] bg-black text-white px-1.5 py-0.5 rounded uppercase tracking-wide">Canonical</span>}
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {allTags.slice(0, 4).map(t => (
+                <span key={t} className="text-[10px] bg-[#F3F3F3] text-[#474747] px-1.5 py-0.5 rounded">{t}</span>
+              ))}
+              {allTags.length > 4 && <span className="text-[10px] text-[#A3A3A3]">+{allTags.length - 4}</span>}
+            </div>
+          )}
+        </div>
+        <svg className={`w-3.5 h-3.5 text-[#A3A3A3] transition-transform flex-shrink-0 ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+
+      {open && (
+        <div className="px-4 py-4 space-y-4 bg-white">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">Function</p>
+            <div className="flex flex-wrap gap-1.5">
+              {FUNCTION_TAGS.map(t => (
+                <TagPill key={t} label={t} active={functionTags.includes(t)} onClick={() => toggle(functionTags, setFunctionTags, t)} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">Type</p>
+            <div className="flex flex-wrap gap-1.5">
+              {TYPE_TAGS.map(t => (
+                <TagPill key={t} label={t} active={typeTags.includes(t)} onClick={() => toggle(typeTags, setTypeTags, t)} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">Stage</p>
+            <div className="flex flex-wrap gap-1.5">
+              {STAGE_TAGS.map(t => (
+                <TagPill key={t} label={t} active={stageTags.includes(t)} onClick={() => toggle(stageTags, setStageTags, t)} />
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-3 pt-1">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={canonical}
+                onChange={e => setCanonical(e.target.checked)}
+                className="w-3.5 h-3.5"
+              />
+              <span className="text-[12px] text-[#474747] font-medium">Canonical</span>
+            </label>
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">Superseded by (doc ID)</p>
+            <input
+              value={supersededBy}
+              onChange={e => setSupersededBy(e.target.value)}
+              placeholder="Paste document ID…"
+              className="w-full text-[12px] border border-[#E5E5E5] rounded px-3 py-1.5 bg-[#F9F9F9] focus:outline-none focus:border-[#1A1A1A]"
+            />
+          </div>
+          <button
+            onClick={save}
+            disabled={saving}
+            className="px-4 py-1.5 bg-[#1A1A1A] text-white text-[12px] font-medium rounded hover:bg-black transition disabled:opacity-50"
+          >
+            {saving ? 'Saving…' : 'Save tags'}
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }
 
 interface DocumentVersion {
@@ -476,6 +610,12 @@ export default function DocumentDetailPage() {
             <div className="flex-1 min-w-0">
               {/* Document Info Panel */}
               <DocumentMetaPanel doc={document} />
+
+              {/* Tags Panel */}
+              <DocumentTagsPanel
+                doc={document}
+                onSaved={(updated) => setDocument(prev => prev ? { ...prev, ...updated } : prev)}
+              />
               
               <div className="bg-white rounded overflow-hidden">
                 {content && (

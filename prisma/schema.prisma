@@ -612,6 +612,13 @@ model Document {
   updatedAt    DateTime @updatedAt @db.Timestamptz()
   createdBy    String   @db.Uuid
 
+  // Tagging system
+  functionTags String[] // source | core-strategy | technical | security | ops | gtm | meta
+  typeTags     String[] // brief | memo | research | spec | playbook | sop | interview | script
+  stageTags    String[] // validation | mvp | pilot | launch-ready
+  canonical    Boolean  @default(false)
+  supersededBy String?  @db.Text // docId of the document that supersedes this one
+
   workspace      Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   company        Space?              @relation(fields: [companyId], references: [id], onDelete: SetNull)
   project        Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)

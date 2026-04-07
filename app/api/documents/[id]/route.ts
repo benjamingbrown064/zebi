@@ -74,6 +74,12 @@ export async function PUT(
     if (contentRich !== undefined) updateData.contentRich = contentRich;
     if (body.projectId !== undefined) updateData.projectId = body.projectId || null;
     if (body.companyId !== undefined) updateData.companyId = body.companyId || null;
+    // Tagging fields
+    if (body.functionTags !== undefined) updateData.functionTags = body.functionTags;
+    if (body.typeTags !== undefined) updateData.typeTags = body.typeTags;
+    if (body.stageTags !== undefined) updateData.stageTags = body.stageTags;
+    if (body.canonical !== undefined) updateData.canonical = body.canonical;
+    if (body.supersededBy !== undefined) updateData.supersededBy = body.supersededBy || null;
     if (contentChanged && createVersion) {
       updateData.version = existingDoc.version + 1;
     }
