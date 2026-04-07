@@ -75,6 +75,10 @@ model Workspace {
   // Inbox Relations (Phase 1)
   inboxItems InboxItem[]
 
+  // Taskbox Relations
+  taskboxBoards TaskboxBoard[]
+  taskboxTasks  TaskboxTask[]
+
   @@index([ownerId])
 }
 
@@ -1447,6 +1451,93 @@ model MeetingContribution {
   @@index([meetingId])
   @@index([author])
   @@map("meeting_contributions")
+}
+
+// ==================== TASKBOX ====================
+
+model TaskboxBoard {
+  id              String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId     String   @db.Text
+  name            String
+  description     String?  @db.Text
+  columns         Json     @default("[\"todo\", \"in_progress\", \"done\"]")
+  automationRules Json?
+  createdBy       String   @db.Uuid
+  createdAt       DateTime @default(now()) @db.Timestamptz()
+  updatedAt       DateTime @updatedAt @db.Timestamptz()
+
+  workspace       Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks           TaskboxTask[]
+  automationLogs  TaskboxAutomationLog[]
+
+  @@index([workspaceId])
+  @@map("taskbox_boards")
+}
+
+model TaskboxTask {
+  id                String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  workspaceId       String   @db.Text
+  boardId           String?  @db.Text
+  companyId         String?  @db.Text
+  projectId         String?  @db.Text
+
+  title             String
+  description       String?  @db.Text
+  status            String   @default("todo")
+  priority          Int      @default(3)
+
+  assignedTo        String?  @db.Uuid
+  createdBy         String   @db.Uuid
+
+  dueAt             DateTime? @db.Timestamptz()
+  blockedReason     String?   @db.Text
+  blockedAt         DateTime? @db.Timestamptz()
+
+  automationEnabled Boolean  @default(false)
+  automationRules   Json?
+
+  tags              String[]
+  labels            String[]
+  position          Int?
+
+  createdAt         DateTime  @default(now()) @db.Timestamptz()
+  updatedAt         DateTime  @updatedAt @db.Timestamptz()
+  completedAt       DateTime? @db.Timestamptz()
+
+  workspace         Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  board             TaskboxBoard?         @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  automationLogs    TaskboxAutomationLog[]
+
+  @@index([workspaceId])
+  @@index([boardId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([dueAt])
+  @@index([companyId])
+  @@index([projectId])
+  @@map("taskbox_tasks")
+}
+
+model TaskboxAutomationLog {
+  id           String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  taskId       String?   @db.Text
+  boardId      String?   @db.Text
+  triggerType  String
+  actionType   String
+  triggeredAt  DateTime  @default(now()) @db.Timestamptz()
+  executedAt   DateTime? @db.Timestamptz()
+  status       String    @default("pending")
+  errorMessage String?   @db.Text
+  metadata     Json?
+
+  task         TaskboxTask?  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  board        TaskboxBoard? @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([boardId])
+  @@index([status])
+  @@index([triggeredAt])
+  @@map("taskbox_automation_logs")
 }
 
 // Force Prisma regeneration Mon Apr  6 00:55:00 GMT 2026

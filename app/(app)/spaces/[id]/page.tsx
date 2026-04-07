@@ -938,7 +938,7 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
         ) : (
           <div className="space-y-2">
             {(space.documents ?? []).map((doc: any) => (
-              <div key={doc.id} className="flex items-center gap-3 bg-white rounded p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
+              <div key={doc.id} onClick={() => router.push(`/documents/${doc.id}`)} className="flex items-center gap-3 bg-white rounded p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
                 <svg className="w-4 h-4 text-[#C6C6C6] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
