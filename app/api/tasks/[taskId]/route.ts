@@ -176,43 +176,55 @@ export async function PATCH(
         skillId:          body.skillId            ?? existingTask.skillId,
       }
 
-      const statusName = status.name.toLowerCase().replace(/\s+/g, '_')
+      // Normalise status name for gate matching
+      const statusName = status.name.toLowerCase().replace(/[\s-]+/g, '_')
       const gateErrors: string[] = []
 
-      if (statusName === 'in_progress' || statusName === 'doing' || statusName === 'in progress') {
-        if (!merged.ownerAgent)       gateErrors.push('ownerAgent is required to start work')
+      // ── Gate: Inbox → To-Do (no requirements, free transition) ──────────
+
+      // ── Gate: → Doing ────────────────────────────────────────────────────
+      if (statusName === 'doing' || statusName === 'in_progress') {
+        if (!merged.ownerAgent)
+          gateErrors.push('ownerAgent is required before starting work — which agent owns this?')
         if (!merged.expectedOutcome && !merged.definitionOfDone)
-          gateErrors.push('expectedOutcome or definitionOfDone is required to start work')
+          gateErrors.push('expectedOutcome or definitionOfDone is required before starting work')
       }
 
-      if (statusName === 'blocked') {
-        if (!merged.blockedReason) gateErrors.push('blockedReason is required when blocking a task')
-        if (!merged.waitingOn)     gateErrors.push('waitingOn is required when blocking a task')
-      }
+      // ── Gate: → Review ───────────────────────────────────────────────────
+      // Agents move tasks here when done. Requires full completion evidence.
+      if (statusName === 'review') {
+        if (!merged.completionNote)
+          gateErrors.push('completionNote is required — write exactly what was done and what the outcome is')
+        if (!merged.outputDocId && !merged.outputUrl && !merged.completionNote)
+          gateErrors.push('outputUrl or outputDocId is required — link to the deliverable or output')
+        if (!merged.ownerAgent)
+          gateErrors.push('ownerAgent is required on tasks moved to Review')
 
-      if (statusName === 'handed_off' || statusName === 'handoff') {
-        if (!merged.handoffToAgent) gateErrors.push('handoffToAgent is required for a handoff')
-        // Check a handoff record exists for this task
-        const handoff = await prisma.handoff.findFirst({
-          where: { taskId, workspaceId, status: { in: ['pending', 'accepted'] } }
-        })
-        if (!handoff) gateErrors.push('A handoff record must be created before marking as handed_off')
-      }
-
-      if (statusName === 'done' || statusName === 'complete' || statusName === 'completed') {
-        const hasOutput = merged.completionNote || merged.outputDocId || merged.outputUrl
-        if (!hasOutput) gateErrors.push('completionNote, outputDocId, or outputUrl is required to mark done')
-
-        // Skill evaluation gate — if task has a skillId, require evaluation unless skipped
+        // Skill evaluation gate
         if (merged.skillId && !body.skipEvaluation && !body.force) {
-          // Check if an evaluation already exists for this task+skill
           const existingEval = await prisma.skillEvaluation.findFirst({
             where: { taskId, skillId: merged.skillId }
           })
           if (!existingEval) {
-            gateErrors.push('A skill evaluation is required before marking this task done. Submit via POST /api/skills/' + merged.skillId + '/evaluate with taskId, or pass skipEvaluation: true to bypass.')
+            gateErrors.push('A skill evaluation is required. Submit via POST /api/skills/' + merged.skillId + '/evaluate with taskId, or pass skipEvaluation: true to bypass.')
           }
         }
+      }
+
+      // ── Gate: → Done ─────────────────────────────────────────────────────
+      // Done is set by Benjamin only. Agents must not move tasks to Done.
+      if (statusName === 'done' || statusName === 'complete' || statusName === 'completed') {
+        const hasOutput = merged.completionNote || merged.outputDocId || merged.outputUrl
+        if (!hasOutput) gateErrors.push('completionNote or output link is required to mark done')
+      }
+
+      // ── Gate: → handed_off ───────────────────────────────────────────────
+      if (statusName === 'handed_off' || statusName === 'handoff') {
+        if (!merged.handoffToAgent) gateErrors.push('handoffToAgent is required for a handoff')
+        const handoff = await prisma.handoff.findFirst({
+          where: { taskId, workspaceId, status: { in: ['pending', 'accepted'] } }
+        })
+        if (!handoff) gateErrors.push('A handoff record must be created before marking as handed_off')
       }
 
       // Soft gates — return warnings but allow bypass with { force: true }

@@ -5,11 +5,11 @@ import { prisma } from '@/lib/prisma'
 export const revalidate = 300 // Cache for 300s — invalidated on writes
 
 const DEFAULT_STATUSES = [
-  { name: 'Inbox', type: 'inbox', sortOrder: 0 },
-  { name: 'Planned', type: 'planned', sortOrder: 1 },
-  { name: 'Doing', type: 'doing', sortOrder: 2 },
-  { name: 'Blocked', type: 'blocked', sortOrder: 3 },
-  { name: 'Done', type: 'done', sortOrder: 4 },
+  { name: 'Inbox',  type: 'inbox',  sortOrder: 0 },
+  { name: 'To-Do',  type: 'todo',   sortOrder: 1 },
+  { name: 'Doing',  type: 'doing',  sortOrder: 2 },
+  { name: 'Review', type: 'review', sortOrder: 3 },
+  { name: 'Done',   type: 'done',   sortOrder: 4 },
 ]
 
 export async function GET(request: Request) {
