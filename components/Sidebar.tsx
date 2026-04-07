@@ -63,14 +63,9 @@ const PRIMARY_NAV: NavItem[] = [
   { href: '/tasks',       icon: faListCheck,     label: 'Tasks' },
   { href: '/board',       icon: faGrid2,         label: 'Board' },
   { href: '/planner',     icon: faCalendarWeek,  label: 'Weekly Planner' },
-  { href: '/memory',      icon: faBrain,         label: 'Memory' },
   { href: '/documents',   icon: faFileLines,     label: 'Documents' },
-  { href: '/skills',      icon: faBookOpenLines, label: 'Skills' },
-  { href: '/insights',    icon: faLightbulb,     label: 'AI Insights' },
   { href: '/activity',    icon: faTimeline,      label: 'Activity Feed' },
   { href: '/meetings',    icon: faScreenUsers,   label: 'Meetings' },
-  { href: '/comms',       icon: faMessages,      label: 'Agent Comms' },
-  { href: '/queue',       icon: faMicrochip,     label: 'Agent Queue' },
 ]
 
 const MORE_NAV: NavItem[] = []
