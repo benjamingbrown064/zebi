@@ -507,12 +507,12 @@ function InsightsTab() {
 
   useEffect(() => {
     if (!workspaceId) return
-    const p = new URLSearchParams({ workspaceId, status: 'new', limit: '100' })
+    const p = new URLSearchParams({ workspaceId, status: 'new' })
     if (search) p.set('search', search)
-    if (typeFilter) p.set('type', typeFilter)
-    fetch(`/api/insights?${p}`)
+    if (typeFilter) p.set('insightType', typeFilter)
+    fetch(`/api/ai-insights?${p}`)
       .then(r => r.json())
-      .then(d => { setInsights(d.insights ?? []); setLoading(false) })
+      .then(d => { setInsights(Array.isArray(d) ? d : (d.insights ?? [])); setLoading(false) })
   }, [workspaceId, search, typeFilter])
 
   return (
@@ -538,7 +538,7 @@ function InsightsTab() {
                   <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${TYPE_COLORS[ins.insightType] || 'bg-[#F3F3F3] text-[#474747]'}`}>{ins.insightType}</span>
                 </div>
                 <p className="text-[12px] text-[#737373] line-clamp-2">{ins.summary}</p>
-                <p className="text-[10px] text-[#A3A3A3] mt-1.5">{ins.createdBy || 'unknown'} · {timeAgo(ins.createdAt)}</p>
+                <p className="text-[10px] text-[#A3A3A3] mt-1.5">{ins.createdBy || ins.authorAgent || 'unknown'} · {timeAgo(ins.createdAt)}</p>
               </div>
             ))}
           </div>
