@@ -369,7 +369,9 @@ model Task {
   nextAction       String?  @db.Text
   dependencyIds    String[]
   outputDocId      String?  @db.Text  // link to Document or AIInsight id
-  skillId          String?  @db.Text  // skill/playbook used for this task
+  skillId              String?  @db.Text  // skill/playbook used for this task
+  skipEvaluation       Boolean? @default(false) // bypass evaluation gate
+  skipEvaluationReason String?  @db.Text  // required if skipEvaluation is true
 
   workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   status     Status    @relation(fields: [statusId], references: [id])

@@ -173,7 +173,9 @@ export async function PATCH(
         completionNote:   body.completionNote     ?? existingTask.completionNote,
         outputDocId:      body.outputDocId        ?? existingTask.outputDocId,
         outputUrl:        body.outputUrl          ?? existingTask.outputUrl,
-        skillId:          body.skillId            ?? existingTask.skillId,
+        skillId:              body.skillId              ?? existingTask.skillId,
+        skipEvaluation:       body.skipEvaluation       ?? (existingTask as any).skipEvaluation ?? false,
+        skipEvaluationReason: body.skipEvaluationReason ?? (existingTask as any).skipEvaluationReason ?? null,
       }
 
       // Normalise status name for gate matching
@@ -201,12 +203,20 @@ export async function PATCH(
           gateErrors.push('ownerAgent is required on tasks moved to Review')
 
         // Skill evaluation gate
-        if (merged.skillId && !body.skipEvaluation && !body.force) {
-          const existingEval = await prisma.skillEvaluation.findFirst({
-            where: { taskId, skillId: merged.skillId }
-          })
-          if (!existingEval) {
-            gateErrors.push('A skill evaluation is required. Submit via POST /api/skills/' + merged.skillId + '/evaluate with taskId, or pass skipEvaluation: true to bypass.')
+        if (merged.skillId && !body.force) {
+          if (body.skipEvaluation) {
+            // Bypass allowed only with a valid reason
+            const validReasons = ['wrong_skill_linked','skill_obsolete','admin_or_trivial_task','emergency_override','reviewer_requested_bypass']
+            if (!body.skipEvaluationReason || !validReasons.includes(body.skipEvaluationReason)) {
+              gateErrors.push('skipEvaluationReason is required when bypassing evaluation. Valid values: ' + validReasons.join(', '))
+            }
+          } else {
+            const existingEval = await prisma.skillEvaluation.findFirst({
+              where: { taskId, skillId: merged.skillId }
+            })
+            if (!existingEval) {
+              gateErrors.push('A skill evaluation is required. Submit via POST /api/skills/' + merged.skillId + '/evaluate with taskId, or pass skipEvaluation: true with skipEvaluationReason to bypass.')
+            }
           }
         }
       }
@@ -278,6 +288,10 @@ export async function PATCH(
         ...(body.nextAction !== undefined && { nextAction: body.nextAction || null }),
         ...(body.dependencyIds !== undefined && { dependencyIds: body.dependencyIds }),
         ...(body.outputDocId !== undefined && { outputDocId: body.outputDocId || null }),
+        // Skill linking
+        ...(body.skillId !== undefined && { skillId: body.skillId || null }),
+        ...(body.skipEvaluation !== undefined && { skipEvaluation: Boolean(body.skipEvaluation) }),
+        ...(body.skipEvaluationReason !== undefined && { skipEvaluationReason: body.skipEvaluationReason || null }),
         // Context linking
         ...(body.companyId !== undefined && { companyId: body.companyId || null }),
         ...(body.projectId !== undefined && { projectId: body.projectId || null }),

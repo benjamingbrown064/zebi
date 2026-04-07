@@ -12,6 +12,8 @@ import FileUpload from './FileUpload'
 import TaskOutcomeFields from './TaskOutcomeFields'
 import TaskAgentFields, { AgentFieldValues } from './TaskAgentFields'
 import TaskHandoffPanel from './TaskHandoffPanel'
+import TaskSkillPanel from './TaskSkillPanel'
+import TaskSkillEvaluationModal from './TaskSkillEvaluationModal'
 import { tidyDescription, TidyMode } from '@/app/actions/ai-tidy'
 
 interface TaskDetailModalProps {
@@ -65,6 +67,11 @@ export default function TaskDetailModal({
   const [expectedOutcome, setExpectedOutcome] = useState<string | null>(null)
   const [completionNote, setCompletionNote] = useState<string | null>(null)
   const [outputUrl, setOutputUrl] = useState<string | null>(null)
+
+  // Skill linking
+  const [skillId, setSkillId] = useState<string | null>(null)
+  const [showEvalModal, setShowEvalModal] = useState(false)
+  const [pendingStatusId, setPendingStatusId] = useState<string | null>(null)
 
   // Multi-agent OS fields
   const [agentFields, setAgentFields] = useState<AgentFieldValues>({
@@ -132,6 +139,9 @@ export default function TaskDetailModal({
       setCompletionNote((task as any).completionNote || null)
       setOutputUrl((task as any).outputUrl || null)
 
+      // Skill linking
+      setSkillId((task as any).skillId || null)
+
       // Multi-agent OS fields
       setAgentFields({
         ownerAgent:       (task as any).ownerAgent       ?? null,
@@ -161,6 +171,9 @@ export default function TaskDetailModal({
       setExpectedOutcome(null)
       setCompletionNote(null)
       setOutputUrl(null)
+
+      // Skill linking
+      setSkillId(null)
 
       // Multi-agent OS fields reset
       setAgentFields({
@@ -199,10 +212,33 @@ export default function TaskDetailModal({
       } : {}),
       // Multi-agent OS fields (always save)
       ...agentFields,
+      // Skill linking
+      skillId: skillId || undefined,
     }
 
     onUpdate?.(task.id, updates)
     onClose()
+  }
+
+  // Called when evaluation is submitted or skipped from eval modal
+  const handleEvaluationComplete = (skipped: boolean, skipReason?: string) => {
+    setShowEvalModal(false)
+    if (pendingStatusId) {
+      setStatusId(pendingStatusId)
+      setPendingStatusId(null)
+      // Save immediately with new status + skip info if applicable
+      if (task && workspaceId) {
+        fetch(`/api/tasks/${task.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            workspaceId,
+            statusId: pendingStatusId,
+            ...(skipped ? { skipEvaluation: true, skipEvaluationReason: skipReason } : {}),
+          }),
+        }).catch(err => console.error('Failed to update task status:', err))
+      }
+    }
   }
 
   const handleDelete = () => {
@@ -336,7 +372,17 @@ export default function TaskDetailModal({
               {statuses.length > 0 ? (
                 <select
                   value={statusId}
-                  onChange={(e) => setStatusId(e.target.value)}
+                  onChange={(e) => {
+                    const newStatusId = e.target.value
+                    const newStatus = statuses.find(s => s.id === newStatusId)
+                    // If moving to Review and a skill is linked, trigger evaluation modal
+                    if (newStatus?.name?.toLowerCase() === 'review' && skillId && task) {
+                      setPendingStatusId(newStatusId)
+                      setShowEvalModal(true)
+                    } else {
+                      setStatusId(newStatusId)
+                    }
+                  }}
                   className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
                 >
                   <option value="">Select a status</option>
@@ -430,6 +476,23 @@ export default function TaskDetailModal({
                     body: JSON.stringify({ ...fields, workspaceId }),
                   }).catch(err => console.error('Failed to save outcome fields:', err))
                 }
+              }}
+            />
+          )}
+
+          {/* Skill linking */}
+          {task && workspaceId && (
+            <TaskSkillPanel
+              workspaceId={workspaceId}
+              skillId={skillId}
+              onSkillChange={(id) => {
+                setSkillId(id)
+                // Auto-save
+                fetch(`/api/tasks/${task.id}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ workspaceId, skillId: id || null }),
+                }).catch(err => console.error('Failed to save skill link:', err))
               }}
             />
           )}
@@ -550,6 +613,19 @@ export default function TaskDetailModal({
           mode={aiTidyResult.mode}
           onAccept={handleAITidyAccept}
           isLoading={isAITidyLoading}
+        />
+      )}
+
+      {/* Skill Evaluation Modal — shown when moving to Review with a skill linked */}
+      {showEvalModal && task && skillId && workspaceId && (
+        <TaskSkillEvaluationModal
+          isOpen={showEvalModal}
+          onClose={() => { setShowEvalModal(false); setPendingStatusId(null) }}
+          onSubmit={(_evalData, skipped, skipReason) => handleEvaluationComplete(skipped, skipReason)}
+          skillId={skillId}
+          taskId={task.id}
+          workspaceId={workspaceId}
+          agentId={(agentFields.ownerAgent as string) || 'doug'}
         />
       )}
     </div>

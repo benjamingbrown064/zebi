@@ -24,6 +24,10 @@ export interface Task {
   workspaceId: string
   createdAt: string
   updatedAt: string
+  // Skill linking
+  skillId?: string | null
+  skipEvaluation?: boolean | null
+  skipEvaluationReason?: string | null
 }
 
 export async function getTasks(workspaceId: string, options?: { limit?: number; offset?: number }): Promise<Task[]> {
