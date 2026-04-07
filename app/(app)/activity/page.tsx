@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useWorkspace } from '@/lib/use-workspace'
-import { cachedFetch, SHORT_TTL } from '@/lib/client-cache'
+import { cachedFetch, SHORT_TTL, STABLE_TTL } from '@/lib/client-cache'
+import TaskDetailModal from '@/components/TaskDetailModal'
 import {
   FaSync, FaRobot, FaCheckCircle, FaBolt, FaExclamationTriangle,
   FaPlus, FaPen, FaArrowRight, FaLightbulb, FaBrain, FaBalanceScale,
@@ -99,6 +100,9 @@ export default function ActivityPage() {
   const [agentFilter, setAgentFilter] = useState<string>('')
   const [typeFilter, setTypeFilter] = useState<string>('')
   const [showFilters, setShowFilters] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<any>(null)
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+  const [statuses, setStatuses] = useState<any[]>([])
 
   const load = useCallback(async () => {
     if (!workspaceId) return
@@ -115,7 +119,12 @@ export default function ActivityPage() {
   }, [workspaceId])
 
   useEffect(() => {
-    if (!wsLoading && workspaceId) load()
+    if (!wsLoading && workspaceId) {
+      load()
+      cachedFetch<any>(`/api/statuses?workspaceId=${workspaceId}`, { ttl: STABLE_TTL })
+        .then(d => setStatuses(d?.statuses ?? []))
+        .catch(() => {})
+    }
   }, [wsLoading, workspaceId, load])
 
   const filtered = logs.filter(l => {
@@ -195,41 +204,84 @@ export default function ActivityPage() {
             </div>
           )}
 
-          {!loading && filtered.map(entry => (
-            <div key={entry.id} className="flex items-start gap-3 px-5 py-3.5 hover:bg-[#F9F9F9] transition-colors">
-              {/* Icon */}
-              <div className="w-6 h-6 rounded-full bg-[#F3F3F3] flex items-center justify-center shrink-0 mt-0.5">
-                {EVENT_ICONS[entry.eventType] ?? <FaArrowRight size={10} className="text-[#A3A3A3]" />}
-              </div>
+          {!loading && filtered.map(entry => {
+            const hasTask = !!entry.taskId
+            const hasSpace = !!entry.companyId
+            const hasProject = !!entry.projectId
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] text-[#1A1A1A]">
-                  {entry.task ? (
-                    <Link href={`/tasks/${entry.task.id}`} className="hover:text-[#474747] transition-colors">
-                      {eventLabel(entry)}
-                    </Link>
-                  ) : eventLabel(entry)}
-                </p>
-                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <span className="text-[11px] text-[#A3A3A3]">{timeAgo(entry.createdAt)}</span>
-                  {entry.aiAgent && (
-                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium capitalize ${AGENT_COLORS[entry.aiAgent] ?? 'bg-gray-100 text-gray-500'}`}>
-                      {entry.aiAgent}
-                    </span>
-                  )}
+            const handleClick = async () => {
+              if (!hasTask) return
+              try {
+                const data = await cachedFetch<any>(`/api/tasks/${entry.taskId}`, { ttl: 0 })
+                if (data?.task) { setSelectedTask({ ...data.task, workspaceId }); setIsTaskModalOpen(true) }
+              } catch {}
+            }
+
+            return (
+              <div
+                key={entry.id}
+                className={`flex items-start gap-3 px-5 py-3.5 hover:bg-[#F9F9F9] transition-colors ${hasTask ? 'cursor-pointer' : ''}`}
+                onClick={hasTask ? handleClick : undefined}
+              >
+                {/* Icon */}
+                <div className="w-6 h-6 rounded-full bg-[#F3F3F3] flex items-center justify-center shrink-0 mt-0.5">
+                  {EVENT_ICONS[entry.eventType] ?? <FaArrowRight size={10} className="text-[#A3A3A3]" />}
                 </div>
-              </div>
 
-              {/* Time */}
-              <span className="text-[11px] text-[#C4C4C4] shrink-0 mt-0.5">
-                {new Date(entry.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            </div>
-          ))}
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] text-[#1A1A1A]">{eventLabel(entry)}</p>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <span className="text-[11px] text-[#A3A3A3]">{timeAgo(entry.createdAt)}</span>
+                    {entry.aiAgent && (
+                      <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium capitalize ${AGENT_COLORS[entry.aiAgent] ?? 'bg-gray-100 text-gray-500'}`}>
+                        {entry.aiAgent}
+                      </span>
+                    )}
+                    {hasTask && <span className="text-[10px] text-[#A3A3A3]">· click to view task</span>}
+                    {!hasTask && hasSpace && (
+                      <Link href={`/spaces/${entry.companyId}`} onClick={e => e.stopPropagation()} className="text-[10px] text-[#A3A3A3] hover:text-[#1A1C1C]">· view space →</Link>
+                    )}
+                    {!hasTask && hasProject && (
+                      <Link href={`/projects/${entry.projectId}`} onClick={e => e.stopPropagation()} className="text-[10px] text-[#A3A3A3] hover:text-[#1A1C1C]">· view project →</Link>
+                    )}
+                  </div>
+                </div>
+
+                {/* Time */}
+                <span className="text-[11px] text-[#C4C4C4] shrink-0 mt-0.5">
+                  {new Date(entry.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+            )
+          })}
         </div>
 
       </main>
+
+      <TaskDetailModal
+        isOpen={isTaskModalOpen}
+        onClose={() => { setIsTaskModalOpen(false); setSelectedTask(null) }}
+        task={selectedTask ?? undefined}
+        onUpdate={async (taskId, updates) => {
+          await fetch(`/api/tasks/${taskId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...updates, workspaceId }),
+          })
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+          load()
+        }}
+        onDelete={async (taskId) => {
+          await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' })
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+          load()
+        }}
+        workspaceId={workspaceId ?? ''}
+        statuses={statuses}
+      />
     </div>
   )
 }
