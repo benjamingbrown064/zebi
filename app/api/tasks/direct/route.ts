@@ -178,6 +178,7 @@ export async function GET(request: NextRequest) {
     const decisionNeeded  = searchParams.get('decisionNeeded')
     const waitingOn       = searchParams.get('waitingOn')
     const taskType        = searchParams.get('taskType')
+    const search          = searchParams.get('search')
 
     console.log(`[API:tasks/direct] Fetching tasks for workspace ${workspaceId}`, {
       includeArchived,
@@ -197,7 +198,9 @@ export async function GET(request: NextRequest) {
     if (waitingOn)  where.waitingOn  = waitingOn
     if (taskType)   where.taskType   = taskType
     if (decisionNeeded === 'true') where.decisionNeeded = true
+    if (search) where.title = { contains: search, mode: 'insensitive' }
 
+    const limitParam = searchParams.get('limit')
     const tasks = await prisma.task.findMany({
       where,
       include: {
@@ -206,6 +209,7 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: { createdAt: 'desc' },
+      ...(limitParam ? { take: parseInt(limitParam, 10) } : {}),
     })
 
     const duration = Date.now() - startTime

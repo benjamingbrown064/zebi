@@ -8,6 +8,7 @@ interface TaskBoardTileProps {
     tags?: Array<{ id: string; name: string }>
     attachments?: Array<{ id: string; filename: string }>
     blockedReason?: string
+    dependencyIds?: string[]
     assignee?: { id: string; name: string } | null
     project?: { id: string; name: string } | null
     space?: { id: string; name: string } | null
@@ -94,6 +95,13 @@ export default function TaskBoardTile({
       {task.blockedReason && (
         <p className="text-[11px] text-[#EF4444] mb-3 leading-snug">
           ⚠ {task.blockedReason}
+        </p>
+      )}
+
+      {/* Dependency indicator */}
+      {task.dependencyIds && task.dependencyIds.length > 0 && (
+        <p className="text-[11px] text-amber-600 mb-3 leading-snug">
+          ⏳ {task.dependencyIds.length} prerequisite{task.dependencyIds.length > 1 ? 's' : ''} required
         </p>
       )}
 

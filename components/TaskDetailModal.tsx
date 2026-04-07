@@ -14,6 +14,7 @@ import TaskAgentFields, { AgentFieldValues } from './TaskAgentFields'
 import TaskHandoffPanel from './TaskHandoffPanel'
 import TaskSkillPanel from './TaskSkillPanel'
 import TaskSkillEvaluationModal from './TaskSkillEvaluationModal'
+import TaskDependencyPanel from './TaskDependencyPanel'
 import { tidyDescription, TidyMode } from '@/app/actions/ai-tidy'
 
 interface TaskDetailModalProps {
@@ -67,6 +68,9 @@ export default function TaskDetailModal({
   const [expectedOutcome, setExpectedOutcome] = useState<string | null>(null)
   const [completionNote, setCompletionNote] = useState<string | null>(null)
   const [outputUrl, setOutputUrl] = useState<string | null>(null)
+
+  // Dependencies
+  const [dependencyIds, setDependencyIds] = useState<string[]>([])
 
   // Skill linking
   const [skillId, setSkillId] = useState<string | null>(null)
@@ -139,6 +143,9 @@ export default function TaskDetailModal({
       setCompletionNote((task as any).completionNote || null)
       setOutputUrl((task as any).outputUrl || null)
 
+      // Dependencies
+      setDependencyIds((task as any).dependencyIds || [])
+
       // Skill linking
       setSkillId((task as any).skillId || null)
 
@@ -171,6 +178,9 @@ export default function TaskDetailModal({
       setExpectedOutcome(null)
       setCompletionNote(null)
       setOutputUrl(null)
+
+      // Dependencies
+      setDependencyIds([])
 
       // Skill linking
       setSkillId(null)
@@ -212,6 +222,8 @@ export default function TaskDetailModal({
       } : {}),
       // Multi-agent OS fields (always save)
       ...agentFields,
+      // Dependencies
+      dependencyIds,
       // Skill linking
       skillId: skillId || undefined,
     }
@@ -476,6 +488,25 @@ export default function TaskDetailModal({
                     body: JSON.stringify({ ...fields, workspaceId }),
                   }).catch(err => console.error('Failed to save outcome fields:', err))
                 }
+              }}
+            />
+          )}
+
+          {/* Dependencies */}
+          {task && workspaceId && (
+            <TaskDependencyPanel
+              workspaceId={workspaceId}
+              taskId={task.id}
+              dependencyIds={dependencyIds}
+              dependencies={(task as any).dependencies}
+              onChange={(ids) => {
+                setDependencyIds(ids)
+                // Auto-save
+                fetch(`/api/tasks/${task.id}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ workspaceId, dependencyIds: ids }),
+                }).catch(err => console.error('Failed to save dependencies:', err))
               }}
             />
           )}

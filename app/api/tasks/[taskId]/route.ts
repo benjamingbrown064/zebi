@@ -46,6 +46,15 @@ export async function GET(
       }
     })
 
+    // Fetch dependency task objects if any
+    const dependencyTasks = task && task.dependencyIds.length > 0
+      ? await prisma.task.findMany({
+          where: { id: { in: task.dependencyIds } },
+          include: { status: true },
+          orderBy: { createdAt: 'asc' },
+        })
+      : []
+
     if (!task) {
       return NextResponse.json(
         { success: false, error: 'Task not found' },
@@ -94,6 +103,13 @@ export async function GET(
         definitionOfDone: task.definitionOfDone || undefined,
         nextAction: task.nextAction || undefined,
         dependencyIds: task.dependencyIds,
+        dependencies: dependencyTasks.map(d => ({
+          id: d.id,
+          title: d.title,
+          statusId: d.statusId,
+          status: d.status.name,
+          isDone: d.status.name.toLowerCase() === 'done',
+        })),
         outputDocId: task.outputDocId || undefined,
         workspaceId: task.workspaceId,
         createdBy: task.createdBy,
@@ -176,6 +192,7 @@ export async function PATCH(
         skillId:              body.skillId              ?? existingTask.skillId,
         skipEvaluation:       body.skipEvaluation       ?? (existingTask as any).skipEvaluation ?? false,
         skipEvaluationReason: body.skipEvaluationReason ?? (existingTask as any).skipEvaluationReason ?? null,
+        dependencyIds:        body.dependencyIds        ?? existingTask.dependencyIds ?? [],
       }
 
       // Normalise status name for gate matching
@@ -190,6 +207,21 @@ export async function PATCH(
           gateErrors.push('ownerAgent is required before starting work — which agent owns this?')
         if (!merged.expectedOutcome && !merged.definitionOfDone)
           gateErrors.push('expectedOutcome or definitionOfDone is required before starting work')
+
+        // Dependency gate — all prerequisites must be Done
+        if (merged.dependencyIds && merged.dependencyIds.length > 0 && !body.force) {
+          const deps = await prisma.task.findMany({
+            where: { id: { in: merged.dependencyIds } },
+            include: { status: true },
+          })
+          const incomplete = deps.filter(d => d.status.name.toLowerCase() !== 'done')
+          if (incomplete.length > 0) {
+            gateErrors.push(
+              'Cannot start: ' + incomplete.length + ' prerequisite task(s) are not yet Done: ' +
+              incomplete.map(d => `"${d.title}" (${d.status.name})`).join(', ')
+            )
+          }
+        }
       }
 
       // ── Gate: → Review ───────────────────────────────────────────────────
@@ -391,6 +423,39 @@ export async function PATCH(
         objectiveId: updatedTask.objectiveId ?? null,
         dependencyIds: updatedTask.dependencyIds ?? [],
       }).catch(err => console.error('[propagation] failed:', err))
+
+      // Downstream dependency recheck — log which tasks just became unblocked
+      prisma.task.findMany({
+        where: {
+          workspaceId: updatedTask.workspaceId,
+          dependencyIds: { has: updatedTask.id },
+          archivedAt: null,
+        },
+        include: { status: true },
+      }).then(async (downstream) => {
+        for (const dt of downstream) {
+          // Check if ALL deps are now done
+          const deps = await prisma.task.findMany({
+            where: { id: { in: dt.dependencyIds } },
+            include: { status: true },
+          })
+          const allDone = deps.every(d => d.status.name.toLowerCase() === 'done')
+          if (allDone) {
+            console.log(`[deps] Task "${dt.title}" is now unblocked — all prerequisites done`)
+            await prisma.activityLog.create({
+              data: {
+                workspaceId: updatedTask.workspaceId,
+                eventType: 'task_unblocked',
+                eventPayload: { taskId: dt.id, taskTitle: dt.title, unlockedBy: updatedTask.id },
+                createdBy: '00000000-0000-0000-0000-000000000000',
+                aiAgent: updatedTask.ownerAgent ?? null,
+                taskId: dt.id,
+                companyId: dt.companyId ?? null,
+              },
+            }).catch(() => {})
+          }
+        }
+      }).catch(() => {})
     }
 
     // Trigger async objective progress recalculation (V2)

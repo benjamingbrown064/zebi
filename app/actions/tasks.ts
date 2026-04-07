@@ -28,6 +28,9 @@ export interface Task {
   skillId?: string | null
   skipEvaluation?: boolean | null
   skipEvaluationReason?: string | null
+  // Dependencies
+  dependencyIds?: string[]
+  dependencies?: Array<{ id: string; title: string; statusId: string; status: string; isDone: boolean }>
 }
 
 export async function getTasks(workspaceId: string, options?: { limit?: number; offset?: number }): Promise<Task[]> {
