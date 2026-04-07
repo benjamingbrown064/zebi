@@ -415,6 +415,7 @@ function SkillsTab() {
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')
   const [category, setCategory] = useState('all')
+  const [status, setStatus]     = useState('all')
 
   const CATEGORIES = ['research', 'outreach', 'content', 'scraping', 'mailer', 'lead-gen', 'build', 'ops', 'other']
   const CAT_COLORS: Record<string, string> = {
@@ -422,16 +423,21 @@ function SkillsTab() {
     content: 'bg-pink-100 text-pink-700', build: 'bg-emerald-100 text-emerald-700',
     ops: 'bg-orange-100 text-orange-700', other: 'bg-[#F3F3F3] text-[#474747]',
   }
+  const STATUS_COLORS: Record<string, string> = {
+    active: 'bg-emerald-50 text-emerald-700',
+    draft:  'bg-[#F3F3F3] text-[#474747]',
+    archived: 'bg-red-50 text-red-700',
+  }
 
   useEffect(() => {
     if (!workspaceId) return
-    const p = new URLSearchParams({ workspaceId, status: 'active' })
+    const p = new URLSearchParams({ workspaceId, status: status === 'all' ? 'all' : status, limit: '100' })
     if (search) p.set('search', search)
     if (category !== 'all') p.set('category', category)
     fetch(`/api/skills?${p}`)
       .then(r => r.json())
       .then(d => { setSkills(d.skills ?? []); setLoading(false) })
-  }, [workspaceId, search, category])
+  }, [workspaceId, search, category, status])
 
   return (
     <div>
@@ -443,6 +449,13 @@ function SkillsTab() {
           <option value="all">All categories</option>
           {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
+        <select value={status} onChange={e => setStatus(e.target.value)}
+          className="px-3 py-2 text-[13px] border border-[#E5E5E5] rounded bg-white focus:outline-none">
+          <option value="all">All statuses</option>
+          <option value="active">Active</option>
+          <option value="draft">Draft</option>
+          <option value="archived">Archived</option>
+        </select>
       </div>
       {loading ? <div className="flex justify-center py-12"><LoadingSpinner /></div> :
        skills.length === 0 ? <p className="text-[#A3A3A3] text-[14px] py-12 text-center">No skills found.</p> : (
@@ -452,7 +465,12 @@ function SkillsTab() {
               className="bg-white border border-[#E5E5E5] rounded p-4 cursor-pointer hover:border-[#C6C6C6] transition">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <h3 className="text-[14px] font-semibold text-[#1A1A1A]">{skill.title}</h3>
-                <span className={`text-[10px] px-2 py-0.5 rounded font-medium flex-shrink-0 ${CAT_COLORS[skill.category] || CAT_COLORS.other}`}>{skill.category}</span>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {skill.status !== 'active' && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${STATUS_COLORS[skill.status] || 'bg-[#F3F3F3] text-[#474747]'}`}>{skill.status}</span>
+                  )}
+                  <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${CAT_COLORS[skill.category] || CAT_COLORS.other}`}>{skill.category}</span>
+                </div>
               </div>
               {skill.description && <p className="text-[12px] text-[#737373] line-clamp-2">{skill.description}</p>}
               <div className="flex items-center gap-2 mt-2">
