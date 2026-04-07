@@ -72,12 +72,15 @@ function OverviewTab({ skill }: { skill: any }) {
                 <div className="flex-1">
                   <p className="text-[13px] font-semibold text-[#1A1A1A] mb-1">{step.title}</p>
                   {step.description && <p className="text-[12px] text-[#474747] leading-relaxed">{step.description}</p>}
-                  {step.tips?.length > 0 && (
+                  {Array.isArray(step.tips) && step.tips.length > 0 && (
                     <div className="mt-2 space-y-1">
                       {step.tips.map((tip: string, j: number) => (
-                        <p key={j} className="text-[11px] text-[#737373] before:content-['💡_'] leading-relaxed">{tip}</p>
+                        <p key={j} className="text-[11px] text-[#737373] leading-relaxed">💡 {tip}</p>
                       ))}
                     </div>
+                  )}
+                  {typeof step.tips === 'string' && step.tips && (
+                    <p className="text-[11px] text-[#737373] mt-2 leading-relaxed">💡 {step.tips}</p>
                   )}
                 </div>
               </div>
