@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import Sidebar from '@/components/Sidebar'
 import TaskDetailModal from '@/components/TaskDetailModal'
 import QuickAddModal from '@/components/QuickAddModal'
 import TasksTable from '@/components/TasksTable'
@@ -26,7 +25,6 @@ export default function TasksPage() {
   const [statuses, setStatuses] = useState<Status[]>([])
   const [loading, setLoading] = useState(true)
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -231,11 +229,6 @@ export default function TasksPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar 
-        workspaceName="My Workspace"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
 
       <div className={mainPaddingClass}>
         <ResponsiveHeader

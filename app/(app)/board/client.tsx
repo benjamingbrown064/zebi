@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
 import TaskBoardTile from '@/components/TaskBoardTile'
 import TaskDetailModal from '@/components/TaskDetailModal'
 import QuickAddModal from '@/components/QuickAddModal'
@@ -31,7 +30,6 @@ export default function BoardClient({
   const router = useRouter()
   const [tasks, setTasks] = useState(initialTasks)
   const [statuses, setStatuses] = useState(initialStatuses)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [draggedTask, setDraggedTask] = useState<any>(null)
   const [selectedTask, setSelectedTask] = useState<any>(null)
@@ -426,11 +424,6 @@ export default function BoardClient({
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar
-        workspaceName="My Workspace"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
 
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white border-b border-[#E5E5E5] px-6 py-3 flex items-center justify-between">

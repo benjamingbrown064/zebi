@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Sidebar from '@/components/Sidebar'
 import MilestoneTimeline from '@/components/MilestoneTimeline'
 import BlockerCard from '@/components/BlockerCard'
 import ProgressChart from '@/components/ProgressChart'
@@ -40,7 +39,6 @@ export default function ObjectiveDetailClient({
 }: ObjectiveDetailClientProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
@@ -109,11 +107,6 @@ export default function ObjectiveDetailClient({
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex">
-      <Sidebar
-        workspaceName="My Workspace"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
 
         {/* Header */}
         <header className="bg-white sticky top-0 z-10">

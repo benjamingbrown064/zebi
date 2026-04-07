@@ -13,7 +13,6 @@ import {
   FaPlus,
   FaMicrophone,
 } from 'react-icons/fa'
-import Sidebar from '@/components/Sidebar'
 import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import QuickAddModal from '@/components/QuickAddModal'
@@ -60,7 +59,6 @@ export default function ProjectDetailPage() {
 
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
   const [isVoiceToTaskOpen, setIsVoiceToTaskOpen] = useState(false)
@@ -124,11 +122,6 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar
-        workspaceName="My Workspace"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
       <div className={mainPaddingClass}>
         {/* Header */}
         <header className="bg-white sticky top-0 z-10">

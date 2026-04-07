@@ -5,7 +5,6 @@ import { useRouter, useParams } from 'next/navigation'
 import { useWorkspace } from '@/lib/use-workspace'
 import Link from 'next/link'
 import { cachedFetch, invalidateCache, STABLE_TTL } from '@/lib/client-cache'
-import Sidebar from '@/components/Sidebar'
 import CaptureBar from '@/components/CaptureBar'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import SpaceForm from '@/components/SpaceForm'
@@ -1083,7 +1082,6 @@ export default function SpaceDetailPage() {
   const [space, setSpace] = useState<Space | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabId>('overview')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -1139,7 +1137,6 @@ export default function SpaceDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
       <div className={`${mainClass} transition-all duration-200`}>
 
         {/* ── Top bar with capture ──────────────────────────────────────── */}

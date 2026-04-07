@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import Sidebar from '@/components/Sidebar'
 import { useWorkspace } from '@/lib/use-workspace'
 import { cachedFetch, SHORT_TTL } from '@/lib/client-cache'
 import {
@@ -95,7 +94,6 @@ export default function ActivityPage() {
   const { workspaceId, loading: wsLoading } = useWorkspace()
   const [logs, setLogs] = useState<ActivityEntry[]>([])
   const [loading, setLoading] = useState(true)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // Filters
   const [agentFilter, setAgentFilter] = useState<string>('')
@@ -128,7 +126,6 @@ export default function ActivityPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar workspaceName="Zebi" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
 
       <main className="p-6 md:p-8">
 

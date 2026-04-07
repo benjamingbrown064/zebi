@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
 import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer';
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader';
 import MobileListItem from '@/components/responsive/MobileListItem';
@@ -45,7 +44,7 @@ export default function DocumentsPage() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   const [isMobile, setIsMobile] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -167,11 +166,6 @@ export default function DocumentsPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar
-        workspaceName="My Workspace"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
 
       <div className={mainPaddingClass}>
         <ResponsiveHeader

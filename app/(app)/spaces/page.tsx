@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
 import CaptureBar from '@/components/CaptureBar'
 import SpaceForm from '@/components/SpaceForm'
 import VoiceEntityModal from '@/components/voice-entity/VoiceEntityModal'
@@ -231,7 +230,6 @@ export default function SpacesPage() {
   const [view, setView] = useState<ViewMode>('list')
   const [isAdding, setIsAdding] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false)
 
@@ -283,7 +281,6 @@ export default function SpacesPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
 
       <div className={`${mainClass} transition-all duration-200`}>
 

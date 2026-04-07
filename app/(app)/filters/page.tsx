@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { FaPlus, FaTrash, FaEdit } from 'react-icons/fa'
-import Sidebar from '@/components/Sidebar'
 import { getFilters, createFilter, deleteFilter, SavedFilter, FilterDefinition } from '@/app/actions/filters'
 import { useWorkspace } from '@/lib/use-workspace'
 
@@ -118,11 +117,7 @@ export default function FiltersPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar 
-        workspaceName="My Workspace"
-        isCollapsed={false}
-        onCollapsedChange={() => {}}
-      />
+
       <div>
         <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="px-8 py-6 flex justify-between items-center">

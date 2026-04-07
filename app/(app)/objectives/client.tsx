@@ -3,7 +3,6 @@
 import { cachedFetch, invalidateCache } from '@/lib/client-cache'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
 import ObjectiveCard, { CreateObjectiveCard } from '@/components/ObjectiveCard'
 import ObjectiveForm from '@/components/ObjectiveForm'
 import VoiceEntityModal from '@/components/voice-entity/VoiceEntityModal'
@@ -247,7 +246,6 @@ export default function ObjectivesClient({
   const [objectives, setObjectives] = useState<Objective[]>(initialObjectives)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(initialObjectives.length === PAGE_SIZE)
   const [page, setPage] = useState(0)
@@ -339,7 +337,6 @@ export default function ObjectivesClient({
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
 
       <div>
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 pt-8 pb-16">

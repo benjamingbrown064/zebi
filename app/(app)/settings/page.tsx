@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer'
 import { FaCog, FaFilter } from 'react-icons/fa'
 
 export default function SettingsPage() {
   const router = useRouter()
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
@@ -45,11 +43,6 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar
-        workspaceName="My Workspace"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
         <ResponsiveHeader
           title="Settings"
           subtitle="Manage your preferences"

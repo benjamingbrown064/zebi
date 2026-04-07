@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@heroui/react'
-import Sidebar from '@/components/Sidebar'
 import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer'
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader'
 import MobileListItem from '@/components/responsive/MobileListItem'
@@ -55,7 +54,6 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false)
@@ -139,11 +137,6 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar 
-        isCollapsed={sidebarCollapsed} 
-        onCollapsedChange={setSidebarCollapsed}
-        workspaceName="My Workspace"
-      />
       
       <div className={mainPaddingClass}>
         <ResponsiveHeader

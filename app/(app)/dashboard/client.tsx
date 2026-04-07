@@ -13,7 +13,6 @@ import {
   FaChartLine,
   FaMicrophone
 } from 'react-icons/fa'
-import Sidebar from '@/components/Sidebar'
 import DayPlanningModal from '@/app/components/DayPlanningModal'
 import { useWorkspace } from '@/lib/use-workspace'
 import ManagersNote from '@/components/ManagersNote'
@@ -74,7 +73,6 @@ export default function DashboardClient({
 }) {
   const router = useRouter()
   const { workspaceId } = useWorkspace()
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [showCompletedModal, setShowCompletedModal] = useState(false)
   const [showBotActivityModal, setShowBotActivityModal] = useState(false)
@@ -132,11 +130,6 @@ export default function DashboardClient({
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar 
-        workspaceName="Zebi"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
       
         {/* Header */}
         <header className="bg-white sticky top-0 z-10">

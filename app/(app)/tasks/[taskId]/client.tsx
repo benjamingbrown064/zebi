@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import TaskDetailModal from '@/components/TaskDetailModal'
-import Sidebar from '@/components/Sidebar'
 import { updateTask, deleteTask } from '@/app/actions/tasks'
 
 interface TaskDetailClientProps {
@@ -20,7 +19,6 @@ export default function TaskDetailClient({
   workspaceId,
 }: TaskDetailClientProps) {
   const router = useRouter()
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [currentTask, setCurrentTask] = useState(task)
 
   // Auto-open modal on mount
@@ -56,11 +54,6 @@ export default function TaskDetailClient({
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar
-        workspaceName="My Workspace"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
       <div>
         {/* Main content - just show empty state since modal will overlay */}
         <div className="p-8">

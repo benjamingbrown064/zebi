@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import Sidebar from '@/components/Sidebar'
 import {
   FaFlag, FaExclamationTriangle, FaCheckCircle, FaRobot,
   FaClock, FaBalanceScale, FaSync, FaChevronRight,
@@ -169,7 +168,7 @@ export default function FounderPage() {
   const [data, setData] = useState<FounderSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null)
 
   const load = useCallback(async () => {

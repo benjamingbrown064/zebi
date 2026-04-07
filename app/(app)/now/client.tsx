@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
 import ManagersNote from '@/components/ManagersNote'
 import { useWorkspace } from '@/lib/use-workspace'
 import { cachedFetch, SHORT_TTL } from '@/lib/client-cache'
@@ -552,7 +551,6 @@ export default function NowClient() {
   const { workspaceId } = useWorkspace()
   const [data, setData] = useState<NowData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const router = useRouter()
 
@@ -596,7 +594,6 @@ export default function NowClient() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar workspaceName="My Workspace" isCollapsed={sidebarCollapsed} onCollapsedChange={setSidebarCollapsed} />
 
         {/* ── Top bar — consistent with rest of app ────────────────────────── */}
         <div className="sticky top-0 z-30 bg-white border-b border-[#E5E5E5] px-4 md:px-8 py-3 flex items-center justify-between">

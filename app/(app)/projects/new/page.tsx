@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button, Input, Textarea, Select, SelectItem } from '@heroui/react';
 import { FaArrowLeft, FaProjectDiagram } from 'react-icons/fa';
-import Sidebar from '@/components/Sidebar';
 import ResponsivePageContainer from '@/components/responsive/ResponsivePageContainer';
 import ResponsiveHeader from '@/components/responsive/ResponsiveHeader';
 import { useWorkspace } from '@/lib/use-workspace';
@@ -35,7 +34,7 @@ export default function NewProjectPage() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -116,11 +115,6 @@ export default function NewProjectPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar
-        workspaceName="My Workspace"
-        isCollapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-      />
       
       <div className={mainPaddingClass}>
         {/* Header */}
