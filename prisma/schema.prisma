@@ -634,17 +634,33 @@ model Document {
 }
 
 model DocumentVersion {
-  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
-  documentId  String   @db.Text
-  version     Int
-  contentRich Json
-  createdAt   DateTime @default(now()) @db.Timestamptz()
-  createdBy   String   @db.Uuid
+  id                String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  documentId        String   @db.Text
+  version           Int
+  contentRich       Json
+  createdAt         DateTime @default(now()) @db.Timestamptz()
+  createdBy         String   @db.Text  // user UUID or agent id ("doug", "harvey", etc.)
+
+  // Authorship
+  authorName        String?  @db.Text  // display name: "Benjamin", "Doug", "Harvey", etc.
+  authorAgent       String?  @db.Text  // agent id if created by an agent
+  authorType        String   @default("user") // "user" | "agent" | "system"
+
+  // Change log
+  changeDescription String?  @db.Text  // one-line summary of what changed
+  changeTags        String[]            // content | structure | tags | title | minor | major | fix | rewrite
+  changeNotes       String?  @db.Text  // extended notes / reasoning (optional)
+
+  // Snapshot metadata
+  snapshotTitle     String?  @db.Text  // title at time of snapshot
+  snapshotTags      Json?               // tag state at time of snapshot (functionTags, typeTags, stageTags)
 
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([documentId])
   @@index([version])
+  @@index([createdBy])
+  @@index([authorAgent])
 }
 
 // ==================== NOTES (NEW) ====================

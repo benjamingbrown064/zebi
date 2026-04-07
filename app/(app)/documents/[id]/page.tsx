@@ -30,6 +30,12 @@ interface Document {
     id: string;
     version: number;
     createdAt: string;
+    authorName?: string;
+    authorAgent?: string;
+    authorType?: string;
+    changeDescription?: string;
+    changeTags?: string[];
+    snapshotTitle?: string;
   }>;
   functionTags?: string[];
   typeTags?: string[];
@@ -270,37 +276,89 @@ function ExportDropdown({ onExport }: { onExport: (format: 'markdown' | 'html' |
   );
 }
 
+const CHANGE_TAG_COLORS: Record<string, string> = {
+  content:   'bg-blue-50 text-blue-700',
+  title:     'bg-purple-50 text-purple-700',
+  structure: 'bg-orange-50 text-orange-700',
+  tags:      'bg-[#F3F3F3] text-[#474747]',
+  minor:     'bg-[#F3F3F3] text-[#A3A3A3]',
+  major:     'bg-black text-white',
+  fix:       'bg-yellow-50 text-yellow-700',
+  rewrite:   'bg-red-50 text-red-700',
+}
+
+const AUTHOR_TYPE_ICON: Record<string, string> = {
+  agent: '🤖',
+  user:  '👤',
+  system: '⚙️',
+}
+
 function VersionList({ versions, document, selectedVersion, onView }: {
-  versions: DocumentVersion[];
+  versions: Document['versions'];
   document: Document;
   selectedVersion: DocumentVersion | null;
   onView: (v: DocumentVersion) => void;
 }) {
+  if (versions.length === 0) {
+    return <p className="text-[12px] text-[#A3A3A3] text-center py-6">No version history yet.<br/>Versions are created when you save content changes.</p>
+  }
+
   return (
     <div className="space-y-2">
-      {versions.map((version) => (
-        <button
-          key={version.id}
-          onClick={() => onView(version)}
-          className={`w-full text-left p-3 rounded border transition ${
-            selectedVersion?.id === version.id
-              ? 'border-[#DD3A44] bg-[#FEF2F2]'
-              : 'border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#F3F3F3]'
-          }`}
-        >
-          <div className="font-medium text-sm text-[#1A1C1C]">
-            Version {version.version}
-            {version.version === document.version && (
-              <span className="ml-2 px-2 py-0.5 bg-[#F3F3F3] text-[#474747] text-xs rounded">Current</span>
+      {versions.map((v) => {
+        const isCurrent = v.version === document.version
+        const isSelected = selectedVersion?.id === v.id
+        return (
+          <button
+            key={v.id}
+            onClick={() => onView(v as any)}
+            className={`w-full text-left p-3 rounded border transition ${
+              isSelected
+                ? 'border-[#1A1A1A] bg-[#F9F9F9]'
+                : 'border-[#E5E5E5] hover:border-[#C6C6C6] hover:bg-[#F9F9F9]'
+            }`}
+          >
+            {/* Version + current badge */}
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-[13px] font-semibold text-[#1A1A1A]">v{v.version}</span>
+              {isCurrent && (
+                <span className="text-[10px] px-1.5 py-0.5 bg-[#1A1A1A] text-white rounded uppercase tracking-wide font-medium">Current</span>
+              )}
+            </div>
+
+            {/* Author */}
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="text-[11px]">{AUTHOR_TYPE_ICON[v.authorType || 'user']}</span>
+              <span className="text-[12px] font-medium text-[#474747]">
+                {v.authorName || (v.authorAgent ? v.authorAgent.charAt(0).toUpperCase() + v.authorAgent.slice(1) : 'Unknown')}
+              </span>
+              <span className="text-[11px] text-[#A3A3A3]">
+                {new Date(v.createdAt).toLocaleString('en-GB', {
+                  day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                })}
+              </span>
+            </div>
+
+            {/* Change description */}
+            {v.changeDescription && (
+              <p className="text-[12px] text-[#474747] mb-1.5 leading-snug">{v.changeDescription}</p>
             )}
-          </div>
-          <div className="text-xs text-[#A3A3A3] mt-1">
-            {new Date(version.createdAt).toLocaleString()}
-          </div>
-        </button>
-      ))}
+
+            {/* Change tags */}
+            {v.changeTags && v.changeTags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {v.changeTags.map(tag => (
+                  <span key={tag} className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${CHANGE_TAG_COLORS[tag] || 'bg-[#F3F3F3] text-[#474747]'}`}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </button>
+        )
+      })}
     </div>
-  );
+  )
 }
 
 export default function DocumentDetailPage() {
@@ -358,7 +416,13 @@ export default function DocumentDetailPage() {
     }
   };
 
-  const saveDocument = useCallback(async () => {
+    // Save modal state
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveDescription, setSaveDescription] = useState('');
+  const [saveTags, setSaveTags] = useState<string[]>([]);
+  const SAVE_TAG_OPTIONS = ['content', 'structure', 'title', 'tags', 'minor', 'major', 'fix', 'rewrite'];
+
+  const saveDocument = useCallback(async (opts?: { autoSave?: boolean; changeDescription?: string; changeTags?: string[] }) => {
     if (!documentId || saving) return;
 
     setSaving(true);
@@ -370,40 +434,37 @@ export default function DocumentDetailPage() {
           title,
           documentType,
           contentRich: content,
-          createVersion: false, // Auto-save doesn't create versions
+          autoSave: opts?.autoSave ?? false, // auto-save won't create a version
+          changeDescription: opts?.changeDescription || undefined,
+          changeTags: opts?.changeTags || undefined,
+          authorName: 'Benjamin',
+          authorType: 'user',
         }),
       });
 
       const data = await res.json();
       if (data.success) {
         setDocument(data.document);
+        if (showVersionHistory) fetchVersions();
       }
     } catch (error) {
       console.error('Failed to save document:', error);
     } finally {
       setSaving(false);
     }
-  }, [documentId, title, documentType, content, saving]);
+  }, [documentId, title, documentType, content, saving, showVersionHistory]);
 
   const createVersion = async () => {
+    setShowSaveModal(true);
+  };
+
+  const handleSaveWithLog = async () => {
     if (!documentId) return;
-
-    try {
-      const res = await fetch(`/api/documents/${documentId}/versions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contentRich: content }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        await fetchDocument();
-        await fetchVersions();
-        alert('Version saved successfully');
-      }
-    } catch (error) {
-      console.error('Failed to create version:', error);
-    }
+    setShowSaveModal(false);
+    await saveDocument({ changeDescription: saveDescription, changeTags: saveTags });
+    setSaveDescription('');
+    setSaveTags([]);
+    fetchVersions();
   };
 
   const deleteDocument = async () => {
@@ -466,7 +527,22 @@ export default function DocumentDetailPage() {
 
   const viewVersion = async (version: DocumentVersion) => {
     setSelectedVersion(version);
-    setContent(version.contentRich);
+    // If content already loaded (from full version object), use it
+    if (version.contentRich) {
+      setContent(version.contentRich);
+      return;
+    }
+    // Otherwise fetch from dedicated endpoint
+    try {
+      const res = await fetch(`/api/documents/${documentId}/versions/${version.id}`);
+      const data = await res.json();
+      if (data.success) {
+        setSelectedVersion(data.version);
+        setContent(data.version.contentRich);
+      }
+    } catch (e) {
+      console.error('Failed to fetch version content:', e);
+    }
   };
 
   const restoreVersion = async () => {
@@ -480,7 +556,10 @@ export default function DocumentDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contentRich: selectedVersion.contentRich,
-          createVersion: true,
+          changeDescription: `Restored from v${selectedVersion.version}`,
+          changeTags: ['content'],
+          authorName: 'Benjamin',
+          authorType: 'user',
         }),
       });
 
@@ -515,6 +594,7 @@ export default function DocumentDetailPage() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-[#F9F9F9]">
       <div>
 
@@ -534,7 +614,7 @@ export default function DocumentDetailPage() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                onBlur={saveDocument}
+                onBlur={() => saveDocument({ autoSave: true })}
                 className="flex-1 min-w-0 text-[18px] md:text-[24px] leading-[28px] md:leading-[32px] font-medium text-[#1A1A1A] border-none focus:outline-none focus:ring-2 focus:ring-[#DD3A44] rounded px-2 py-1"
                 placeholder="Untitled Document"
               />
@@ -544,7 +624,7 @@ export default function DocumentDetailPage() {
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
               <select
                 value={documentType}
-                onChange={(e) => { setDocumentType(e.target.value); saveDocument(); }}
+                onChange={(e) => { setDocumentType(e.target.value); saveDocument({ autoSave: true }); }}
                 className="flex-shrink-0 px-3 py-2 rounded text-[12px] md:text-[13px] font-medium text-[#474747] focus:outline-none focus:ring-2 focus:ring-[#DD3A44] border border-[#E5E5E5] bg-white"
               >
                 {DOCUMENT_TYPES.map((type) => (
@@ -622,7 +702,7 @@ export default function DocumentDetailPage() {
                   <DocumentEditor
                     content={content}
                     onChange={setContent}
-                    onSave={saveDocument}
+                    onSave={() => saveDocument({ autoSave: true })}
                     autoSave={true}
                     autoSaveDelay={30000}
                   />
@@ -657,5 +737,65 @@ export default function DocumentDetailPage() {
         </div>
       </div>
     </div>
+
+    {/* Save with log modal - outside main div, inside fragment */}
+    {/* Save with log modal */}
+    {showSaveModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.45)' }}
+        onClick={e => { if (e.target === e.currentTarget) setShowSaveModal(false) }}>
+        <div className="bg-white w-full max-w-[480px] rounded p-6" style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.18)' }}>
+          <h2 className="text-[18px] font-bold text-[#1A1A1A] mb-1">Save version</h2>
+          <p className="text-[13px] text-[#737373] mb-5">Add a short description of what changed. This appears in the version history.</p>
+
+          <div className="mb-4">
+            <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">Change description</label>
+            <input
+              value={saveDescription}
+              onChange={e => setSaveDescription(e.target.value)}
+              placeholder="e.g. Rewrote introduction, added security section…"
+              autoFocus
+              className="w-full text-[13px] border border-[#E5E5E5] rounded px-3 py-2 bg-white focus:outline-none focus:border-[#1A1A1A]"
+              onKeyDown={e => { if (e.key === 'Enter') handleSaveWithLog() }}
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">Tags</label>
+            <div className="flex flex-wrap gap-1.5">
+              {SAVE_TAG_OPTIONS.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => setSaveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
+                  className={`text-[11px] px-2.5 py-1 rounded border font-medium transition ${
+                    saveTags.includes(tag)
+                      ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
+                      : 'bg-white text-[#737373] border-[#E5E5E5] hover:border-[#C6C6C6]'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleSaveWithLog}
+              disabled={saving}
+              className="flex-1 py-2.5 bg-[#1A1A1A] text-white text-[14px] font-semibold rounded hover:bg-black transition disabled:opacity-50"
+            >
+              {saving ? 'Saving…' : 'Save version'}
+            </button>
+            <button
+              onClick={() => setShowSaveModal(false)}
+              className="px-5 py-2.5 text-[14px] text-[#474747] hover:text-[#1A1A1A] transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
