@@ -123,9 +123,11 @@ export async function POST(request: NextRequest) {
         steps:           body.steps,
         qualityCriteria: body.qualityCriteria,
         examples:        body.examples         || null,
-        status:          body.status           || 'active',
-        createdBy:       body.createdBy        || null,
-        lastUpdatedBy:   body.createdBy        || null,
+        status:           body.status           || 'active',
+        ownerAgent:       body.ownerAgent       || null,
+        maintainerAgents: body.maintainerAgents || [],
+        createdBy:        body.createdBy        || null,
+        lastUpdatedBy:    body.createdBy        || null,
       },
     })
 
