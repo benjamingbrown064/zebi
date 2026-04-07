@@ -302,92 +302,63 @@ export default function TaskDetailModal({
     }, 100)
   }
 
-  return (
-    <div className={`fixed inset-0 bg-black z-50 flex items-end md:items-center justify-center ${isMobile ? 'bg-opacity-0 p-0' : 'bg-opacity-50 p-4'}`}>
-      <div className={`bg-white w-full shadow-[0_20px_40px_rgba(28,27,27,0.06)] flex flex-col ${
-        isMobile 
-          ? 'h-full rounded-none' 
-          : 'max-w-2xl max-h-[90vh] rounded'
-      }`}>
-        {/* Header - Mobile: sticky with explicit back button, Desktop: modal close */}
-        <div className={`sticky top-0 bg-white px-4 md:px-6 py-4 flex justify-between items-center min-h-[56px] md:min-h-auto`}>
-          {isMobile ? (
-            <>
-              <button
-                onClick={onClose}
-                className="text-[#474747] hover:bg-[#F3F3F3] rounded transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
-                title="Go back"
-              >
-                <FaTimes className="text-lg" />
-              </button>
-              <h2 className="text-lg font-semibold text-[#1A1C1C] flex-1 text-center">
-                {task ? 'Edit Task' : 'New Task'}
-              </h2>
-              <div className="w-[44px]" />
-            </>
-          ) : (
-            <>
-              <h2 className="text-xl font-semibold text-[#1A1C1C]">
-                {task ? 'Edit Task' : 'New Task'}
-              </h2>
-              <button
-                onClick={onClose}
-                className="text-[#C4C0C0] hover:text-[#474747] transition p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              >
-                <FaTimes className="text-lg" />
-              </button>
-            </>
-          )}
-        </div>
+return (
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-5xl max-h-[92vh] flex flex-col shadow-[0_24px_48px_rgba(0,0,0,0.12)]" style={{ borderRadius: 2 }}>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-          {/* Title */}
-          <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
-              Task Title
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="What needs to be done?"
-              className="w-full max-w-full break-words bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
-            />
+        {/* ── Top header ── */}
+        <div className="px-8 pt-6 pb-5 border-b border-[#E8E8E8]">
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-2">
+                {task?.id ? `TASK · ${task.id.slice(0, 8).toUpperCase()}` : 'NEW TASK'}
+              </p>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Task title"
+                className="w-full text-[22px] font-bold text-[#1A1C1C] uppercase tracking-tight bg-transparent border-none outline-none placeholder:text-[#C6C6C6]"
+              />
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={handleSave}
+                className="px-5 py-2 bg-[#1A1C1C] text-white text-[12px] font-semibold uppercase tracking-[0.08em] hover:bg-[#333] transition"
+                style={{ borderRadius: 2 }}
+              >
+                Save Task
+              </button>
+              <button onClick={onClose} className="p-2 text-[#A3A3A3] hover:text-[#1A1C1C] transition">
+                <FaTimes />
+              </button>
+            </div>
           </div>
 
-          {/* Priority & Status */}
-          <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
+          {/* Meta bar */}
+          <div className="grid grid-cols-4 gap-0 border border-[#E8E8E8]" style={{ borderRadius: 2 }}>
             {/* Priority */}
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
-                Priority
-              </label>
+            <div className="px-5 py-3 border-r border-[#E8E8E8]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-1">Priority</p>
               <select
                 value={priority}
                 onChange={(e) => setPriority(parseInt(e.target.value))}
-                className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
+                className="text-[13px] font-bold text-[#1A1C1C] bg-transparent border-none outline-none cursor-pointer uppercase tracking-wide w-full"
               >
                 {PRIORITIES.map((p) => (
-                  <option key={p.num} value={p.num}>
-                    {p.label}
-                  </option>
+                  <option key={p.num} value={p.num}>{p.label.split(' - ')[1]?.toUpperCase() ?? p.label}</option>
                 ))}
               </select>
             </div>
-
             {/* Status */}
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
-                Status
-              </label>
+            <div className="px-5 py-3 border-r border-[#E8E8E8]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-1">Status</p>
               {statuses.length > 0 ? (
                 <select
                   value={statusId}
                   onChange={(e) => {
                     const newStatusId = e.target.value
                     const newStatus = statuses.find(s => s.id === newStatusId)
-                    // If moving to Review and a skill is linked, trigger evaluation modal
                     if (newStatus?.name?.toLowerCase() === 'review' && skillId && task) {
                       setPendingStatusId(newStatusId)
                       setShowEvalModal(true)
@@ -395,226 +366,242 @@ export default function TaskDetailModal({
                       setStatusId(newStatusId)
                     }
                   }}
-                  className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
+                  className="text-[13px] font-bold text-[#1A1C1C] bg-transparent border-none outline-none cursor-pointer uppercase tracking-wide w-full"
                 >
-                  <option value="">Select a status</option>
+                  <option value="">— Select —</option>
                   {statuses.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
+                    <option key={s.id} value={s.id}>{s.name.toUpperCase()}</option>
                   ))}
                 </select>
               ) : (
-                <div className="px-4 py-3 bg-[#F3F3F3] text-[#474747] rounded min-h-[44px] flex items-center">
-                  Loading statuses...
-                </div>
+                <span className="text-[13px] font-bold text-[#A3A3A3]">—</span>
               )}
             </div>
-
-            {/* Assignee */}
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
-                Assign to
-              </label>
+            {/* Due Date */}
+            <div className="px-5 py-3 border-r border-[#E8E8E8]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-1">Due Date</p>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="text-[13px] font-bold text-[#1A1C1C] bg-transparent border-none outline-none cursor-pointer uppercase tracking-wide w-full"
+              />
+            </div>
+            {/* Owner */}
+            <div className="px-5 py-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-1">Owner</p>
               <select
-                value={assigneeId || ''}
-                onChange={(e) => setAssigneeId(e.target.value || null)}
-                className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
+                value={agentFields.ownerAgent || ''}
+                onChange={(e) => {
+                  const updated = { ...agentFields, ownerAgent: e.target.value || null }
+                  setAgentFields(updated)
+                  if (task && workspaceId) {
+                    fetch(`/api/tasks/${task.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ ownerAgent: e.target.value || null, workspaceId }),
+                    }).catch(() => {})
+                  }
+                }}
+                className="text-[13px] font-bold text-[#1A1C1C] bg-transparent border-none outline-none cursor-pointer uppercase tracking-wide w-full"
               >
                 <option value="">Unassigned</option>
+                <option value="harvey">Harvey</option>
+                <option value="theo">Theo</option>
                 <option value="doug">Doug</option>
+                <option value="casper">Casper</option>
                 <option value="ben">Ben</option>
-                <option value="other">Other</option>
               </select>
             </div>
           </div>
+        </div>
 
-          {/* Due Date */}
-          <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
-              Due Date
-            </label>
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full bg-[#F9F9F9] border border-[#E5E5E5] rounded px-3 py-2 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A] min-h-[44px]"
-            />
-          </div>
+        {/* ── Body — two column ── */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 h-full">
 
-          {/* Description */}
-          <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
-              Description
-            </label>
-            <div className="relative">
-              <RichTextEditor
-                key={`editor-${task?.id}`}
-                value={description}
-                onChange={setDescription}
-                onAITidyClick={() => setIsAITidyMenuOpen(!isAITidyMenuOpen)}
-                placeholder="Add notes..."
-              />
-              {isAITidyMenuOpen && (
-                <AITidyMenu
-                  isOpen={isAITidyMenuOpen}
-                  onClose={() => setIsAITidyMenuOpen(false)}
-                  onSelect={handleAITidy}
-                  isLoading={isAITidyLoading}
+            {/* Left: main content */}
+            <div className="lg:col-span-2 px-8 py-6 space-y-7 border-r border-[#E8E8E8]">
+
+              {/* Description */}
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-3">Description</p>
+                <div className="relative">
+                  <RichTextEditor
+                    key={`editor-${task?.id}`}
+                    value={description}
+                    onChange={setDescription}
+                    onAITidyClick={() => setIsAITidyMenuOpen(!isAITidyMenuOpen)}
+                    placeholder="Describe this task..."
+                  />
+                  {isAITidyMenuOpen && (
+                    <AITidyMenu
+                      isOpen={isAITidyMenuOpen}
+                      onClose={() => setIsAITidyMenuOpen(false)}
+                      onSelect={handleAITidy}
+                      isLoading={isAITidyLoading}
+                    />
+                  )}
+                </div>
+                {aiTidyError && <p className="mt-2 text-sm text-red-600">{aiTidyError}</p>}
+              </div>
+
+              {/* Expected Outcome */}
+              {(showOutcomeFields || expectedOutcome) && task && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-3">Expected Outcome</p>
+                  <textarea
+                    value={expectedOutcome || ''}
+                    onChange={e => {
+                      setExpectedOutcome(e.target.value)
+                      if (task && workspaceId) {
+                        fetch(`/api/tasks/${task.id}`, {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ expectedOutcome: e.target.value, workspaceId }),
+                        }).catch(() => {})
+                      }
+                    }}
+                    rows={3}
+                    placeholder="What does success look like?"
+                    className="w-full text-[13px] text-[#1A1C1C] bg-[#F9F9F9] border border-[#E8E8E8] px-3 py-2.5 outline-none focus:border-[#1A1C1C] resize-none"
+                    style={{ borderRadius: 2 }}
+                  />
+                </div>
+              )}
+
+              {/* Completion Note */}
+              {(isCompleted || completionNote) && task && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-3">Result</p>
+                  <div className="border-l-2 border-[#1A1C1C] pl-4 py-1">
+                    <textarea
+                      value={completionNote || ''}
+                      onChange={e => {
+                        setCompletionNote(e.target.value)
+                        if (task && workspaceId) {
+                          fetch(`/api/tasks/${task.id}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ completionNote: e.target.value, workspaceId }),
+                          }).catch(() => {})
+                        }
+                      }}
+                      rows={3}
+                      placeholder="What was completed?"
+                      className="w-full text-[13px] text-[#1A1C1C] bg-transparent border-none outline-none resize-none"
+                    />
+                    {outputUrl && (
+                      <a href={outputUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#1A1C1C] underline hover:text-[#474747] mt-1 block">
+                        Access Output →
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Dependencies */}
+              {task && workspaceId && (
+                <TaskDependencyPanel
+                  workspaceId={workspaceId}
+                  taskId={task.id}
+                  dependencyIds={dependencyIds}
+                  dependencies={(task as any).dependencies}
+                  onChange={(ids) => {
+                    setDependencyIds(ids)
+                    fetch(`/api/tasks/${task.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ workspaceId, dependencyIds: ids }),
+                    }).catch(() => {})
+                  }}
+                />
+              )}
+
+              {/* Skill */}
+              {task && workspaceId && (
+                <TaskSkillPanel
+                  workspaceId={workspaceId}
+                  skillId={skillId}
+                  onSkillChange={(id) => {
+                    setSkillId(id)
+                    fetch(`/api/tasks/${task.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ workspaceId, skillId: id || null }),
+                    }).catch(() => {})
+                  }}
+                />
+              )}
+
+              {/* Agent & Workflow */}
+              {task && (
+                <TaskAgentFields
+                  values={agentFields}
+                  onChange={values => {
+                    setAgentFields(values)
+                    if (workspaceId) {
+                      fetch(`/api/tasks/${task.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ...values, workspaceId }),
+                      }).catch(() => {})
+                    }
+                  }}
+                />
+              )}
+
+              {/* Handoff panel */}
+              {task && workspaceId && (
+                <TaskHandoffPanel
+                  taskId={task.id}
+                  workspaceId={workspaceId}
+                  ownerAgent={agentFields.ownerAgent}
                 />
               )}
             </div>
-            {aiTidyError && (
-              <p className="mt-2 text-sm text-red-600">{aiTidyError}</p>
-            )}
-          </div>
 
-          {/* Phase 2: Outcome Fields - Only show when relevant */}
-          {showOutcomeFields && task && (
-            <TaskOutcomeFields
-              expectedOutcome={expectedOutcome}
-              completionNote={completionNote}
-              outputUrl={outputUrl}
-              isCompleted={isCompleted}
-              onUpdate={(fields) => {
-                if ('expectedOutcome' in fields) setExpectedOutcome(fields.expectedOutcome ?? null)
-                if ('completionNote' in fields) setCompletionNote(fields.completionNote ?? null)
-                if ('outputUrl' in fields) setOutputUrl(fields.outputUrl ?? null)
-                // Save immediately on field update
-                if (task && workspaceId) {
-                  fetch(`/api/tasks/${task.id}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ...fields, workspaceId }),
-                  }).catch(err => console.error('Failed to save outcome fields:', err))
-                }
-              }}
-            />
-          )}
+            {/* Right: sidebar */}
+            <div className="px-6 py-6 space-y-6 bg-[#F9F9F9]">
 
-          {/* Dependencies */}
-          {task && workspaceId && (
-            <TaskDependencyPanel
-              workspaceId={workspaceId}
-              taskId={task.id}
-              dependencyIds={dependencyIds}
-              dependencies={(task as any).dependencies}
-              onChange={(ids) => {
-                setDependencyIds(ids)
-                // Auto-save
-                fetch(`/api/tasks/${task.id}`, {
-                  method: 'PATCH',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ workspaceId, dependencyIds: ids }),
-                }).catch(err => console.error('Failed to save dependencies:', err))
-              }}
-            />
-          )}
+              {/* Attachments */}
+              {task && workspaceId && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-3">Attachments</p>
+                  <FileUpload
+                    taskId={task.id}
+                    workspaceId={workspaceId}
+                    attachments={attachments}
+                    onUploadComplete={(attachment) => setAttachments([...attachments, attachment])}
+                    onDelete={(attachmentId) => setAttachments(attachments.filter(a => a.id !== attachmentId))}
+                  />
+                </div>
+              )}
 
-          {/* Skill linking */}
-          {task && workspaceId && (
-            <TaskSkillPanel
-              workspaceId={workspaceId}
-              skillId={skillId}
-              onSkillChange={(id) => {
-                setSkillId(id)
-                // Auto-save
-                fetch(`/api/tasks/${task.id}`, {
-                  method: 'PATCH',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ workspaceId, skillId: id || null }),
-                }).catch(err => console.error('Failed to save skill link:', err))
-              }}
-            />
-          )}
+              {/* Comments / Activity */}
+              {task && workspaceId && userId && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-3">Activity Ledger</p>
+                  <TaskComments
+                    taskId={task.id}
+                    workspaceId={workspaceId}
+                    userId={userId}
+                    userName={userName}
+                  />
+                </div>
+              )}
 
-          {/* Agent & Workflow fields */}
-          {task && (
-            <TaskAgentFields
-              values={agentFields}
-              onChange={values => {
-                setAgentFields(values)
-                // Auto-save agent fields immediately on change
-                if (workspaceId) {
-                  fetch(`/api/tasks/${task.id}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ...values, workspaceId }),
-                  }).catch(err => console.error('Failed to save agent fields:', err))
-                }
-              }}
-            />
-          )}
-
-          {/* Handoff panel */}
-          {task && workspaceId && (
-            <TaskHandoffPanel
-              taskId={task.id}
-              workspaceId={workspaceId}
-              ownerAgent={agentFields.ownerAgent}
-            />
-          )}
-
-          {/* Attachments */}
-          {task && workspaceId && (
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1 block">
-                Attachments
-              </label>
-              <FileUpload
-                taskId={task.id}
-                workspaceId={workspaceId}
-                attachments={attachments}
-                onUploadComplete={(attachment) => setAttachments([...attachments, attachment])}
-                onDelete={(attachmentId) => setAttachments(attachments.filter(a => a.id !== attachmentId))}
-              />
+              {/* Footer actions */}
+              <div className="pt-4 border-t border-[#E8E8E8] flex flex-col gap-2">
+                <button
+                  onClick={handleDelete}
+                  className="w-full py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-red-500 hover:bg-red-50 border border-red-200 transition"
+                  style={{ borderRadius: 2 }}
+                >
+                  Delete Task
+                </button>
+              </div>
             </div>
-          )}
-
-          {/* Comments Section */}
-          {task && workspaceId && userId && (
-            <TaskComments
-              taskId={task.id}
-              workspaceId={workspaceId}
-              userId={userId}
-              userName={userName}
-            />
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className={`sticky bottom-0 bg-[#F3F3F3] px-4 md:px-6 py-4 flex flex-col-reverse md:flex-row md:justify-between md:items-center gap-3 md:gap-0 ${isMobile ? 'safe-area-inset-bottom' : ''}`}>
-          <div className={`flex gap-2 ${isMobile ? 'w-full md:w-auto' : ''}`}>
-            <button
-              onClick={handleDelete}
-              className="p-3 text-[#A3A3A3] hover:text-red-600 transition rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
-              title="Delete task"
-            >
-              <FaTrash />
-            </button>
-            {task && workspaceId && userId && (
-              <button
-                onClick={() => setIsShareModalOpen(true)}
-                className="p-3 text-[#A3A3A3] hover:text-[#474747] transition rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
-                title="Share task"
-              >
-                <FaShareAlt />
-              </button>
-            )}
-          </div>
-          <div className={`flex gap-3 w-full md:w-auto ${isMobile ? 'flex-col-reverse' : ''}`}>
-            <button
-              onClick={onClose}
-              className="px-4 py-3 bg-[#F3F3F3] text-[#1A1C1C] rounded hover:bg-[#e8e4e4] transition font-medium min-h-[44px] flex items-center justify-center"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="bg-[#000000] hover:bg-[#1A1C1C] text-white rounded px-5 py-2.5 text-[13px] font-medium transition-colors min-h-[44px] flex items-center justify-center"
-            >
-              Save Task
-            </button>
           </div>
         </div>
       </div>
@@ -635,10 +622,7 @@ export default function TaskDetailModal({
       {aiTidyResult && (
         <AITidyPreviewModal
           isOpen={isAITidyPreviewOpen}
-          onClose={() => {
-            setIsAITidyPreviewOpen(false)
-            setAiTidyResult(null)
-          }}
+          onClose={() => { setIsAITidyPreviewOpen(false); setAiTidyResult(null) }}
           original={aiTidyResult.original}
           rewritten={aiTidyResult.rewritten}
           mode={aiTidyResult.mode}
@@ -647,7 +631,7 @@ export default function TaskDetailModal({
         />
       )}
 
-      {/* Skill Evaluation Modal — shown when moving to Review with a skill linked */}
+      {/* Skill Evaluation Modal */}
       {showEvalModal && task && skillId && workspaceId && (
         <TaskSkillEvaluationModal
           isOpen={showEvalModal}
