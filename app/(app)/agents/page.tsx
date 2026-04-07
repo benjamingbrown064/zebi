@@ -1,9 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
 import LoadingSpinner from '@/components/LoadingSpinner'
-import { useWorkspace } from '@/hooks/useWorkspace'
+import { useWorkspace } from '@/lib/use-workspace'
 
 const AGENT_AVATARS: Record<string, string> = {
   harvey: '🧠',
@@ -49,9 +48,7 @@ export default function AgentsPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar workspaceName="My Workspace" isCollapsed={collapsed} onCollapsedChange={setCollapsed} />
-      <div className="transition-all duration-200">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-8 pb-16">
+      <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-8 pb-16">
 
           {/* Header */}
           <div className="mb-8">
@@ -139,7 +136,6 @@ export default function AgentsPage() {
             </div>
           )}
         </div>
-      </div>
     </div>
   )
 }

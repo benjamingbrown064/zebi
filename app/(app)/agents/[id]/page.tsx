@@ -1,9 +1,8 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
 import LoadingSpinner from '@/components/LoadingSpinner'
-import { useWorkspace } from '@/hooks/useWorkspace'
+import { useWorkspace } from '@/lib/use-workspace'
 
 type Tab = 'overview' | 'work' | 'knowledge' | 'memory' | 'insights'
 
@@ -559,7 +558,6 @@ export default function AgentProfilePage() {
   const [agent, setAgent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('overview')
-  const [collapsed, setCollapsed] = useState(false)
   const [editing, setEditing] = useState(false)
 
   const load = useCallback(async () => {
@@ -584,8 +582,6 @@ export default function AgentProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <Sidebar workspaceName="My Workspace" isCollapsed={collapsed} onCollapsedChange={setCollapsed} />
-      <div className="transition-all duration-200">
 
         {/* Top bar */}
         <div className="sticky top-0 z-30 bg-[#F3F3F3] border-b border-[#E5E5E5] px-4 md:px-8 py-3">
@@ -655,7 +651,6 @@ export default function AgentProfilePage() {
           {activeTab === 'memory'    && <MemoryTab agent={agent} />}
           {activeTab === 'insights'  && <InsightsTab agent={agent} />}
         </div>
-      </div>
 
       {editing && <EditModal agent={agent} onClose={() => setEditing(false)} onSaved={load} />}
     </div>
