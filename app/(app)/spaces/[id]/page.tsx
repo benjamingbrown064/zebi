@@ -873,6 +873,7 @@ function AgentsTab({ space, onSwitchToWork }: { space: Space; onSwitchToWork?: (
 // ─── Tab: Docs & Notes ────────────────────────────────────────────────────────
 
 function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null; onRefresh: () => void }) {
+  const router = useRouter()
   const [showAddDoc, setShowAddDoc] = useState(false)
   const [showAddNote, setShowAddNote] = useState(false)
   const [savingDoc, setSavingDoc] = useState(false)
