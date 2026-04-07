@@ -573,7 +573,7 @@ function WorkTab({ space, wsId, onRefresh, onTaskClick }: { space: Space; wsId: 
               <div
                 key={task.id}
                 className="group flex items-start gap-3 py-3 px-3 bg-white rounded hover:border-[#E5E5E5] border border-transparent hover:shadow-sm transition cursor-pointer"
-                onClick={() => onTaskClick?.(task)}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (onTaskClick) onTaskClick(task) }}
               >
                 <button
                   onClick={e => { e.stopPropagation(); handleComplete(task.id) }}
