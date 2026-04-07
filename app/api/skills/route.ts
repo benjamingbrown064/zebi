@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
         tags:            body.tags             || [],
         steps:           body.steps,
         qualityCriteria: body.qualityCriteria,
-        examples:        body.examples         || null,
+        ...(body.examples ? { examples: body.examples } : {}),
         status:           body.status           || 'active',
         ownerAgent:       body.ownerAgent       || null,
         maintainerAgents: body.maintainerAgents || [],
