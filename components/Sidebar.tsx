@@ -31,6 +31,7 @@ import {
   faMessages,
   faScreenUsers,
   faBookOpenLines,
+  faRobot,
 } from '@fortawesome/pro-duotone-svg-icons'
 import GlobalSearch from './GlobalSearch'
 
@@ -53,6 +54,7 @@ interface SidebarProps {
 const PRIMARY_NAV: NavItem[] = [
   { href: '/founder',     icon: faChartLine,     label: 'Dashboard' },
   { href: '/now',         icon: faHouse,         label: 'Now' },
+  { href: '/agents',      icon: faRobot,         label: 'Agents' },
   { href: '/inbox',       icon: faInbox,         label: 'Inbox' },
   { href: '/goals',       icon: faBullseyeArrow, label: 'Goals' },
   { href: '/spaces',      icon: faBox,           label: 'Spaces' },

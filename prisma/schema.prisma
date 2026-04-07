@@ -79,6 +79,9 @@ model Workspace {
   taskboxBoards TaskboxBoard[]
   taskboxTasks  TaskboxTask[]
 
+  // Agent Profile Relations
+  agents             Agent[]
+
   @@index([ownerId])
 }
 
@@ -609,11 +612,12 @@ model Document {
   updatedAt    DateTime @updatedAt @db.Timestamptz()
   createdBy    String   @db.Uuid
 
-  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  company   Space?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  project   Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  files     File[]
-  versions  DocumentVersion[]
+  workspace      Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  company        Space?              @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  project        Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  files          File[]
+  versions       DocumentVersion[]
+  knowledgeLinks AgentKnowledgeLink[]
 
   @@index([workspaceId])
   @@index([companyId])
@@ -1358,8 +1362,9 @@ model Skill {
   createdAt    DateTime @default(now()) @db.Timestamptz()
   updatedAt    DateTime @updatedAt @db.Timestamptz()
 
-  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  tasks        Task[]    @relation("TaskSkill")
+  workspace      Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks          Task[]              @relation("TaskSkill")
+  knowledgeLinks AgentKnowledgeLink[]
 
   @@index([workspaceId])
   @@index([category])
@@ -1540,4 +1545,57 @@ model TaskboxAutomationLog {
   @@map("taskbox_automation_logs")
 }
 
-// Force Prisma regeneration Mon Apr  6 00:55:00 GMT 2026
+// ==================== AGENT PROFILES ====================
+
+model Agent {
+  id                   String   @id @db.Text // "harvey" | "doug" | "theo" | "casper"
+  workspaceId          String   @db.Text
+  name                 String
+  role                 String   @default("")
+  perspective          String   @default("") // e.g. "Strategic / Commercial"
+  tagline              String   @default("") // one-liner
+  identity             String   @default("") @db.Text // markdown — who they are
+  toneOfVoice          String   @default("") @db.Text
+  workingStyle         String   @default("") @db.Text
+  coreResponsibilities String   @default("") @db.Text
+  escalationRules      String   @default("") @db.Text
+  decisionScope        String   @default("") @db.Text
+  approvalBoundaries   String   @default("") @db.Text
+  avatar               String?  @db.Text // emoji or image URL
+  status               String   @default("active") // active | paused | offline
+  profileVersion       Int      @default(1)
+  createdAt            DateTime @default(now()) @db.Timestamptz()
+  updatedAt            DateTime @updatedAt @db.Timestamptz()
+
+  workspace      Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  knowledgeLinks AgentKnowledgeLink[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId])
+  @@map("agents")
+}
+
+model AgentKnowledgeLink {
+  id         String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  agentId    String   @db.Text
+  workspaceId String  @db.Text
+  linkType   String   // skill | document | briefing | url | file
+  title      String
+  skillId    String?  @db.Text
+  documentId String?  @db.Text
+  url        String?  @db.Text
+  notes      String?  @db.Text
+  required   Boolean  @default(false)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now()) @db.Timestamptz()
+
+  agent    Agent     @relation(fields: [agentId, workspaceId], references: [id, workspaceId], onDelete: Cascade)
+  skill    Skill?    @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([agentId])
+  @@index([workspaceId])
+  @@map("agent_knowledge_links")
+}
+
+// Force Prisma regeneration Mon Apr  7 15:30:00 GMT 2026
