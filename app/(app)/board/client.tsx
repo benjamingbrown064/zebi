@@ -16,7 +16,9 @@ import { getGoals, calculateGoalProgress } from '@/app/actions/goals'
 
 // All lanes use the same neutral background — cleaner Monolith style
 const STATUS_ORDER: Record<string, number> = {
-  inbox: 0, planned: 1, doing: 2, review: 3, check: 4, done: 5,
+  inbox: 0, todo: 1, doing: 2, review: 3, check: 4, done: 5,
+  // legacy aliases
+  planned: 1, 'in_progress': 2, blocked: 2,
 }
 
 const DEFAULT_WORKSPACE_ID = 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'
