@@ -14,6 +14,8 @@ import {
   FaTimes,
   FaChevronDown,
   FaChevronUp,
+  FaArchive,
+  FaBoxOpen,
 } from 'react-icons/fa';
 
 interface Document {
@@ -24,6 +26,8 @@ interface Document {
   version: number;
   createdAt: string;
   updatedAt: string;
+  archivedAt?: string | null;
+  authorName?: string | null;
   space?: { id: string; name: string };
   project?: { id: string; name: string };
   versions: Array<{
@@ -468,21 +472,30 @@ export default function DocumentDetailPage() {
   };
 
   const deleteDocument = async () => {
-    if (!confirm('Are you sure you want to delete this document? This cannot be undone.')) {
-      return;
-    }
-
+    if (!confirm('Are you sure you want to delete this document? This cannot be undone.')) return;
     try {
-      const res = await fetch(`/api/documents/${documentId}`, {
-        method: 'DELETE',
-      });
-
+      const res = await fetch(`/api/documents/${documentId}`, { method: 'DELETE' });
       const data = await res.json();
-      if (data.success) {
-        router.push('/documents');
-      }
+      if (data.success) router.push('/documents');
     } catch (error) {
       console.error('Failed to delete document:', error);
+    }
+  };
+
+  const toggleArchive = async () => {
+    if (!document) return;
+    const isArchived = !!document.archivedAt;
+    if (!isArchived && !confirm('Archive this document? It will be hidden from the main list.')) return;
+    try {
+      const res = await fetch(`/api/documents/${documentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(isArchived ? { unarchive: true } : { archive: true }),
+      });
+      const data = await res.json();
+      if (data.success) setDocument(data.document);
+    } catch (error) {
+      console.error('Failed to archive document:', error);
     }
   };
 
@@ -648,6 +661,15 @@ export default function DocumentDetailPage() {
               >
                 <FaSave />
                 <span>Save Version</span>
+              </button>
+
+              <button
+                onClick={toggleArchive}
+                title={document.archivedAt ? 'Unarchive' : 'Archive'}
+                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 text-[#474747] hover:bg-[#F3F3F3] rounded transition text-[12px] md:text-[13px] font-medium whitespace-nowrap"
+              >
+                {document.archivedAt ? <FaBoxOpen /> : <FaArchive />}
+                <span className="hidden sm:inline">{document.archivedAt ? 'Unarchive' : 'Archive'}</span>
               </button>
 
               <button

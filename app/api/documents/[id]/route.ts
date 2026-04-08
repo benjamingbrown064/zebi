@@ -92,6 +92,9 @@ export async function PUT(
     if (body.stageTags !== undefined) updateData.stageTags = body.stageTags
     if (body.canonical !== undefined) updateData.canonical = body.canonical
     if (body.supersededBy !== undefined) updateData.supersededBy = body.supersededBy || null
+    if (body.archivedAt !== undefined) updateData.archivedAt = body.archivedAt ? new Date(body.archivedAt) : null
+    if (body.archive === true) updateData.archivedAt = new Date()
+    if (body.unarchive === true) updateData.archivedAt = null
 
     // Always snapshot when content or title changes (not on tag-only changes)
     const shouldVersion = (contentChanged || titleChanged) && body.autoSave !== true

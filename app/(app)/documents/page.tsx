@@ -246,32 +246,34 @@ export default function DocumentsPage() {
             </div>
           ) : viewMode === 'list' ? (
             <div className="bg-white rounded border border-[#E5E5E5] overflow-hidden">
-              {documents.map(doc => (
-                <div key={doc.id} onClick={() => router.push(`/documents/${doc.id}`)}
-                  className="flex items-start gap-4 px-5 py-3.5 border-b border-[#F3F3F3] hover:bg-[#F9F9F9] cursor-pointer transition-colors last:border-0">
-                  <div className="w-8 h-8 rounded bg-[#F3F3F3] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <FontAwesomeIcon icon={faFileLines} className="text-[#474747] text-[13px]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{doc.title}</p>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
-                      {(doc.company || doc.space) && <span className="text-[11px] text-[#737373]">{(doc.company || doc.space)!.name}</span>}
-                      {doc.project && <span className="text-[11px] text-[#A3A3A3]">{doc.project.name}</span>}
-                      {doc.authorName && (
-                        <span className="flex items-center gap-1 text-[11px] text-[#A3A3A3]">
-                          <FaUser className="text-[9px]" />{doc.authorName}
-                        </span>
-                      )}
+              {documents.map(doc => {
+                const allTags = [...(doc.functionTags || []), ...(doc.typeTags || []), ...(doc.stageTags || [])]
+                return (
+                  <div key={doc.id} onClick={() => router.push(`/documents/${doc.id}`)}
+                    className="flex items-center gap-4 px-5 py-3 border-b border-[#F3F3F3] hover:bg-[#F9F9F9] cursor-pointer transition-colors last:border-0">
+                    {/* Icon */}
+                    <div className="w-7 h-7 rounded bg-[#F3F3F3] flex items-center justify-center flex-shrink-0">
+                      <FontAwesomeIcon icon={faFileLines} className="text-[#474747] text-[11px]" />
                     </div>
-                    {renderTags(doc)}
+                    {/* Title + author */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{doc.title}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {(doc.company || doc.space) && <span className="text-[11px] text-[#737373] truncate">{(doc.company || doc.space)!.name}</span>}
+                        {doc.authorName && <span className="text-[11px] text-[#A3A3A3] flex-shrink-0">· {doc.authorName}</span>}
+                      </div>
+                    </div>
+                    {/* Tags + type + date — right side, inline */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {allTags.slice(0, 3).map(tag => (
+                        <span key={tag} className="px-1.5 py-0.5 rounded text-[10px] bg-[#F3F3F3] text-[#737373] hidden sm:inline">{tag}</span>
+                      ))}
+                      {getTypeBadge(doc.documentType)}
+                      <p className="text-[11px] text-[#A3A3A3] hidden md:block">{formatDate(doc.updatedAt)}</p>
+                    </div>
                   </div>
-                  <div className="flex-shrink-0 flex flex-col items-end gap-1">
-                    {getTypeBadge(doc.documentType)}
-                    <p className="text-[11px] text-[#A3A3A3]">{formatDate(doc.updatedAt)}</p>
-                    {doc.archivedAt && <p className="text-[10px] text-orange-400">Archived</p>}
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
