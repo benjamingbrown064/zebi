@@ -3,6 +3,9 @@
  * 
  * Doug & Harvey (AI assistants) can call Zebi APIs
  * using token-based authentication.
+ * 
+ * Kill switch: set AGENT_WORK_ENABLED=false in Vercel env vars to instantly
+ * block all agent API access. Set to true (or remove) to re-enable.
  */
 
 import { NextRequest } from 'next/server'
@@ -12,12 +15,21 @@ const HARVEY_API_TOKEN = process.env.HARVEY_API_TOKEN
 const THEO_API_TOKEN   = process.env.THEO_API_TOKEN
 const CASPER_API_TOKEN = process.env.CASPER_API_TOKEN
 
+// Kill switch — defaults to enabled if not set
+const AGENT_WORK_ENABLED = process.env.AGENT_WORK_ENABLED !== 'false'
+
 export type AIAssistant = 'doug' | 'harvey' | 'theo' | 'casper'
 
 /**
- * Validate AI assistant token and return which assistant it is
+ * Validate AI assistant token and return which assistant it is.
+ * Returns { valid: false, disabled: true } when the kill switch is active.
  */
-export function validateAIAuth(request: NextRequest): { valid: boolean; assistant?: AIAssistant } {
+export function validateAIAuth(request: NextRequest): { valid: boolean; assistant?: AIAssistant; disabled?: boolean } {
+  // Kill switch — block all agent access immediately
+  if (!AGENT_WORK_ENABLED) {
+    return { valid: false, disabled: true }
+  }
+
   const authHeader = request.headers.get('authorization')
   if (!authHeader) {
     return { valid: false }
@@ -62,6 +74,12 @@ export function requireDougAuth(request: NextRequest) {
   const auth = validateAIAuth(request)
   
   if (!auth.valid) {
+    if (auth.disabled) {
+      return {
+        error: 'Agent access is currently disabled. AGENT_WORK_ENABLED=false.',
+        status: 503,
+      }
+    }
     return {
       error: 'Unauthorized - Invalid or missing API token',
       status: 401,
