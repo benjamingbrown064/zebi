@@ -22,7 +22,7 @@ function CopyLinkButton({ taskId }: { taskId: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
-    const url = `${window.location.origin}/tasks?task=${taskId}`
+    const url = `https://zebi.app/api/tasks/${taskId}`
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
