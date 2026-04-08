@@ -883,6 +883,15 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
   const [showAddNote, setShowAddNote] = useState(false)
   const [savingDoc, setSavingDoc] = useState(false)
   const [savingNote, setSavingNote] = useState(false)
+  const [docs, setDocs] = useState<any[] | null>(null)
+
+  useEffect(() => {
+    if (!wsId) return
+    fetch(`/api/documents?companyId=${space.id}&workspaceId=${wsId}`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setDocs(d.documents) })
+      .catch(() => {})
+  }, [space.id, wsId])
 
   const handleAddDoc = async (data: Record<string, string>) => {
     if (!data.title?.trim()) return
@@ -895,6 +904,13 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
       })
       setShowAddDoc(false)
       onRefresh()
+      // Refresh docs list directly
+      if (wsId) {
+        fetch(`/api/documents?companyId=${space.id}&workspaceId=${wsId}`)
+          .then(r => r.json())
+          .then(d => { if (d.success) setDocs(d.documents) })
+          .catch(() => {})
+      }
     } finally {
       setSavingDoc(false)
     }
@@ -939,11 +955,13 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
             saving={savingDoc}
           />
         )}
-        {(space.documents ?? []).length === 0 ? (
+        {docs === null ? (
+          <div className="flex justify-center py-6"><div className="w-4 h-4 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" /></div>
+        ) : docs.length === 0 ? (
           <EmptyState icon="📄" title="No documents yet" />
         ) : (
           <div className="space-y-2">
-            {(space.documents ?? []).map((doc: any) => {
+            {docs.map((doc: any) => {
               const allTags = [...(doc.functionTags || []), ...(doc.typeTags || []), ...(doc.stageTags || [])]
               return (
                 <div key={doc.id} onClick={() => router.push(`/documents/${doc.id}`)}
