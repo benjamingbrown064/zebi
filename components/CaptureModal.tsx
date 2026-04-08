@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useWorkspace } from '@/lib/use-workspace'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -34,6 +34,13 @@ const TYPES: { id: CaptureType; label: string; icon: any; placeholder: string; h
 export default function CaptureModal({ isOpen, onClose }: CaptureModalProps) {
   const { workspaceId } = useWorkspace()
   const router = useRouter()
+  const pathname = usePathname()
+
+  // Detect current space from URL: /spaces/[id]
+  const currentSpaceId = (() => {
+    const m = pathname?.match(/^\/spaces\/([^/]+)/)
+    return m ? m[1] : null
+  })()
   const [type, setType] = useState<CaptureType>('any')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -122,15 +129,18 @@ export default function CaptureModal({ isOpen, onClose }: CaptureModalProps) {
         navigateTo = `/objectives/${newId}`
 
       } else if (type === 'task') {
+        const taskBody: any = { workspaceId, title: text, priority: 3 }
+        if (currentSpaceId) taskBody.companyId = currentSpaceId
         const res = await fetch('/api/tasks/direct', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ workspaceId, title: text, priority: 3 }),
+          body: JSON.stringify(taskBody),
         })
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Failed to create task')
         newId = data.task?.id || data.id
-        navigateTo = newId ? `/tasks/${newId}` : '/tasks'
+        // Open inline modal on tasks page rather than full-page navigation
+        navigateTo = newId ? `/tasks?task=${newId}` : '/tasks'
 
       } else {
         // any / note / idea — route via inbox AI
@@ -141,13 +151,19 @@ export default function CaptureModal({ isOpen, onClose }: CaptureModalProps) {
         })
         if (!res.ok) {
           // fallback to task
-          await fetch('/api/tasks/direct', {
+          const taskBody: any = { workspaceId, title: text, priority: 3 }
+          if (currentSpaceId) taskBody.companyId = currentSpaceId
+          const fallbackRes = await fetch('/api/tasks/direct', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ workspaceId, title: text, priority: 3 }),
+            body: JSON.stringify(taskBody),
           })
+          const fallbackData = await fallbackRes.json()
+          const fallbackId = fallbackData.task?.id || fallbackData.id
+          navigateTo = fallbackId ? `/tasks?task=${fallbackId}` : '/tasks'
+        } else {
+          navigateTo = type === 'note' ? '/memory' : '/inbox'
         }
-        navigateTo = type === 'note' ? '/memory' : '/inbox'
       }
 
       onClose()

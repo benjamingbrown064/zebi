@@ -350,12 +350,11 @@ export async function deleteTask(workspaceId: string, taskId: string): Promise<b
       return false
     }
 
-    // Delete tags first
-    await prisma.taskTag.deleteMany({ where: { taskId } })
-    
-    // Delete task
-    await prisma.task.delete({
-      where: { id: taskId }
+    // Soft delete — set archivedAt so FK constraints are never a problem
+    // and the task can be recovered if needed
+    await prisma.task.update({
+      where: { id: taskId },
+      data: { archivedAt: new Date() },
     })
 
     return true

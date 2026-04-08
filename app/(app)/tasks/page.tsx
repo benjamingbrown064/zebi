@@ -119,8 +119,13 @@ function TasksPageInner() {
   }
 
   const handleDeleteTask = async (taskId: string) => {
-    await deleteTask(workspaceId!, taskId)
-    setTasks(tasks.filter(t => t.id !== taskId))
+    const ok = await deleteTask(workspaceId!, taskId)
+    if (ok) {
+      // Optimistically remove from local state
+      setTasks(prev => prev.filter(t => t.id !== taskId))
+      // Invalidate cache so next load fetches fresh data
+      invalidateCache(`/api/tasks/direct?workspaceId=${workspaceId}&limit=500`)
+    }
   }
 
   // Apply filters

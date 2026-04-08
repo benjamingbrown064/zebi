@@ -86,7 +86,10 @@ export default function InboxItemCard({
   const isLongText = displayText.length > 200
 
   return (
-    <div className="bg-white rounded hover:border-gray-200 hover:shadow-[0_1px_3px_rgba(28,27,27,0.06)] transition">
+    <div
+      className="bg-white rounded border border-transparent hover:border-[#E5E5E5] hover:shadow-[0_1px_3px_rgba(28,27,27,0.06)] transition cursor-pointer"
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
       {/* Main Content */}
       <div className="p-4">
         <div className="flex items-start gap-3">
@@ -101,29 +104,11 @@ export default function InboxItemCard({
             <div className="text-[#1A1C1C] mb-2">
               {isLongText && !isExpanded ? (
                 <>
-                  {displayText.substring(0, 200)}...{' '}
-                  <button
-                    onClick={() => setIsExpanded(true)}
-                    className="text-[#1A1C1C] hover:underline text-sm font-medium"
-                  >
-                    Read more
-                  </button>
+                  {displayText.substring(0, 200)}
+                  <span className="text-[#A3A3A3]">… click to expand</span>
                 </>
               ) : (
-                <>
-                  {displayText}
-                  {isLongText && isExpanded && (
-                    <>
-                      {' '}
-                      <button
-                        onClick={() => setIsExpanded(false)}
-                        className="text-[#1A1C1C] hover:underline text-sm font-medium"
-                      >
-                        Show less
-                      </button>
-                    </>
-                  )}
-                </>
+                displayText
               )}
             </div>
 
@@ -158,7 +143,7 @@ export default function InboxItemCard({
           </div>
 
           {/* Actions Menu */}
-          <div className="relative flex-shrink-0">
+          <div className="relative flex-shrink-0" onClick={e => e.stopPropagation()}>
             <button
               onClick={() => setShowActions(!showActions)}
               className="p-2 hover:bg-[#F3F3F3] rounded transition"
