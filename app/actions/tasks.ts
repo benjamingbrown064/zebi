@@ -250,6 +250,7 @@ export async function updateTask(
         goalId: updates.goalId,
         projectId: updates.projectId,
         assigneeId: updates.assigneeId !== undefined ? updates.assigneeId : undefined,
+        ...((updates as any).skillId !== undefined && { skillId: (updates as any).skillId || null }),
       },
       include: {
         tags: {
