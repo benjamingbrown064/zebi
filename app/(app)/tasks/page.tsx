@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import TaskDetailModal from '@/components/TaskDetailModal'
 import QuickAddModal from '@/components/QuickAddModal'
@@ -18,8 +18,9 @@ import LoadingScreen from '@/components/LoadingScreen'
 
 const PLACEHOLDER_USER_ID = 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74'
 
-export default function TasksPage() {
+function TasksPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { workspaceId, loading: workspaceLoading } = useWorkspace()
   const [tasks, setTasks] = useState<Task[]>([])
   const [statuses, setStatuses] = useState<Status[]>([])
@@ -72,6 +73,21 @@ export default function TasksPage() {
 
     loadInitialData()
   }, [workspaceId, workspaceLoading])
+
+  // Deep-link: ?task=<id> auto-opens the modal
+  useEffect(() => {
+    const taskId = searchParams.get('task')
+    if (!taskId || loading) return
+    fetch(`/api/tasks/${taskId}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.task) {
+          setSelectedTask(d.task)
+          setIsTaskModalOpen(true)
+        }
+      })
+      .catch(() => {})
+  }, [searchParams, loading])
 
   const getInboxStatusId = (): string => {
     const inbox = statuses.find(s => s.type === 'inbox')
@@ -491,5 +507,13 @@ export default function TasksPage() {
         statuses={statuses}
       />
     </div>
+  )
+}
+
+export default function TasksPage() {
+  return (
+    <Suspense>
+      <TasksPageInner />
+    </Suspense>
   )
 }
