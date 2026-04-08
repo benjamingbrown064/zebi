@@ -368,7 +368,8 @@ model Task {
   definitionOfDone String?  @db.Text
   nextAction       String?  @db.Text
   dependencyIds    String[]
-  outputDocId      String?  @db.Text  // link to Document or AIInsight id
+  outputDocId      String?  @db.Text  // primary output document id
+  linkedDocIds     String[]              // additional referenced document ids
   skillId              String?  @db.Text  // skill/playbook used for this task
   skipEvaluation       Boolean? @default(false) // bypass evaluation gate
   skipEvaluationReason String?  @db.Text  // required if skipEvaluation is true

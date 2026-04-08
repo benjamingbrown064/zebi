@@ -111,6 +111,7 @@ export async function GET(
           isDone: d.status.name.toLowerCase() === 'done',
         })),
         outputDocId: task.outputDocId || undefined,
+        linkedDocIds: (task as any).linkedDocIds || [],
         workspaceId: task.workspaceId,
         createdBy: task.createdBy,
         createdAt: task.createdAt.toISOString(),
@@ -320,6 +321,7 @@ export async function PATCH(
         ...(body.nextAction !== undefined && { nextAction: body.nextAction || null }),
         ...(body.dependencyIds !== undefined && { dependencyIds: body.dependencyIds }),
         ...(body.outputDocId !== undefined && { outputDocId: body.outputDocId || null }),
+        ...(body.linkedDocIds !== undefined && { linkedDocIds: body.linkedDocIds }),
         // Skill linking
         ...(body.skillId !== undefined && { skillId: body.skillId || null }),
         ...(body.skipEvaluation !== undefined && { skipEvaluation: Boolean(body.skipEvaluation) }),
@@ -518,6 +520,7 @@ export async function PATCH(
         nextAction: updatedTask.nextAction || undefined,
         dependencyIds: updatedTask.dependencyIds,
         outputDocId: updatedTask.outputDocId || undefined,
+        linkedDocIds: (updatedTask as any).linkedDocIds || [],
         workspaceId: updatedTask.workspaceId,
         createdAt: updatedTask.createdAt.toISOString(),
         updatedAt: updatedTask.updatedAt.toISOString(),

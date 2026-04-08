@@ -26,6 +26,8 @@ export interface Task {
   updatedAt: string
   // Skill linking
   skillId?: string | null
+  outputDocId?: string | null
+  linkedDocIds?: string[]
   skipEvaluation?: boolean | null
   skipEvaluationReason?: string | null
   // Dependencies
@@ -251,6 +253,8 @@ export async function updateTask(
         projectId: updates.projectId,
         assigneeId: updates.assigneeId !== undefined ? updates.assigneeId : undefined,
         ...((updates as any).skillId !== undefined && { skillId: (updates as any).skillId || null }),
+        ...((updates as any).outputDocId !== undefined && { outputDocId: (updates as any).outputDocId || null }),
+        ...((updates as any).linkedDocIds !== undefined && { linkedDocIds: (updates as any).linkedDocIds }),
       },
       include: {
         tags: {

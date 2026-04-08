@@ -16,6 +16,7 @@ import TaskSkillPanel from './TaskSkillPanel'
 import TaskSkillEvaluationModal from './TaskSkillEvaluationModal'
 import TaskDependencyPanel from './TaskDependencyPanel'
 import { tidyDescription, TidyMode } from '@/app/actions/ai-tidy'
+import TaskDocPanel from './TaskDocPanel'
 
 // ─── Copy Link Button ─────────────────────────────────────────────────────────
 function CopyLinkButton({ taskId }: { taskId: string }) {
@@ -116,6 +117,10 @@ export default function TaskDetailModal({
 
   // Skill linking
   const [skillId, setSkillId] = useState<string | null>(null)
+
+  // Doc linking
+  const [outputDocId, setOutputDocId] = useState<string | null>(null)
+  const [linkedDocIds, setLinkedDocIds] = useState<string[]>([])
   const [showEvalModal, setShowEvalModal] = useState(false)
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null)
 
@@ -191,6 +196,10 @@ export default function TaskDetailModal({
       // Skill linking
       setSkillId((task as any).skillId || null)
 
+      // Doc linking
+      setOutputDocId((task as any).outputDocId || null)
+      setLinkedDocIds((task as any).linkedDocIds || [])
+
       // Multi-agent OS fields
       setAgentFields({
         ownerAgent:       (task as any).ownerAgent       ?? null,
@@ -226,6 +235,10 @@ export default function TaskDetailModal({
 
       // Skill linking
       setSkillId(null)
+
+      // Doc linking
+      setOutputDocId(null)
+      setLinkedDocIds([])
 
       // Multi-agent OS fields reset
       setAgentFields({
@@ -268,6 +281,9 @@ export default function TaskDetailModal({
       dependencyIds,
       // Skill linking
       skillId: skillId || undefined,
+      // Doc linking
+      outputDocId: outputDocId || undefined,
+      linkedDocIds,
     }
 
     onUpdate?.(task.id, updates)
@@ -593,6 +609,17 @@ return (
                       }).catch(() => {})
                     }
                   }}
+                />
+              )}
+
+              {/* Doc linking */}
+              {workspaceId && (
+                <TaskDocPanel
+                  workspaceId={workspaceId}
+                  outputDocId={outputDocId}
+                  linkedDocIds={linkedDocIds}
+                  onOutputDocChange={setOutputDocId}
+                  onLinkedDocIdsChange={setLinkedDocIds}
                 />
               )}
 
