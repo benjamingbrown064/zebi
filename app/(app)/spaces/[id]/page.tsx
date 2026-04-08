@@ -224,249 +224,236 @@ function JsonField({ value }: { value: any }) {
   return <p className="text-[13px] text-[#474747]">{String(value)}</p>
 }
 
+function CompetitorsList({ value }: { value: any }) {
+  if (!value) return <p className="text-[13px] text-[#A3A3A3] italic">No competitors listed yet.</p>
+  const items: string[] = Array.isArray(value)
+    ? value.map((v: any) => (typeof v === 'string' ? v : JSON.stringify(v)))
+    : typeof value === 'string'
+    ? value.split('\n').filter(Boolean)
+    : Object.values(value).map(String)
+  return (
+    <div className="space-y-3 mt-2">
+      {items.map((c, i) => (
+        <div key={i} className="flex items-start gap-3">
+          <span className="text-[10px] font-bold text-[#A3A3A3] w-4 flex-shrink-0 mt-0.5">{String(i + 1).padStart(2, '0')}</span>
+          <div className="flex-1 border-t border-[#E5E5E5] pt-2">
+            <p className="text-[13px] font-semibold text-[#1A1C1C]">{c}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => void }) {
   const router = useRouter()
+  const hasAnyProfile = !!(
+    space.missionStatement || space.executiveSummary || space.vision ||
+    space.coreProduct || space.competitors || space.targetCustomers || space.marketSize
+  )
 
-  const topObjectives = space.objectives.slice(0, 3)
-  const topProjects = space.projects.slice(0, 3)
-  const recentMemory = (space.memories ?? []).slice(0, 3)
-
-  // Sections that have content — only render populated ones
-  const strategyFields = [
-    { label: 'Mission Statement', value: space.missionStatement },
-    { label: 'Executive Summary', value: space.executiveSummary },
-    { label: 'Vision', value: space.vision },
-  ].filter(f => f.value)
-
-  const marketFields = [
-    { label: 'Target Customers', value: space.targetCustomers },
-    { label: 'Market Size', value: space.marketSize },
-    { label: 'Competitors', value: space.competitors },
-    { label: 'Differentiators', value: space.differentiators },
-    { label: 'USPs', value: space.usps },
-  ].filter(f => f.value)
-
-  const productFields = [
-    { label: 'Core Product', value: space.coreProduct },
-    { label: 'Positioning', value: space.positioning },
-    { label: 'Pricing', value: space.pricing },
-    { label: 'Features', value: space.features },
-    { label: 'Roadmap', value: space.roadmap },
-  ].filter(f => f.value)
-
-  const aiFields = [
-    { label: 'AI Improvement Areas', value: space.aiImprovementAreas },
-    { label: 'AI Opportunities', value: space.aiOpportunities },
-  ].filter(f => f.value)
-
-  const hasProfile = strategyFields.length > 0 || marketFields.length > 0 || productFields.length > 0
+  // Derive primary market label
+  const primaryMarket = space.marketSize || space.industry || null
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left: live ops + profile */}
-      <div className="lg:col-span-2 space-y-5">
+    <div className="space-y-0">
 
-        {/* Objectives */}
-        <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-          <SectionHeader
-            title="Active Objectives"
-            action={
-              space.objectives.length > 3 ? (
-                <button onClick={() => router.push(`/spaces/${space.id}?tab=objectives`)} className="text-[11px] text-[#737373] hover:text-[#1A1A1A]">
-                  View all {space._count.objectives}
-                </button>
-              ) : undefined
-            }
-          />
-          {topObjectives.length === 0 ? (
-            <p className="text-[13px] text-[#C6C6C6] italic">No active objectives</p>
-          ) : (
-            <div className="space-y-4">
-              {topObjectives.map((obj: any) => {
-                const pct = obj.targetValue > 0
-                  ? Math.min(100, Math.round((Number(obj.currentValue || 0) / Number(obj.targetValue)) * 100))
-                  : 0
-                return (
-                  <div key={obj.id}>
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{obj.title}</p>
-                      <span className={`text-[11px] font-semibold flex-shrink-0 ${obj.status === 'blocked' ? 'text-red-600' : obj.status === 'at_risk' ? 'text-amber-600' : 'text-green-600'}`}>{pct}%</span>
-                    </div>
-                    <ProgressBar value={Number(obj.currentValue || 0)} max={Number(obj.targetValue)} />
-                    {obj.deadline && <p className="text-[11px] text-[#A3A3A3] mt-1">Due {new Date(obj.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>}
-                  </div>
-                )
-              })}
-            </div>
-          )}
+      {/* ── Mission Statement ───────────────────────────────────────────── */}
+      {space.missionStatement ? (
+        <div className="grid grid-cols-[180px_1fr] gap-10 py-10 border-b border-[#E5E5E5]">
+          <div className="pt-1">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3]">Mission Statement</p>
+          </div>
+          <p className="text-[22px] font-bold leading-snug text-[#1A1C1C]">{space.missionStatement}</p>
         </div>
+      ) : null}
 
-        {/* Projects */}
-        <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-          <SectionHeader title="Projects" />
-          {topProjects.length === 0 ? (
-            <p className="text-[13px] text-[#C6C6C6] italic">No active projects</p>
-          ) : (
-            <div className="space-y-3">
-              {topProjects.map((p: any) => {
-                const total = p.tasks?.length || 0
-                const done = p.tasks?.filter((t: any) => t.completedAt).length || 0
-                return (
-                  <Link key={p.id} href={`/projects/${p.id}`} className="flex items-center gap-3 group">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-medium text-[#1A1A1A] group-hover:text-[#474747] transition truncate">{p.name}</p>
-                      <p className="text-[11px] text-[#A3A3A3]">{done}/{total} tasks done</p>
-                    </div>
-                    <svg className="w-3.5 h-3.5 text-[#C6C6C6] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-                  </Link>
-                )
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Strategy */}
-        {strategyFields.length > 0 && (
-          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-            <SectionHeader title="Strategy" />
-            <div className="space-y-5">
-              {strategyFields.map(f => (
-                <div key={f.label}>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">{f.label}</p>
-                  <JsonField value={f.value} />
+      {/* ── Executive Summary + Market & Competition ────────────────────── */}
+      {(space.executiveSummary || space.competitors || space.targetCustomers) ? (
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 py-8 border-b border-[#E5E5E5]">
+          {/* Executive Summary */}
+          {space.executiveSummary ? (
+            <div className="bg-white border border-[#E5E5E5] rounded p-7" style={{ boxShadow: '0px 20px 40px rgba(0,0,0,0.04)' }}>
+              <h3 className="text-[15px] font-bold text-[#1A1C1C] mb-4">Executive Summary</h3>
+              <p className="text-[13px] text-[#474747] leading-relaxed whitespace-pre-wrap">{space.executiveSummary}</p>
+              {space.differentiators && (
+                <div className="mt-5 pt-5 border-t border-[#F3F3F3]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-2">Differentiators</p>
+                  <JsonField value={space.differentiators} />
                 </div>
-              ))}
+              )}
             </div>
-          </div>
-        )}
+          ) : <div />}
 
-        {/* Market */}
-        {marketFields.length > 0 && (
-          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-            <SectionHeader title="Market & Competition" />
-            <div className="space-y-5">
-              {marketFields.map(f => (
-                <div key={f.label}>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">{f.label}</p>
-                  <JsonField value={f.value} />
+          {/* Market & Competition */}
+          <div className="bg-white border border-[#E5E5E5] rounded p-6" style={{ boxShadow: '0px 20px 40px rgba(0,0,0,0.04)' }}>
+            <h3 className="text-[15px] font-bold text-[#1A1C1C] mb-5">Market & Competition</h3>
+
+            {primaryMarket && (
+              <div className="mb-5 pb-4 border-b border-[#E5E5E5]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-1">Primary Market</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-[14px] font-semibold text-[#1A1C1C]">{primaryMarket}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Product */}
-        {productFields.length > 0 && (
-          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-            <SectionHeader title="Product" />
-            <div className="space-y-5">
-              {productFields.map(f => (
-                <div key={f.label}>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">{f.label}</p>
-                  <JsonField value={f.value} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* AI */}
-        {aiFields.length > 0 && (
-          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-            <SectionHeader title="AI Intelligence" />
-            <div className="space-y-5">
-              {aiFields.map(f => (
-                <div key={f.label}>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1.5">{f.label}</p>
-                  <JsonField value={f.value} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Empty profile prompt */}
-        {!hasProfile && (
-          <div className="bg-white rounded p-6 border border-dashed border-[#E5E5E5] text-center">
-            <p className="text-[13px] text-[#A3A3A3] mb-3">No business profile yet — add mission, market, and product details</p>
-            <button
-              onClick={onEditClick}
-              className="text-[12px] font-medium text-[#1A1A1A] border border-[#C6C6C6] px-3 py-1.5 rounded-md hover:bg-[#F9F9F9] transition"
-            >
-              Fill in profile
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Right: meta + stats + memory */}
-      <div className="space-y-5">
-        {/* Business details */}
-        <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-          <SectionHeader
-            title="Details"
-            action={
-              <button onClick={onEditClick} className="text-[11px] text-[#737373] hover:text-[#1A1A1A]">Edit</button>
-            }
-          />
-          <div className="space-y-3">
-            {[
-              { label: 'Industry',   value: space.industry },
-              { label: 'Stage',      value: space.stage },
-              { label: 'Model',      value: space.businessModel },
-              { label: 'Revenue',    value: space.revenue ? `£${(Number(space.revenue)/1000).toFixed(1)}k MRR` : null },
-              { label: 'Market',     value: space.marketSize },
-            ].filter(r => r.value).map(r => (
-              <div key={r.label} className="flex justify-between gap-2">
-                <span className="text-[12px] text-[#A3A3A3]">{r.label}</span>
-                <span className="text-[12px] font-medium text-[#1A1A1A] text-right capitalize">{r.value}</span>
+                <div className="mt-2 h-px bg-[#1A1C1C] w-2/3" />
               </div>
-            ))}
-            {space.websiteUrl && (
-              <a href={space.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[12px] text-[#DD3A44] hover:underline">
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                Website
-              </a>
+            )}
+
+            {space.targetCustomers && (
+              <div className="mb-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-1">Target Customers</p>
+                <p className="text-[13px] text-[#474747]">{
+                  typeof space.targetCustomers === 'string'
+                    ? space.targetCustomers
+                    : JSON.stringify(space.targetCustomers)
+                }</p>
+              </div>
+            )}
+
+            {space.competitors && (
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-1">Competitive Landscape</p>
+                <CompetitorsList value={space.competitors} />
+              </div>
+            )}
+
+            {!space.competitors && !space.targetCustomers && !primaryMarket && (
+              <p className="text-[13px] text-[#A3A3A3] italic">No market data yet.</p>
             )}
           </div>
         </div>
+      ) : null}
 
-        {/* Stats */}
-        <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-          <SectionHeader title="Stats" />
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { label: 'Tasks',      n: space._count.tasks },
-              { label: 'Objectives', n: space._count.objectives },
-              { label: 'Projects',   n: space._count.projects },
-              { label: 'Docs',       n: space._count.documents },
-              { label: 'Notes',      n: space._count.notes },
-              { label: 'Insights',   n: space._count.insights },
-            ].map(s => (
-              <div key={s.label} className="text-center py-2 bg-[#F9F9F9] rounded-md">
-                <div className="text-[18px] font-bold text-[#1A1A1A]">{s.n}</div>
-                <div className="text-[10px] text-[#A3A3A3] uppercase tracking-wide">{s.label}</div>
+      {/* ── Vision / Core Product / Objectives strip ────────────────────── */}
+      {(space.vision || space.coreProduct || space.objectives.length > 0) ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 py-8 border-b border-[#E5E5E5]">
+          {/* Vision */}
+          <div className="bg-[#F3F3F3] rounded p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-3">Vision</p>
+            {space.vision ? (
+              <p className="text-[14px] font-medium text-[#1A1C1C] leading-snug">{
+                typeof space.vision === 'string' ? space.vision : JSON.stringify(space.vision)
+              }</p>
+            ) : (
+              <p className="text-[13px] text-[#A3A3A3] italic">Vision not set.</p>
+            )}
+          </div>
+
+          {/* Core Product — inverted black tile */}
+          <div className="bg-[#1A1C1C] rounded p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C6C6C6] mb-3">Core Product</p>
+            {space.coreProduct ? (
+              <p className="text-[14px] font-semibold text-white leading-snug">{
+                typeof space.coreProduct === 'string' ? space.coreProduct : JSON.stringify(space.coreProduct)
+              }</p>
+            ) : (
+              <p className="text-[13px] text-[#737373] italic">Core product not set.</p>
+            )}
+            {space.positioning && (
+              <p className="text-[12px] text-[#A3A3A3] mt-3 leading-relaxed">{
+                typeof space.positioning === 'string' ? space.positioning : ''
+              }</p>
+            )}
+          </div>
+
+          {/* Top Objectives — card with progress */}
+          <div className="bg-white border border-[#E5E5E5] rounded p-6" style={{ boxShadow: '0px 20px 40px rgba(0,0,0,0.04)' }}>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3]">Top Objectives</p>
+              {space.objectives.length > 2 && (
+                <button
+                  onClick={() => router.push(`/spaces/${space.id}?tab=objectives`)}
+                  className="text-[10px] text-[#737373] hover:text-[#1A1C1C] transition"
+                >
+                  View all →
+                </button>
+              )}
+            </div>
+            {space.objectives.length === 0 ? (
+              <p className="text-[13px] text-[#A3A3A3] italic">No objectives yet.</p>
+            ) : (
+              <div className="space-y-4">
+                {space.objectives.slice(0, 2).map((obj: any) => {
+                  const pct = obj.targetValue > 0
+                    ? Math.min(100, Math.round((Number(obj.currentValue || 0) / Number(obj.targetValue)) * 100))
+                    : 0
+                  return (
+                    <div key={obj.id}>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <p className="text-[12px] font-medium text-[#1A1C1C] truncate leading-tight">{obj.title}</p>
+                        <span className="text-[11px] font-bold text-[#474747] flex-shrink-0">{pct}%</span>
+                      </div>
+                      <ProgressBar value={Number(obj.currentValue || 0)} max={Number(obj.targetValue)} />
+                    </div>
+                  )
+                })}
               </div>
-            ))}
+            )}
           </div>
         </div>
+      ) : null}
 
-        {/* Recent memory */}
-        {recentMemory.length > 0 && (
-          <div className="bg-white rounded p-5 border border-[#E5E5E5]">
-            <SectionHeader title="Recent Memory" />
-            <div className="space-y-3">
-              {recentMemory.map((m: any) => (
-                <div key={m.id}>
-                  <p className="text-[12px] font-medium text-[#1A1A1A] truncate">{m.title}</p>
-                  <p className="text-[11px] text-[#A3A3A3] mt-0.5 line-clamp-2">{m.description}</p>
-                  <p className="text-[10px] text-[#C6C6C6] mt-0.5">{timeAgo(m.updatedAt)}</p>
-                </div>
-              ))}
-            </div>
+      {/* ── Stats bar ───────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-0 py-8">
+        {[
+          { label: 'Active Tasks',  value: space._count.tasks,      sub: 'across all projects' },
+          { label: 'Objectives',    value: space._count.objectives,  sub: 'key results tracked' },
+          { label: 'Projects',      value: space._count.projects,    sub: 'in progress' },
+          { label: 'Documents',     value: space._count.documents,   sub: 'knowledge base' },
+        ].map((s, i) => (
+          <div
+            key={s.label}
+            className={`py-8 px-6 ${i < 3 ? 'border-r border-[#E5E5E5]' : ''} ${i >= 2 ? 'hidden md:block' : ''}`}
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-2">{s.label}</p>
+            <p className="text-[40px] font-bold text-[#1A1C1C] leading-none">{s.value}</p>
+            <p className="text-[12px] text-[#A3A3A3] italic mt-2">{s.sub}</p>
           </div>
-        )}
+        ))}
       </div>
+
+      {/* ── AI / Product detail (secondary) ────────────────────────────── */}
+      {(space.aiImprovementAreas || space.aiOpportunities || space.features || space.roadmap) ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 pb-8 border-t border-[#E5E5E5]">
+          {space.features && (
+            <div className="bg-white border border-[#E5E5E5] rounded p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-3">Features</p>
+              <JsonField value={space.features} />
+            </div>
+          )}
+          {space.roadmap && (
+            <div className="bg-white border border-[#E5E5E5] rounded p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-3">Roadmap</p>
+              <JsonField value={space.roadmap} />
+            </div>
+          )}
+          {space.aiImprovementAreas && (
+            <div className="bg-white border border-[#E5E5E5] rounded p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-3">AI Improvement Areas</p>
+              <JsonField value={space.aiImprovementAreas} />
+            </div>
+          )}
+          {space.aiOpportunities && (
+            <div className="bg-white border border-[#E5E5E5] rounded p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-3">AI Opportunities</p>
+              <JsonField value={space.aiOpportunities} />
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {/* ── Empty profile prompt ─────────────────────────────────────────── */}
+      {!hasAnyProfile && (
+        <div className="py-20 text-center border border-dashed border-[#E5E5E5] rounded bg-white">
+          <p className="text-[13px] text-[#A3A3A3] mb-4">No business profile yet — add mission, market, and product details to bring this space to life.</p>
+          <button
+            onClick={onEditClick}
+            className="text-[12px] font-semibold text-white bg-[#000000] px-5 py-2.5 rounded hover:bg-[#1A1C1C] transition"
+          >
+            Fill in profile
+          </button>
+        </div>
+      )}
     </div>
   )
 }
@@ -1183,65 +1170,84 @@ export default function SpaceDetailPage() {
 
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 pt-6 pb-12">
 
-          {/* ── Space header ──────────────────────────────────────────────── */}
-          <div className="flex items-start gap-4 mb-6">
-            {/* Logo / avatar */}
-            <div className="flex-shrink-0 w-14 h-14 rounded bg-white border border-[#E5E5E5] flex items-center justify-center overflow-hidden">
-              {space.logoUrl ? (
-                <img src={space.logoUrl} alt={space.name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-2xl font-bold text-[#C6C6C6]">{space.name[0]}</span>
+          {/* ── Space header — editorial style ────────────────────────────── */}
+          <div className="mb-8">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3]">Profile</span>
+              <span className="text-[#C6C6C6] text-[10px]">/</span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3]">Space</span>
+              {space.industry && (
+                <>
+                  <span className="text-[#C6C6C6] text-[10px]">/</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3]">{space.industry}</span>
+                </>
               )}
+              <span className="ml-2 flex items-center gap-1.5 bg-[#1A1C1C] text-white text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-white/70 flex-shrink-0" />
+                Active Project
+              </span>
             </div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3">
-                <h1 className="text-[22px] font-bold text-[#1A1A1A] truncate">{space.name}</h1>
+            {/* Title row */}
+            <div className="flex items-start justify-between gap-6 mb-5">
+              <h1 className="text-[48px] font-extrabold text-[#1A1C1C] leading-none tracking-tight">{space.name}</h1>
+              <div className="flex-shrink-0 flex items-center gap-3 mt-2">
+                <button
+                  onClick={() => {}}
+                  className="px-5 py-2.5 border border-[#C6C6C6] text-[12px] font-semibold uppercase tracking-[0.06em] text-[#1A1C1C] rounded bg-white hover:bg-[#F3F3F3] transition"
+                >
+                  Export Report
+                </button>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex-shrink-0 text-[#C6C6C6] hover:text-[#737373] transition"
-                  title="Edit space profile"
+                  className="px-5 py-2.5 bg-[#1A1C1C] text-[12px] font-semibold uppercase tracking-[0.06em] text-white rounded hover:bg-[#000] transition"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
+                  Edit Space
                 </button>
-              </div>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                {space.industry && <span className="text-[12px] text-[#737373]">{space.industry}</span>}
-                {space.industry && space.stage && <span className="text-[#C6C6C6]">·</span>}
-                {space.stage && <span className="text-[12px] text-[#737373] capitalize">{space.stage}</span>}
-                {space.revenue && (
-                  <>
-                    <span className="text-[#C6C6C6]">·</span>
-                    <span className="text-[12px] font-semibold text-[#1A1A1A]">
-                      £{(Number(space.revenue) / 1000).toFixed(1)}k MRR
-                    </span>
-                  </>
-                )}
-                {space.websiteUrl && (
-                  <>
-                    <span className="text-[#C6C6C6]">·</span>
-                    <a href={space.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-[12px] text-[#DD3A44] hover:underline">
-                      {space.websiteUrl.replace(/^https?:\/\//, '')}
-                    </a>
-                  </>
-                )}
               </div>
             </div>
 
-            {/* Counts pills */}
-            <div className="flex-shrink-0 hidden md:flex items-center gap-2">
-              {[
-                { label: 'Tasks', n: space._count.tasks },
-                { label: 'Objectives', n: space._count.objectives },
-                { label: 'Projects', n: space._count.projects },
-              ].map(s => (
-                <div key={s.label} className="text-center bg-white border border-[#E5E5E5] rounded-md px-3 py-1.5">
-                  <div className="text-[14px] font-bold text-[#1A1A1A]">{s.n}</div>
-                  <div className="text-[10px] text-[#A3A3A3]">{s.label}</div>
+            {/* Meta columns row */}
+            <div className="flex items-start gap-10 flex-wrap">
+              {space.industry && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-1">Industry</p>
+                  <p className="text-[14px] font-semibold text-[#1A1C1C]">{space.industry}</p>
                 </div>
-              ))}
+              )}
+              {space.stage && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-1">Stage</p>
+                  <p className="text-[14px] font-semibold text-[#1A1C1C] capitalize">{space.stage}</p>
+                </div>
+              )}
+              {space.businessModel && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-1">Model</p>
+                  <p className="text-[14px] font-semibold text-[#1A1C1C]">{space.businessModel}</p>
+                </div>
+              )}
+              {space.marketSize && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-1">Region / Market</p>
+                  <p className="text-[14px] font-semibold text-[#1A1C1C]">{space.marketSize}</p>
+                </div>
+              )}
+              {space.revenue && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-1">Revenue</p>
+                  <p className="text-[14px] font-semibold text-[#1A1C1C]">£{(Number(space.revenue) / 1000).toFixed(1)}k MRR</p>
+                </div>
+              )}
+              {space.websiteUrl && (
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A3A3A3] mb-1">Website</p>
+                  <a href={space.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-[14px] font-semibold text-[#1A1C1C] hover:underline">
+                    {space.websiteUrl.replace(/^https?:\/\//, '')}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
