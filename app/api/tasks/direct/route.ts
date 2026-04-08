@@ -207,6 +207,18 @@ export async function GET(request: NextRequest) {
         tags: {
           include: { tag: true },
         },
+        company: {
+          select: { id: true, name: true },
+        },
+        project: {
+          select: { id: true, name: true },
+        },
+        objective: {
+          select: { id: true, title: true },
+        },
+        goal: {
+          select: { id: true, name: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
       ...(limitParam ? { take: parseInt(limitParam, 10) } : {}),
@@ -234,6 +246,11 @@ export async function GET(request: NextRequest) {
         companyId: t.companyId || undefined,
         objectiveId: t.objectiveId || undefined,
         botAssignee: t.botAssignee || undefined,
+        // Resolved relations for list/table display
+        space: t.company ? { id: t.company.id, name: t.company.name } : undefined,
+        project: t.project ? { id: t.project.id, name: t.project.name } : undefined,
+        objective: t.objective ? { id: t.objective.id, title: t.objective.title } : undefined,
+        goal: t.goal ? { id: t.goal.id, name: t.goal.name } : undefined,
         // Multi-agent OS fields
         ownerAgent:       t.ownerAgent       || undefined,
         reviewerAgent:    t.reviewerAgent     || undefined,
