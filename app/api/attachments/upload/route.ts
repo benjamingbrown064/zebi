@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createClient } from '@supabase/supabase-js'
+import { requireWorkspace } from '@/lib/workspace'
 
 // Conditionally create Supabase client if credentials exist
 const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -11,10 +12,16 @@ const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SE
   : null
 
 const ALLOWED_TYPES = [
-  'image/jpeg',
-  'image/png',
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
   'application/pdf',
+  'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain', 'text/csv', 'text/markdown',
+  'application/zip', 'application/json',
 ]
 
 export async function POST(request: Request) {
@@ -30,7 +37,12 @@ export async function POST(request: Request) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const taskId = formData.get('taskId') as string
-    const workspaceId = formData.get('workspaceId') as string
+    let workspaceId = formData.get('workspaceId') as string
+
+    // Fall back to session workspace if not provided
+    if (!workspaceId) {
+      try { workspaceId = await requireWorkspace() } catch {}
+    }
 
     if (!file || !taskId || !workspaceId) {
       return NextResponse.json(
