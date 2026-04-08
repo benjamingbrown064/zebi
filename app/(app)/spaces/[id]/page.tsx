@@ -1261,10 +1261,18 @@ export default function SpaceDetailPage() {
 
           {/* ── Tab content ───────────────────────────────────────────────── */}
           {activeTab === 'overview'     && <OverviewTab space={space} onEditClick={() => setIsEditing(true)} />}
-          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} onTaskClick={(t) => { setSelectedTask(t); setIsTaskModalOpen(true) }} />}
+          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} onTaskClick={async (t) => {
+              const d = await fetch(`/api/tasks/${t.id}`).then(r => r.json()).catch(() => ({}))
+              setSelectedTask(d.task ?? t)
+              setIsTaskModalOpen(true)
+            }} />}
           {activeTab === 'objectives'   && <ObjectivesTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'projects'     && <ProjectsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
-          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} onTaskClick={(t) => { setSelectedTask(t); setIsTaskModalOpen(true) }} />}
+          {activeTab === 'agents'       && <AgentsTab space={space} onSwitchToWork={() => setActiveTab('work')} onTaskClick={async (t) => {
+              const d = await fetch(`/api/tasks/${t.id}`).then(r => r.json()).catch(() => ({}))
+              setSelectedTask(d.task ?? t)
+              setIsTaskModalOpen(true)
+            }} />}
           {activeTab === 'docs'         && <DocsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'intelligence' && <IntelligenceTab space={space} />}
 
@@ -1356,64 +1364,30 @@ export default function SpaceDetailPage() {
         </div>
       )}
 
-      {/* Task Detail Panel — simple slide-in overlay */}
-      {isTaskModalOpen && selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black bg-opacity-50 p-4" onClick={() => { setIsTaskModalOpen(false); setSelectedTask(null) }}>
-          <div className="bg-white w-full max-w-lg max-h-[85vh] overflow-y-auto rounded shadow-xl" onClick={e => e.stopPropagation()}>
-            {/* Header */}
-            <div className="flex items-start justify-between p-5 border-b border-[#E8E8E8]">
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1">Task</p>
-                <h2 className="text-[16px] font-semibold text-[#1A1C1C] leading-tight">{selectedTask.title}</h2>
-              </div>
-              <button onClick={() => { setIsTaskModalOpen(false); setSelectedTask(null) }} className="ml-4 text-[#A3A3A3] hover:text-[#1A1C1C] text-lg">✕</button>
-            </div>
-            {/* Body */}
-            <div className="p-5 space-y-4">
-              {selectedTask.description && (
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1">Description</p>
-                  <p className="text-sm text-[#474747] whitespace-pre-wrap">{selectedTask.description}</p>
-                </div>
-              )}
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                {selectedTask.status && <div><span className="text-[#A3A3A3] text-xs block mb-0.5">Status</span><span className="font-medium text-[#1A1C1C]">{selectedTask.status}</span></div>}
-                {selectedTask.priority && <div><span className="text-[#A3A3A3] text-xs block mb-0.5">Priority</span><span className="font-medium text-[#1A1C1C]">P{selectedTask.priority}</span></div>}
-                {selectedTask.ownerAgent && <div><span className="text-[#A3A3A3] text-xs block mb-0.5">Owner</span><span className="font-medium text-[#1A1C1C] capitalize">{selectedTask.ownerAgent}</span></div>}
-                {selectedTask.dueAt && <div><span className="text-[#A3A3A3] text-xs block mb-0.5">Due</span><span className="font-medium text-[#1A1C1C]">{new Date(selectedTask.dueAt).toLocaleDateString()}</span></div>}
-                {selectedTask.waitingOn && <div><span className="text-[#A3A3A3] text-xs block mb-0.5">Waiting on</span><span className="font-medium text-[#1A1C1C] capitalize">{selectedTask.waitingOn}</span></div>}
-              </div>
-              {selectedTask.expectedOutcome && (
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1">Expected Outcome</p>
-                  <p className="text-sm text-[#474747]">{selectedTask.expectedOutcome}</p>
-                </div>
-              )}
-              {selectedTask.completionNote && (
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] mb-1">Completion Note</p>
-                  <p className="text-sm text-[#474747]">{selectedTask.completionNote}</p>
-                </div>
-              )}
-              {selectedTask.blockedReason && (
-                <div className="bg-red-50 border border-red-200 rounded p-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-red-600 mb-1">Blocked</p>
-                  <p className="text-sm text-red-700">{selectedTask.blockedReason}</p>
-                </div>
-              )}
-            </div>
-            {/* Footer */}
-            <div className="px-5 pb-5">
-              <button
-                onClick={() => { setIsTaskModalOpen(false); setSelectedTask(null) }}
-                className="w-full py-2.5 border border-[#C6C6C6] text-sm text-[#474747] hover:bg-[#F3F3F3] rounded transition"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Task Detail Modal — same component as task list */}
+      <TaskDetailModal
+        isOpen={isTaskModalOpen}
+        onClose={() => { setIsTaskModalOpen(false); setSelectedTask(null) }}
+        task={selectedTask ?? undefined}
+        onUpdate={async (taskId, updates) => {
+          await fetch(`/api/tasks/${taskId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...updates, workspaceId: wsId }),
+          })
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+          loadSpace(true)
+        }}
+        onDelete={async (taskId) => {
+          await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' })
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+          loadSpace(true)
+        }}
+        workspaceId={wsId ?? ''}
+        statuses={modalStatuses}
+      />
 
     </div>
   )
