@@ -473,7 +473,21 @@ function OverviewTab({ space, onEditClick }: { space: Space; onEditClick: () => 
 
 // ─── Tab: Work ────────────────────────────────────────────────────────────────
 
-function WorkTab({ space, wsId, onRefresh, onTaskClick }: { space: Space; wsId: string | null; onRefresh: () => void; onTaskClick?: (task: any) => void }) {
+const STATUS_PILL: Record<string, string> = {
+  inbox:    'bg-[#F3F3F3] text-[#474747]',
+  todo:     'bg-[#F3F3F3] text-[#474747]',
+  doing:    'bg-amber-100 text-amber-700',
+  review:   'bg-blue-100 text-blue-700',
+  done:     'bg-[#1A1C1C] text-white',
+  blocked:  'bg-red-100 text-red-700',
+}
+
+function statusPill(name: string) {
+  const key = name.toLowerCase().replace(/[\s-]+/g, '')
+  return STATUS_PILL[key] || 'bg-[#F3F3F3] text-[#474747]'
+}
+
+function WorkTab({ space, wsId, onRefresh, onTaskClick, statuses }: { space: Space; wsId: string | null; onRefresh: () => void; onTaskClick?: (task: any) => void; statuses?: any[] }) {
   const router = useRouter()
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -591,6 +605,10 @@ function WorkTab({ space, wsId, onRefresh, onTaskClick }: { space: Space; wsId: 
                         {AGENT_LABELS[task.ownerAgent] || task.ownerAgent}
                       </span>
                     )}
+                    {task.statusId && statuses && (() => {
+                      const s = statuses.find((st: any) => st.id === task.statusId)
+                      return s ? <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${statusPill(s.name)}`}>{s.name}</span> : null
+                    })()}
                     {task.blockedReason && <span className="text-[11px] text-red-600">Blocked</span>}
                     {due && <span className={`text-[11px] ${due.cls}`}>{due.label}</span>}
                   </div>
@@ -1261,7 +1279,7 @@ export default function SpaceDetailPage() {
 
           {/* ── Tab content ───────────────────────────────────────────────── */}
           {activeTab === 'overview'     && <OverviewTab space={space} onEditClick={() => setIsEditing(true)} />}
-          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} onTaskClick={async (t) => {
+          {activeTab === 'work'         && <WorkTab space={space} wsId={wsId} statuses={modalStatuses} onRefresh={() => loadSpace(true)} onTaskClick={async (t) => {
               const d = await fetch(`/api/tasks/${t.id}`).then(r => r.json()).catch(() => ({}))
               setSelectedTask(d.task ?? t)
               setIsTaskModalOpen(true)
