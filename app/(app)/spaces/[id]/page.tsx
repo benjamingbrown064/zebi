@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { useWorkspace } from '@/lib/use-workspace'
 import Link from 'next/link'
 import { cachedFetch, invalidateCache, STABLE_TTL } from '@/lib/client-cache'
@@ -1082,12 +1082,15 @@ function IntelligenceTab({ space }: { space: Space }) {
 export default function SpaceDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const spaceId = params.id as string
   const { workspaceId: wsId } = useWorkspace()
 
   const [space, setSpace] = useState<Space | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<TabId>('overview')
+  const [activeTab, setActiveTab] = useState<TabId>(
+    (searchParams.get('tab') as TabId) || 'overview'
+  )
   const [isMobile, setIsMobile] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -1256,7 +1259,12 @@ export default function SpaceDetailPage() {
             {TABS.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id)
+                  const url = new URL(window.location.href)
+                  url.searchParams.set('tab', tab.id)
+                  window.history.replaceState(null, '', url.toString())
+                }}
                 className={`px-4 py-2 rounded-md text-[13px] font-medium whitespace-nowrap transition flex-shrink-0 ${
                   activeTab === tab.id
                     ? 'bg-[#1A1A1A] text-white'
