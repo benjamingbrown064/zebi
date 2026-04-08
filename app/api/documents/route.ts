@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    const archived = searchParams.get('archived') === 'true';
+
     const where: any = { workspaceId };
     if (companyId) where.companyId = companyId;
     if (projectId) where.projectId = projectId;
@@ -34,11 +36,30 @@ export async function GET(request: NextRequest) {
     if (search) {
       where.title = { contains: search, mode: 'insensitive' };
     }
+    // Default: exclude archived. Pass ?archived=true to fetch only archived.
+    if (archived) {
+      where.archivedAt = { not: null };
+    } else {
+      where.archivedAt = null;
+    }
 
     const [documents, total] = await Promise.all([
       prisma.document.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          title: true,
+          documentType: true,
+          updatedAt: true,
+          createdAt: true,
+          archivedAt: true,
+          version: true,
+          authorName: true,
+          createdBy: true,
+          functionTags: true,
+          typeTags: true,
+          stageTags: true,
+          canonical: true,
           company: { select: { id: true, name: true } },
           project: { select: { id: true, name: true } },
           versions: {

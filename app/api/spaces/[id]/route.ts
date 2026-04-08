@@ -31,7 +31,11 @@ export async function GET(
           },
           orderBy: { createdAt: 'desc' },
         },
-        documents: { orderBy: { updatedAt: 'desc' } },
+        documents: {
+          where: { archivedAt: null },
+          select: { id: true, title: true, documentType: true, updatedAt: true, authorName: true, functionTags: true, typeTags: true, stageTags: true },
+          orderBy: { updatedAt: 'desc' },
+        },
         insights: {
           where: { status: { in: ['new', 'reviewed'] } },
           orderBy: { createdAt: 'desc' },

@@ -617,6 +617,8 @@ model Document {
   createdAt    DateTime @default(now()) @db.Timestamptz()
   updatedAt    DateTime @updatedAt @db.Timestamptz()
   createdBy    String   @db.Uuid
+  authorName   String?  @db.Text  // display name: "Benjamin", "Doug", "Harvey", etc.
+  archivedAt   DateTime? @db.Timestamptz()
 
   // Tagging system
   functionTags String[] // source | core-strategy | technical | security | ops | gtm | meta

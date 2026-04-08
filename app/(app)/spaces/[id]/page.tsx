@@ -943,17 +943,33 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
           <EmptyState icon="📄" title="No documents yet" />
         ) : (
           <div className="space-y-2">
-            {(space.documents ?? []).map((doc: any) => (
-              <div key={doc.id} onClick={() => router.push(`/documents/${doc.id}`)} className="flex items-center gap-3 bg-white rounded p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
-                <svg className="w-4 h-4 text-[#C6C6C6] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{doc.title}</p>
-                  <p className="text-[11px] text-[#A3A3A3] capitalize">{doc.documentType} · {new Date(doc.updatedAt).toLocaleDateString('en-GB')}</p>
+            {(space.documents ?? []).map((doc: any) => {
+              const allTags = [...(doc.functionTags || []), ...(doc.typeTags || []), ...(doc.stageTags || [])]
+              return (
+                <div key={doc.id} onClick={() => router.push(`/documents/${doc.id}`)} className="flex items-start gap-3 bg-white rounded p-4 border border-[#E5E5E5] hover:border-[#C6C6C6] cursor-pointer transition">
+                  <svg className="w-4 h-4 text-[#C6C6C6] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{doc.title}</p>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+                      <span className="text-[11px] text-[#A3A3A3] capitalize">{doc.documentType}</span>
+                      <span className="text-[11px] text-[#C6C6C6]">·</span>
+                      <span className="text-[11px] text-[#A3A3A3]">{new Date(doc.updatedAt).toLocaleDateString('en-GB')}</span>
+                      {doc.authorName && <span className="text-[11px] text-[#A3A3A3]">· {doc.authorName}</span>}
+                    </div>
+                    {allTags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {allTags.slice(0, 4).map((tag: string) => (
+                          <span key={tag} className="px-1.5 py-0.5 rounded text-[10px] bg-[#F3F3F3] text-[#737373]">{tag}</span>
+                        ))}
+                        {allTags.length > 4 && <span className="text-[10px] text-[#A3A3A3]">+{allTags.length - 4}</span>}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
