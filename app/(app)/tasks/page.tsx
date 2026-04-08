@@ -483,7 +483,7 @@ function TasksPageInner() {
           isOpen={isQuickAddOpen}
           onClose={() => setIsQuickAddOpen(false)}
           onAdd={handleAddTask}
-          workspaceId={workspaceId!}
+          workspaceId={workspaceId ?? 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'}
           isMobile={isMobile}
         />
       )}
@@ -503,7 +503,7 @@ function TasksPageInner() {
           setIsTaskModalOpen(false)
           setSelectedTask(null)
         }}
-        workspaceId={workspaceId!}
+        workspaceId={workspaceId ?? 'dfd6d384-9e2f-4145-b4f3-254aa82c0237'}
         statuses={statuses}
       />
     </div>

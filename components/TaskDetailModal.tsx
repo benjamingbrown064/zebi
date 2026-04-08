@@ -586,11 +586,15 @@ return (
                   skillId={skillId}
                   onSkillChange={(id) => {
                     setSkillId(id)
+                    // Save immediately via API — use force to avoid gate issues when only changing skill
                     fetch(`/api/tasks/${task.id}`, {
                       method: 'PATCH',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ workspaceId, skillId: id || null }),
-                    }).catch(() => {})
+                      body: JSON.stringify({ workspaceId, skillId: id || null, force: true }),
+                    })
+                    .then(r => r.json())
+                    .then(d => { if (!d.success) console.error('[skill save failed]', d.error) })
+                    .catch(e => console.error('[skill save error]', e))
                   }}
                 />
               )}
