@@ -1678,16 +1678,16 @@ model AgentKnowledgeLink {
 
 model RelayCall {
   id           String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
-  actor        String   @db.Text          // "doug" | "harvey" | "theo" | "casper"
-  method       String   @db.Text          // GET | POST | PATCH | PUT | DELETE
-  path         String   @db.Text          // e.g. /api/tasks/direct
-  statusCode   Int
-  latencyMs    Int
-  requestSize  Int      @default(0)       // bytes
-  responseSize Int      @default(0)       // bytes
+  actor        String   @db.Text                // "doug" | "harvey" | "theo" | "casper"
+  method       String   @db.Text                // GET | POST | PATCH | PUT | DELETE
+  path         String   @db.Text                // e.g. /api/tasks/direct
+  statusCode   Int      @map("status_code")
+  latencyMs    Int      @map("latency_ms")
+  requestSize  Int      @default(0) @map("request_size")   // bytes
+  responseSize Int      @default(0) @map("response_size")  // bytes
   success      Boolean
-  errorCode    String?  @db.Text          // structured error code if failed
-  calledAt     DateTime @default(now()) @db.Timestamptz()
+  errorCode    String?  @db.Text @map("error_code")        // structured error code if failed
+  calledAt     DateTime @default(now()) @db.Timestamptz() @map("called_at")
 
   @@index([actor])
   @@index([calledAt])
