@@ -9,7 +9,8 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "test:relay": "node scripts/test-relay.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
