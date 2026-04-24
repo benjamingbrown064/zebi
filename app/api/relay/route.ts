@@ -222,9 +222,9 @@ export async function POST(request: NextRequest) {
     console.error(`[relay] fetch error: ${msg}`)
     errorCode = 'UPSTREAM_ERROR'
 
-    // Still log the failed call
+    // Log the failed call (blocking — must complete before Vercel kills the function)
     const durationMs = Date.now() - startMs
-    void persistRelayCall({
+    await persistRelayCall({
       actor, method, path: url.pathname, statusCode: 502,
       latencyMs: durationMs, requestSize: rawBody.length, responseSize: 0,
       success: false, errorCode,
@@ -241,8 +241,8 @@ export async function POST(request: NextRequest) {
     `[relay] ← ${statusCode} ${method} ${url.pathname} | actor=${actor} latency=${durationMs}ms`
   )
 
-  // 9. Persist call log (non-blocking — don't slow the response)
-  void persistRelayCall({
+  // 9. Persist call log — must await before returning so Vercel doesn't kill the function first
+  await persistRelayCall({
     actor, method, path: url.pathname, statusCode,
     latencyMs: durationMs,
     requestSize:  rawBody.length,
