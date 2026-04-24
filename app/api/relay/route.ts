@@ -75,6 +75,7 @@ const BLOCKED_PATHS  = ['/api/relay', '/api/auth']
 
 // ─── Handler ──────────────────────────────────────────────────────────────────
 export const dynamic = 'force-dynamic'
+export const runtime  = 'nodejs'  // must run as Node.js lambda — Prisma is not edge-compatible
 
 export async function POST(request: NextRequest) {
   const startMs = Date.now()
