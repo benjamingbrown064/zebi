@@ -277,7 +277,7 @@ async function persistRelayCall(params: {
   errorCode?:   string
 }) {
   try {
-    await prisma.relayCall.create({
+    const row = await prisma.relayCall.create({
       data: {
         actor:        params.actor,
         method:       params.method,
@@ -290,8 +290,9 @@ async function persistRelayCall(params: {
         ...(params.errorCode ? { errorCode: params.errorCode } : {}),
       },
     })
+    console.log(`[relay] logged call id=${row.id} actor=${params.actor}`)
   } catch (err) {
     // Never let DB logging failures break the relay
-    console.error('[relay] failed to persist call log:', err)
+    console.error('[relay] PERSIST FAILED actor=' + params.actor, String(err))
   }
 }
