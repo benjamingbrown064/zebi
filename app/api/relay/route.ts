@@ -1,59 +1,77 @@
 /**
  * POST /api/relay
  *
- * Thin passthrough relay for sandboxed environments that cannot reach
- * zebi.app directly. Accepts a structured request, forwards it to the
- * Zebi API internally (same process), and returns the exact response.
+ * Single entrypoint for all bot API calls. Accepts a structured request
+ * envelope, validates the caller identity, injects X-Actor-Agent so
+ * downstream writes can stamp authorAgent consistently, enforces per-bot
+ * rate limits, logs every call to relay_calls, and returns the exact
+ * upstream response.
  *
- * Body:
+ * Envelope:
  *   {
- *     "method":   "GET" | "POST" | "PATCH" | "PUT" | "DELETE"   (required)
- *     "path":     "/api/tasks/direct"                            (required — must start with /api/)
- *     "query":    { "workspaceId": "...", ... }                  (optional — appended as query string)
- *     "body":     { ... }                                        (optional — forwarded as JSON body)
+ *     "method":  "GET" | "POST" | "PATCH" | "PUT" | "DELETE"  (required)
+ *     "path":    "/api/tasks/direct"                           (required — must start with /api/)
+ *     "query":   { "workspaceId": "...", ... }                 (optional)
+ *     "body":    { ... }                                       (optional)
  *   }
  *
- * Auth: pass the same Bearer token you would use on direct API calls.
- * The relay validates the token and forwards it to the target endpoint.
+ * Auth: Authorization: Bearer <bot-token>
+ * Identity is resolved by validateAIAuth in lib/doug-auth.ts.
  *
- * Rate limit: 120 requests / minute per token (in-memory, resets on cold start).
+ * Rate limits (per bot, per minute):
+ *   - Default: 60 req/min
+ *   - Override per bot via env: RELAY_RATE_LIMIT_DOUG, RELAY_RATE_LIMIT_HARVEY,
+ *     RELAY_RATE_LIMIT_THEO, RELAY_RATE_LIMIT_CASPER
  *
- * All relay calls are logged to console for auditability.
+ * Every call is persisted to the relay_calls table.
+ *
+ * Error shape: { success: false, error: string, code: string, field?: string }
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { validateAIAuth } from '@/lib/doug-auth'
+import { validateAIAuth, AIAssistant } from '@/lib/doug-auth'
+import { prisma } from '@/lib/prisma'
 
 // ─── Rate limiting ────────────────────────────────────────────────────────────
-// Simple in-memory window counter. Resets on Vercel cold start.
-const RATE_LIMIT = 120          // requests per window
-const WINDOW_MS  = 60 * 1000    // 1 minute
+const DEFAULT_RATE_LIMIT = 60       // requests per window
+const WINDOW_MS          = 60_000   // 1 minute
+
+// Per-bot limits — configurable via env vars
+function getBotRateLimit(bot: AIAssistant): number {
+  const envKey = `RELAY_RATE_LIMIT_${bot.toUpperCase()}`
+  const envVal = process.env[envKey]
+  if (envVal) {
+    const n = parseInt(envVal, 10)
+    if (!isNaN(n) && n > 0) return n
+  }
+  return DEFAULT_RATE_LIMIT
+}
 
 interface RateBucket { count: number; resetAt: number }
+// Key: bot name (not token — buckets survive token rotation)
 const rateBuckets = new Map<string, RateBucket>()
 
-function checkRateLimit(token: string): { ok: boolean; remaining: number } {
-  const now = Date.now()
-  const bucket = rateBuckets.get(token)
+function checkRateLimit(bot: AIAssistant): { ok: boolean; remaining: number; limit: number } {
+  const limit = getBotRateLimit(bot)
+  const now   = Date.now()
+  const bucket = rateBuckets.get(bot)
 
   if (!bucket || now > bucket.resetAt) {
-    rateBuckets.set(token, { count: 1, resetAt: now + WINDOW_MS })
-    return { ok: true, remaining: RATE_LIMIT - 1 }
+    rateBuckets.set(bot, { count: 1, resetAt: now + WINDOW_MS })
+    return { ok: true, remaining: limit - 1, limit }
   }
 
   bucket.count++
-  const remaining = RATE_LIMIT - bucket.count
-  if (bucket.count > RATE_LIMIT) {
-    return { ok: false, remaining: 0 }
+  const remaining = limit - bucket.count
+  if (bucket.count > limit) {
+    return { ok: false, remaining: 0, limit }
   }
-  return { ok: true, remaining }
+  return { ok: true, remaining, limit }
 }
 
-// ─── Allowed path prefix ──────────────────────────────────────────────────────
+// ─── Path guardrails ──────────────────────────────────────────────────────────
 const ALLOWED_PREFIX = '/api/'
-
-// Endpoints the relay must never forward (prevent self-loops and auth bypass)
-const BLOCKED_PATHS = ['/api/relay', '/api/auth']
+const BLOCKED_PATHS  = ['/api/relay', '/api/auth']
 
 // ─── Handler ──────────────────────────────────────────────────────────────────
 export const dynamic = 'force-dynamic'
@@ -61,33 +79,48 @@ export const dynamic = 'force-dynamic'
 export async function POST(request: NextRequest) {
   const startMs = Date.now()
 
-  // 1. Auth — validate bearer token
+  // 1. Auth — resolve bearer token to a known bot
   const auth = validateAIAuth(request)
   if (!auth.valid) {
     return NextResponse.json(
-      { success: false, error: auth.disabled ? 'Agent access is currently disabled.' : 'Unauthorized — invalid or missing Bearer token.' },
+      {
+        success: false,
+        error:   auth.disabled
+          ? 'Agent access is currently disabled.'
+          : 'Unauthorized — invalid or missing Bearer token.',
+        code: auth.disabled ? 'AGENT_DISABLED' : 'UNAUTHORIZED',
+      },
       { status: auth.disabled ? 503 : 401 }
     )
   }
 
-  // 2. Rate limit per token
-  const rawAuth = request.headers.get('authorization') ?? ''
-  const token = rawAuth.startsWith('Bearer ') ? rawAuth.slice(7) : rawAuth
-  const { ok: withinLimit, remaining } = checkRateLimit(token)
+  const actor = auth.assistant as AIAssistant
+
+  // 2. Per-bot rate limit
+  const { ok: withinLimit, remaining, limit } = checkRateLimit(actor)
   if (!withinLimit) {
-    console.warn(`[relay] Rate limit exceeded — agent: ${auth.assistant}`)
+    console.warn(`[relay] rate limit exceeded — actor: ${actor} (limit: ${limit}/min)`)
     return NextResponse.json(
-      { success: false, error: 'Rate limit exceeded. Max 120 requests/minute.' },
+      {
+        success: false,
+        error:   `Rate limit exceeded. Max ${limit} requests/minute for ${actor}.`,
+        code:    'RATE_LIMIT_EXCEEDED',
+      },
       { status: 429, headers: { 'Retry-After': '60' } }
     )
   }
 
   // 3. Parse relay envelope
-  let envelope: { method?: string; path?: string; query?: Record<string, string>; body?: any }
+  let envelope: { method?: string; path?: string; query?: Record<string, string>; body?: unknown }
+  let rawBody = ''
   try {
-    envelope = await request.json()
+    rawBody  = await request.text()
+    envelope = rawBody ? JSON.parse(rawBody) : {}
   } catch {
-    return NextResponse.json({ success: false, error: 'Invalid JSON body.' }, { status: 400 })
+    return NextResponse.json(
+      { success: false, error: 'Invalid JSON body.', code: 'INVALID_JSON' },
+      { status: 400 }
+    )
   }
 
   const method = (envelope.method ?? 'GET').toUpperCase()
@@ -98,13 +131,23 @@ export async function POST(request: NextRequest) {
   // 4. Validate path
   if (!path.startsWith(ALLOWED_PREFIX)) {
     return NextResponse.json(
-      { success: false, error: `path must start with "${ALLOWED_PREFIX}". Got: "${path}"` },
+      {
+        success: false,
+        error:   `path must start with "${ALLOWED_PREFIX}". Got: "${path}"`,
+        code:    'INVALID_PATH',
+        field:   'path',
+      },
       { status: 400 }
     )
   }
   if (BLOCKED_PATHS.some(blocked => path.startsWith(blocked))) {
     return NextResponse.json(
-      { success: false, error: `path "${path}" is not permitted through the relay.` },
+      {
+        success: false,
+        error:   `path "${path}" is not permitted through the relay.`,
+        code:    'BLOCKED_PATH',
+        field:   'path',
+      },
       { status: 403 }
     )
   }
@@ -113,23 +156,32 @@ export async function POST(request: NextRequest) {
   const ALLOWED_METHODS = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
   if (!ALLOWED_METHODS.includes(method)) {
     return NextResponse.json(
-      { success: false, error: `method must be one of: ${ALLOWED_METHODS.join(', ')}` },
+      {
+        success: false,
+        error:   `method must be one of: ${ALLOWED_METHODS.join(', ')}`,
+        code:    'INVALID_METHOD',
+        field:   'method',
+      },
       { status: 400 }
     )
   }
 
   // 6. Build target URL
-  const base = new URL(request.url).origin   // e.g. https://zebi.app
+  const base = new URL(request.url).origin
   const url  = new URL(path, base)
   for (const [k, v] of Object.entries(query)) {
     url.searchParams.set(k, String(v))
   }
 
-  // 7. Forward request
+  // 7. Forward — inject X-Actor-Agent so downstream routes can stamp authorAgent
+  const rawAuth = request.headers.get('authorization') ?? ''
+  const token   = rawAuth.startsWith('Bearer ') ? rawAuth.slice(7) : rawAuth
+
   const forwardHeaders: HeadersInit = {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type':  'application/json',
-    'X-Relay-Agent': auth.assistant ?? 'unknown',
+    'Authorization':  `Bearer ${token}`,
+    'Content-Type':   'application/json',
+    'X-Actor-Agent':  actor,        // consumed by downstream writes to stamp authorAgent
+    'X-Relay-Agent':  actor,        // legacy alias — keep both for compatibility
   }
 
   const fetchOptions: RequestInit = {
@@ -140,35 +192,105 @@ export async function POST(request: NextRequest) {
       : {}),
   }
 
-  // 8. Audit log
-  console.log(`[relay] ${method} ${url.pathname}${url.search} — agent: ${auth.assistant} — remaining: ${remaining}/min`)
+  // 8. Structured console log (before fetch so we capture even on error)
+  console.log(
+    `[relay] → ${method} ${url.pathname}${url.search} | actor=${actor} remaining=${remaining}/${limit}`
+  )
 
   let upstreamResponse: Response
+  let responseText = ''
+  let statusCode   = 502
+  let success      = false
+  let errorCode: string | undefined
+
   try {
     upstreamResponse = await fetch(url.toString(), fetchOptions)
+    responseText     = await upstreamResponse.text()
+    statusCode       = upstreamResponse.status
+    success          = statusCode >= 200 && statusCode < 300
+    if (!success) {
+      // Try to extract structured error code from upstream
+      try {
+        const parsed = JSON.parse(responseText)
+        errorCode = parsed.code ?? String(statusCode)
+      } catch {
+        errorCode = String(statusCode)
+      }
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error(`[relay] fetch error: ${msg}`)
+    errorCode = 'UPSTREAM_ERROR'
+
+    // Still log the failed call
+    const durationMs = Date.now() - startMs
+    void persistRelayCall({
+      actor, method, path: url.pathname, statusCode: 502,
+      latencyMs: durationMs, requestSize: rawBody.length, responseSize: 0,
+      success: false, errorCode,
+    })
+
     return NextResponse.json(
-      { success: false, error: `Relay fetch failed: ${msg}` },
+      { success: false, error: `Relay fetch failed: ${msg}`, code: 'UPSTREAM_ERROR' },
       { status: 502 }
     )
   }
 
-  // 9. Stream response body back exactly
-  const responseText = await upstreamResponse.text()
-  const durationMs   = Date.now() - startMs
+  const durationMs = Date.now() - startMs
+  console.log(
+    `[relay] ← ${statusCode} ${method} ${url.pathname} | actor=${actor} latency=${durationMs}ms`
+  )
 
-  console.log(`[relay] ← ${upstreamResponse.status} ${method} ${url.pathname} (${durationMs}ms) — agent: ${auth.assistant}`)
+  // 9. Persist call log (non-blocking — don't slow the response)
+  void persistRelayCall({
+    actor, method, path: url.pathname, statusCode,
+    latencyMs: durationMs,
+    requestSize:  rawBody.length,
+    responseSize: responseText.length,
+    success, errorCode,
+  })
 
-  // Return with exact upstream status + Content-Type
+  // 10. Return upstream response exactly
   const contentType = upstreamResponse.headers.get('content-type') ?? 'application/json'
   return new NextResponse(responseText, {
-    status: upstreamResponse.status,
+    status: statusCode,
     headers: {
-      'Content-Type':    contentType,
+      'Content-Type':     contentType,
       'X-Relay-Duration': `${durationMs}ms`,
-      'X-Relay-Agent':    auth.assistant ?? 'unknown',
+      'X-Relay-Agent':    actor,
+      'X-Actor-Agent':    actor,
     },
   })
+}
+
+// ─── DB persistence ───────────────────────────────────────────────────────────
+async function persistRelayCall(params: {
+  actor:        string
+  method:       string
+  path:         string
+  statusCode:   number
+  latencyMs:    number
+  requestSize:  number
+  responseSize: number
+  success:      boolean
+  errorCode?:   string
+}) {
+  try {
+    await prisma.relayCall.create({
+      data: {
+        actor:        params.actor,
+        method:       params.method,
+        path:         params.path,
+        statusCode:   params.statusCode,
+        latencyMs:    params.latencyMs,
+        requestSize:  params.requestSize,
+        responseSize: params.responseSize,
+        success:      params.success,
+        ...(params.errorCode ? { errorCode: params.errorCode } : {}),
+      },
+    })
+  } catch (err) {
+    // Never let DB logging failures break the relay
+    console.error('[relay] failed to persist call log:', err)
+  }
 }

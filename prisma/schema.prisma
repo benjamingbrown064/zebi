@@ -1674,4 +1674,25 @@ model AgentKnowledgeLink {
   @@map("agent_knowledge_links")
 }
 
+// ==================== RELAY CALL LOG ====================
+
+model RelayCall {
+  id           String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  actor        String   @db.Text          // "doug" | "harvey" | "theo" | "casper"
+  method       String   @db.Text          // GET | POST | PATCH | PUT | DELETE
+  path         String   @db.Text          // e.g. /api/tasks/direct
+  statusCode   Int
+  latencyMs    Int
+  requestSize  Int      @default(0)       // bytes
+  responseSize Int      @default(0)       // bytes
+  success      Boolean
+  errorCode    String?  @db.Text          // structured error code if failed
+  calledAt     DateTime @default(now()) @db.Timestamptz()
+
+  @@index([actor])
+  @@index([calledAt])
+  @@index([path])
+  @@map("relay_calls")
+}
+
 // Force Prisma regeneration Mon Apr  7 15:30:00 GMT 2026
