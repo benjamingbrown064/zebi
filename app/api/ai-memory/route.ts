@@ -77,7 +77,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'confidenceScore must be between 1 and 10' }, { status: 400 })
     }
 
-    const memory = await createAIMemory(workspaceId, PLACEHOLDER_USER_ID, body)
+    // Resolve bot identity from X-Actor-Agent header (set by relay) or body
+    const actorAgent = request.headers.get('x-actor-agent') || body.authorAgent || undefined
+    const actorType: string = body.authorType || (actorAgent ? 'agent' : 'user')
+
+    const memory = await createAIMemory(workspaceId, PLACEHOLDER_USER_ID, {
+      ...body,
+      authorAgent: actorAgent,
+      authorType:  actorType,
+    })
     return NextResponse.json(memory, { status: 201 })
   } catch (error) {
     console.error('Error in POST /api/ai-memory:', error)
