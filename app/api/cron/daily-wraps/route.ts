@@ -152,6 +152,7 @@ export async function GET(request: NextRequest) {
             memoryType:     'summary',
             entryType:      'daily_wrap',
             authorAgent:    agent,
+            authorType:     'agent',
             createdBy:      agent,
             date:           dateStr,
             title:          `${agent.charAt(0).toUpperCase() + agent.slice(1)} — Daily Wrap ${dateStr}`,

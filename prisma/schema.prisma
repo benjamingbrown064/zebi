@@ -589,13 +589,15 @@ model Goal {
 }
 
 model GoalProgressEntry {
-  id        String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
-  goalId    String   @db.Text
-  value     Decimal
-  entryDate DateTime @db.Date()
-  note      String?
-  createdBy String   @db.Uuid
-  createdAt DateTime @default(now()) @db.Timestamptz()
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.Text
+  goalId      String   @db.Text
+  value       Decimal
+  entryDate   DateTime @db.Date()
+  note        String?
+  createdBy   String   @db.Uuid
+  authorAgent String?  @db.Text  // agent id if created by a bot
+  authorType  String   @default("user") // "user" | "agent" | "system"
+  createdAt   DateTime @default(now()) @db.Timestamptz()
 
   goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
 
@@ -681,6 +683,8 @@ model Note {
   summary     String?  @db.Text
   noteType    String   @default("general") // general, strategy, plan, meeting, briefing, ops, partnership
   author      String?  @db.Text
+  authorAgent String?  @db.Text  // agent id if created by a bot: "doug" | "harvey" | "theo" | "casper"
+  authorType  String   @default("user") // "user" | "agent" | "system"
 
   companyId   String?  @db.Text
   projectId   String?  @db.Text
@@ -720,6 +724,7 @@ model AIMemory {
   source          String?
   createdBy       String?  @db.Text // "doug", "harvey", user UUID, or null
   authorAgent     String?  @db.Text // explicit agent: "harvey" | "theo" | "doug" | "casper"
+  authorType      String   @default("user") // "user" | "agent" | "system"
   entryType       String?  @db.Text // "daily_wrap" | "progress" | "blocker" | "decision" | "handoff" | "note" | "routine"
   // Structured daily wrap fields
   completed       Json?    // array of completed items
@@ -912,6 +917,8 @@ model TaskComment {
   workspaceId String   @db.Text
   bodyRich    Json
   createdBy   String   @db.Uuid
+  authorAgent String?  @db.Text  // agent id if created by a bot: "doug" | "harvey" | "theo" | "casper"
+  authorType  String   @default("user") // "user" | "agent" | "system"
   createdAt   DateTime @default(now()) @db.Timestamptz()
   updatedAt   DateTime @updatedAt @db.Timestamptz()
 
@@ -920,6 +927,7 @@ model TaskComment {
 
   @@index([taskId])
   @@index([workspaceId])
+  @@index([authorAgent])
 }
 
 // ==================== ATTACHMENTS ====================

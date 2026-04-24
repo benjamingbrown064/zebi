@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     let workspaceId: string;
 
     const body = await request.json();
-    const { title, body: noteBody, summary, noteType, author, companyId, projectId, objectiveId, taskId } = body;
+    const { title, body: noteBody, summary, noteType, author, authorAgent, authorType, companyId, projectId, objectiveId, taskId } = body;
 
     if (auth.valid) {
       if (!body.workspaceId) return NextResponse.json({ success: false, error: 'workspaceId is required' }, { status: 400 });
@@ -95,6 +95,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'title is required' }, { status: 400 });
     }
 
+    // Resolve author identity from relay header if not provided in body
+    const resolvedAuthorAgent = authorAgent || request.headers.get('x-actor-agent') || null
+    const resolvedAuthorType  = authorType  || (resolvedAuthorAgent ? 'agent' : 'user')
+
     const noteData = {
       workspaceId,
       title,
@@ -102,6 +106,8 @@ export async function POST(request: NextRequest) {
       summary: summary || null,
       noteType: noteType || 'general',
       author: author || null,
+      authorAgent: resolvedAuthorAgent,
+      authorType: resolvedAuthorType,
       companyId: companyId || null,
       projectId: projectId || null,
       objectiveId: objectiveId || null,

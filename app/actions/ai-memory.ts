@@ -16,6 +16,7 @@ export interface AIMemory {
   updatedAt: Date
   createdBy: string | null // "doug", "harvey", user UUID, or null
   authorAgent: string | null
+  authorType: string        // "user" | "agent" | "system"
   entryType: string | null
   date: string | null
   tags: string[]
@@ -40,6 +41,7 @@ export interface CreateAIMemoryInput {
   memoryType: string
   entryType?: string
   authorAgent?: string
+  authorType?: string  // "user" | "agent" | "system"
   title: string
   description: string
   confidenceScore: number
@@ -184,6 +186,7 @@ export async function createAIMemory(
         memoryType:     input.memoryType,
         entryType:      input.entryType   || 'note',
         authorAgent:    input.authorAgent || null,
+        authorType:     input.authorType  || (input.authorAgent ? 'agent' : 'user'),
         title:          input.title,
         description:    input.description,
         confidenceScore: input.confidenceScore,

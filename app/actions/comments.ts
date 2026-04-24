@@ -9,6 +9,8 @@ export interface TaskComment {
   workspaceId: string
   body: string
   createdBy: string
+  authorAgent?: string | null
+  authorType?: string
   createdAt: string
   updatedAt: string
 }
@@ -52,7 +54,9 @@ export async function createComment(
   workspaceId: string,
   userId: string,
   body: string,
-  workspaceMembers?: User[]
+  workspaceMembers?: User[],
+  authorAgent?: string | null,
+  authorType?: string
 ): Promise<TaskComment | null> {
   try {
     // SECURITY: Verify task belongs to workspace
@@ -66,12 +70,14 @@ export async function createComment(
     }
 
     // Store body as JSON with text field for compatibility with bodyRich schema
+    const resolvedAuthorType = authorType || (authorAgent ? 'agent' : 'user')
     const comment = await prisma.taskComment.create({
       data: {
         taskId,
         workspaceId,
         createdBy: userId,
         bodyRich: { text: body },
+        ...(authorAgent ? { authorAgent, authorType: resolvedAuthorType } : { authorType: 'user' }),
       }
     })
 
@@ -89,6 +95,8 @@ export async function createComment(
       workspaceId: comment.workspaceId,
       body,
       createdBy: comment.createdBy,
+      authorAgent: comment.authorAgent ?? null,
+      authorType: comment.authorType,
       createdAt: comment.createdAt.toISOString(),
       updatedAt: comment.updatedAt.toISOString(),
     }
