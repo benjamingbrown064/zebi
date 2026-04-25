@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAIAuth } from '@/lib/doug-auth'
+import { requireWorkspace } from '@/lib/workspace'
 import { getServerSupabaseClient } from '@/lib/supabase'
 import { prisma } from '@/lib/prisma'
 
@@ -68,19 +69,18 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = validateAIAuth(request)
-  if (!auth.valid) {
-    return NextResponse.json(
-      { error: auth.disabled ? 'Agent work is disabled' : 'Unauthorized' },
-      { status: 401 }
-    )
-  }
-
   const { id: stackId } = await params
   const { searchParams } = new URL(request.url)
-  const workspaceId = searchParams.get('workspaceId')
 
-  if (!workspaceId) {
-    return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+  let workspaceId: string
+  if (auth.valid) {
+    const wid = searchParams.get('workspaceId')
+    if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+    workspaceId = wid
+  } else {
+    try { workspaceId = await requireWorkspace() } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
   }
 
   try {
@@ -103,13 +103,6 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = validateAIAuth(request)
-  if (!auth.valid) {
-    return NextResponse.json(
-      { error: auth.disabled ? 'Agent work is disabled' : 'Unauthorized' },
-      { status: 401 }
-    )
-  }
-
   const { id: stackId } = await params
 
   let body: Record<string, unknown>
@@ -119,8 +112,18 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 422 })
   }
 
+  let resolvedWorkspaceId: string
+  if (auth.valid) {
+    if (!body.workspaceId) return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+    resolvedWorkspaceId = body.workspaceId as string
+  } else {
+    try { resolvedWorkspaceId = await requireWorkspace() } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+  }
+
   const {
-    workspaceId,
+    workspaceId = resolvedWorkspaceId,
     name,
     provider,
     companyId,
@@ -254,19 +257,18 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = validateAIAuth(request)
-  if (!auth.valid) {
-    return NextResponse.json(
-      { error: auth.disabled ? 'Agent work is disabled' : 'Unauthorized' },
-      { status: 401 }
-    )
-  }
-
   const { id: stackId } = await params
   const { searchParams } = new URL(request.url)
-  const workspaceId = searchParams.get('workspaceId')
 
-  if (!workspaceId) {
-    return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+  let workspaceId: string
+  if (auth.valid) {
+    const wid = searchParams.get('workspaceId')
+    if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+    workspaceId = wid
+  } else {
+    try { workspaceId = await requireWorkspace() } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
   }
 
   try {

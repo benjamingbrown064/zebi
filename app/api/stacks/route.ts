@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAIAuth } from '@/lib/doug-auth'
+import { requireWorkspace } from '@/lib/workspace'
 import { getServerSupabaseClient } from '@/lib/supabase'
 import { prisma } from '@/lib/prisma'
 
@@ -39,22 +40,25 @@ function secretMetadata(row: Record<string, unknown>) {
 
 export async function GET(request: NextRequest) {
   const auth = validateAIAuth(request)
-  if (!auth.valid) {
-    return NextResponse.json(
-      { error: auth.disabled ? 'Agent work is disabled' : 'Unauthorized' },
-      { status: 401 }
-    )
-  }
-
   const { searchParams } = new URL(request.url)
-  const workspaceId = searchParams.get('workspaceId')
-  const companyId   = searchParams.get('companyId')
-  const projectId   = searchParams.get('projectId')
   const provider    = searchParams.get('provider')
 
-  if (!workspaceId) {
-    return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+  let workspaceId: string
+  if (auth.valid) {
+    const wid = searchParams.get('workspaceId')
+    if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+    workspaceId = wid
+  } else {
+    try {
+      workspaceId = await requireWorkspace()
+    } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
   }
+
+  const companyId = searchParams.get('companyId')
+  const projectId = searchParams.get('projectId')
+
 
   if (provider && !VALID_PROVIDERS.includes(provider as ProviderType)) {
     return NextResponse.json({ error: `Invalid provider. Must be one of: ${VALID_PROVIDERS.join(', ')}` }, { status: 422 })
