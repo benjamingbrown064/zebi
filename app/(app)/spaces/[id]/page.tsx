@@ -1195,7 +1195,7 @@ function InfrastructureTab({ space, wsId }: { space: Space; wsId: string | null 
     if (!wsId) return
     setLoading(true)
     try {
-      const res = await fetch(`/api/stacks?workspaceId=${wsId}&companyId=${space.id}`)
+      const res = await fetch(`/api/stacks?workspaceId=${wsId}`)
       const d = await res.json()
       const all: Stack[] = d.stacks ?? []
       setStacks(all)
