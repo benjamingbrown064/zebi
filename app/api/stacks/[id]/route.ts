@@ -220,7 +220,7 @@ export async function PATCH(
 
     // Upsert secrets (rotation: new plaintext → new Vault entry)
     for (const s of secrets) {
-      const { data: vaultId, error: vaultErr } = await supabase.rpc('vault_store_secret', {
+      const { data: vaultId, error: vaultErr } = await supabase.rpc('vault_upsert_secret', {
         p_name: `${workspaceId}/${stackId}/${s.key}`,
         p_secret: s.plaintext,
       })
