@@ -80,6 +80,8 @@ export async function middleware(req: NextRequest) {
     '/api/doug',      // Doug AI Assistant API (uses DOUG_API_TOKEN auth)
     '/api/build',     // First-value flow — session-authenticated via Supabase cookie
     '/api/stacks',    // Stack CRUD — agent bearer token auth (Doug)
+    '/api/agents/enroll', // Agent bootstrap enrollment — X-Bootstrap-Token auth
+    '/api/agents',    // Agent profiles — public read + bearer token auth
   ]
   // Allow root path (landing page) without auth
   // Check if path starts with any public route
