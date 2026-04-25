@@ -11,24 +11,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAIAuth } from '@/lib/doug-auth'
 import { getServerSupabaseClient } from '@/lib/supabase'
-import { Pool } from 'pg'
-
-// ---------------------------------------------------------------------------
-// DB helpers
-// ---------------------------------------------------------------------------
-
-function getPool(): Pool {
-  const url = process.env.DATABASE_URL
-  if (!url) throw new Error('DATABASE_URL not set')
-  return new Pool({
-    connectionString: url,
-    ssl: { rejectUnauthorized: false },
-    max: 5,
-  })
-}
+import { prisma } from '@/lib/prisma'
 
 const VALID_PROVIDERS = ['supabase', 'vercel', 'railway', 'github', 'other'] as const
 const VALID_KINDS     = ['url', 'id', 'env_name', 'identifier', 'other'] as const
+
+type ProviderType = typeof VALID_PROVIDERS[number]
+type KindType = typeof VALID_KINDS[number]
 
 function secretMetadata(row: Record<string, unknown>) {
   return {
@@ -44,39 +33,29 @@ function secretMetadata(row: Record<string, unknown>) {
   }
 }
 
-async function fetchStackWithDetails(client: import('pg').PoolClient, stackId: string, workspaceId: string) {
-  const stackResult = await client.query(
-    `SELECT id, workspace_id, company_id, project_id, name, provider, description,
-            created_by, created_at, updated_at, archived_at
-       FROM stack
-      WHERE id = $1 AND workspace_id = $2`,
-    [stackId, workspaceId]
-  )
-  if (stackResult.rows.length === 0) return null
+async function fetchStackWithDetails(stackId: string, workspaceId: string) {
+  const stacks = await prisma.$queryRaw<Array<Record<string, unknown>>>`
+    SELECT id, workspace_id, company_id, project_id, name, provider, description,
+           created_by, created_at, updated_at, archived_at
+      FROM stack
+     WHERE id = ${stackId}::uuid AND workspace_id = ${workspaceId}`
 
-  const stack = stackResult.rows[0]
+  if (stacks.length === 0) return null
+  const stack = stacks[0]
 
-  const resourcesResult = await client.query(
-    `SELECT id, stack_id, key, value, kind, description, created_at, updated_at
-       FROM stack_resource
-      WHERE stack_id = $1
-      ORDER BY created_at ASC`,
-    [stackId]
-  )
+  const resources = await prisma.$queryRaw<Array<Record<string, unknown>>>`
+    SELECT id, stack_id, key, value, kind, description, created_at, updated_at
+      FROM stack_resource WHERE stack_id = ${stackId}::uuid ORDER BY created_at ASC`
 
-  const secretsResult = await client.query(
-    `SELECT id, stack_id, key, vault_secret_id, description,
-            last_rotated_at, rotation_interval_days, created_at, updated_at
-       FROM stack_secret
-      WHERE stack_id = $1
-      ORDER BY created_at ASC`,
-    [stackId]
-  )
+  const secrets = await prisma.$queryRaw<Array<Record<string, unknown>>>`
+    SELECT id, stack_id, key, vault_secret_id, description,
+           last_rotated_at, rotation_interval_days, created_at, updated_at
+      FROM stack_secret WHERE stack_id = ${stackId}::uuid ORDER BY created_at ASC`
 
   return {
     ...stack,
-    resources: resourcesResult.rows,
-    secrets:   secretsResult.rows.map(secretMetadata),
+    resources,
+    secrets: secrets.map(secretMetadata),
   }
 }
 
@@ -104,21 +83,14 @@ export async function GET(
     return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
   }
 
-  const pool = getPool()
-  const client = await pool.connect()
   try {
-    const stack = await fetchStackWithDetails(client, stackId, workspaceId)
-    if (!stack) {
-      return NextResponse.json({ error: 'Stack not found' }, { status: 404 })
-    }
+    const stack = await fetchStackWithDetails(stackId, workspaceId)
+    if (!stack) return NextResponse.json({ error: 'Stack not found' }, { status: 404 })
     return NextResponse.json({ stack })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[GET /api/stacks/:id]', message)
     return NextResponse.json({ error: 'Failed to fetch stack' }, { status: 500 })
-  } finally {
-    client.release()
-    await pool.end()
   }
 }
 
@@ -154,9 +126,9 @@ export async function PATCH(
     companyId,
     projectId,
     description,
-    resources = [],  // upsert: existing key → update, new key → insert
+    resources = [],
     removeResourceIds = [],
-    secrets = [],    // add or rotate: existing key → new vault entry, new key → insert
+    secrets = [],
     removeSecretIds = [],
   } = body as {
     workspaceId: string
@@ -174,14 +146,14 @@ export async function PATCH(
   if (!workspaceId) {
     return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
   }
-  if (provider && !VALID_PROVIDERS.includes(provider as typeof VALID_PROVIDERS[number])) {
+  if (provider && !VALID_PROVIDERS.includes(provider as ProviderType)) {
     return NextResponse.json({ error: `provider must be one of: ${VALID_PROVIDERS.join(', ')}` }, { status: 422 })
   }
   for (const r of resources) {
     if (!r.key || !r.value || !r.kind) {
       return NextResponse.json({ error: 'Each resource must have key, value, and kind' }, { status: 422 })
     }
-    if (!VALID_KINDS.includes(r.kind as typeof VALID_KINDS[number])) {
+    if (!VALID_KINDS.includes(r.kind as KindType)) {
       return NextResponse.json({ error: `Resource kind must be one of: ${VALID_KINDS.join(', ')}` }, { status: 422 })
     }
   }
@@ -192,129 +164,84 @@ export async function PATCH(
   }
 
   const supabase = getServerSupabaseClient()
-  const pool = getPool()
-  const client = await pool.connect()
 
   try {
-    await client.query('BEGIN')
-
-    // Verify stack ownership
-    const ownerCheck = await client.query(
-      `SELECT id FROM stack WHERE id = $1 AND workspace_id = $2 AND archived_at IS NULL`,
-      [stackId, workspaceId]
-    )
-    if (ownerCheck.rows.length === 0) {
-      await client.query('ROLLBACK')
+    // Verify ownership
+    const ownerCheck = await prisma.$queryRaw<Array<{ id: string }>>`
+      SELECT id FROM stack WHERE id = ${stackId}::uuid AND workspace_id = ${workspaceId} AND archived_at IS NULL`
+    if (ownerCheck.length === 0) {
       return NextResponse.json({ error: 'Stack not found' }, { status: 404 })
     }
 
-    // Update stack fields (only what was provided)
+    // Update stack scalar fields
     const updates: string[] = ['updated_at = NOW()']
-    const updateParams: unknown[] = []
-
-    if (name !== undefined) {
-      updateParams.push(name)
-      updates.push(`name = $${updateParams.length}`)
-    }
-    if (provider !== undefined) {
-      updateParams.push(provider)
-      updates.push(`provider = $${updateParams.length}`)
-    }
-    if ('companyId' in body) {
-      updateParams.push(companyId ?? null)
-      updates.push(`company_id = $${updateParams.length}`)
-    }
-    if ('projectId' in body) {
-      updateParams.push(projectId ?? null)
-      updates.push(`project_id = $${updateParams.length}`)
-    }
-    if ('description' in body) {
-      updateParams.push(description ?? null)
-      updates.push(`description = $${updateParams.length}`)
-    }
+    if (name !== undefined)         updates.push(`name = '${name.replace(/'/g, "''")}'`)
+    if (provider !== undefined)     updates.push(`provider = '${provider}'`)
+    if ('companyId' in body)        updates.push(`company_id = ${companyId ? `'${companyId}'` : 'NULL'}`)
+    if ('projectId' in body)        updates.push(`project_id = ${projectId ? `'${projectId}'` : 'NULL'}`)
+    if ('description' in body)      updates.push(`description = ${description ? `'${description.replace(/'/g, "''")}'` : 'NULL'}`)
 
     if (updates.length > 1) {
-      updateParams.push(stackId)
-      await client.query(
-        `UPDATE stack SET ${updates.join(', ')} WHERE id = $${updateParams.length}`,
-        updateParams
+      await prisma.$queryRawUnsafe(
+        `UPDATE stack SET ${updates.join(', ')} WHERE id = '${stackId}'`
       )
     }
 
     // Remove resources
     if (removeResourceIds.length > 0) {
-      const placeholders = removeResourceIds.map((_: unknown, i: number) => `$${i + 2}`).join(', ')
-      await client.query(
-        `DELETE FROM stack_resource WHERE stack_id = $1 AND id IN (${placeholders})`,
-        [stackId, ...removeResourceIds]
+      const ids = removeResourceIds.map(id => `'${id}'`).join(', ')
+      await prisma.$queryRawUnsafe(
+        `DELETE FROM stack_resource WHERE stack_id = '${stackId}' AND id IN (${ids})`
       )
     }
 
-    // Upsert resources (insert or update by key)
+    // Upsert resources
     for (const r of resources) {
-      await client.query(
-        `INSERT INTO stack_resource (stack_id, key, value, kind, description)
-         VALUES ($1, $2, $3, $4, $5)
-         ON CONFLICT (stack_id, key) DO UPDATE
-           SET value = EXCLUDED.value,
-               kind = EXCLUDED.kind,
-               description = EXCLUDED.description,
-               updated_at = NOW()`,
-        [stackId, r.key, r.value, r.kind, r.description || null]
-      )
+      await prisma.$queryRaw`
+        INSERT INTO stack_resource (stack_id, key, value, kind, description)
+        VALUES (${stackId}::uuid, ${r.key}, ${r.value}, ${r.kind}, ${r.description ?? null})
+        ON CONFLICT (stack_id, key) DO UPDATE
+          SET value = EXCLUDED.value,
+              kind = EXCLUDED.kind,
+              description = EXCLUDED.description,
+              updated_at = NOW()`
     }
 
-    // Remove secrets (soft: just delete the metadata row; Vault entry remains for audit)
+    // Remove secrets
     if (removeSecretIds.length > 0) {
-      const placeholders = removeSecretIds.map((_: unknown, i: number) => `$${i + 2}`).join(', ')
-      await client.query(
-        `DELETE FROM stack_secret WHERE stack_id = $1 AND id IN (${placeholders})`,
-        [stackId, ...removeSecretIds]
+      const ids = removeSecretIds.map(id => `'${id}'`).join(', ')
+      await prisma.$queryRawUnsafe(
+        `DELETE FROM stack_secret WHERE stack_id = '${stackId}' AND id IN (${ids})`
       )
     }
 
-    // Upsert secrets — new plaintext → new Vault entry (rotation)
+    // Upsert secrets (rotation: new plaintext → new Vault entry)
     for (const s of secrets) {
       const { data: vaultId, error: vaultErr } = await supabase.rpc('vault_store_secret', {
         p_name: `${workspaceId}/${stackId}/${s.key}`,
         p_secret: s.plaintext,
       })
       if (vaultErr || !vaultId) {
-        await client.query('ROLLBACK')
         return NextResponse.json({ error: `Failed to store secret "${s.key}" in Vault` }, { status: 500 })
       }
       // plaintext dropped here
-      await client.query(
-        `INSERT INTO stack_secret (stack_id, key, vault_secret_id, description, rotation_interval_days, last_rotated_at)
-         VALUES ($1, $2, $3, $4, $5, NOW())
-         ON CONFLICT (stack_id, key) DO UPDATE
-           SET vault_secret_id = EXCLUDED.vault_secret_id,
-               description = COALESCE(EXCLUDED.description, stack_secret.description),
-               rotation_interval_days = COALESCE(EXCLUDED.rotation_interval_days, stack_secret.rotation_interval_days),
-               last_rotated_at = NOW(),
-               updated_at = NOW()`,
-        [stackId, s.key, vaultId, s.description || null, s.rotation_interval_days || null]
-      )
+      await prisma.$queryRaw`
+        INSERT INTO stack_secret (stack_id, key, vault_secret_id, description, rotation_interval_days, last_rotated_at)
+        VALUES (${stackId}::uuid, ${s.key}, ${vaultId}::uuid, ${s.description ?? null}, ${s.rotation_interval_days ?? null}, NOW())
+        ON CONFLICT (stack_id, key) DO UPDATE
+          SET vault_secret_id = EXCLUDED.vault_secret_id,
+              description = COALESCE(EXCLUDED.description, stack_secret.description),
+              rotation_interval_days = COALESCE(EXCLUDED.rotation_interval_days, stack_secret.rotation_interval_days),
+              last_rotated_at = NOW(),
+              updated_at = NOW()`
     }
 
-    await client.query('COMMIT')
-
-    // Return updated stack
-    const clientForRead = await pool.connect()
-    try {
-      const updated = await fetchStackWithDetails(clientForRead, stackId, workspaceId)
-      return NextResponse.json({ success: true, stack: updated })
-    } finally {
-      clientForRead.release()
-    }
+    const updated = await fetchStackWithDetails(stackId, workspaceId)
+    return NextResponse.json({ success: true, stack: updated })
   } catch (err: unknown) {
-    await client.query('ROLLBACK')
     const message = err instanceof Error ? err.message : String(err)
     console.error('[PATCH /api/stacks/:id]', message)
     return NextResponse.json({ error: 'Failed to update stack' }, { status: 500 })
-  } finally {
-    client.release()
-    await pool.end()
   }
 }
 
@@ -342,29 +269,22 @@ export async function DELETE(
     return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
   }
 
-  const pool = getPool()
-  const client = await pool.connect()
   try {
-    const result = await client.query(
-      `UPDATE stack
-          SET archived_at = NOW(), updated_at = NOW()
-        WHERE id = $1 AND workspace_id = $2 AND archived_at IS NULL
-        RETURNING id, name, archived_at`,
-      [stackId, workspaceId]
-    )
+    const result = await prisma.$queryRaw<Array<Record<string, unknown>>>`
+      UPDATE stack
+         SET archived_at = NOW(), updated_at = NOW()
+       WHERE id = ${stackId}::uuid AND workspace_id = ${workspaceId} AND archived_at IS NULL
+       RETURNING id, name, archived_at`
 
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return NextResponse.json({ error: 'Stack not found' }, { status: 404 })
     }
 
     // Secrets remain in Vault for audit/recovery. Metadata rows stay too.
-    return NextResponse.json({ success: true, archived: result.rows[0] })
+    return NextResponse.json({ success: true, archived: result[0] })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[DELETE /api/stacks/:id]', message)
     return NextResponse.json({ error: 'Failed to archive stack' }, { status: 500 })
-  } finally {
-    client.release()
-    await pool.end()
   }
 }
