@@ -205,11 +205,14 @@ export async function POST(request: NextRequest) {
 
     // Insert resources
     const insertedResources: unknown[] = []
+    const stackIdStr = stack.id as string
     for (const r of resources) {
-      const res = await prisma.$queryRaw<Array<Record<string, unknown>>>`
-        INSERT INTO stack_resource (stack_id, key, value, kind, description)
-        VALUES (${stack.id}, ${r.key}, ${r.value}, ${r.kind}, ${r.description ?? null})
-        RETURNING id, stack_id, key, value, kind, description, created_at, updated_at`
+      const res = await prisma.$queryRawUnsafe<Array<Record<string, unknown>>>(
+        `INSERT INTO stack_resource (stack_id, key, value, kind, description)
+         VALUES ('${stackIdStr}'::uuid, $1, $2, $3, $4)
+         RETURNING id, stack_id, key, value, kind, description, created_at, updated_at`,
+        r.key, r.value, r.kind, r.description ?? null
+      )
       insertedResources.push(res[0])
     }
 
@@ -225,10 +228,12 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: `Failed to store secret "${s.key}" in Vault` }, { status: 500 })
       }
       // Plaintext is now in Vault. Store only the opaque vault_secret_id.
-      const secRes = await prisma.$queryRaw<Array<Record<string, unknown>>>`
-        INSERT INTO stack_secret (stack_id, key, vault_secret_id, description, rotation_interval_days)
-        VALUES (${stack.id}, ${s.key}, ${vaultId}::uuid, ${s.description ?? null}, ${s.rotation_interval_days ?? null})
-        RETURNING id, stack_id, key, vault_secret_id, description, last_rotated_at, rotation_interval_days, created_at, updated_at`
+      const secRes = await prisma.$queryRawUnsafe<Array<Record<string, unknown>>>(
+        `INSERT INTO stack_secret (stack_id, key, vault_secret_id, description, rotation_interval_days)
+         VALUES ('${stackIdStr}'::uuid, $1, $2::uuid, $3, $4)
+         RETURNING id, stack_id, key, vault_secret_id, description, last_rotated_at, rotation_interval_days, created_at, updated_at`,
+        s.key, vaultId, s.description ?? null, s.rotation_interval_days ?? null
+      )
       insertedSecretsMeta.push(secretMetadata(secRes[0]))
       // plaintext dropped here — never in response
     }
