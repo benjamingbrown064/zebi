@@ -1,14 +1,15 @@
 // Stack #5 — /api/stacks/[id]/secrets/[secretKey]/reveal
-// User-facing secret reveal endpoint (session auth, not agent bearer).
+// Secret reveal endpoint.
 //
 // POST /api/stacks/:id/secrets/:secretKey/reveal
 //
-// Auth: Supabase session cookie (requireWorkspace). Validates stack belongs to workspace.
-// Audit: vault_resolve_secret() writes an audit row internally (agent = "user:<userId>").
+// Auth: Supabase session cookie (requireWorkspace) OR agent bearer token (validateAIAuth).
+// Audit: vault_resolve_secret() writes an audit row internally.
 // Secret plaintext is returned once per request and never persisted.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { requireWorkspace } from '@/lib/workspace'
+import { validateAIAuth } from '@/lib/doug-auth'
 import { getServerSupabaseClient } from '@/lib/supabase'
 import { prisma } from '@/lib/prisma'
 
@@ -24,11 +25,26 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string; secretKey: string }> }
 ) {
+  const agentAuth = validateAIAuth(request)
   let workspaceId: string
-  try {
-    workspaceId = await requireWorkspace()
-  } catch {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  let callerLabel: string
+
+  if (agentAuth.valid && agentAuth.assistant) {
+    // Agent bearer token path — get workspaceId from body
+    let body: Record<string, unknown> = {}
+    try { body = await request.json() } catch { /* ignore */ }
+    const wid = body.workspaceId as string | undefined
+    if (!wid) return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+    workspaceId = wid
+    callerLabel = agentAuth.assistant
+  } else {
+    // User session path
+    try {
+      workspaceId = await requireWorkspace()
+      callerLabel = 'user'
+    } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
   }
 
   const { id: stackId, secretKey } = await params
@@ -55,7 +71,7 @@ export async function POST(
     const { data: plaintext, error: vaultErr } = await supabase.rpc('vault_resolve_secret', {
       p_vault_secret_id: vault_secret_id,
       p_audit_context: {
-        agent: `user`,
+        agent: callerLabel,
         task_id: null,
         ip,
       },
