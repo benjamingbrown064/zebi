@@ -79,6 +79,7 @@ export async function middleware(req: NextRequest) {
     '/api/brain-dump', // Brain Dump API (internal processing, no auth needed for server-to-server)
     '/api/doug',      // Doug AI Assistant API (uses DOUG_API_TOKEN auth)
     '/api/build',     // First-value flow — session-authenticated via Supabase cookie
+    '/api/stacks',    // Stack CRUD — agent bearer token auth (Doug)
   ]
   // Allow root path (landing page) without auth
   // Check if path starts with any public route
