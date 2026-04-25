@@ -58,16 +58,17 @@ interface Space {
   }
 }
 
-type TabId = 'overview' | 'work' | 'objectives' | 'projects' | 'agents' | 'docs' | 'intelligence'
+type TabId = 'overview' | 'work' | 'objectives' | 'projects' | 'agents' | 'docs' | 'intelligence' | 'infrastructure'
 
 const TABS: { id: TabId; label: string }[] = [
-  { id: 'overview',     label: 'Overview' },
-  { id: 'work',         label: 'Tasks' },
-  { id: 'objectives',   label: 'Objectives' },
-  { id: 'projects',     label: 'Projects' },
-  { id: 'agents',       label: 'Agents' },
-  { id: 'docs',         label: 'Docs & Notes' },
-  { id: 'intelligence', label: 'Intelligence' },
+  { id: 'overview',       label: 'Overview' },
+  { id: 'work',           label: 'Tasks' },
+  { id: 'objectives',     label: 'Objectives' },
+  { id: 'projects',       label: 'Projects' },
+  { id: 'agents',         label: 'Agents' },
+  { id: 'docs',           label: 'Docs & Notes' },
+  { id: 'intelligence',   label: 'Intelligence' },
+  { id: 'infrastructure', label: 'Infrastructure' },
 ]
 
 const AGENT_COLOURS: Record<string, string> = {
@@ -1030,6 +1031,622 @@ function DocsTab({ space, wsId, onRefresh }: { space: Space; wsId: string | null
   )
 }
 
+// ─── Tab: Infrastructure ─────────────────────────────────────────────────────
+
+const PROVIDER_LABELS: Record<string, string> = {
+  supabase: 'Supabase',
+  vercel:   'Vercel',
+  railway:  'Railway',
+  github:   'GitHub',
+  other:    'Other',
+}
+const PROVIDER_ORDER = ['supabase', 'vercel', 'railway', 'github', 'other']
+
+function ProviderBadge({ provider }: { provider: string }) {
+  const colours: Record<string, string> = {
+    supabase: '#3ECF8E20',
+    vercel:   '#00000015',
+    railway:  '#6B21A820',
+    github:   '#24292E20',
+    other:    '#A3A3A320',
+  }
+  const text: Record<string, string> = {
+    supabase: '#10B981',
+    vercel:   '#1A1A1A',
+    railway:  '#7C3AED',
+    github:   '#24292E',
+    other:    '#737373',
+  }
+  return (
+    <span
+      className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+      style={{ backgroundColor: colours[provider] || colours.other, color: text[provider] || text.other }}
+    >
+      {PROVIDER_LABELS[provider] || provider}
+    </span>
+  )
+}
+
+function ScopeBadge({ companyId, projectId }: { companyId: string | null; projectId: string | null }) {
+  const label = projectId ? 'Project' : companyId ? 'Space' : 'Workspace'
+  return (
+    <span className="text-[10px] font-medium text-[#737373] bg-[#F3F3F3] px-1.5 py-0.5 rounded">
+      {label}
+    </span>
+  )
+}
+
+interface Stack {
+  id: string
+  name: string
+  provider: string
+  description: string | null
+  company_id: string | null
+  project_id: string | null
+  resources: Array<{ key: string; value: string; kind: string; description: string | null }>
+  secrets: Array<{ id: string; key: string; vault_secret_id: string; description: string | null; last_rotated_at: string | null }>
+}
+
+function RevealModal({
+  stackId, secretKey, onClose,
+}: {
+  stackId: string
+  secretKey: string
+  onClose: () => void
+}) {
+  const [state, setState] = useState<'confirm' | 'loading' | 'revealed'>('confirm')
+  const [plaintext, setPlaintext] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [countdown, setCountdown] = useState(30)
+
+  const reveal = async () => {
+    setState('loading')
+    try {
+      const res = await fetch(`/api/stacks/${stackId}/secrets/${encodeURIComponent(secretKey)}/reveal`, { method: 'POST' })
+      const d = await res.json()
+      if (!res.ok) { setError(d.error || 'Failed to reveal'); setState('confirm'); return }
+      setPlaintext(d.plaintext)
+      setState('revealed')
+    } catch {
+      setError('Network error'); setState('confirm')
+    }
+  }
+
+  useEffect(() => {
+    if (state !== 'revealed') return
+    if (countdown <= 0) { onClose(); return }
+    const t = setTimeout(() => setCountdown(c => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [state, countdown, onClose])
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.5)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div className="bg-white rounded border border-[#E5E5E5] w-full max-w-md p-6" style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.18)' }}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[16px] font-bold text-[#1A1A1A]">Reveal Secret</h3>
+          <button onClick={onClose} className="text-[#A3A3A3] hover:text-[#1A1A1A]">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <p className="text-[12px] text-[#737373] font-mono mb-1">{secretKey}</p>
+
+        {state === 'confirm' && (
+          <>
+            <p className="text-[13px] text-[#474747] mb-5">
+              This will decrypt and display the secret value. The access will be recorded in the audit log.
+            </p>
+            {error && <p className="text-[12px] text-red-600 mb-3">{error}</p>}
+            <div className="flex gap-2">
+              <button
+                onClick={reveal}
+                className="flex-1 bg-[#1A1A1A] text-white text-[13px] font-medium py-2 rounded-md hover:bg-[#333] transition"
+              >
+                Reveal — I understand
+              </button>
+              <button onClick={onClose} className="px-4 py-2 text-[13px] text-[#737373] hover:bg-[#F3F3F3] rounded-md transition">
+                Cancel
+              </button>
+            </div>
+          </>
+        )}
+
+        {state === 'loading' && (
+          <div className="flex items-center justify-center py-8">
+            <div className="w-6 h-6 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" />
+          </div>
+        )}
+
+        {state === 'revealed' && plaintext && (
+          <>
+            <div className="bg-[#F9F9F9] border border-[#E5E5E5] rounded p-4 mb-4">
+              <p className="text-[13px] font-mono text-[#1A1A1A] break-all select-all">{plaintext}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] text-[#A3A3A3]">Clearing in {countdown}s</p>
+              <button onClick={onClose} className="text-[12px] text-[#737373] hover:text-[#1A1A1A] transition">Close now</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function InfrastructureTab({ space, wsId }: { space: Space; wsId: string | null }) {
+  const [stacks, setStacks] = useState<Stack[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedStack, setSelectedStack] = useState<Stack | null>(null)
+  const [showAddStack, setShowAddStack] = useState(false)
+  const [addingStack, setAddingStack] = useState(false)
+  const [showAddResource, setShowAddResource] = useState(false)
+  const [savingResource, setSavingResource] = useState(false)
+  const [showAddSecret, setShowAddSecret] = useState(false)
+  const [savingSecret, setSavingSecret] = useState(false)
+  const [revealSecret, setRevealSecret] = useState<string | null>(null)
+  const [deletingResource, setDeletingResource] = useState<string | null>(null)
+  const [deletingSecret, setDeletingSecret] = useState<string | null>(null)
+
+  const fetchStacks = useCallback(async () => {
+    if (!wsId) return
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/stacks?workspaceId=${wsId}&companyId=${space.id}`)
+      const d = await res.json()
+      const all: Stack[] = d.stacks ?? []
+      setStacks(all)
+      // If a stack is selected, refresh it from the updated list
+      setSelectedStack(sel => sel ? (all.find(s => s.id === sel.id) ?? null) : null)
+    } finally {
+      setLoading(false)
+    }
+  }, [wsId, space.id])
+
+  useEffect(() => { fetchStacks() }, [fetchStacks])
+
+  // Group by provider
+  const grouped: Record<string, Stack[]> = {}
+  for (const p of PROVIDER_ORDER) grouped[p] = []
+  for (const s of stacks) {
+    const key = PROVIDER_ORDER.includes(s.provider) ? s.provider : 'other'
+    grouped[key].push(s)
+  }
+  const hasStacks = stacks.length > 0
+
+  const handleAddStack = async (data: Record<string, string>) => {
+    if (!data.name?.trim() || !wsId) return
+    setAddingStack(true)
+    try {
+      const res = await fetch('/api/stacks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId: wsId,
+          companyId: data.scope === 'space' || data.scope === 'project' ? space.id : undefined,
+          name: data.name,
+          provider: data.provider || 'other',
+          description: data.description || undefined,
+        }),
+      })
+      if (res.ok) {
+        setShowAddStack(false)
+        await fetchStacks()
+      }
+    } finally {
+      setAddingStack(false)
+    }
+  }
+
+  const handleAddResource = async (data: Record<string, string>) => {
+    if (!selectedStack || !data.key?.trim() || !data.value?.trim() || !wsId) return
+    setSavingResource(true)
+    try {
+      await fetch(`/api/stacks/${selectedStack.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId: wsId,
+          resources: [{ key: data.key, value: data.value, kind: data.kind || 'identifier', description: data.description || undefined }],
+        }),
+      })
+      setShowAddResource(false)
+      await fetchStacks()
+    } finally {
+      setSavingResource(false)
+    }
+  }
+
+  const handleAddSecret = async (data: Record<string, string>) => {
+    if (!selectedStack || !data.key?.trim() || !data.plaintext?.trim() || !wsId) return
+    setSavingSecret(true)
+    try {
+      await fetch(`/api/stacks/${selectedStack.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId: wsId,
+          secrets: [{ key: data.key, plaintext: data.plaintext, description: data.description || undefined }],
+        }),
+      })
+      setShowAddSecret(false)
+      await fetchStacks()
+    } finally {
+      setSavingSecret(false)
+    }
+  }
+
+  const handleDeleteResource = async (resourceKey: string) => {
+    if (!selectedStack || !wsId) return
+    // Find resource ID — the API expects IDs but we store by key in the UI
+    // Re-fetch the stack raw to get IDs
+    setDeletingResource(resourceKey)
+    try {
+      const res = await fetch(`/api/stacks/${selectedStack.id}?workspaceId=${wsId}`)
+      const d = await res.json()
+      const resourceId = d.stack?.resources?.find((r: any) => r.key === resourceKey)?.id
+      if (!resourceId) return
+      await fetch(`/api/stacks/${selectedStack.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workspaceId: wsId, removeResourceIds: [resourceId] }),
+      })
+      await fetchStacks()
+    } finally {
+      setDeletingResource(null)
+    }
+  }
+
+  const handleDeleteSecret = async (secretKey: string) => {
+    if (!selectedStack || !wsId) return
+    setDeletingSecret(secretKey)
+    try {
+      const res = await fetch(`/api/stacks/${selectedStack.id}?workspaceId=${wsId}`)
+      const d = await res.json()
+      const secretId = d.stack?.secrets?.find((s: any) => s.key === secretKey)?.id
+      if (!secretId) return
+      await fetch(`/api/stacks/${selectedStack.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workspaceId: wsId, removeSecretIds: [secretId] }),
+      })
+      await fetchStacks()
+    } finally {
+      setDeletingSecret(null)
+    }
+  }
+
+  const handleDeleteStack = async (stackId: string) => {
+    if (!wsId) return
+    await fetch(`/api/stacks/${stackId}?workspaceId=${wsId}`, { method: 'DELETE' })
+    setSelectedStack(null)
+    await fetchStacks()
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-16">
+        <div className="w-5 h-5 border-2 border-[#E5E5E5] border-t-[#1A1C1C] rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header bar */}
+      <div className="flex items-center justify-between">
+        <p className="text-[13px] text-[#737373]">
+          {stacks.length === 0 ? 'No stacks yet' : `${stacks.length} stack${stacks.length !== 1 ? 's' : ''} — Supabase, Vercel, Railway, and GitHub connections`}
+        </p>
+        <button
+          onClick={() => setShowAddStack(true)}
+          className="text-[12px] font-medium bg-[#1A1A1A] text-white px-3 py-1.5 rounded-md hover:bg-[#333] transition flex items-center gap-1.5"
+        >
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Add Stack
+        </button>
+      </div>
+
+      {/* Add Stack form */}
+      {showAddStack && (
+        <InlineForm
+          title="New stack"
+          fields={[
+            { key: 'name',     label: 'Stack name (e.g. Govscape production)' },
+            { key: 'provider', label: 'Provider', options: ['supabase', 'vercel', 'railway', 'github', 'other'] },
+            { key: 'scope',    label: 'Scope', options: ['workspace', 'space', 'project'] },
+            { key: 'description', label: 'Description (optional)' },
+          ]}
+          onSubmit={handleAddStack}
+          onCancel={() => setShowAddStack(false)}
+          saving={addingStack}
+        />
+      )}
+
+      {/* Two-column layout: card list + edit panel */}
+      <div className={`${selectedStack ? 'grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5' : ''}`}>
+
+        {/* Left: provider groups */}
+        <div className="space-y-6">
+          {!hasStacks && !showAddStack && (
+            <EmptyState
+              icon="🏗️"
+              title="No stacks yet — add your first infrastructure connection"
+              cta="Add Stack"
+              onCta={() => setShowAddStack(true)}
+            />
+          )}
+
+          {PROVIDER_ORDER.filter(p => grouped[p].length > 0).map(provider => (
+            <div key={provider}>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-2">
+                {PROVIDER_LABELS[provider]}
+              </p>
+              <div className="space-y-2">
+                {grouped[provider].map(stack => (
+                  <button
+                    key={stack.id}
+                    onClick={() => setSelectedStack(stack.id === selectedStack?.id ? null : stack)}
+                    className={`w-full text-left bg-white rounded border p-4 transition hover:border-[#C6C6C6] hover:shadow-sm ${
+                      selectedStack?.id === stack.id
+                        ? 'border-[#1A1A1A] shadow-sm'
+                        : 'border-[#E5E5E5]'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-[13px] font-semibold text-[#1A1A1A] leading-tight">{stack.name}</p>
+                      <ScopeBadge companyId={stack.company_id} projectId={stack.project_id} />
+                    </div>
+                    {stack.description && (
+                      <p className="text-[12px] text-[#737373] mt-1 line-clamp-1">{stack.description}</p>
+                    )}
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-[11px] text-[#A3A3A3]">{stack.resources.length} resource{stack.resources.length !== 1 ? 's' : ''}</span>
+                      <span className="text-[11px] text-[#A3A3A3]">{stack.secrets.length} secret{stack.secrets.length !== 1 ? 's' : ''}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Right: edit panel */}
+        {selectedStack && (
+          <div className="bg-white rounded border border-[#E5E5E5] p-5">
+            {/* Panel header */}
+            <div className="flex items-start justify-between mb-5">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <ProviderBadge provider={selectedStack.provider} />
+                  <ScopeBadge companyId={selectedStack.company_id} projectId={selectedStack.project_id} />
+                </div>
+                <h3 className="text-[18px] font-bold text-[#1A1A1A]">{selectedStack.name}</h3>
+                {selectedStack.description && (
+                  <p className="text-[12px] text-[#737373] mt-1">{selectedStack.description}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleDeleteStack(selectedStack.id)}
+                  className="text-[11px] text-red-600 border border-red-200 px-2.5 py-1 rounded-md hover:bg-red-50 transition"
+                >
+                  Archive
+                </button>
+                <button
+                  onClick={() => setSelectedStack(null)}
+                  className="text-[#A3A3A3] hover:text-[#1A1A1A] transition"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Resources */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3]">Resources</p>
+                <button
+                  onClick={() => setShowAddResource(r => !r)}
+                  className="text-[11px] font-medium text-[#1A1A1A] border border-[#E5E5E5] px-2 py-1 rounded-md hover:bg-[#F9F9F9] transition"
+                >
+                  + Add
+                </button>
+              </div>
+
+              {showAddResource && (
+                <div className="mb-3">
+                  <InlineForm
+                    title="New resource"
+                    fields={[
+                      { key: 'key',   label: 'Key (e.g. project_ref)' },
+                      { key: 'value', label: 'Value' },
+                      { key: 'kind',  label: 'Kind', options: ['url', 'id', 'env_name', 'identifier', 'other'] },
+                      { key: 'description', label: 'Description (optional)' },
+                    ]}
+                    onSubmit={handleAddResource}
+                    onCancel={() => setShowAddResource(false)}
+                    saving={savingResource}
+                  />
+                </div>
+              )}
+
+              {selectedStack.resources.length === 0 && !showAddResource && (
+                <p className="text-[12px] text-[#A3A3A3] italic">No resources — add project refs, URLs, or IDs.</p>
+              )}
+
+              {selectedStack.resources.length > 0 && (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[12px]">
+                    <thead>
+                      <tr className="border-b border-[#F3F3F3]">
+                        <th className="text-left py-1.5 pr-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] w-1/3">Key</th>
+                        <th className="text-left py-1.5 pr-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Value</th>
+                        <th className="text-left py-1.5 pr-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] hidden md:table-cell">Kind</th>
+                        <th className="w-8" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedStack.resources.map(r => (
+                        <tr key={r.key} className="border-b border-[#F9F9F9] hover:bg-[#FAFAFA]">
+                          <td className="py-2 pr-3 font-mono text-[#1A1A1A] align-top">{r.key}</td>
+                          <td className="py-2 pr-3 text-[#474747] break-all align-top">{r.value}</td>
+                          <td className="py-2 pr-3 text-[#A3A3A3] capitalize align-top hidden md:table-cell">{r.kind}</td>
+                          <td className="py-2 align-top">
+                            <button
+                              onClick={() => handleDeleteResource(r.key)}
+                              disabled={deletingResource === r.key}
+                              className="text-[#C6C6C6] hover:text-red-500 transition disabled:opacity-40"
+                              title="Remove resource"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Secrets */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3]">Secrets</p>
+                <button
+                  onClick={() => setShowAddSecret(s => !s)}
+                  className="text-[11px] font-medium text-[#1A1A1A] border border-[#E5E5E5] px-2 py-1 rounded-md hover:bg-[#F9F9F9] transition"
+                >
+                  + Add
+                </button>
+              </div>
+
+              {showAddSecret && (
+                <div className="mb-3">
+                  <InlineForm
+                    title="New secret"
+                    fields={[
+                      { key: 'key',       label: 'Key (e.g. service_role_key)' },
+                      { key: 'plaintext', label: 'Secret value (will be vaulted)', type: 'password' },
+                      { key: 'description', label: 'Description (optional)' },
+                    ]}
+                    onSubmit={handleAddSecret}
+                    onCancel={() => setShowAddSecret(false)}
+                    saving={savingSecret}
+                  />
+                </div>
+              )}
+
+              {selectedStack.secrets.length === 0 && !showAddSecret && (
+                <p className="text-[12px] text-[#A3A3A3] italic">No secrets — values are encrypted in Supabase Vault.</p>
+              )}
+
+              {selectedStack.secrets.length > 0 && (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[12px]">
+                    <thead>
+                      <tr className="border-b border-[#F3F3F3]">
+                        <th className="text-left py-1.5 pr-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] w-1/3">Key</th>
+                        <th className="text-left py-1.5 pr-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3]">Value</th>
+                        <th className="text-left py-1.5 pr-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A3A3A3] hidden md:table-cell">Last Rotated</th>
+                        <th className="w-16" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedStack.secrets.map(s => (
+                        <tr key={s.key} className="border-b border-[#F9F9F9] hover:bg-[#FAFAFA]">
+                          <td className="py-2 pr-3 font-mono text-[#1A1A1A] align-middle">{s.key}</td>
+                          <td className="py-2 pr-3 text-[#A3A3A3] font-mono align-middle">{'•'.repeat(12)}</td>
+                          <td className="py-2 pr-3 text-[#A3A3A3] align-middle hidden md:table-cell">
+                            {s.last_rotated_at
+                              ? new Date(s.last_rotated_at).toLocaleDateString('en-GB')
+                              : '—'}
+                          </td>
+                          <td className="py-2 align-middle">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setRevealSecret(s.key)}
+                                className="text-[10px] font-medium text-[#474747] border border-[#E5E5E5] px-2 py-0.5 rounded hover:border-[#1A1A1A] transition"
+                              >
+                                Reveal
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSecret(s.key)}
+                                disabled={deletingSecret === s.key}
+                                className="text-[#C6C6C6] hover:text-red-500 transition disabled:opacity-40"
+                                title="Remove secret"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Linked to — tasks and projects in this workspace referencing this stack scope */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#A3A3A3] mb-3">Linked To</p>
+              {(() => {
+                const linkedProjects = space.projects.filter((p: any) => 
+                  selectedStack.project_id === p.id ||
+                  (selectedStack.company_id === space.id && !selectedStack.project_id)
+                )
+                const linkedTasks = space.tasks.filter((t: any) =>
+                  selectedStack.project_id
+                    ? t.projectId === selectedStack.project_id
+                    : selectedStack.company_id === space.id
+                )
+                if (linkedProjects.length === 0 && linkedTasks.length === 0) {
+                  return <p className="text-[12px] text-[#A3A3A3] italic">No tasks or projects scoped to this stack.</p>
+                }
+                return (
+                  <div className="space-y-1">
+                    {linkedProjects.slice(0, 3).map((p: any) => (
+                      <div key={p.id} className="flex items-center gap-2">
+                        <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">Project</span>
+                        <span className="text-[12px] text-[#474747]">{p.name}</span>
+                      </div>
+                    ))}
+                    {linkedTasks.slice(0, 5).map((t: any) => (
+                      <div key={t.id} className="flex items-center gap-2">
+                        <span className="text-[10px] font-semibold text-[#737373] bg-[#F3F3F3] px-1.5 py-0.5 rounded">Task</span>
+                        <span className="text-[12px] text-[#474747] truncate">{t.title}</span>
+                      </div>
+                    ))}
+                    {(linkedTasks.length > 5 || linkedProjects.length > 3) && (
+                      <p className="text-[11px] text-[#A3A3A3]">
+                        +{Math.max(0, linkedTasks.length - 5) + Math.max(0, linkedProjects.length - 3)} more
+                      </p>
+                    )}
+                  </div>
+                )
+              })()}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Reveal modal */}
+      {revealSecret && selectedStack && (
+        <RevealModal
+          stackId={selectedStack.id}
+          secretKey={revealSecret}
+          onClose={() => setRevealSecret(null)}
+        />
+      )}
+    </div>
+  )
+}
+
 // ─── Tab: Intelligence ────────────────────────────────────────────────────────
 
 function IntelligenceTab({ space }: { space: Space }) {
@@ -1336,6 +1953,7 @@ export default function SpaceDetailPage() {
             }} />}
           {activeTab === 'docs'         && <DocsTab space={space} wsId={wsId} onRefresh={() => loadSpace(true)} />}
           {activeTab === 'intelligence' && <IntelligenceTab space={space} />}
+          {activeTab === 'infrastructure' && <InfrastructureTab space={space} wsId={wsId} />}
 
         </div>
       </div>
