@@ -238,7 +238,7 @@ Be specific and actionable. For revenue goals, think about customer acquisition,
         objective: {
           id: objective.id,
           title: objective.title,
-          url: `http://localhost:3001/objectives/${objective.id}`,
+          url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://zebi.app'}/objectives/${objective.id}`,
         },
         projects: createdProjects,
         totalTasks: createdProjects.reduce((sum, p) => sum + p.tasks.length, 0),
