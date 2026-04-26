@@ -14,11 +14,12 @@ const DOUG_API_TOKEN   = process.env.DOUG_API_TOKEN
 const HARVEY_API_TOKEN = process.env.HARVEY_API_TOKEN
 const THEO_API_TOKEN   = process.env.THEO_API_TOKEN
 const CASPER_API_TOKEN = process.env.CASPER_API_TOKEN
+const CLAUDE_API_TOKEN = process.env.CLAUDE_API_TOKEN
 
 // Kill switch — defaults to enabled if not set
 const AGENT_WORK_ENABLED = process.env.AGENT_WORK_ENABLED !== 'false'
 
-export type AIAssistant = 'doug' | 'harvey' | 'theo' | 'casper'
+export type AIAssistant = 'doug' | 'harvey' | 'theo' | 'casper' | 'claude'
 
 /**
  * Validate AI assistant token and return which assistant it is.
@@ -54,6 +55,10 @@ export function validateAIAuth(request: NextRequest): { valid: boolean; assistan
 
   if (CASPER_API_TOKEN && token === CASPER_API_TOKEN) {
     return { valid: true, assistant: 'casper' }
+  }
+
+  if (CLAUDE_API_TOKEN && token === CLAUDE_API_TOKEN) {
+    return { valid: true, assistant: 'claude' }
   }
 
   return { valid: false }
