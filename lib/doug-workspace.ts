@@ -18,6 +18,7 @@ const AI_USER_IDS: Record<AIAssistant, string> = {
   harvey: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
   theo:   'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
   casper: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
+  claude: 'dc949f3d-2077-4ff7-8dc2-2a54454b7d74',
 }
 
 /**
