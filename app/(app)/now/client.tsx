@@ -614,6 +614,7 @@ export default function NowClient() {
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#A3A3A3] mb-1">NOW DASHBOARD</p>
               <h1 className="text-[28px] font-bold text-[#1A1A1A] leading-tight">{dateStr}</h1>
+              <p className="text-[14px] font-medium text-[#737373] mt-2">Welcome back</p>
             </div>
           </div>
 
