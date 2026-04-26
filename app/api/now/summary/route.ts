@@ -152,16 +152,25 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
+    const myQueueTaskRows = myQueueTasks as any[]
+    const allActiveTaskRows = allActiveTasks as any[]
+    const decisionTaskRows = decisionTasks as any[]
+    const waitingOnBenTaskRows = waitingOnBenTasks as any[]
+    const overdueTaskRows = overdueTasks as any[]
+    const staleTaskRows = staleTasks as any[]
+    const pendingHandoffRows = pendingHandoffs as any[]
+    const recentCompletionRows = recentCompletions as any[]
+
     // Build a quick lookup: agent → heartbeat row
-    const hbMap = new Map(agentHeartbeats.map(h => [h.agent, h]))
+    const hbMap = new Map<string, any>((agentHeartbeats as any[]).map((h: any) => [h.agent, h]))
 
     // Build per-agent status — heartbeat takes priority over task inference
     const agentStatus = AGENTS.map(agent => {
-      const agentTasks   = allActiveTasks.filter(t => t.ownerAgent === agent)
-      const blocked      = agentTasks.filter(t => !!t.blockedReason)
-      const waitingOnBen = agentTasks.filter(t => t.waitingOn === 'ben')
-      const decisions    = agentTasks.filter(t => t.decisionNeeded)
-      const myHandoffs   = pendingHandoffs.filter(h => h.toAgent === agent)
+      const agentTasks   = allActiveTaskRows.filter((t: any) => t.ownerAgent === agent)
+      const blocked      = agentTasks.filter((t: any) => !!t.blockedReason)
+      const waitingOnBen = agentTasks.filter((t: any) => t.waitingOn === 'ben')
+      const decisions    = agentTasks.filter((t: any) => t.decisionNeeded)
+      const myHandoffs   = pendingHandoffRows.filter((h: any) => h.toAgent === agent)
 
       const hb = hbMap.get(agent)
       const msSinceLastSeen = hb
@@ -169,7 +178,7 @@ export async function GET(request: NextRequest) {
         : null
 
       // Determine online presence from heartbeat
-      let presenceSignal: 'online' | 'idle' | 'offline' =
+      const presenceSignal: 'online' | 'idle' | 'offline' =
         msSinceLastSeen === null
           ? 'offline'
           : msSinceLastSeen <= AGENT_ACTIVE_THRESHOLD_MS
@@ -183,19 +192,13 @@ export async function GET(request: NextRequest) {
       if (blocked.length > 0) workSignal = 'blocked'
       else if (waitingOnBen.length > 0 || myHandoffs.length > 0) workSignal = 'waiting'
 
-      // Combined status label shown in UI
-      // If offline/idle — show that. If online — show work signal.
-      let statusSignal: 'active' | 'waiting' | 'blocked' | 'idle' | 'offline' =
-        presenceSignal === 'offline'
-          ? 'offline'
-          : presenceSignal === 'idle'
-          ? 'idle'
-          : workSignal  // 'active' | 'waiting' | 'blocked'
-
       return {
         agent,
-        // UI-facing combined status
-        status: statusSignal,
+        // Backwards-compatible status field for older clients.
+        status: presenceSignal === 'offline' ? 'offline' : presenceSignal === 'idle' ? 'idle' : workSignal,
+        // Presence and work are separate so the UI can show online state independently.
+        presence: presenceSignal,
+        workStatus: workSignal,
         // Presence info for "last seen" display
         lastSeenAt: hb?.lastSeenAt?.toISOString() ?? null,
         lastEvent: hb?.event ?? null,
@@ -208,10 +211,10 @@ export async function GET(request: NextRequest) {
         decisionsNeededCount: decisions.length,
         pendingHandoffsCount: myHandoffs.length,
         topTasks: agentTasks
-          .filter(t => !t.blockedReason)
-          .sort((a, b) => a.priority - b.priority)
+          .filter((t: any) => !t.blockedReason)
+          .sort((a: any, b: any) => a.priority - b.priority)
           .slice(0, 2)
-          .map(t => ({
+          .map((t: any) => ({
             id: t.id,
             title: t.title,
             spaceName: t.company?.name || null,
@@ -220,13 +223,13 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const decisionIds = new Set(decisionTasks.map(t => t.id))
-    const waitingIds  = new Set(waitingOnBenTasks.map(t => t.id))
-    const overdueNotDecision = overdueTasks.filter(t => !decisionIds.has(t.id) && !waitingIds.has(t.id))
-    const staleNotOther      = staleTasks.filter(t => !decisionIds.has(t.id) && !waitingIds.has(t.id))
+    const decisionIds = new Set(decisionTaskRows.map((t: any) => t.id))
+    const waitingIds  = new Set(waitingOnBenTaskRows.map((t: any) => t.id))
+    const overdueNotDecision = overdueTaskRows.filter((t: any) => !decisionIds.has(t.id) && !waitingIds.has(t.id))
+    const staleNotOther      = staleTaskRows.filter((t: any) => !decisionIds.has(t.id) && !waitingIds.has(t.id))
 
     const responseData = {
-      myQueue: myQueueTasks.map(t => ({
+      myQueue: myQueueTaskRows.map((t: any) => ({
         id: t.id, title: t.title, priority: t.priority,
         dueAt: t.dueAt?.toISOString() || null, taskType: t.taskType,
         spaceName: t.company?.name || null, spaceId: t.company?.id || null,
@@ -235,38 +238,39 @@ export async function GET(request: NextRequest) {
       })),
       agentStatus,
       needsAttention: {
-        decisions: decisionTasks.map(t => ({
+        decisions: decisionTaskRows.map((t: any) => ({
           id: t.id, title: t.title, priority: t.priority, ownerAgent: t.ownerAgent,
           decisionSummary: t.decisionSummary, dueAt: t.dueAt?.toISOString() || null,
           spaceName: t.company?.name || null,
         })),
-        waitingOnBen: waitingOnBenTasks.map(t => ({
+        waitingOnBen: waitingOnBenTaskRows.map((t: any) => ({
           id: t.id, title: t.title, priority: t.priority, ownerAgent: t.ownerAgent,
           blockedReason: t.blockedReason, dueAt: t.dueAt?.toISOString() || null,
           spaceName: t.company?.name || null,
         })),
-        overdue: overdueNotDecision.map(t => ({
+        overdue: overdueNotDecision.map((t: any) => ({
           id: t.id, title: t.title, priority: t.priority,
           dueAt: t.dueAt?.toISOString() || null, ownerAgent: t.ownerAgent,
           spaceName: t.company?.name || null,
         })),
-        stale: staleNotOther.map(t => ({
+        stale: staleNotOther.map((t: any) => ({
           id: t.id, title: t.title, ownerAgent: t.ownerAgent,
           updatedAt: t.updatedAt.toISOString(), spaceName: t.company?.name || null,
         })),
       },
-      recentWins: recentCompletions.map(t => ({
+      recentWins: recentCompletionRows.map((t: any) => ({
         id: t.id, title: t.title, ownerAgent: t.ownerAgent,
         completedAt: t.completedAt?.toISOString() || null,
         spaceName: t.company?.name || null,
       })),
       counts: {
-        totalActive: allActiveTasks.length,
-        totalDecisions: decisionTasks.length,
-        totalWaitingOnBen: waitingOnBenTasks.length,
-        totalOverdue: overdueTasks.length,
-        totalStale: staleTasks.length,
-        totalPendingHandoffs: pendingHandoffs.length,
+        totalActive: allActiveTaskRows.length,
+        totalOnlineAgents: agentStatus.filter(a => a.presence === 'online').length,
+        totalDecisions: decisionTaskRows.length,
+        totalWaitingOnBen: waitingOnBenTaskRows.length,
+        totalOverdue: overdueTaskRows.length,
+        totalStale: staleTaskRows.length,
+        totalPendingHandoffs: pendingHandoffRows.length,
       },
     }
 

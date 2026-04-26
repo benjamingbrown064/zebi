@@ -26,6 +26,8 @@ interface QueueTask {
 interface AgentStatus {
   agent: string
   status: 'active' | 'waiting' | 'blocked' | 'idle' | 'offline'
+  presence?: 'online' | 'idle' | 'offline'
+  workStatus?: 'active' | 'waiting' | 'blocked'
   lastSeenAt: string | null
   lastEvent: string | null
   currentTaskId: string | null
@@ -67,6 +69,7 @@ interface NowData {
     totalOverdue: number
     totalStale: number
     totalPendingHandoffs: number
+    totalOnlineAgents?: number
   }
 }
 
@@ -133,8 +136,8 @@ function StatBar({ data }: { data: NowData }) {
       onClick: () => {},
     },
     {
-      label: 'ACTIVE AGENTS',
-      value: data.agentStatus.filter(a => a.activeCount > 0).length,
+      label: 'ONLINE AGENTS',
+      value: data.counts.totalOnlineAgents ?? data.agentStatus.filter(a => (a.presence ?? (a.status === 'active' || a.status === 'waiting' || a.status === 'blocked' ? 'online' : a.status)) === 'online').length,
       sub: `${data.counts.totalActive} tasks in flight`,
       highlight: false,
       onClick: () => router.push('/founder'),
@@ -272,21 +275,28 @@ function formatLastSeen(lastSeenAt: string | null): string {
   return `${days}d ago`
 }
 
-function AgentStatusBadge({ status }: { status: AgentStatus['status'] }) {
-  const cfg: Record<AgentStatus['status'], { label: string; cls: string; dot: string }> = {
-    active:  { label: 'ACTIVE',   cls: 'bg-[#F0FDF4] text-[#16A34A]', dot: '#16A34A' },
-    waiting: { label: 'WAITING',  cls: 'bg-[#FFFBEB] text-[#D97706]', dot: '#D97706' },
-    blocked: { label: 'BLOCKED',  cls: 'bg-[#FEF2F2] text-[#EF4444]', dot: '#EF4444' },
-    idle:    { label: 'IDLE',     cls: 'bg-[#F3F3F3] text-[#A3A3A3]', dot: '#C6C6C6' },
-    offline: { label: 'OFFLINE',  cls: 'bg-[#F3F3F3] text-[#C6C6C6]', dot: '#E5E5E5' },
+function PresenceBadge({ presence }: { presence: NonNullable<AgentStatus['presence']> }) {
+  const cfg: Record<NonNullable<AgentStatus['presence']>, { label: string; cls: string; dot: string }> = {
+    online:  { label: 'ONLINE',  cls: 'bg-[#F0FDF4] text-[#16A34A]', dot: '#16A34A' },
+    idle:    { label: 'IDLE',    cls: 'bg-[#F3F3F3] text-[#A3A3A3]', dot: '#C6C6C6' },
+    offline: { label: 'OFFLINE', cls: 'bg-[#F3F3F3] text-[#C6C6C6]', dot: '#E5E5E5' },
   }
-  const c = cfg[status]
+  const c = cfg[presence]
   return (
     <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.08em] px-1.5 py-0.5 rounded ${c.cls}`}>
       <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.dot }} />
       {c.label}
     </span>
   )
+}
+
+function WorkStatusLabel({ status }: { status: NonNullable<AgentStatus['workStatus']> }) {
+  const cls: Record<NonNullable<AgentStatus['workStatus']>, string> = {
+    active: 'text-[#16A34A]',
+    waiting: 'text-[#D97706]',
+    blocked: 'text-[#EF4444]',
+  }
+  return <span className={`font-semibold uppercase ${cls[status]}`}>{status}</span>
 }
 
 function AgentIntelligence({ agents, router }: { agents: AgentStatus[]; router: ReturnType<typeof useRouter> }) {
@@ -305,7 +315,9 @@ function AgentIntelligence({ agents, router }: { agents: AgentStatus[]; router: 
         ) : agents.map(a => {
           const col = AGENT_COLOURS[a.agent] || '#737373'
           const pct = Math.round((a.activeCount / maxTasks) * 100)
-          const isOffline = a.status === 'offline'
+          const presence = a.presence ?? (a.status === 'active' || a.status === 'waiting' || a.status === 'blocked' ? 'online' : a.status)
+          const workStatus = a.workStatus ?? (a.status === 'waiting' || a.status === 'blocked' ? a.status : 'active')
+          const isOffline = presence === 'offline'
 
           return (
             <div
@@ -326,10 +338,8 @@ function AgentIntelligence({ agents, router }: { agents: AgentStatus[]; router: 
                   className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white"
                   style={{
                     backgroundColor:
-                      a.status === 'active'  ? '#16A34A' :
-                      a.status === 'waiting' ? '#D97706' :
-                      a.status === 'blocked' ? '#EF4444' :
-                      a.status === 'idle'    ? '#A3A3A3' :
+                      presence === 'online' ? '#16A34A' :
+                      presence === 'idle'   ? '#A3A3A3' :
                       '#E5E5E5'
                   }}
                 />
@@ -341,7 +351,7 @@ function AgentIntelligence({ agents, router }: { agents: AgentStatus[]; router: 
                   <p className={`text-[12px] font-bold uppercase tracking-[0.04em] ${isOffline ? 'text-[#A3A3A3]' : 'text-[#1A1A1A]'}`}>
                     {AGENT_LABELS[a.agent] || a.agent}
                   </p>
-                  <AgentStatusBadge status={a.status} />
+                  <PresenceBadge presence={presence} />
                 </div>
 
                 {/* Current task (if agent reported one) */}
@@ -358,7 +368,7 @@ function AgentIntelligence({ agents, router }: { agents: AgentStatus[]; router: 
                     style={{
                       width: `${pct}%`,
                       backgroundColor:
-                        a.status === 'blocked' ? '#EF4444' :
+                        workStatus === 'blocked' ? '#EF4444' :
                         isOffline ? '#E5E5E5' : col
                     }}
                   />
@@ -367,7 +377,7 @@ function AgentIntelligence({ agents, router }: { agents: AgentStatus[]; router: 
                 {/* Meta row */}
                 <div className="flex items-center justify-between mt-1.5">
                   <p className="text-[10px] text-[#A3A3A3]">
-                    {a.activeCount} task{a.activeCount !== 1 ? 's' : ''}
+                    <WorkStatusLabel status={workStatus} /> · {a.activeCount} task{a.activeCount !== 1 ? 's' : ''}
                     {a.blockedCount > 0 && <span className="text-[#EF4444] ml-1">· {a.blockedCount} blocked</span>}
                     {a.waitingOnBenCount > 0 && <span className="text-[#D97706] ml-1">· {a.waitingOnBenCount} waiting</span>}
                   </p>
