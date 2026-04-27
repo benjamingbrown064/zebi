@@ -103,7 +103,7 @@ export function requireDougAuth(request: NextRequest) {
  * (stacks, secrets, auth routes).
  * Add an agent id here to block them from those sensitive surfaces.
  */
-export const INFRA_BLOCKED_AGENTS: AIAssistant[] = ['zebby']
+export const INFRA_BLOCKED_AGENTS: AIAssistant[] = ['zebby', 'claude']
 
 export function isInfraBlocked(assistant: AIAssistant | undefined): boolean {
   return assistant !== undefined && INFRA_BLOCKED_AGENTS.includes(assistant)
