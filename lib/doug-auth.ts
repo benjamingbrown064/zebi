@@ -15,11 +15,12 @@ const HARVEY_API_TOKEN = process.env.HARVEY_API_TOKEN
 const THEO_API_TOKEN   = process.env.THEO_API_TOKEN
 const CASPER_API_TOKEN = process.env.CASPER_API_TOKEN
 const CLAUDE_API_TOKEN = process.env.CLAUDE_API_TOKEN
+const ZEBBY_API_TOKEN  = process.env.ZEBBY_API_TOKEN
 
 // Kill switch — defaults to enabled if not set
 const AGENT_WORK_ENABLED = process.env.AGENT_WORK_ENABLED !== 'false'
 
-export type AIAssistant = 'doug' | 'harvey' | 'theo' | 'casper' | 'claude'
+export type AIAssistant = 'doug' | 'harvey' | 'theo' | 'casper' | 'claude' | 'zebby'
 
 /**
  * Validate AI assistant token and return which assistant it is.
@@ -61,6 +62,10 @@ export function validateAIAuth(request: NextRequest): { valid: boolean; assistan
     return { valid: true, assistant: 'claude' }
   }
 
+  if (ZEBBY_API_TOKEN && token === ZEBBY_API_TOKEN) {
+    return { valid: true, assistant: 'zebby' }
+  }
+
   return { valid: false }
 }
 
@@ -93,4 +98,15 @@ export function requireDougAuth(request: NextRequest) {
 
   return null // No error, auth valid
 }
+/**
+ * Agents that are NOT permitted to access infrastructure/vault endpoints
+ * (stacks, secrets, auth routes).
+ * Add an agent id here to block them from those sensitive surfaces.
+ */
+export const INFRA_BLOCKED_AGENTS: AIAssistant[] = ['zebby']
+
+export function isInfraBlocked(assistant: AIAssistant | undefined): boolean {
+  return assistant !== undefined && INFRA_BLOCKED_AGENTS.includes(assistant)
+}
+
 // Deployed with API auth enabled

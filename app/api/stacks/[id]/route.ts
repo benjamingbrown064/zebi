@@ -9,7 +9,7 @@
 // Secret rule: NEVER return or log plaintext. Only vault_secret_id (opaque) in responses.
 
 import { NextRequest, NextResponse } from 'next/server'
-import { validateAIAuth } from '@/lib/doug-auth'
+import { validateAIAuth, isInfraBlocked } from '@/lib/doug-auth'
 import { requireWorkspace } from '@/lib/workspace'
 import { getServerSupabaseClient } from '@/lib/supabase'
 import { prisma } from '@/lib/prisma'
@@ -69,6 +69,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = validateAIAuth(request)
+  if (auth.valid && isInfraBlocked(auth.assistant)) {
+    return NextResponse.json({ error: 'Forbidden — infrastructure access not permitted for this agent' }, { status: 403 })
+  }
   const { id: stackId } = await params
   const { searchParams } = new URL(request.url)
 
@@ -103,6 +106,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = validateAIAuth(request)
+  if (auth.valid && isInfraBlocked(auth.assistant)) {
+    return NextResponse.json({ error: 'Forbidden — infrastructure access not permitted for this agent' }, { status: 403 })
+  }
   const { id: stackId } = await params
 
   let body: Record<string, unknown>
@@ -257,6 +263,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = validateAIAuth(request)
+  if (auth.valid && isInfraBlocked(auth.assistant)) {
+    return NextResponse.json({ error: 'Forbidden — infrastructure access not permitted for this agent' }, { status: 403 })
+  }
   const { id: stackId } = await params
   const { searchParams } = new URL(request.url)
 

@@ -9,7 +9,7 @@
 //              vault_secret_id persisted, plaintext dropped. NEVER returned in any response.
 
 import { NextRequest, NextResponse } from 'next/server'
-import { validateAIAuth } from '@/lib/doug-auth'
+import { validateAIAuth, isInfraBlocked } from '@/lib/doug-auth'
 import { requireWorkspace } from '@/lib/workspace'
 import { getServerSupabaseClient } from '@/lib/supabase'
 import { prisma } from '@/lib/prisma'
@@ -40,6 +40,9 @@ function secretMetadata(row: Record<string, unknown>) {
 
 export async function GET(request: NextRequest) {
   const auth = validateAIAuth(request)
+  if (auth.valid && isInfraBlocked(auth.assistant)) {
+    return NextResponse.json({ error: 'Forbidden — infrastructure access not permitted for this agent' }, { status: 403 })
+  }
   const { searchParams } = new URL(request.url)
   const provider    = searchParams.get('provider')
 
@@ -131,6 +134,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const auth = validateAIAuth(request)
+  if (auth.valid && isInfraBlocked(auth.assistant)) {
+    return NextResponse.json({ error: 'Forbidden — infrastructure access not permitted for this agent' }, { status: 403 })
+  }
   if (!auth.valid) {
     return NextResponse.json(
       { error: auth.disabled ? 'Agent work is disabled' : 'Unauthorized' },

@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { requireWorkspace } from '@/lib/workspace'
-import { validateAIAuth } from '@/lib/doug-auth'
+import { validateAIAuth, isInfraBlocked } from '@/lib/doug-auth'
 import { getServerSupabaseClient } from '@/lib/supabase'
 import { prisma } from '@/lib/prisma'
 
@@ -26,6 +26,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string; secretKey: string }> }
 ) {
   const agentAuth = validateAIAuth(request)
+  if (agentAuth.valid && isInfraBlocked(agentAuth.assistant)) {
+    return NextResponse.json({ error: 'Forbidden — infrastructure access not permitted for this agent' }, { status: 403 })
+  }
   let workspaceId: string
   let callerLabel: string
 

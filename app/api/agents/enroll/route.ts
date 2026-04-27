@@ -24,7 +24,7 @@ import { getServerSupabaseClient } from '@/lib/supabase'
 import { prisma } from '@/lib/prisma'
 
 const AGENT_BOOTSTRAP_TOKEN = process.env.AGENT_BOOTSTRAP_TOKEN
-const VALID_AGENTS = ['doug', 'harvey', 'theo', 'casper'] as const
+const VALID_AGENTS = ['doug', 'harvey', 'theo', 'casper', 'zebby'] as const
 type AgentId = typeof VALID_AGENTS[number]
 
 // Agent token key names in the Zebi — Agent Tokens stack
@@ -33,6 +33,7 @@ const AGENT_TOKEN_KEYS: Record<AgentId, string> = {
   harvey: 'HARVEY_API_TOKEN',
   theo:   'THEO_API_TOKEN',
   casper: 'CASPER_API_TOKEN',
+  zebby:  'ZEBBY_API_TOKEN',
 }
 
 function clientIp(request: NextRequest): string {
