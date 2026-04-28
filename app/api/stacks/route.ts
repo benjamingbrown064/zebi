@@ -137,12 +137,6 @@ export async function POST(request: NextRequest) {
   if (auth.valid && isInfraBlocked(auth.assistant)) {
     return NextResponse.json({ error: 'Forbidden — infrastructure access not permitted for this agent' }, { status: 403 })
   }
-  if (!auth.valid) {
-    return NextResponse.json(
-      { error: auth.disabled ? 'Agent work is disabled' : 'Unauthorized' },
-      { status: 401 }
-    )
-  }
 
   let body: Record<string, unknown>
   try {
@@ -151,8 +145,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 422 })
   }
 
+  // Resolve workspaceId and createdBy — agent token OR session cookie
+  let resolvedWorkspaceId: string
+  let createdBy: string
+
+  if (auth.valid) {
+    if (!body.workspaceId || typeof body.workspaceId !== 'string') {
+      return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
+    }
+    resolvedWorkspaceId = body.workspaceId as string
+    createdBy = auth.assistant ?? 'agent'
+  } else if (auth.disabled) {
+    return NextResponse.json({ error: 'Agent work is disabled' }, { status: 401 })
+  } else {
+    // Session auth fallback (browser UI)
+    try {
+      resolvedWorkspaceId = await requireWorkspace()
+    } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    createdBy = 'user'
+  }
+
   const {
-    workspaceId,
     name,
     provider,
     companyId,
@@ -161,7 +176,6 @@ export async function POST(request: NextRequest) {
     resources = [],
     secrets   = [],
   } = body as {
-    workspaceId: string
     name: string
     provider: string
     companyId?: string
@@ -171,9 +185,6 @@ export async function POST(request: NextRequest) {
     secrets?: Array<{ key: string; plaintext: string; description?: string; rotation_interval_days?: number }>
   }
 
-  if (!workspaceId || typeof workspaceId !== 'string') {
-    return NextResponse.json({ error: 'workspaceId is required' }, { status: 422 })
-  }
   if (!name || typeof name !== 'string' || !name.trim()) {
     return NextResponse.json({ error: 'name is required' }, { status: 422 })
   }
@@ -209,7 +220,7 @@ export async function POST(request: NextRequest) {
     // Insert stack
     const stackRows = await prisma.$queryRaw<Array<Record<string, unknown>>>`
       INSERT INTO stack (workspace_id, company_id, project_id, name, provider, description, created_by)
-      VALUES (${workspaceId}, ${companyId ?? null}, ${projectId ?? null}, ${name.trim()}, ${provider}, ${description ?? null}, ${auth.assistant ?? 'doug'})
+      VALUES (${resolvedWorkspaceId}, ${companyId ?? null}, ${projectId ?? null}, ${name.trim()}, ${provider}, ${description ?? null}, ${createdBy})
       RETURNING id, workspace_id, company_id, project_id, name, provider, description, created_by, created_at, updated_at`
     const stack = stackRows[0]
 
@@ -230,7 +241,7 @@ export async function POST(request: NextRequest) {
     const insertedSecretsMeta: unknown[] = []
     for (const s of secrets) {
       const { data: vaultId, error: vaultErr } = await supabase.rpc('vault_store_secret', {
-        p_name: `${workspaceId}/${stack.id}/${s.key}`,
+        p_name: `${resolvedWorkspaceId}/${stack.id}/${s.key}`,
         p_secret: s.plaintext,
       })
       if (vaultErr || !vaultId) {

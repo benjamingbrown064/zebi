@@ -1198,9 +1198,12 @@ function InfrastructureTab({ space, wsId }: { space: Space; wsId: string | null 
       const res = await fetch(`/api/stacks?workspaceId=${wsId}`)
       const d = await res.json()
       const all: Stack[] = d.stacks ?? []
-      setStacks(all)
+      // Only show stacks scoped to this space or workspace-level (company_id = null)
+      // Never show stacks belonging to other spaces
+      const spaceStacks = all.filter(s => !s.company_id || s.company_id === space.id)
+      setStacks(spaceStacks)
       // If a stack is selected, refresh it from the updated list
-      setSelectedStack(sel => sel ? (all.find(s => s.id === sel.id) ?? null) : null)
+      setSelectedStack(sel => sel ? (spaceStacks.find(s => s.id === sel.id) ?? null) : null)
     } finally {
       setLoading(false)
     }
