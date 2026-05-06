@@ -5,23 +5,44 @@ import { validateAIAuth } from '@/lib/doug-auth'
 
 const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
 
+/**
+ * Agents sometimes pass a Space (company) ID where a workspace ID is expected.
+ * This resolver detects that case and returns the correct workspaceId + companyId.
+ * Falls back to treating the value as a workspaceId if it's not a known Space.
+ */
+async function resolveWorkspaceContext(candidateId: string, explicitCompanyId?: string | null): Promise<{ workspaceId: string; companyId: string | null }> {
+  // Check if the candidate is actually a Space ID
+  const space = await prisma.space.findUnique({
+    where: { id: candidateId },
+    select: { id: true, workspaceId: true },
+  })
+  if (space) {
+    // The agent passed a company/space ID — auto-resolve to the real workspace
+    return { workspaceId: space.workspaceId, companyId: explicitCompanyId ?? space.id }
+  }
+  // Treat as a normal workspaceId
+  return { workspaceId: candidateId, companyId: explicitCompanyId ?? null }
+}
+
 // GET /api/documents - List documents with filters
 export async function GET(request: NextRequest) {
   try {
     const auth = validateAIAuth(request)
     let workspaceId: string
 
+    const { searchParams } = new URL(request.url);
+    let resolvedCompanyId: string | null = searchParams.get('companyId');
+    const projectId = searchParams.get('projectId');
+
     if (auth.valid) {
-      const wid = new URL(request.url).searchParams.get('workspaceId')
+      const wid = searchParams.get('workspaceId')
       if (!wid) return NextResponse.json({ success: false, error: 'workspaceId is required' }, { status: 400 })
-      workspaceId = wid
+      const resolved = await resolveWorkspaceContext(wid, resolvedCompanyId)
+      workspaceId = resolved.workspaceId
+      if (!resolvedCompanyId) resolvedCompanyId = resolved.companyId
     } else {
       workspaceId = await requireWorkspace()
     }
-
-    const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId');
-    const projectId = searchParams.get('projectId');
     const documentType = searchParams.get('documentType');
     const search = searchParams.get('search');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -30,7 +51,7 @@ export async function GET(request: NextRequest) {
     const archived = searchParams.get('archived') === 'true';
 
     const where: any = { workspaceId };
-    if (companyId) where.companyId = companyId;
+    if (resolvedCompanyId) where.companyId = resolvedCompanyId;
     if (projectId) where.projectId = projectId;
     if (documentType) where.documentType = documentType;
     if (search) {
@@ -127,6 +148,7 @@ export async function POST(request: NextRequest) {
   try {
     const auth = validateAIAuth(request)
     let workspaceId: string
+    let resolvedCompanyId: string | null = null
 
     const body = await request.json();
     // Accept: contentRich (TipTap JSON), content or body (markdown/plain text)
@@ -141,14 +163,16 @@ export async function POST(request: NextRequest) {
 
     if (auth.valid) {
       if (!body.workspaceId) return NextResponse.json({ success: false, error: 'workspaceId is required' }, { status: 400 })
-      workspaceId = body.workspaceId
+      const resolved = await resolveWorkspaceContext(body.workspaceId, companyId || null)
+      workspaceId = resolved.workspaceId
+      resolvedCompanyId = resolved.companyId
     } else {
       workspaceId = await requireWorkspace()
     }
 
     const docData = {
       workspaceId,
-      companyId: companyId || null,
+      companyId: resolvedCompanyId || null,
       projectId: projectId || null,
       title: title || 'Untitled Document',
       documentType: documentType || 'notes',
